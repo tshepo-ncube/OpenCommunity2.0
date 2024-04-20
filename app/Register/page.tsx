@@ -12,7 +12,7 @@ function page() {
 
   return (
     <>
-      <h1>Register Component</h1>
+      <h1>Register Component Tshepo</h1>
       <Register />
     </>
   );
