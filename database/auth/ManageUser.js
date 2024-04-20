@@ -21,7 +21,27 @@ import {
 } from "firebase/firestore";
 
 export default class ManageUser {
-  static userIsSignedIn = () => {
-    return true;
+  static manageUserState = (setUser, setSignedIn) => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in.
+        console.log("User is logged in:", user);
+        setSignedIn(true);
+
+        // User is signed in.
+        setUser(user);
+
+        window.location.href = "http://localhost:3000/Home";
+      } else {
+        setSignedIn(false);
+        setUser(null);
+        // No user is signed in.
+        console.log("No user is logged in");
+      }
+    });
+
+    // To stop listening for changes (unsubscribe) - optional
+    //return () => unsubscribe();
   };
 }
