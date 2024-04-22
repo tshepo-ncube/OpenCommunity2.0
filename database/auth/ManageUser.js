@@ -44,4 +44,18 @@ export default class ManageUser {
     // To stop listening for changes (unsubscribe) - optional
     //return () => unsubscribe();
   };
+
+  static logoutUser = (setLoggedIn, router) => {
+    const auth = getAuth();
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+        setLoggedIn(false);
+        router.push("/");
+        //window.location.href = "http://localhost:3000/sign-in";
+      })
+      .catch((error) => {
+        // An error happened.
+      });
+  };
 }
