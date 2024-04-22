@@ -32,7 +32,7 @@ const Sidebar = () => {
             <button className="toggle-btn" onClick={toggleSidebar}>
                 {isOpen ? '>' : '<'}
             </button>
-            <div className={`sidebar ${isOpen ? '' : 'hidden'} border-r-2 border-black`}> {/* Apply border-r-2 for a 2px black border on the right */}
+            <div className={`sidebar ${isOpen ? '' : 'hidden'}`}> {/* Removed border-r-2 class */}
                 {/* User Profile */}
                 <div className="user-profile">
                    
@@ -45,7 +45,7 @@ const Sidebar = () => {
                 <ul>
                     <li>
                         <button onClick={openTeamsApp}>
-                            <Image src={teamsLogo} alt="Microsoft Teams" style={{ width: '90px', marginTop: '160px' }} />
+                            <Image src={teamsLogo} alt="Microsoft Teams" style={{ width: '90px', marginTop: '170px' }} />
                         </button>
                     </li>
                     <li>
