@@ -38,7 +38,7 @@ const router = useRouter();
                 {/* User Profile */}
                 <div className="user-profile">
                     <div className="profile-icon">Profile Icon</div>
-                    <div className="logout-link bg-red-500 p-2" onClick={handleLogout}>Log out</div>
+                    <div className="logout-link p-2" onClick={handleLogout}>Log out</div>
                 </div>
                 {/* Sidebar Links */}
                 <ul>
