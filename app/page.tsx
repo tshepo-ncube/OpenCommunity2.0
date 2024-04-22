@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Register from "@/_Components/Register";
 import { useRouter } from "next/router";
-const Login = () => {
+const Page = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -36,35 +36,39 @@ const Login = () => {
           <a>Go to Home</a>
         </Link>
       ) : (
-        // <div className="login-form">
-        //   <div>
-        //     <label htmlFor="email">Email</label>
-        //     <input
-        //       type="email"
-        //       id="email"
-        //       value={email}
-        //       onChange={handleEmailChange}
-        //       placeholder="Enter your email"
-        //     />
-        //   </div>
-        //   <div>
-        //     <label htmlFor="password">Password</label>
-        //     <input
-        //       type="password"
-        //       id="password"
-        //       value={password}
-        //       onChange={handlePasswordChange}
-        //       placeholder="Enter your password"
-        //     />
-        //   </div>
-        //   {errorMessage && <p className="error-message">{errorMessage}</p>}
-        //   <button onClick={handleLogin}>Login</button>
-        // </div>
-
+    
+        <>
+             <div className="login-form">
+           <div>
+             <label htmlFor="email">Email</label>
+             <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={handleEmailChange}
+              placeholder="Enter your email"
+            />
+          </div>
+          <div>
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={handlePasswordChange}
+              placeholder="Enter your password"
+            />
+          </div>
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
+          <button onClick={handleLogin}>Login</button>
+        </div>
         <Register />
+        
+        </>
+        
       )}
     </div>
   );
 };
 
-export default Login;
+export default Page;

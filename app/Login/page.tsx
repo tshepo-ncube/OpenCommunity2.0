@@ -1,11 +1,13 @@
-import React, { useState } from "react";
-
+"use client"; 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [loggedIn, setLoggedIn] = useState(false);
+    const router = useRouter();
 
     const handleEmailChange = (e) => {
         setEmail(e.target.value);
@@ -25,12 +27,15 @@ const Login = () => {
         // Here, you might make an API call to authenticate the user
         setLoggedIn(true);
         setErrorMessage(''); // Clear error message upon successful login
+        
+        // Redirect to home page
+        router.push("/Home");
     };
 
     return (
         <div className="login-container">
             {loggedIn ? (
-                <Home />
+                <div>Logged In</div>
             ) : (
                 <div className="login-form">
                     <div>
