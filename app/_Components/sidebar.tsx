@@ -1,6 +1,10 @@
+"use client"; 
 import React, { useState } from 'react';
 //import teamsLogo from "./teams-icon.jpg"; // Import Microsoft Teams logo
 //import outlookLogo from "./outlook-logo.png"; // Import Outlook logo
+import teamsLogo from '@/lib/images/teams-icon.jpg'
+import outlookLogo from '@/lib/images/outlook-icon.jpeg'
+import Image from 'next/image';
 
 const openTeamsApp = () => {
     window.location.href = "msteams://";
@@ -26,12 +30,12 @@ const Sidebar = () => {
           <ul>
             <li>
               <button onClick={openTeamsApp}>
-                <img src={teamsLogo} alt="Microsoft Teams" style={{ width: '90px', marginTop: '370px' }} />
+                <Image src={teamsLogo} alt="Microsoft Teams" style={{ width: '90px', marginTop: '370px' }} />
               </button>
             </li>
             <li>
               <button onClick={openOutlookApp}>
-                <img src={outlookLogo} alt="Outlook" style={{ width: '100px', marginTop: '20px' }} />
+                <Image src={outlookLogo} alt="Outlook" style={{ width: '100px', marginTop: '20px' }} />
               </button>
             </li>
           </ul>

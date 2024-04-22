@@ -1,6 +1,6 @@
+"use client"; 
 import { useState } from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -27,7 +27,9 @@ const Login = () => {
         // Here, you might make an API call to authenticate the user
         setLoggedIn(true);
         setErrorMessage(''); // Clear error message upon successful login
-        router.push("/"); // Redirect to home page after login
+        
+        // Redirect to home page
+        router.push("/Home");
     };
 
     return (
@@ -58,12 +60,6 @@ const Login = () => {
                     </div>
                     {errorMessage && <p className="error-message">{errorMessage}</p>}
                     <button onClick={handleLogin}>Login</button>
-                    <p>
-                        Don't have an account?{" "}
-                        <Link href="/signup">
-                            <a>Sign up</a>
-                        </Link>
-                    </p>
                 </div>
             )}
         </div>
