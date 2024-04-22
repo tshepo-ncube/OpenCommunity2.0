@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import teamsLogo from '@/lib/images/teams-icon.jpg';
 import outlookLogo from '@/lib/images/outlook-icon.jpeg';
+import profileicon from '@/lib/images/profile-icon.webp';
 import ManageUser from '@/database/auth/ManageUser';
 import { useRouter } from "next/navigation";
 
@@ -34,14 +35,17 @@ const Sidebar = () => {
             <div className={`sidebar ${isOpen ? '' : 'hidden'} border-r-2 border-black`}> {/* Apply border-r-2 for a 2px black border on the right */}
                 {/* User Profile */}
                 <div className="user-profile">
-                    <div className="profile-icon">Profile Icon</div>
+                   
+                <button onClick={openOutlookApp}>
+                            <Image src={profileicon} alt="Profile" style={{ width: '80px', marginTop: '20px' }} />
+                        </button>
                     <div className="logout-link p-2" onClick={handleLogout}>Log out</div>
                 </div>
                 {/* Sidebar Links */}
                 <ul>
                     <li>
                         <button onClick={openTeamsApp}>
-                            <Image src={teamsLogo} alt="Microsoft Teams" style={{ width: '90px', marginTop: '290px' }} />
+                            <Image src={teamsLogo} alt="Microsoft Teams" style={{ width: '90px', marginTop: '160px' }} />
                         </button>
                     </li>
                     <li>
