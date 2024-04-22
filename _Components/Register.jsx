@@ -21,7 +21,7 @@ function Register() {
     //router.push("/");
     if (user) {
       // window.location.href = "http://localhost:3000/Home";
-      router.push("/Home");
+      router.push("/");
     }
   }, [user]);
 

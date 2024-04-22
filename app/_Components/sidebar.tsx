@@ -3,6 +3,10 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import teamsLogo from '@/lib/images/teams-icon.jpg';
 import outlookLogo from '@/lib/images/outlook-icon.jpeg';
+import ManageUser from '@/database/auth/ManageUser';
+import { useRouter } from "next/navigation";
+
+
 
 const openTeamsApp = () => {
     window.location.href = "msteams://";
@@ -15,16 +19,28 @@ const openOutlookApp = () => {
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(true);
   
+const [loggedIn, setLoggedIn] = useState(false);
+const router = useRouter();
+
     const toggleSidebar = () => {
         setIsOpen(!isOpen);
     };
   
+    const handleLogout= () => {
+      ManageUser.logoutUser( setLoggedIn,router)
+    }
     return (
         <div>
             <button className="toggle-btn" onClick={toggleSidebar}>
                 {isOpen ? '>' : '<'}
             </button>
             <div className={`sidebar ${isOpen ? '' : 'collapsed'}`}>
+                {/* User Profile */}
+                <div className="user-profile">
+                    <div className="profile-icon">Profile Icon</div>
+                    <div className="logout-link bg-red-500 p-2" onClick={handleLogout}>Log out</div>
+                </div>
+                {/* Sidebar Links */}
                 <ul>
                     <li>
                         <button onClick={openTeamsApp}>
