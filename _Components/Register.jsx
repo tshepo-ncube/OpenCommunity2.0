@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 //import { BrowserRouter as Router } from "react-router-dom";
 import RegisterUser from "../database/auth/Register";
 import ManageUser from "@/database/auth/ManageUser";
-//import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 function Register() {
-  // const router = useRouter();
+  const router = useRouter();
 
   const [name, setName] = useState(null);
   const [surname, setSurname] = useState(null);
@@ -20,7 +20,8 @@ function Register() {
     //if user exists then we need to direct to another page.
     //router.push("/");
     if (user) {
-      window.location.href = "http://localhost:3000/Home";
+      // window.location.href = "http://localhost:3000/Home";
+      router.push("/Home");
     }
   }, [user]);
 
