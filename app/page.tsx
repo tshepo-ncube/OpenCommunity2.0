@@ -1,67 +1,22 @@
-"use client"
-import React, { useState } from "react";
-import Link from "next/link";
+"use client"; 
+import Link from 'next/link';
 
-const Login = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-    const [loggedIn, setLoggedIn] = useState(false);
-
-    const handleEmailChange = (e) => {
-        setEmail(e.target.value);
-    };
-
-    const handlePasswordChange = (e) => {
-        setPassword(e.target.value);
-    };
-
-    const handleLogin = () => {
-        if (email.trim() === '' || password.trim() === '') {
-            setErrorMessage('Please enter both email and password');
-            return;
-        }
-
-        // Simulate successful login
-        // Here, you might make an API call to authenticate the user
-        setLoggedIn(true);
-        setErrorMessage(''); // Clear error message upon successful login
-    };
-
-    return (
-        <div className="login-container">
-            {loggedIn ? (
-                <Link href="/">
-                    <a>Go to Home</a>
-                </Link>
-            ) : (
-                <div className="login-form">
-                    <div>
-                        <label htmlFor="email">Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            value={email}
-                            onChange={handleEmailChange}
-                            placeholder="Enter your email"
-                        />
-                    </div>
-                    <div>
-                        <label htmlFor="password">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            value={password}
-                            onChange={handlePasswordChange}
-                            placeholder="Enter your password"
-                        />
-                    </div>
-                    {errorMessage && <p className="error-message">{errorMessage}</p>}
-                    <button onClick={handleLogin}>Login</button>
-                </div>
-            )}
+const Page = () => {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="container">
+        <h1 className="text-3xl font-bold text-center mb-8">Welcome to Open Community</h1>
+        <div className="flex justify-center">
+          <Link href="/Login">
+            <button className="btn bg-green-500 hover:bg-green-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300">Login</button>
+          </Link>
+          <Link href="/Register">
+            <button className="btn bg-green-500 hover:bg-green-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300">Register</button>
+          </Link>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
-export default Login;
+export default Page;

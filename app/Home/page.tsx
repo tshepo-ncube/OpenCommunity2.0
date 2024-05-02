@@ -1,16 +1,15 @@
 "use client"
-import React, { useState } from "react";
 import  Sidebar from"../_Components/sidebar";
+import  Header from"../_Components/header";
 
-function Home (){
-
-
-return (
+function Home() {
+  return (
     <div className="App">
-      <Sidebar/>
+       
+       <Header/>
+       <Sidebar/>
     </div>
-
   );
 }
 
-export default Home; 
+export default Home;

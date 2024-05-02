@@ -1,4 +1,4 @@
-// File: C:\Users\admin\OneDrive - University of Cape Town\FRNMOD001\2024 Honours\BCom Hons Information Systems\INF4027W Systems Development\OpenCommunity2.0\app\layout.tsx
+// File: C:\Users\Holly-May\Downloads\OpenCommunity2.0\OpenCommunity2.0\app\layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
