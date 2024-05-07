@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import Image from 'next/image';
 import teamsLogo from '@/lib/images/teams-icon.jpg';
@@ -27,6 +28,11 @@ const Sidebar = () => {
         ManageUser.logoutUser(setLoggedIn, router);
     };
 
+    // Function to handle click event and navigate to Login page
+    const goToProfilePage = () => {
+      router.push("/Profile"); // Replace "/login" with the actual path of your Login page
+  };
+
     return (
         <div className="flex">
             <button className="toggle-btn" onClick={toggleSidebar}>
@@ -36,9 +42,9 @@ const Sidebar = () => {
                 {/* User Profile */}
                 <div className="user-profile">
                    
-                <button onClick={openOutlookApp}>
-                            <Image src={profileicon} alt="Profile" style={{ width: '80px', marginTop: '20px' }} />
-                        </button>
+                <button onClick={goToProfilePage}>
+                <Image src={profileicon} alt="Profile" className="w-20 mt-5" />
+            </button>
                     <div className="logout-link p-2" onClick={handleLogout}>Log out</div>
                 </div>
                 {/* Sidebar Links */}
