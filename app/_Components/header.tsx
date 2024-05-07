@@ -14,12 +14,12 @@ const Header = () => {
       <div className="bg-white py-4 text-center">
         <div className="flex justify-center">
           <div className="px-4">
-            <Link href="/my-communities">
+            <Link href="/mycommunities">
               <div className="text-green-500 font-semibold">My Communities</div>
             </Link>
           </div>
           <div className="px-4">
-            <Link href="/discover-communities">
+            <Link href="/DiscoverCommunities">
               <div className="text-green-500 font-semibold">Discover Communities</div>
             </Link>
           </div>
