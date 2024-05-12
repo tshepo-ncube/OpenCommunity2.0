@@ -109,11 +109,9 @@ useState('');
 
   const
 handleAccountDetails
-= ()
-=> {
+= ()=> {
 
-    console.log("The
- Account details form has been submitted")
+    console.log("The Account details form has been submitted")
 
     //This function will deal with sending the account details information to be stored in FireStore
 
@@ -125,8 +123,7 @@ handleAccountDetails
 
 
 
-  useEffect(()
-=> {
+  useEffect(()=> {
 
     //if user exists then we need to direct to another page.
 
@@ -145,8 +142,7 @@ handleAccountDetails
 
 
 
-  useEffect(()
-=> {
+  useEffect(()=> {
 
     ManageUser.manageUserState(setUser,
 setIsSignedIn);
@@ -158,8 +154,7 @@ setIsSignedIn);
 
   const
 handleRegistration
-= (e)
-=> {
+= (e)=> {
 
     e.preventDefault();
 
@@ -255,8 +250,7 @@ className="block mb-2 text-sm font-medium text-gray-700">Dietary
 
               value={diet}
 
-              onChange={(e)
-=>
+              onChange={(e)=>
 setDiet(e.target.value)}
 
               required
@@ -304,8 +298,7 @@ className="block mb-2 text-sm font-medium text-gray-700">Allergies</label>
 
               value={allergies}
 
-              onChange={(e)
-=>
+              onChange={(e)=>
 setAllergies(e.target.value)}
 
             />
@@ -332,8 +325,7 @@ className="block mb-2 text-sm font-medium text-gray-700">Injury</label>
 
               value={injury}
 
-              onChange={(e)
-=>
+              onChange={(e)=>
 setInjury(e.target.value)}
 
             />
@@ -402,8 +394,7 @@ className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
 
                   placeholder="Name"
 
-                  onChange={(e)
-=> {
+                  onChange={(e)=> {
 
                     setName(e.target.value);
 
@@ -440,8 +431,7 @@ className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
 
                   placeholder="Surname"
 
-                  onChange={(e)
-=> {
+                  onChange={(e)=> {
 
                     setSurname(e.target.value);
 
@@ -478,8 +468,7 @@ className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
 
                   placeholder="Email"
 
-                  onChange={(e)
-=> {
+                  onChange={(e)=> {
 
                     setEmail(e.target.value);
 
@@ -552,8 +541,7 @@ className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   className="bg-gray-50 border border-gray-300 text-gray-900
  sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 
-                  onChange={(e)
-=> {
+                  onChange={(e)=> {
 
                     setPassword(e.target.value);
 
@@ -590,8 +578,7 @@ className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   className="bg-gray-50 border border-gray-300 text-gray-900
  sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 
-                  onChange={(e)
-=> {
+                  onChange={(e)=> {
 
                     setConfirmPassword(e.target.value);
 
