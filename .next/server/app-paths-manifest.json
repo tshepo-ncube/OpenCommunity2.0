@@ -1,7 +1,1 @@
-{
-  "/page": "app/page.js",
-  "/Home/page": "app/Home/page.js",
-  "/DiscoverCommunities/page": "app/DiscoverCommunities/page.js",
-  "/Login/page": "app/Login/page.js",
-  "/Register/page": "app/Register/page.js"
-}
+{}
