@@ -16,14 +16,11 @@ const openOutlookApp = () => {
 };
 
 const Sidebar = () => {
-    const [isOpen, setIsOpen] = useState(true);
+   
     const [loggedIn, setLoggedIn] = useState(false);
     const router = useRouter();
 
-    const toggleSidebar = () => {
-        setIsOpen(!isOpen);
-    };
-
+   
     const handleLogout = () => {
         ManageUser.logoutUser(setLoggedIn, router);
     };
@@ -35,15 +32,13 @@ const Sidebar = () => {
 
     return (
         <div className="flex">
-            <button className="toggle-btn" onClick={toggleSidebar}>
-                {isOpen ? '>' : '<'}
-            </button>
-            <div className={`sidebar ${isOpen ? '' : 'hidden'}`}> {/* Removed border-r-2 class */}
+          
+           
                 {/* User Profile */}
                 <div className="user-profile">
                    
                 <button onClick={goToProfilePage}>
-                <Image src={profileicon} alt="Profile" className="w-20 mt-5" />
+                <Image src={profileicon} alt="Profile" className="w-20 mt-80" />
             </button>
                     <div className="logout-link p-2" onClick={handleLogout}>Log out</div>
                 </div>
@@ -51,17 +46,17 @@ const Sidebar = () => {
                 <ul>
                     <li>
                         <button onClick={openTeamsApp}>
-                            <Image src={teamsLogo} alt="Microsoft Teams" style={{ width: '90px', marginTop: '170px' }} />
+                            <Image src={teamsLogo} alt="Microsoft Teams" style={{ width: '90px', marginTop: '17px' }} />
                         </button>
                     </li>
                     <li>
                         <button onClick={openOutlookApp}>
-                            <Image src={outlookLogo} alt="Outlook" style={{ width: '100px', marginTop: '20px' }} />
+                            <Image src={outlookLogo} alt="Outlook" style={{ width: '100px', marginTop: '15px' }} />
                         </button>
                     </li>
                 </ul>
             </div>
-        </div>
+        
     );
 };
 
