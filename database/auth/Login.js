@@ -6,7 +6,7 @@ import {
   onAuthStateChanged,
   signOut,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
 } from "firebase/auth";
 
 import {
@@ -31,6 +31,8 @@ export default class LoginUser {
         // Signed in
         const user = userCredential.user;
         setUser(user);
+
+        localStorage.setItem("Email", user.email);
       })
       .catch((error) => {
         const errorCode = error.code;

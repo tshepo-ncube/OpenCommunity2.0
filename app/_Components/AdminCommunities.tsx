@@ -344,16 +344,18 @@ const AdminCommunity = () => {
                             size="small"
                             onClick={() => handleEdit(index)}
                           >
-                            edit
+                            Edit
                           </Button>
 
                           <Button
                             size="small"
                             onClick={() => {
+                              localStorage.setItem("CurrentCommunity", data.id);
+                              console.log(`Current Community : ${data.id}`);
                               router.push("/adminDash");
                             }}
                           >
-                            post
+                            View
                           </Button>
 
                           <Button

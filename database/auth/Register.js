@@ -27,6 +27,7 @@ export default class RegisterUser {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
+        localStorage.setItem("Email", user.email);
         setUser(user);
         RegisterUser.storeUserData(userData);
       })

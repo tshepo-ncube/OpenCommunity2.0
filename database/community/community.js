@@ -24,6 +24,7 @@ import {
 
 import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 //import { truncateSync } from "fs";
+import { v4 } from "uuid";
 
 export default class CommunityDB {
   static createCommunity = async (item, setCommunities, setLoading) => {
@@ -54,6 +55,9 @@ export default class CommunityDB {
     await updateDoc(communityRef, object);
   };
 
+  static deleteCommunity = async (id) => {
+    await deleteDoc(doc(DB, "communities", id));
+  };
   static getCommunitiesWithImages = async (setCommunities, setLoading) => {
     setLoading(true);
     const communities = [];

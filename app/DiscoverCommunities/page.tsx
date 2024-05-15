@@ -11,6 +11,7 @@ import Image from "next/image";
 import CommunityDB from "@/database/community/community";
 import Logo from "@/lib/images/Logo.jpeg";
 import AdminCommunity from "../_Components/AdminCommunities";
+import CloseIcon from "@mui/icons-material/Close";
 
 const CreateCommunity = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -114,7 +115,7 @@ const CreateCommunity = () => {
 
       {/* Apply backdrop blur effect when popup is open */}
       {isPopupOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-0 backdrop-blur-md z-10"></div>
+        <div className="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-md z-10"></div>
       )}
 
       {isPopupOpen && (
@@ -177,12 +178,12 @@ const CreateCommunity = () => {
               >
                 {editIndex !== null ? "Save" : "Create"}
               </button>
-              <button
-                onClick={handleClosePopup}
-                className="ml-2 bg-gray hover:bg-hover-gray text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-              >
-                Close
-              </button>
+              <div className="flex justify-end">
+                <CloseIcon
+                  className="absolute top-4 right-4 text-balck-500 cursor-pointer"
+                  onClick={handleClosePopup}
+                />
+              </div>
             </div>
           </form>
         </div>

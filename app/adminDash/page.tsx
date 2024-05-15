@@ -1,7 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Header from "../_Components/header";
-
+import EventsHolder from "../_Components/EventsHolder";
+import PollsHolder from "../_Components/PollsHolder";
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
+import EventDB from "@/database/community/event";
+import PollDB from "@/database/community/poll";
 interface Option {
   id: number;
   value: string;
@@ -21,6 +26,17 @@ interface EventDetails {
   description: string;
 }
 
+const createEvent = (communityID) => {
+  EventDB.createEvent({
+    Name: eventDetails.eventName,
+    StartDate: new Date(`${eventDetails.date} ${eventDetails.startTime}`),
+    EndDate: new Date(`${eventDetails.date} ${eventDetails.endTime}`),
+    EventDescription: eventDetails.description,
+    Location: eventDetails.location,
+    CommunityID: communityID,
+  });
+};
+
 const EventForm = ({ isOpen, onClose }) => {
   const [eventDetails, setEventDetails] = useState<EventDetails>({
     eventName: "",
@@ -31,6 +47,26 @@ const EventForm = ({ isOpen, onClose }) => {
     description: "",
   });
 
+  const formRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (formRef.current && !formRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen, onClose]);
+
   const handleChangeEvent = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEventDetails((prevDetails) => ({
@@ -39,8 +75,24 @@ const EventForm = ({ isOpen, onClose }) => {
     }));
   };
 
+  const createEvent = (communityID) => {
+    EventDB.createEvent({
+      Name: eventDetails.eventName,
+      StartDate: new Date(`${eventDetails.date} ${eventDetails.startTime}`),
+      EndDate: new Date(`${eventDetails.date} ${eventDetails.endTime}`),
+      EventDescription: eventDetails.description,
+      Location: eventDetails.location,
+      CommunityID: communityID,
+    });
+  };
+
   const handleSubmitEvent = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log(eventDetails.date);
+    console.log(eventDetails.startTime);
+    //createEvent("tshepo");
+    createEvent(localStorage.getItem("CurrentCommunity"));
+
     // Handle event form submission
     onClose(); // Close the event form after submission
   };
@@ -49,12 +101,13 @@ const EventForm = ({ isOpen, onClose }) => {
     <>
       {/* Apply backdrop blur effect when popup is open */}
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-0 backdrop-blur-md z-10"></div>
+        <div className="fixed inset-0 bg-black bg-opacity-20 z-10 fixed inset-0 bg-black bg-opacity-0 backdrop-blur-md z-10"></div>
       )}
       <div
+        ref={formRef}
         className={`${
           isOpen ? "block" : "hidden"
-        } mt-16 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-3/4 sm:h-auto lg:h-auto`}
+        } mt-16 fixed top-1/2  left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-3/4 sm:h-auto lg:h-auto`}
       >
         <button
           onClick={onClose}
@@ -191,41 +244,32 @@ const EventForm = ({ isOpen, onClose }) => {
 
 const AdminDash: React.FC = () => {
   const [pollName, setPollName] = useState<string>("");
-  const [options, setOptions] = useState<Option[]>([
-    { id: 1, value: "" },
-    { id: 2, value: "" },
-  ]);
-  const [polls, setPolls] = useState<Poll[]>([]); // Store array of polls
-  const [showPollForm, setShowPollForm] = useState<boolean>(false); // Control visibility of the poll form
-  const [showEventForm, setShowEventForm] = useState<boolean>(false); // Control visibility of the event form
-
-  // Functions for handling polls
-  const handlePollNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPollName(event.target.value);
-  };
-
+  const [options, setOptions] = useState(["option 1", "option2"]);
+  const [showEventForm, setShowEventForm] = useState(false);
+  const [showPollForm, setShowPollForm] = useState(false);
   const handleOptionChange = (
     index: number,
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const newOptions = options.map((option, i) => {
       if (i === index) {
-        return { ...option, value: event.target.value };
+        return event.target.value;
       }
-      return option;
+      return option.value;
     });
     setOptions(newOptions);
   };
 
   const addOption = () => {
     const newOptionId = options.length + 1;
-    const newOption = { id: newOptionId, value: "" };
+    const newOption = ""; //{ id: newOptionId, value: "" };
     setOptions([...options, newOption]);
   };
 
   const handleSubmitPoll = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setPolls([...polls, { pollName, options }]);
+    PollDB.createPoll({ Question: pollName, Options: options });
     setPollName("");
     setOptions([
       { id: 1, value: "" },
@@ -246,90 +290,118 @@ const AdminDash: React.FC = () => {
     setShowEventForm(!showEventForm);
   };
 
+  const handlePollNameChange = (e) => {
+    setPollName(e.target.value);
+  };
+
   return (
-    <div className="flex-col items-center min-h-screen relative text-center">
+    <>
       <Header />
-      <div className="flex justify-between w-full mb-4">
-        <div className="w-1/2 mr-2">
-          <button
-            onClick={handleCreateNewEvent}
-            className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
-          >
-            {showEventForm ? "Close Event Form" : "Create Event"}
-          </button>
-          {showEventForm && (
-            <EventForm isOpen={showEventForm} onClose={handleCreateNewEvent} />
-          )}
-        </div>
-        <div className="w-1/2 ml-2">
-          <button
-            onClick={handleCreateNewPoll}
-            className="px-4 py-2 bg-green-500 hover:bg-green-700 text-white font-bold rounded"
-          >
-            Post Poll
-          </button>
-          {showPollForm && (
-            <form
-              onSubmit={handleSubmitPoll}
-              className="p-4 border-2 border-gray-300 rounded-lg shadow-lg max-w-md w-full mt-4"
+      <Fab
+        variant="extended"
+        style={{
+          bottom: "50px",
+          color: "white",
+          position: "fixed",
+
+          right: "20px",
+        }}
+        aria-label="add"
+        className="bg-openbox-green"
+      >
+        post
+      </Fab>
+      <div className="bg-background_gray p-4">
+        <EventsHolder
+          communityID={localStorage.getItem("CurrentCommunity")}
+          createEvent={createEvent}
+        />
+        <PollsHolder communityID={localStorage.getItem("CurrentCommunity")} />
+        <div className="flex justify-between w-full mb-4">
+          <div className="w-1/2 mr-2">
+            <button
+              onClick={handleCreateNewEvent}
+              className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
             >
-              <h1 className="text-xl font-bold mb-4">Create Poll</h1>
-              <div className="mb-4">
-                <label
-                  htmlFor="pollName"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Question
-                </label>
-                <input
-                  type="text"
-                  name="pollName"
-                  id="pollName"
-                  value={pollName}
-                  onChange={handlePollNameChange}
-                  placeholder="Ask question"
-                  className="mt-1 block w-full rounded-md border-2 border-gray-400 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                  required
-                />
-              </div>
-              {options.map((option, index) => (
-                <div key={option.id} className="mb-2">
+              {showEventForm ? "Close Event Form" : "Create Event"}
+            </button>
+            {showEventForm && (
+              <EventForm
+                isOpen={showEventForm}
+                onClose={handleCreateNewEvent}
+              />
+            )}
+          </div>
+          <div className="w-1/2 ml-2">
+            <button
+              onClick={handleCreateNewPoll}
+              className="px-4 py-2 bg-green-500 hover:bg-green-700 text-white font-bold rounded"
+            >
+              Post Poll
+            </button>
+            {showPollForm && (
+              <form
+                onSubmit={handleSubmitPoll}
+                className="p-4 border-2 border-gray-300 rounded-lg shadow-lg max-w-md w-full mt-4"
+              >
+                <h1 className="text-xl font-bold mb-4">Create Poll</h1>
+                <div className="mb-4">
+                  <label
+                    htmlFor="pollName"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Question
+                  </label>
                   <input
                     type="text"
-                    placeholder={`Option ${option.id}`}
-                    value={option.value}
-                    onChange={(event) => handleOptionChange(index, event)}
+                    name="pollName"
+                    id="pollName"
+                    value={pollName}
+                    onChange={handlePollNameChange}
+                    placeholder="Ask question"
                     className="mt-1 block w-full rounded-md border-2 border-gray-400 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                     required
                   />
                 </div>
-              ))}
-              <div className="flex justify-between mt-4">
-                <button
-                  type="button"
-                  onClick={addOption}
-                  className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                >
-                  Add Option
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
-                >
-                  Post Poll
-                </button>
-              </div>
-            </form>
-          )}
+                {options.map((option, index) => (
+                  <div key={option} className="mb-2">
+                    <input
+                      type="text"
+                      placeholder={`Option ${option}`}
+                      value={option}
+                      onChange={(event) => handleOptionChange(index, event)}
+                      className="mt-1 block w-full rounded-md border-2 border-gray-400 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                      required
+                    />
+                  </div>
+                ))}
+                <div className="flex justify-between mt-4">
+                  <button
+                    type="button"
+                    onClick={addOption}
+                    className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                  >
+                    Add Option
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
+                  >
+                    Post Poll
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+        <div className="w-full flex flex-wrap justify-center mt-4">
+          {/* Render events */}
+        </div>
+        <div className="w-full flex flex-wrap justify-center mt-4">
+          {/* Render polls */}
         </div>
       </div>
-      <div className="w-full flex flex-wrap justify-center mt-4">
-        {/* Render events */}
-      </div>
-      <div className="w-full flex flex-wrap justify-center mt-4">
-        {/* Render polls */}
-      </div>
-    </div>
+    </>
   );
 };
 
