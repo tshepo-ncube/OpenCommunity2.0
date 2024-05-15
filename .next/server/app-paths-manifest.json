@@ -1,8 +1,7 @@
 {
   "/Home/page": "app/Home/page.js",
-  "/page": "app/page.js",
-  "/Register/page": "app/Register/page.js",
+  "/adminDash/page": "app/adminDash/page.js",
   "/Login/page": "app/Login/page.js",
-  "/DiscoverCommunities/page": "app/DiscoverCommunities/page.js",
-  "/Profile/page": "app/Profile/page.js"
+  "/Profile/page": "app/Profile/page.js",
+  "/DiscoverCommunities/page": "app/DiscoverCommunities/page.js"
 }

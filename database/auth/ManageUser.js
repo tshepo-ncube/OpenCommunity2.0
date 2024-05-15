@@ -6,6 +6,7 @@ import {
   onAuthStateChanged,
   signOut,
   createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 
 import {
@@ -43,6 +44,23 @@ export default class ManageUser {
 
     // To stop listening for changes (unsubscribe) - optional
     //return () => unsubscribe();
+  };
+
+  static forgotPassword = (email, setError, router) => {
+    const auth = getAuth();
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        // Password reset email sent!
+        // ..
+        alert("A link to reset your password has been sent to your email")
+        router.push("/"); 
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        setError(errorMessage);
+        // ..
+      });
   };
 
   static logoutUser = (setLoggedIn, router) => {

@@ -38,7 +38,7 @@ const Sidebar = () => {
                 <div className="user-profile">
                    
                 <button onClick={goToProfilePage}>
-                <Image src={profileicon} alt="Profile" className="w-20 mt-80" />
+                <Image src={profileicon} alt="Profile" className="w-20 mt-8" />
             </button>
                     <div className="logout-link p-2" onClick={handleLogout}>Log out</div>
                 </div>

@@ -86,7 +86,7 @@ const page = () => {
                   placeholder="Enter your password"
                   className="w-full px-3 py-2 rounded-lg border-2 border-gray outline-none focus:border-indigo-500" // Changed border-gray-200 to border-gray
                 />
-                 <p className="text-left mt-1"><a href="#" className="text-hover-obgreen">Forgot password?</a></p>
+                 <p className="text-left mt-1"><span className="text-hover-obgreen cursor-pointer" onClick={() => router.push("/ForgotPassword")}>Forgot Password?</span></p>
              </div>
             {errorMessage && <p className="error-message text-red text-center">{errorMessage}</p>}
             <button onClick={handleLogin} className="block w-full bg-openbox-green hover:bg-hover-obgreen focus:bg-hover-obgreen text-white rounded-lg px-3 py-3 font-semibold">Login</button>

@@ -1,10 +1,5 @@
 {
   "pages": {
-    "/Login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/Login/page.js"
-    ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -31,10 +26,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
-    "/Register/page": [
+    "/Login/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/Register/page.js"
+      "static/chunks/app/Login/page.js"
     ],
     "/Profile/page": [
       "static/chunks/webpack.js",
