@@ -335,7 +335,7 @@ const AdminDash: React.FC = () => {
     Description: "",
   });
   return (
-    <>
+    <div className="bg-background_gray h-full">
       <Header />
       <div className="flex flex-col fixed bottom-7 right-4">
         <button
@@ -351,7 +351,7 @@ const AdminDash: React.FC = () => {
           + EVENT
         </button>
       </div>
-      <div className="bg-background_gray p-4">
+      <div className="bg-background_gray p-4 h-full">
         <EventsHolder
           communityID={localStorage.getItem("CurrentCommunity")}
           createEvent={createEvent}
@@ -494,7 +494,7 @@ const AdminDash: React.FC = () => {
           {/* Render polls */}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

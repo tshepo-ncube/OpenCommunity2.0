@@ -40,17 +40,17 @@ function PollsHolder({ communityID }) {
   }, []);
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 h-480">
       <h1 className="text-xxl">Polls</h1>
 
       <div style={{ overflowX: "auto", whiteSpace: "nowrap", marginTop: 15 }}>
-        <Grid container justifyContent="flex-start" spacing={2}>
-          {allPolls.length == 0 ? (
-            <>
-              <center>You have no polls currently.</center>
-            </>
-          ) : (
-            <>
+        {allPolls.length == 0 ? (
+          <div className="mt-8">
+            <center>You have no polls currently.</center>
+          </div>
+        ) : (
+          <>
+            <Grid container justifyContent="flex-start" spacing={2}>
               {allPolls.map((value) => (
                 <>
                   <Grid key={value.id} item sx={{ maxWidth: 345 }}>
@@ -87,9 +87,9 @@ function PollsHolder({ communityID }) {
                   </Grid>
                 </>
               ))}
-            </>
-          )}
-        </Grid>
+            </Grid>
+          </>
+        )}
       </div>
 
       {/* <Grid item xs={12}>

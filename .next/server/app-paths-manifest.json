@@ -1,6 +1,8 @@
 {
+  "/adminDash/page": "app/adminDash/page.js",
   "/Home/page": "app/Home/page.js",
-  "/Profile/page": "app/Profile/page.js",
   "/DiscoverCommunities/page": "app/DiscoverCommunities/page.js",
-  "/adminDash/page": "app/adminDash/page.js"
+  "/page": "app/page.js",
+  "/Profile/page": "app/Profile/page.js",
+  "/Login/page": "app/Login/page.js"
 }

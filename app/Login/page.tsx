@@ -82,7 +82,7 @@ const Login = () => {
                       htmlFor="name"
                       className="block mb-2 text-sm font-medium text-black"
                     >
-                      Alergies
+                      Allergies
                     </label>
                     <input
                       type="text"
