@@ -20,6 +20,7 @@ import {
   query,
   where,
   updateDoc,
+  deleteDoc,
   getDocs,
   runTransaction,
 } from "firebase/firestore";

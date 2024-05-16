@@ -99,6 +99,15 @@ const AdminCommunity = () => {
 
   //At the moment - this creates another community
 
+  const handleDelete = (index: number) => {
+    console.log(submittedData[index]);
+    CommunityDB.deleteCommunity(submittedData[index].id);
+
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000); // Refresh after 2000 milliseconds (2 seconds)
+  };
+
   const handleEdit = (index: number) => {
     setName(submittedData[index].name);
 
@@ -254,6 +263,7 @@ const AdminCommunity = () => {
                   marginTop: 20,
                   width: 150,
                   height: 150,
+                  color: "#bcd727",
                 }}
               />
             </>
@@ -361,7 +371,7 @@ const AdminCommunity = () => {
                           <Button
                             size="small"
                             color="error"
-                            onClick={() => handleEdit(index)}
+                            onClick={() => handleDelete(index)}
                           >
                             delete
                           </Button>

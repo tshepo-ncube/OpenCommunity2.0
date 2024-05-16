@@ -10,7 +10,28 @@ import RadioGroup from "@mui/material/RadioGroup";
 import Radio from "@mui/material/Radio";
 import Paper from "@mui/material/Paper";
 
-function EventsHolder({ communityID, createEvent }) {
+import Card from "@mui/material/Card";
+import CardHeader from "@mui/material/CardHeader";
+import CardMedia from "@mui/material/CardMedia";
+import CardContent from "@mui/material/CardContent";
+import CardActions from "@mui/material/CardActions";
+import Collapse from "@mui/material/Collapse";
+import Avatar from "@mui/material/Avatar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import { red } from "@mui/material/colors";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import ShareIcon from "@mui/icons-material/Share";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { Button } from "@mui/material";
+
+function EventsHolder({
+  communityID,
+  createEvent,
+  setShowEventForm,
+  setEventForm,
+}) {
   //const [communityID, setCommunityID] = useState(communityID);
   const [allEvents, setAllEvents] = useState([]);
 
@@ -35,17 +56,60 @@ function EventsHolder({ communityID, createEvent }) {
       <div style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
         {allEvents.length == 0 ? (
           <>
-            <center>You have no events currently.</center>
+            <center>You have no enteries</center>
           </>
         ) : (
           <>
-            <Grid container justifyContent="flex-start" spacing={2}>
+            <Grid container spacing={2}>
               {allEvents.map((value) => (
-                <>
-                  <Grid key={value.id} item>
-                    <EventCard event={value} />
-                  </Grid>
-                </>
+                <Grid key={value} item>
+                  <Card sx={{ maxWidth: 345 }}>
+                    <CardHeader
+                      avatar={
+                        <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+                          R
+                        </Avatar>
+                      }
+                      action={
+                        <IconButton aria-label="settings">
+                          <MoreVertIcon />
+                        </IconButton>
+                      }
+                      title={value.Name}
+                      subheader="September 14, 2016"
+                    />
+
+                    <CardContent>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        style={{ whiteSpace: "pre-wrap" }}
+                      >
+                        {value.EventDescription}
+                      </Typography>
+                    </CardContent>
+                    <CardActions disableSpacing>
+                      {/* <Button
+                        onClick={() => {
+                          setShowEventForm(true);
+                          setEventForm(value);
+                          console.log(value);
+                        }}
+                      >
+                        edit
+                      </Button> */}
+                      <Button
+                        color="error"
+                        onClick={() => {
+                          console.log(value);
+                          EventDB.deleteEvent(value.id);
+                        }}
+                      >
+                        delete
+                      </Button>
+                    </CardActions>
+                  </Card>
+                </Grid>
               ))}
             </Grid>
           </>

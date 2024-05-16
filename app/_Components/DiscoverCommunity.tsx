@@ -253,6 +253,7 @@ const DiscoverCommunity = () => {
                   marginTop: 20,
                   width: 150,
                   height: 150,
+                  color: "#bcd727",
                 }}
               />
             </>

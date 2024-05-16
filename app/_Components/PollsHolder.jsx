@@ -43,35 +43,52 @@ function PollsHolder({ communityID }) {
     <div className="mt-4">
       <h1 className="text-xxl">Polls</h1>
 
-      <div style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
+      <div style={{ overflowX: "auto", whiteSpace: "nowrap", marginTop: 15 }}>
         <Grid container justifyContent="flex-start" spacing={2}>
-          {allPolls.map((value) => (
+          {allPolls.length == 0 ? (
             <>
-              <Grid key={value.id} item>
-                <Card sx={{ maxWidth: 345 }}>
-                  <CardContent>
-                    <Typography variant="h8" className="font-semibold ">
-                      {value.Question}
-                    </Typography>
-                    <Typography
-                      variant="p"
-                      style={{ whiteSpace: "pre-wrap", color: "black" }}
-                    >
-                      {value.Options.map((x, index) => (
-                        <p key={index} className="text-gray-700">
-                          {index + 1}. {x}
-                        </p>
-                      ))}
-                    </Typography>
-                  </CardContent>
-                  <CardActions disableSpacing>
-                    <Button> edit</Button>
-                    <Button color="error">delete</Button>
-                  </CardActions>
-                </Card>
-              </Grid>
+              <center>You have no polls currently.</center>
             </>
-          ))}
+          ) : (
+            <>
+              {allPolls.map((value) => (
+                <>
+                  <Grid key={value.id} item sx={{ maxWidth: 345 }}>
+                    <Card sx={{ maxWidth: 345 }}>
+                      <CardContent>
+                        <Typography variant="h8" className="font-semibold ">
+                          {value.Question}
+                        </Typography>
+                        <Typography
+                          variant="p"
+                          style={{ whiteSpace: "pre-wrap", color: "black" }}
+                        >
+                          {value.Options.map((x, index) => (
+                            <p key={index} className="text-gray-700">
+                              {index + 1}. {x}
+                            </p>
+                          ))}
+                        </Typography>
+                      </CardContent>
+                      <CardActions disableSpacing>
+                        <Button
+                          color="error"
+                          onClick={() => {
+                            PollDB.deletePoll(value.id);
+                            setTimeout(() => {
+                              window.location.reload();
+                            }, 2000); // Refresh after 2000 milliseconds (2 seconds)
+                          }}
+                        >
+                          delete
+                        </Button>
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                </>
+              ))}
+            </>
+          )}
         </Grid>
       </div>
 

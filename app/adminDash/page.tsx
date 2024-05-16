@@ -7,6 +7,22 @@ import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import EventDB from "@/database/community/event";
 import PollDB from "@/database/community/poll";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Modal from "@mui/material/Modal";
+
+const style = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+
+  boxShadow: 24,
+  p: 4,
+};
 interface Option {
   id: number;
   value: string;
@@ -37,17 +53,21 @@ const createEvent = (communityID) => {
   });
 };
 
-const EventForm = ({ isOpen, onClose }) => {
+const EventForm = ({ isOpen, onClose, eventData }) => {
   const [eventDetails, setEventDetails] = useState<EventDetails>({
-    eventName: "",
-    date: "",
-    startTime: "",
-    endTime: "",
-    location: "",
-    description: "",
+    eventName: eventData.Name,
+    date: eventData.Date,
+    startTime: eventData.StartDate,
+    endTime: eventData.EndDate,
+    location: eventData.Location,
+    description: eventData.EventDescription,
   });
 
   const formRef = useRef(null);
+
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -101,8 +121,9 @@ const EventForm = ({ isOpen, onClose }) => {
     <>
       {/* Apply backdrop blur effect when popup is open */}
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-20 z-10 fixed inset-0 bg-black bg-opacity-0 backdrop-blur-md z-10"></div>
+        <div className="fixed inset-0 bg-black bg-opacity-20 z-10 fixed inset-0 bg-black bg-opacity-0 backdrop-blur-md z-4"></div>
       )}
+
       <div
         ref={formRef}
         className={`${
@@ -113,7 +134,7 @@ const EventForm = ({ isOpen, onClose }) => {
           onClick={onClose}
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
         >
-          Close
+          close
         </button>
         <form onSubmit={handleSubmitEvent} className="space-y-4">
           <div>
@@ -229,12 +250,6 @@ const EventForm = ({ isOpen, onClose }) => {
             >
               Post Event
             </button>
-            <button
-              onClick={onClose}
-              className="ml-2 bg-gray hover:bg-hover-gray text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-            >
-              Close
-            </button>
           </div>
         </form>
       </div>
@@ -244,21 +259,21 @@ const EventForm = ({ isOpen, onClose }) => {
 
 const AdminDash: React.FC = () => {
   const [pollName, setPollName] = useState<string>("");
-  const [options, setOptions] = useState(["option 1", "option2"]);
+  const [options, setOptions] = useState(["", ""]);
   const [showEventForm, setShowEventForm] = useState(false);
   const [showPollForm, setShowPollForm] = useState(false);
-  const handleOptionChange = (
-    index: number,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const newOptions = options.map((option, i) => {
-      if (i === index) {
-        return event.target.value;
-      }
-      return option.value;
-    });
-    setOptions(newOptions);
+
+  //const [options, setOptions] = useState(["", ""]); // Initialize state with an empty string
+
+  const handleOptionChange = (index, event) => {
+    const newOptions = [...options]; // Create a copy of the options array
+    newOptions[index] = event.target.value; // Update the value at the specified index
+    setOptions(newOptions); // Update the state with the new array
   };
+
+  // const handleOptionChange = (event) => {
+  //   setOptions(newOptions);
+  // };
 
   const addOption = () => {
     const newOptionId = options.length + 1;
@@ -266,15 +281,20 @@ const AdminDash: React.FC = () => {
     setOptions([...options, newOption]);
   };
 
+  const addNewOption = () => {
+    setOptions([...options, ""]); // Add a new empty string to the end of the array
+  };
+
   const handleSubmitPoll = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setPolls([...polls, { pollName, options }]);
-    PollDB.createPoll({ Question: pollName, Options: options });
+    //setPolls([...polls, { pollName, options }]);
+    PollDB.createPoll({
+      Question: pollName,
+      Options: options,
+      CommunityID: localStorage.getItem("CurrentCommunity"),
+    });
     setPollName("");
-    setOptions([
-      { id: 1, value: "" },
-      { id: 2, value: "" },
-    ]);
+    setOptions(["", ""]);
     setShowPollForm(false);
   };
 
@@ -293,52 +313,125 @@ const AdminDash: React.FC = () => {
   const handlePollNameChange = (e) => {
     setPollName(e.target.value);
   };
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
+  let emptyObject = {
+    Name: "",
+    Date: "",
+    EndDate: "",
+    StartEnd: "",
+    Location: "",
+    Description: "",
+  };
+
+  const [eventFormData, setEventForm] = useState({
+    Name: "",
+    Date: "",
+    EndDate: "",
+    StartEnd: "",
+    Location: "",
+    Description: "",
+  });
   return (
     <>
       <Header />
-      <Fab
-        variant="extended"
-        style={{
-          bottom: "50px",
-          color: "white",
-          position: "fixed",
-
-          right: "20px",
-        }}
-        aria-label="add"
-        className="bg-openbox-green"
-      >
-        post
-      </Fab>
+      <div className="flex flex-col fixed bottom-7 right-4">
+        <button
+          onClick={handleOpen}
+          className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mb-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+        >
+          + POLL
+        </button>
+        <button
+          onClick={handleCreateNewEvent}
+          className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
+        >
+          + EVENT
+        </button>
+      </div>
       <div className="bg-background_gray p-4">
         <EventsHolder
           communityID={localStorage.getItem("CurrentCommunity")}
           createEvent={createEvent}
+          setEventForm={setEventForm}
+          setShowEventForm={setShowEventForm}
         />
         <PollsHolder communityID={localStorage.getItem("CurrentCommunity")} />
+
+        <Modal
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <form
+              onSubmit={handleSubmitPoll}
+              className="p-4 rounded-lg max-w-md w-full mt-4"
+            >
+              <h1 className="text-xl font-bold mb-4">Create Poll</h1>
+              <div className="mb-4">
+                <label
+                  htmlFor="pollName"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Question
+                </label>
+                <input
+                  type="text"
+                  name="pollName"
+                  id="pollName"
+                  value={pollName}
+                  onChange={handlePollNameChange}
+                  placeholder="Ask question"
+                  className="mt-1 block w-full rounded-md border-2 border-gray-400 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                  required
+                />
+              </div>
+              {options.map((option, index) => (
+                <div key={index} className="mb-2">
+                  <input
+                    type="text"
+                    placeholder={`Option ${index + 1}`}
+                    defaultValue={option}
+                    onChange={(event) => handleOptionChange(index, event)}
+                    className="mt-1 block w-full rounded-md border-2 border-gray-400 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    required
+                  />
+                </div>
+              ))}
+
+              <div className="flex justify-between mt-4">
+                <button
+                  type="button"
+                  onClick={addNewOption}
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Add Option
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
+                >
+                  Post Poll
+                </button>
+              </div>
+            </form>
+          </Box>
+        </Modal>
         <div className="flex justify-between w-full mb-4">
           <div className="w-1/2 mr-2">
-            <button
-              onClick={handleCreateNewEvent}
-              className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold rounded"
-            >
-              {showEventForm ? "Close Event Form" : "Create Event"}
-            </button>
             {showEventForm && (
               <EventForm
                 isOpen={showEventForm}
                 onClose={handleCreateNewEvent}
+                eventData={eventFormData}
               />
             )}
           </div>
           <div className="w-1/2 ml-2">
-            <button
-              onClick={handleCreateNewPoll}
-              className="px-4 py-2 bg-green-500 hover:bg-green-700 text-white font-bold rounded"
-            >
-              Post Poll
-            </button>
             {showPollForm && (
               <form
                 onSubmit={handleSubmitPoll}
@@ -378,7 +471,7 @@ const AdminDash: React.FC = () => {
                 <div className="flex justify-between mt-4">
                   <button
                     type="button"
-                    onClick={addOption}
+                    onClick={addNewOption}
                     className="px-4 py-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                   >
                     Add Option
