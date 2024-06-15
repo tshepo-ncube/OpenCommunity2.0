@@ -1,8 +1,9 @@
 {
-  "/adminDash/page": "app/adminDash/page.js",
-  "/Home/page": "app/Home/page.js",
   "/DiscoverCommunities/page": "app/DiscoverCommunities/page.js",
-  "/page": "app/page.js",
+  "/adminDash/page": "app/adminDash/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/Profile/page": "app/Profile/page.js",
-  "/Login/page": "app/Login/page.js"
+  "/Home/page": "app/Home/page.js",
+  "/page": "app/page.js",
+  "/ForgotPassword/page": "app/ForgotPassword/page.js"
 }
