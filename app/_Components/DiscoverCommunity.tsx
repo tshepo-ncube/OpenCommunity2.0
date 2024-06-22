@@ -68,7 +68,6 @@ const DiscoverCommunity = () => {
 
   return (
     <>
-      {/* Existing JSX */}
       <div className="flex justify-center mt-4">
         <input
           type="text"
@@ -81,33 +80,41 @@ const DiscoverCommunity = () => {
 
       <div className="flex justify-center flex-wrap mt-2">
         {!loading ? (
-          <Grid container spacing={2} style={{ padding: 14 }}>
-            {filteredData.map((data, index) => (
-              <Grid item xs={6} md={3} key={index}>
-                <Card sx={{ maxWidth: 345 }}>
-                  <CardMedia
-                    sx={{ height: 140 }}
-                    image={data.picture}
-                    title="Community Image"
-                  />
-                  <CardContent>
-                    <Typography gutterBottom variant="h5" component="div">
-                      {data.name}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {data.description}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button size="small" onClick={() => handleEdit(index)}>
-                      Edit
-                    </Button>
-                    {/* Add more actions as needed */}
-                  </CardActions>
-                </Card>
+          <>
+            {filteredData.length === 0 ? (
+              <Typography variant="body1" className="mt-4">
+                No communities found.
+              </Typography>
+            ) : (
+              <Grid container spacing={2} style={{ padding: 14 }}>
+                {filteredData.map((data, index) => (
+                  <Grid item xs={6} md={3} key={index}>
+                    <Card sx={{ maxWidth: 345 }}>
+                      <CardMedia
+                        sx={{ height: 140 }}
+                        image={data.picture}
+                        title="Community Image"
+                      />
+                      <CardContent>
+                        <Typography gutterBottom variant="h5" component="div">
+                          {data.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {data.description}
+                        </Typography>
+                      </CardContent>
+                      <CardActions>
+                        <Button size="small" onClick={() => handleEdit(index)}>
+                          Edit
+                        </Button>
+                        {/* Add more actions as needed */}
+                      </CardActions>
+                    </Card>
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
+            )}
+          </>
         ) : (
           <CircularProgress
             color="success"
@@ -115,7 +122,6 @@ const DiscoverCommunity = () => {
           />
         )}
       </div>
-      {/* Existing JSX */}
     </>
   );
 };
