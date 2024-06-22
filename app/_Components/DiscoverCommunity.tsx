@@ -63,9 +63,16 @@ const DiscoverCommunity = () => {
     }
   };
 
-  const filteredData = submittedData.filter((data) =>
-    data[selectedFilter].toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter function
+  const filterData = (data: { name: string; description: string }[]) => {
+    return data.filter((item) =>
+      `${item.name.toLowerCase()} ${item.description.toLowerCase()}`.includes(
+        searchQuery.toLowerCase()
+      )
+    );
+  };
+
+  const filteredData = filterData(submittedData);
 
   const filterOptions = ["name", "description"]; // Add more filter options as needed
 
@@ -80,17 +87,19 @@ const DiscoverCommunity = () => {
           className="p-2 border border-gray-300 rounded-md w-full max-w-md"
         />
 
-        <select
-          className="ml-2 p-2 border border-gray-300 rounded-md"
-          value={selectedFilter}
-          onChange={(e) => setSelectedFilter(e.target.value)}
-        >
-          {filterOptions.map((option) => (
-            <option key={option} value={option}>
-              Filter by {option}
-            </option>
-          ))}
-        </select>
+        <div className="ml-2">
+          <select
+            className="p-2 border border-gray-300 rounded-md"
+            value={selectedFilter}
+            onChange={(e) => setSelectedFilter(e.target.value)}
+          >
+            {filterOptions.map((option) => (
+              <option key={option} value={option}>
+                Filter by {option}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <div className="flex justify-center flex-wrap mt-2">
