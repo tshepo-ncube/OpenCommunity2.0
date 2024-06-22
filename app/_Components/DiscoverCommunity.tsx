@@ -8,6 +8,10 @@ import {
   Typography,
   CardActions,
   Button,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
 import CommunityDB from "../../database/community/community";
 
@@ -18,11 +22,17 @@ const DiscoverCommunity = () => {
   const [description, setDescription] = useState("");
   const [picture, setPicture] = useState<File | null>(null);
   const [submittedData, setSubmittedData] = useState<
-    { name: string; description: string; picture: string }[]
+    {
+      id: string;
+      name: string;
+      description: string;
+      picture: string;
+      category: string;
+    }[]
   >([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedFilter, setSelectedFilter] = useState<string>("name");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
 
   useEffect(() => {
     CommunityDB.getCommunitiesWithImages(setSubmittedData, setLoading);
@@ -39,7 +49,7 @@ const DiscoverCommunity = () => {
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     CommunityDB.createCommunity(
-      { name, description, picture },
+      { name, description, picture, category: "general" }, // Assuming a default category
       setSubmittedData,
       setLoading
     );
@@ -63,18 +73,30 @@ const DiscoverCommunity = () => {
     }
   };
 
-  // Filter function
-  const filterData = (data: { name: string; description: string }[]) => {
-    return data.filter((item) =>
-      `${item.name.toLowerCase()} ${item.description.toLowerCase()}`.includes(
-        searchQuery.toLowerCase()
-      )
-    );
+  const filterDataByCategory = (
+    data: {
+      id: string;
+      name: string;
+      description: string;
+      picture: string;
+      category: string;
+    }[]
+  ) => {
+    if (!selectedCategory) return data;
+    return data.filter((item) => item.category === selectedCategory);
   };
 
-  const filteredData = filterData(submittedData);
+  const filteredData = filterDataByCategory(
+    submittedData.filter((item) =>
+      `${item.name.toLowerCase()} ${item.description.toLowerCase()} ${item.category.toLowerCase()}`.includes(
+        searchQuery.toLowerCase()
+      )
+    )
+  );
 
-  const filterOptions = ["name", "description"]; // Add more filter options as needed
+  const uniqueCategories = Array.from(
+    new Set(submittedData.map((data) => data.category))
+  );
 
   return (
     <>
@@ -88,17 +110,25 @@ const DiscoverCommunity = () => {
         />
 
         <div className="ml-2">
-          <select
-            className="p-2 border border-gray-300 rounded-md"
-            value={selectedFilter}
-            onChange={(e) => setSelectedFilter(e.target.value)}
-          >
-            {filterOptions.map((option) => (
-              <option key={option} value={option}>
-                Filter by {option}
-              </option>
-            ))}
-          </select>
+          <FormControl variant="outlined" className="w-full max-w-xs">
+            <InputLabel id="category-label">Category</InputLabel>
+            <Select
+              labelId="category-label"
+              id="category-select"
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              label="Category"
+            >
+              <MenuItem value="">
+                <em>All</em>
+              </MenuItem>
+              {uniqueCategories.map((category) => (
+                <MenuItem key={category} value={category}>
+                  {category}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </div>
       </div>
 
@@ -126,10 +156,13 @@ const DiscoverCommunity = () => {
                         <Typography variant="body2" color="text.secondary">
                           {data.description}
                         </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Category: {data.category}
+                        </Typography>
                       </CardContent>
                       <CardActions>
                         <Button size="small" onClick={() => handleEdit(index)}>
-                          Edit
+                          Join
                         </Button>
                         {/* Add more actions as needed */}
                       </CardActions>
