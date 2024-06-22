@@ -32,7 +32,8 @@ export default class CommunityDB {
     const object = {
       name: item.name,
       description: item.description,
-      category: item.category, // Include category in the object
+      category: item.category,
+      status: item.status || "active", // Include status field with default value "active"
     };
     try {
       const docRef = await addDoc(collection(DB, "communities"), object);
@@ -63,6 +64,21 @@ export default class CommunityDB {
     await deleteDoc(doc(DB, "communities", id));
   };
 
+  static archiveCommunity = async (id) => {
+    const communityRef = doc(DB, "communities", id);
+
+    try {
+      // Update the status field to 'archived'
+      await updateDoc(communityRef, {
+        status: "archived",
+      });
+      console.log("Community archived successfully.");
+    } catch (error) {
+      console.error("Error archiving community:", error);
+      throw error;
+    }
+  };
+
   static getCommunitiesWithImages = async (setCommunities, setLoading) => {
     setLoading(true);
     const communities = [];
@@ -78,7 +94,8 @@ export default class CommunityDB {
           id: doc.id,
           name: data.name,
           description: data.description,
-          category: data.category, // Include category in the fetched data
+          category: data.category,
+          status: data.status, // Include status in the fetched data
           picture: imgUrl,
         });
       }

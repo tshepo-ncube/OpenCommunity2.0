@@ -6,11 +6,11 @@ import Header from "../_Components/header";
 import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
 import Image from "next/image";
-import CommunityDB from "@/database/community/community";
 import Logo from "@/lib/images/Logo.jpeg";
 import AdminCommunity from "../_Components/AdminCommunities";
 import CloseIcon from "@mui/icons-material/Close";
-
+import CommunityDB from "../../database/community/community";
+import { useRouter } from "next/navigation";
 const CreateCommunity = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [name, setName] = useState("");
@@ -31,6 +31,10 @@ const CreateCommunity = () => {
   const [category, setCategory] = useState<string>("general"); // Default category
   const [filter, setFilter] = useState<string>("all"); // Filter state
   const popupRef = useRef(null);
+  const [deletePopupOpen, setDeletePopupOpen] = useState(false);
+  const [communityToDelete, setCommunityToDelete] = useState<string | null>(
+    null
+  ); // Track the community to be deleted
 
   const handleOpenPopup = () => {
     setPopupOpen(true);
@@ -58,7 +62,11 @@ const CreateCommunity = () => {
 
     setPopupOpen(false);
   };
-
+  const handleSaveDraft = () => {
+    // Implement save draft logic here
+    console.log("Draft saved:", { name, description, picture, category });
+    setPopupOpen(false);
+  };
   const handleEdit = (index: number) => {
     setName(submittedData[index].name);
     setDescription(submittedData[index].description);
