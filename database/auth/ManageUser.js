@@ -7,7 +7,10 @@ import {
   signOut,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
+<<<<<<< HEAD
   updatePassword,
+=======
+>>>>>>> 0e91a268613b35a153850079c96964e210f792d1
 } from "firebase/auth";
 import {
   getFirestore,
@@ -65,6 +68,7 @@ export default class ManageUser {
       });
   };
 
+<<<<<<< HEAD
   static editPassword = (newPassword, setError) => {
     const auth = getAuth();
 
@@ -139,6 +143,8 @@ export default class ManageUser {
     }
   };
 
+=======
+>>>>>>> 0e91a268613b35a153850079c96964e210f792d1
   static logoutUser = (setLoggedIn, router) => {
     const auth = getAuth();
     signOut(auth)
