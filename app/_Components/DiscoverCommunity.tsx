@@ -22,6 +22,7 @@ const DiscoverCommunity = () => {
   >([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [selectedFilter, setSelectedFilter] = useState<string>("name");
 
   useEffect(() => {
     CommunityDB.getCommunitiesWithImages(setSubmittedData, setLoading);
@@ -63,8 +64,10 @@ const DiscoverCommunity = () => {
   };
 
   const filteredData = submittedData.filter((data) =>
-    data.name.toLowerCase().includes(searchQuery.toLowerCase())
+    data[selectedFilter].toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const filterOptions = ["name", "description"]; // Add more filter options as needed
 
   return (
     <>
@@ -76,6 +79,18 @@ const DiscoverCommunity = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="p-2 border border-gray-300 rounded-md w-full max-w-md"
         />
+
+        <select
+          className="ml-2 p-2 border border-gray-300 rounded-md"
+          value={selectedFilter}
+          onChange={(e) => setSelectedFilter(e.target.value)}
+        >
+          {filterOptions.map((option) => (
+            <option key={option} value={option}>
+              Filter by {option}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="flex justify-center flex-wrap mt-2">
