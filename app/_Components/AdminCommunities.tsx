@@ -203,7 +203,7 @@ const AdminCommunity = () => {
                       color="error"
                       onClick={() => handleDelete(data.id)}
                     >
-                      Delete
+                      Archive
                     </Button>
                   </CardActions>
                 </Card>
