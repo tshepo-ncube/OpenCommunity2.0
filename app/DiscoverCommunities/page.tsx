@@ -23,7 +23,7 @@ const CreateCommunity = () => {
     { name: string; description: string; picture: File | null }[]
   >([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [category, setCategory] = useState<string>("social"); // Default category
+  const [category, setCategory] = useState<string>("general"); // Default category
   const popupRef = useRef(null);
 
   const handleOpenPopup = () => {
@@ -49,7 +49,7 @@ const CreateCommunity = () => {
     console.log("Submitted:", { name, description });
 
     CommunityDB.createCommunity(
-      { name, description, picture },
+      { name, description, picture, category },
 
       setSubmittedData,
 
@@ -65,7 +65,7 @@ const CreateCommunity = () => {
     setDescription("");
 
     setPicture(null);
-    setCategory("social"); // Reset category after submission
+    setCategory("general"); // Reset category after submission
 
     setPopupOpen(false);
   };
