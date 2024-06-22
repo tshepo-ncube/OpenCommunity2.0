@@ -23,7 +23,7 @@ const CreateCommunity = () => {
     { name: string; description: string; picture: File | null }[]
   >([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
-
+  const [category, setCategory] = useState<string>("social"); // Default category
   const popupRef = useRef(null);
 
   const handleOpenPopup = () => {
@@ -65,6 +65,7 @@ const CreateCommunity = () => {
     setDescription("");
 
     setPicture(null);
+    setCategory("social"); // Reset category after submission
 
     setPopupOpen(false);
   };
@@ -72,6 +73,7 @@ const CreateCommunity = () => {
   const handleEdit = (index: number) => {
     setName(submittedData[index].name);
     setDescription(submittedData[index].description);
+    setCategory(selectedCommunity.category);
     setEditIndex(index);
     setPopupOpen(true);
   };
@@ -158,6 +160,27 @@ const CreateCommunity = () => {
             </div>
             <div>
               <label
+                htmlFor="category"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Category
+              </label>
+              <select
+                id="category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                required
+              >
+                <option value="social">general</option>
+                <option value="work">sports/fitness</option>
+                <option value="fitness">social activities</option>
+                <option value="fitness">company retreat</option>
+                <option value="fitness">professional development</option>
+              </select>
+            </div>
+            <div>
+              <label
                 htmlFor="description"
                 className="block text-sm font-medium text-gray-700"
               >
@@ -171,6 +194,7 @@ const CreateCommunity = () => {
                 required
               />
             </div>
+
             <div className="flex justify-end">
               <button
                 type="submit"
