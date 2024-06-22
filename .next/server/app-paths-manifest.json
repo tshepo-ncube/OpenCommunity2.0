@@ -1,5 +1,3 @@
 {
-  "/page": "app/page.js",
-  "/Home/page": "app/Home/page.js",
-  "/DiscoverCommunities/page": "app/DiscoverCommunities/page.js"
+  "/Home/page": "app/Home/page.js"
 }
