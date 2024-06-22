@@ -24,7 +24,6 @@ import {
 } from "firebase/firestore";
 
 import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
-//import { truncateSync } from "fs";
 import { v4 } from "uuid";
 
 export default class CommunityDB {
@@ -33,32 +32,37 @@ export default class CommunityDB {
     const object = {
       name: item.name,
       description: item.description,
+      category: item.category, // Include category in the object
     };
     try {
       const docRef = await addDoc(collection(DB, "communities"), object);
       console.log("Document ID: ", docRef.id);
 
-      //this.uploadImage(item.picture, docRef.id);
-
-      const imgRef = ref(StorageDB, `files/${docRef.id}`);
-      uploadBytes(imgRef, item.picture);
+      // Upload image if item.picture is not null
+      if (item.picture) {
+        const imgRef = ref(StorageDB, `files/${docRef.id}`);
+        await uploadBytes(imgRef, item.picture);
+      }
     } catch (e) {
       console.log("Error adding document: ", e);
     }
-    this.getCommunitiesWithImages(setCommunities);
+
+    await this.getCommunitiesWithImages(setCommunities, setLoading); // Wait for communities to be fetched with images
     setLoading(false);
   };
 
   static editCommunity = async (id, object) => {
     const communityRef = doc(DB, "communities", id);
 
-    // Set the "capital" field of the city 'DC'
+    // Update the community document
     await updateDoc(communityRef, object);
   };
 
   static deleteCommunity = async (id) => {
+    // Delete the community document
     await deleteDoc(doc(DB, "communities", id));
   };
+
   static getCommunitiesWithImages = async (setCommunities, setLoading) => {
     setLoading(true);
     const communities = [];
@@ -74,15 +78,14 @@ export default class CommunityDB {
           id: doc.id,
           name: data.name,
           description: data.description,
+          category: data.category, // Include category in the fetched data
           picture: imgUrl,
         });
       }
 
       setCommunities(communities);
-      //return communities;
     } catch (e) {
       console.error("Error fetching communities with images: ", e);
-      //return null; // or handle the error as needed
     }
     setLoading(false);
   };

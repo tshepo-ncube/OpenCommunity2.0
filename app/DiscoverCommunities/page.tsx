@@ -1,5 +1,3 @@
-//This is the administrator page to create a community
-//Instead of importing Header and Sidebar, they should rather be placed in the layout folder
 "use client";
 import React, { ChangeEvent, useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -20,7 +18,13 @@ const CreateCommunity = () => {
   const [description, setDescription] = useState("");
   const [picture, setPicture] = useState<File | null>(null);
   const [submittedData, setSubmittedData] = useState<
-    { name: string; description: string; picture: File | null }[]
+    {
+      id: string;
+      name: string;
+      description: string;
+      picture: string;
+      category: string;
+    }[]
   >([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [category, setCategory] = useState<string>("general"); // Default category
@@ -34,36 +38,19 @@ const CreateCommunity = () => {
     setPopupOpen(false);
   };
 
-  // const handleFormSubmit = (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setSubmittedData([...submittedData, { name, description, picture }]);
-  //   setName("");
-  //   setDescription("");
-  //   setPicture(null);
-  //   setPopupOpen(false);
-  // };
-
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("Submitted:", { name, description });
-
     CommunityDB.createCommunity(
-      { name, description, picture, category },
+      { name, description, picture, category }, // Pass category to createCommunity method
 
       setSubmittedData,
 
       setLoading
     );
 
-    // setSubmittedData([...submittedData, { name, description, picture }]);
-
-    //CommunityDB.uploadImage(picture);
-
     setName("");
-
     setDescription("");
-
     setPicture(null);
     setCategory("general"); // Reset category after submission
 
@@ -73,7 +60,8 @@ const CreateCommunity = () => {
   const handleEdit = (index: number) => {
     setName(submittedData[index].name);
     setDescription(submittedData[index].description);
-    setCategory(selectedCommunity.category);
+    // Assuming `selectedCommunity` is defined somewhere
+    // setCategory(selectedCommunity.category);
     setEditIndex(index);
     setPopupOpen(true);
   };
@@ -172,11 +160,11 @@ const CreateCommunity = () => {
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                 required
               >
-                <option value="social">general</option>
-                <option value="work">sports/fitness</option>
-                <option value="fitness">social activities</option>
-                <option value="fitness">company retreat</option>
-                <option value="fitness">professional development</option>
+                <option value="general">General</option>
+                <option value="sports">Sports/Fitness</option>
+                <option value="social">Social Activities</option>
+                <option value="retreat">Company Retreat</option>
+                <option value="development">Professional Development</option>
               </select>
             </div>
             <div>
@@ -234,30 +222,6 @@ const CreateCommunity = () => {
         <div>
           <AdminCommunity />
         </div>
-        // <div className='flex justify-center flex-wrap '>
-        //   {submittedData.map((data, index) => (
-        //     <div key={index} className="mr-4 ml-4 mb-4 mt-4 bg-gray p-4 rounded-lg text-center w-full sm:w-1/2 md:w-1/3 lg:w-1/4 xl:w-1/5">
-        //       <p className='font-bold'>{data.name} Community</p>
-        //       {data.picture && (
-        //         <img
-        //           src={URL.createObjectURL(data.picture)}
-        //           alt="Uploaded"
-        //           className="mt-4 mb-4 mx-auto max-w-full h-auto max-h-48"
-        //         />
-        //       )}
-        //       <p>{data.description}</p>
-
-        //         <button onClick={() => handleEdit(index)} className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-2 focus:outline-none focus:ring-2 focus:ring-primary-300">
-        //           Edit
-        //         </button>
-        //         <Link href="/adminDash">
-        //           <button className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 ml-2 focus:outline-none focus:ring-2 focus:ring-primary-300">
-        //             Post
-        //           </button>
-        //         </Link>
-        //     </div>
-        //   ))}
-        // </div>
       )}
     </div>
   );
