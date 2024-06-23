@@ -41,17 +41,17 @@ export default class CommunityDB {
     await deleteDoc(doc(DB, "communities", id));
   };
 
-  static archiveCommunity = async (id) => {
+  static updateCommunityStatus = async (id, status) => {
     const communityRef = doc(DB, "communities", id);
 
     try {
-      // Update the status field to 'archived'
+      // Update the status field
       await updateDoc(communityRef, {
-        status: "archived",
+        status: status,
       });
-      console.log("Community archived successfully.");
+      console.log("Community status updated successfully.");
     } catch (error) {
-      console.error("Error archiving community:", error);
+      console.error("Error updating community status:", error);
       throw error;
     }
   };

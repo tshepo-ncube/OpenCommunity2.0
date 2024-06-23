@@ -24,14 +24,24 @@ const DiscoverCommunity = () => {
       name: string;
       description: string;
       category: string;
+      status: string; // Include status in state
     }[]
   >([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedStatus, setSelectedStatus] = useState<string>("active");
 
   useEffect(() => {
-    CommunityDB.getAllCommunities(setSubmittedData, setLoading);
+    const fetchCommunities = async () => {
+      try {
+        await CommunityDB.getAllCommunities(setSubmittedData, setLoading);
+      } catch (error) {
+        console.error("Error fetching communities:", error);
+      }
+    };
+
+    fetchCommunities();
   }, []);
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -51,25 +61,26 @@ const DiscoverCommunity = () => {
     setEditIndex(index);
   };
 
-  const filterDataByCategory = (
+  const filterDataByCategoryAndStatus = (
     data: {
       id: string;
       name: string;
       description: string;
       category: string;
+      status: string;
     }[]
   ) => {
-    if (!selectedCategory) return data;
-    return data.filter((item) => item.category === selectedCategory);
+    return data.filter(
+      (item) =>
+        item.category.toLowerCase().includes(selectedCategory.toLowerCase()) &&
+        item.status === selectedStatus &&
+        `${item.name.toLowerCase()} ${item.description.toLowerCase()} ${item.category.toLowerCase()}`.includes(
+          searchQuery.toLowerCase()
+        )
+    );
   };
 
-  const filteredData = filterDataByCategory(
-    submittedData.filter((item) =>
-      `${item.name.toLowerCase()} ${item.description.toLowerCase()} ${item.category.toLowerCase()}`.includes(
-        searchQuery.toLowerCase()
-      )
-    )
-  );
+  const filteredData = filterDataByCategoryAndStatus(submittedData);
 
   const uniqueCategories = Array.from(
     new Set(submittedData.map((data) => data.category))

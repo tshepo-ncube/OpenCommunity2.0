@@ -1,6 +1,4 @@
-"use client";
-
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
@@ -8,13 +6,16 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
 import CommunityDB from "../../database/community/community";
 import { useRouter } from "next/navigation";
 
@@ -32,9 +33,23 @@ const AdminCommunity = () => {
       name: string;
       description: string;
       category: string;
+      status: string; // Include status in state
     }[]
   >([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<string>("");
+
+  useEffect(() => {
+    const fetchCommunities = async () => {
+      try {
+        await CommunityDB.getAllCommunities(setSubmittedData, setLoading);
+      } catch (error) {
+        console.error("Error fetching communities:", error);
+      }
+    };
+
+    fetchCommunities();
+  }, []);
 
   const handleOpenPopup = () => {
     setPopupOpen(true);
@@ -44,14 +59,18 @@ const AdminCommunity = () => {
     setPopupOpen(false);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    CommunityDB.createCommunity(
-      { name, description, category: "general" }, // Hardcoded category for now
-      setSubmittedData,
-      setLoading
-    );
+    try {
+      await CommunityDB.createCommunity(
+        { name, description, category: "general" }, // Hardcoded category for now
+        setSubmittedData,
+        setLoading
+      );
+    } catch (error) {
+      console.error("Error creating community:", error);
+    }
 
     setName("");
     setDescription("");
@@ -70,9 +89,39 @@ const AdminCommunity = () => {
 
   const handleDelete = async () => {
     if (deleteId) {
-      await CommunityDB.deleteCommunity(deleteId);
-      setSubmittedData(submittedData.filter((item) => item.id !== deleteId));
-      handleCloseDeleteDialog();
+      try {
+        await CommunityDB.deleteCommunity(deleteId);
+        setSubmittedData(submittedData.filter((item) => item.id !== deleteId));
+        handleCloseDeleteDialog();
+      } catch (error) {
+        console.error("Error deleting community:", error);
+      }
+    }
+  };
+
+  const handleArchive = async (id: string) => {
+    try {
+      await CommunityDB.updateCommunityStatus(id, "archived");
+      setSubmittedData(
+        submittedData.map((item) =>
+          item.id === id ? { ...item, status: "archived" } : item
+        )
+      );
+    } catch (error) {
+      console.error("Error archiving community:", error);
+    }
+  };
+
+  const handleUnarchive = async (id: string) => {
+    try {
+      await CommunityDB.updateCommunityStatus(id, "active");
+      setSubmittedData(
+        submittedData.map((item) =>
+          item.id === id ? { ...item, status: "active" } : item
+        )
+      );
+    } catch (error) {
+      console.error("Error unarchiving community:", error);
     }
   };
 
@@ -83,9 +132,24 @@ const AdminCommunity = () => {
     setPopupOpen(true);
   };
 
-  useEffect(() => {
-    CommunityDB.getAllCommunities(setSubmittedData, setLoading);
-  }, []);
+  const handleStatusChange = (event: React.ChangeEvent<{ value: unknown }>) => {
+    setSelectedStatus(event.target.value as string);
+  };
+
+  const filterDataByStatus = (
+    data: {
+      id: string;
+      name: string;
+      description: string;
+      category: string;
+      status: string;
+    }[]
+  ) => {
+    if (!selectedStatus || selectedStatus === "All") return data;
+    return data.filter((item) => item.status === selectedStatus);
+  };
+
+  const filteredData = filterDataByStatus(submittedData);
 
   return (
     <div className="flex-col items-center min-h-screen">
@@ -150,7 +214,9 @@ const AdminCommunity = () => {
         <DialogTitle>{"Confirm Deletion"}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to permanantly delete this community?
+            Are you sure you want to permanently delete this community? Once you
+            have deleted this community you will not be able to retreive the
+            community and its corresponding data
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -162,6 +228,23 @@ const AdminCommunity = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <div className="flex justify-center mt-4">
+        <FormControl variant="outlined" className="w-full max-w-xs">
+          <InputLabel id="status-label">Filter by status</InputLabel>
+          <Select
+            labelId="status-label"
+            id="status-select"
+            value={selectedStatus}
+            onChange={handleStatusChange}
+            label="Status"
+          >
+            <MenuItem value="All">All</MenuItem>
+            <MenuItem value="active">Active</MenuItem>
+            <MenuItem value="archived">Archived</MenuItem>
+          </Select>
+        </FormControl>
+      </div>
 
       <div className="flex justify-center flex-wrap mt-2">
         {loading ? (
@@ -175,10 +258,20 @@ const AdminCommunity = () => {
             }}
           />
         ) : (
-          <Grid container spacing={2} style={{ padding: 14 }}>
-            {submittedData.map((data, index) => (
+          <Grid container spacing={2} className="p-4">
+            {filteredData.map((data, index) => (
               <Grid item xs={6} md={3} key={index}>
-                <Card sx={{ maxWidth: 345 }}>
+                <Card className="relative">
+                  {data.status === "archived" && (
+                    <div className="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
+                      Archived
+                    </div>
+                  )}
+                  {data.status === "active" && (
+                    <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
+                      Active
+                    </div>
+                  )}
                   <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
                       {data.name}
@@ -191,28 +284,55 @@ const AdminCommunity = () => {
                     </Typography>
                   </CardContent>
                   <CardActions>
-                    <Button size="small" onClick={() => handleEdit(index)}>
-                      Edit
-                    </Button>
-                    <Button
-                      size="small"
-                      onClick={() => {
-                        localStorage.setItem("CurrentCommunity", data.id);
-                        router.push("/adminDash");
-                      }}
-                    >
-                      View
-                    </Button>
-                    <Button size="small" color="error">
-                      Archive
-                    </Button>
-                    <Button
-                      size="small"
-                      color="error"
-                      onClick={() => handleOpenDeleteDialog(data.id)}
-                    >
-                      Delete
-                    </Button>
+                    {data.status === "archived" ? (
+                      <>
+                        <Button size="small" onClick={() => handleEdit(index)}>
+                          Edit
+                        </Button>
+                        <Button
+                          size="small"
+                          color="error"
+                          onClick={() => handleOpenDeleteDialog(data.id)}
+                        >
+                          Delete
+                        </Button>
+                        <Button
+                          size="small"
+                          onClick={() => handleUnarchive(data.id)}
+                        >
+                          Unarchive
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button size="small" onClick={() => handleEdit(index)}>
+                          Edit
+                        </Button>
+                        <Button
+                          size="small"
+                          onClick={() => {
+                            localStorage.setItem("CurrentCommunity", data.id);
+                            router.push("/adminDash");
+                          }}
+                        >
+                          View
+                        </Button>
+                        <Button
+                          size="small"
+                          color="error"
+                          onClick={() => handleArchive(data.id)}
+                        >
+                          Archive
+                        </Button>
+                        <Button
+                          size="small"
+                          color="error"
+                          onClick={() => handleOpenDeleteDialog(data.id)}
+                        >
+                          Delete
+                        </Button>
+                      </>
+                    )}
                   </CardActions>
                 </Card>
               </Grid>
