@@ -122,7 +122,7 @@ const DiscoverCommunity = () => {
         />
 
         <div className="ml-2">
-          <FormControl variant="outlined" className="w-full max-w-xs">
+          <FormControl variant="outlined" className="w-full">
             <InputLabel id="category-label">Category</InputLabel>
             <Select
               labelId="category-label"
@@ -159,7 +159,7 @@ const DiscoverCommunity = () => {
                       sx={{
                         position: "relative",
                         maxWidth: 345,
-                        marginBottom: 20,
+                        marginBottom: 10,
                         padding: "6px",
                         "&::before": {
                           content: `"${data.category}"`,
