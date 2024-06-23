@@ -10,11 +10,18 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import CommunityDB from "../../database/community/community";
 import { useRouter } from "next/navigation";
 
 const AdminCommunity = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
+  const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
@@ -51,9 +58,22 @@ const AdminCommunity = () => {
     setPopupOpen(false);
   };
 
-  const handleDelete = async (id: string) => {
-    await CommunityDB.deleteCommunity(id);
-    setSubmittedData(submittedData.filter((item) => item.id !== id));
+  const handleOpenDeleteDialog = (id: string) => {
+    setDeleteId(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setDeleteId(null);
+  };
+
+  const handleDelete = async () => {
+    if (deleteId) {
+      await CommunityDB.deleteCommunity(deleteId);
+      setSubmittedData(submittedData.filter((item) => item.id !== deleteId));
+      handleCloseDeleteDialog();
+    }
   };
 
   const handleEdit = (index: number) => {
@@ -126,6 +146,23 @@ const AdminCommunity = () => {
         </div>
       )}
 
+      <Dialog open={isDeleteDialogOpen} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>{"Confirm Deletion"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to permanantly delete this community?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog} color="primary">
+            No
+          </Button>
+          <Button onClick={handleDelete} color="error" autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <div className="flex justify-center flex-wrap mt-2">
         {loading ? (
           <CircularProgress
@@ -166,10 +203,13 @@ const AdminCommunity = () => {
                     >
                       View
                     </Button>
+                    <Button size="small" color="error">
+                      Archive
+                    </Button>
                     <Button
                       size="small"
                       color="error"
-                      onClick={() => handleDelete(data.id)}
+                      onClick={() => handleOpenDeleteDialog(data.id)}
                     >
                       Delete
                     </Button>
