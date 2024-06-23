@@ -86,14 +86,28 @@ const DiscoverCommunity = () => {
     new Set(submittedData.map((data) => data.category))
   );
 
-  // Function to generate consistent color based on string input
-  const stringToColor = (str: string): string => {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  // Function to generate consistent color based on category
+  const stringToColor = (category: string): string => {
+    switch (category.toLowerCase()) {
+      case "general":
+        return "#2196f3"; // Blue
+      case "social":
+        return "#ff9800"; // Orange
+      case "retreat":
+        return "#f44336"; // Red
+      case "sports":
+        return "#4caf50"; // Green
+      case "development":
+        return "#9c27b0"; // Purple
+      default:
+        // Generate a color based on hash if category not specified
+        let hash = 0;
+        for (let i = 0; i < category.length; i++) {
+          hash = category.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const color = `hsl(${Math.abs(hash) % 360}, 70%, 80%)`; // Fallback to HSL color
+        return color;
     }
-    const color = `hsl(${Math.abs(hash) % 360}, 70%, 80%)`; // Generate HSL color
-    return color;
   };
 
   return (
