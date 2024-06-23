@@ -4,7 +4,6 @@ import {
   Grid,
   Card,
   CardContent,
-  CardMedia,
   Typography,
   CardActions,
   Button,
@@ -16,17 +15,14 @@ import {
 import CommunityDB from "../../database/community/community";
 
 const DiscoverCommunity = () => {
-  const [isPopupOpen, setPopupOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [picture, setPicture] = useState<File | null>(null);
   const [submittedData, setSubmittedData] = useState<
     {
       id: string;
       name: string;
       description: string;
-      picture: string;
       category: string;
     }[]
   >([]);
@@ -35,42 +31,24 @@ const DiscoverCommunity = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("");
 
   useEffect(() => {
-    CommunityDB.getCommunitiesWithImages(setSubmittedData, setLoading);
+    CommunityDB.getAllCommunities(setSubmittedData, setLoading);
   }, []);
-
-  const handleOpenPopup = () => {
-    setPopupOpen(true);
-  };
-
-  const handleClosePopup = () => {
-    setPopupOpen(false);
-  };
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     CommunityDB.createCommunity(
-      { name, description, picture, category: "general" }, // Assuming a default category
+      { name, description, category: "general" }, // Assuming a default category
       setSubmittedData,
       setLoading
     );
     setName("");
     setDescription("");
-    setPicture(null);
-    setPopupOpen(false);
   };
 
   const handleEdit = (index: number) => {
     setName(submittedData[index].name);
     setDescription(submittedData[index].description);
     setEditIndex(index);
-    setPopupOpen(true);
-  };
-
-  const handlePictureUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const picFile = e.target.files && e.target.files[0];
-    if (picFile) {
-      setPicture(picFile);
-    }
   };
 
   const filterDataByCategory = (
@@ -78,7 +56,6 @@ const DiscoverCommunity = () => {
       id: string;
       name: string;
       description: string;
-      picture: string;
       category: string;
     }[]
   ) => {
@@ -144,11 +121,6 @@ const DiscoverCommunity = () => {
                 {filteredData.map((data, index) => (
                   <Grid item xs={6} md={3} key={index}>
                     <Card sx={{ maxWidth: 345 }}>
-                      <CardMedia
-                        sx={{ height: 140 }}
-                        image={data.picture}
-                        title="Community Image"
-                      />
                       <CardContent>
                         <Typography gutterBottom variant="h5" component="div">
                           {data.name}

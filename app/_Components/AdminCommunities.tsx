@@ -6,7 +6,6 @@ import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
@@ -20,13 +19,11 @@ const AdminCommunity = () => {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [picture, setPicture] = useState<File | null>(null);
   const [submittedData, setSubmittedData] = useState<
     {
       id: string;
       name: string;
       description: string;
-      picture: string;
       category: string;
     }[]
   >([]);
@@ -44,14 +41,13 @@ const AdminCommunity = () => {
     e.preventDefault();
 
     CommunityDB.createCommunity(
-      { name, description, picture, category: "general" }, // Hardcoded category for now
+      { name, description, category: "general" }, // Hardcoded category for now
       setSubmittedData,
       setLoading
     );
 
     setName("");
     setDescription("");
-    setPicture(null);
     setPopupOpen(false);
   };
 
@@ -67,15 +63,8 @@ const AdminCommunity = () => {
     setPopupOpen(true);
   };
 
-  const handlePictureUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const picFile = e.target.files && e.target.files[0];
-    if (picFile) {
-      setPicture(picFile);
-    }
-  };
-
   useEffect(() => {
-    CommunityDB.getCommunitiesWithImages(setSubmittedData, setLoading);
+    CommunityDB.getAllCommunities(setSubmittedData, setLoading);
   }, []);
 
   return (
@@ -87,22 +76,6 @@ const AdminCommunity = () => {
       {isPopupOpen && (
         <div className="mt-16 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-3/4 sm:h-auto lg:h-auto">
           <form onSubmit={handleFormSubmit} className="space-y-4">
-            <div>
-              <label
-                htmlFor="image"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Upload Image
-              </label>
-              <input
-                type="file"
-                id="image"
-                onChange={handlePictureUpload}
-                accept="image/*"
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                required
-              />
-            </div>
             <div>
               <label
                 htmlFor="name"
@@ -169,11 +142,6 @@ const AdminCommunity = () => {
             {submittedData.map((data, index) => (
               <Grid item xs={6} md={3} key={index}>
                 <Card sx={{ maxWidth: 345 }}>
-                  <CardMedia
-                    sx={{ height: 140 }}
-                    image={data.picture}
-                    title={data.name}
-                  />
                   <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
                       {data.name}

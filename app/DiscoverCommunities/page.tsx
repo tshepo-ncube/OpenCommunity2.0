@@ -1,13 +1,12 @@
-"use client";
+"use client"; // Add this at the top
+
 import React, { ChangeEvent, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Sidebar from "../_Components/sidebar";
 import Header from "../_Components/header";
 import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
-import Image from "next/image";
 import CommunityDB from "@/database/community/community";
-import Logo from "@/lib/images/Logo.jpeg";
 import AdminCommunity from "../_Components/AdminCommunities";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -16,13 +15,11 @@ const CreateCommunity = () => {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [description, setDescription] = useState("");
-  const [picture, setPicture] = useState<File | null>(null);
   const [submittedData, setSubmittedData] = useState<
     {
       id: string;
       name: string;
       description: string;
-      picture: string;
       category: string;
     }[]
   >([]);
@@ -42,16 +39,13 @@ const CreateCommunity = () => {
     e.preventDefault();
 
     CommunityDB.createCommunity(
-      { name, description, picture, category }, // Pass category to createCommunity method
-
+      { name, description, category }, // Pass category to createCommunity method
       setSubmittedData,
-
       setLoading
     );
 
     setName("");
     setDescription("");
-    setPicture(null);
     setCategory("general"); // Reset category after submission
 
     setPopupOpen(false);
@@ -60,21 +54,16 @@ const CreateCommunity = () => {
   const handleEdit = (index: number) => {
     setName(submittedData[index].name);
     setDescription(submittedData[index].description);
-    // Assuming `selectedCommunity` is defined somewhere
-    // setCategory(selectedCommunity.category);
     setEditIndex(index);
     setPopupOpen(true);
   };
 
-  const handlePictureUpload = (e: ChangeEvent<HTMLInputElement>) => {
-    const picFile = e.target.files && e.target.files[0];
-    if (picFile) {
-      setPicture(picFile);
-    }
-  };
-
   useEffect(() => {
-    CommunityDB.getCommunitiesWithImages(setSubmittedData, setLoading);
+    CommunityDB.getAllCommunities((data) => {
+      console.log("Fetched communities:", data); // Debugging log
+      setSubmittedData(data);
+      setLoading(false);
+    }, setLoading);
   }, []);
 
   useEffect(() => {
@@ -103,7 +92,6 @@ const CreateCommunity = () => {
         </button>
       </div>
 
-      {/* Apply backdrop blur effect when popup is open */}
       {isPopupOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-md z-10"></div>
       )}
@@ -114,22 +102,6 @@ const CreateCommunity = () => {
           className="mt-16 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-3/4 sm:h-auto lg:h-auto"
         >
           <form onSubmit={handleFormSubmit} className="space-y-4">
-            <div>
-              <label
-                htmlFor="image"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Upload Image
-              </label>
-              <input
-                type="file"
-                id="image"
-                onChange={handlePictureUpload}
-                accept="image/*"
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                required
-              />
-            </div>
             <div>
               <label
                 htmlFor="name"
@@ -203,15 +175,8 @@ const CreateCommunity = () => {
 
       {submittedData.length === 0 ? (
         <div className="text-center">
-          <Image
-            src={Logo} // Replace "/path/to/logo.png" with the path to your logo image
-            alt="Logo"
-            width={400} // Adjust width as needed
-            height={400} // Adjust height as needed
-            className="mx-auto mb-4"
-          />
           <p className="text-gray-900 text-lg">
-            You have created no communities yet.{" "}
+            You have created no communities yet.
           </p>
           <p className="text-gray-900 text-lg">
             Click on <span className="font-bold">create community</span> to
@@ -220,7 +185,7 @@ const CreateCommunity = () => {
         </div>
       ) : (
         <div>
-          <AdminCommunity />
+          <AdminCommunity communities={submittedData} />
         </div>
       )}
     </div>
