@@ -1,11 +1,7 @@
-"use client"; // Add this at the top
-
-import React, { ChangeEvent, useState, useEffect, useRef } from "react";
-import Link from "next/link";
+"use client";
+import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "../_Components/sidebar";
 import Header from "../_Components/header";
-import AddIcon from "@mui/icons-material/Add";
-import Fab from "@mui/material/Fab";
 import CommunityDB from "@/database/community/community";
 import AdminCommunity from "../_Components/AdminCommunities";
 import CloseIcon from "@mui/icons-material/Close";
@@ -21,6 +17,7 @@ const CreateCommunity = () => {
       name: string;
       description: string;
       category: string;
+      status: string; // Add status field
     }[]
   >([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
@@ -38,29 +35,42 @@ const CreateCommunity = () => {
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    CommunityDB.createCommunity(
-      { name, description, category }, // Pass category to createCommunity method
-      setSubmittedData,
-      setLoading
-    );
+    if (editIndex !== null) {
+      // Update existing community
+      CommunityDB.updateCommunity(
+        { id: submittedData[editIndex].id, name, description, category },
+        setSubmittedData,
+        setLoading
+      );
+    } else {
+      // Create new community with status set to draft
+      const status = "draft";
+      CommunityDB.createCommunity(
+        { name, description, category, status },
+        (newCommunity) => {
+          setSubmittedData((prevData) => [...prevData, newCommunity]);
+        },
+        setLoading
+      );
+    }
 
     setName("");
     setDescription("");
-    setCategory("general"); // Reset category after submission
-
+    setCategory("general");
+    setEditIndex(null);
     setPopupOpen(false);
   };
 
   const handleEdit = (index: number) => {
     setName(submittedData[index].name);
     setDescription(submittedData[index].description);
+    setCategory(submittedData[index].category);
     setEditIndex(index);
     setPopupOpen(true);
   };
 
   useEffect(() => {
     CommunityDB.getAllCommunities((data) => {
-      console.log("Fetched communities:", data); // Debugging log
       setSubmittedData(data);
       setLoading(false);
     }, setLoading);
@@ -157,6 +167,13 @@ const CreateCommunity = () => {
 
             <div className="flex justify-end">
               <button
+                type="button"
+                onClick={handleFormSubmit}
+                className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+              >
+                Save as Draft
+              </button>
+              <button
                 type="submit"
                 className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
               >
@@ -164,7 +181,7 @@ const CreateCommunity = () => {
               </button>
               <div className="flex justify-end">
                 <CloseIcon
-                  className="absolute top-4 right-4 text-balck-500 cursor-pointer"
+                  className="absolute top-4 right-4 text-black-500 cursor-pointer"
                   onClick={handleClosePopup}
                 />
               </div>

@@ -37,7 +37,7 @@ const AdminCommunity = () => {
     }[]
   >([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [selectedStatus, setSelectedStatus] = useState<string>("All");
 
   useEffect(() => {
     const fetchCommunities = async () => {
@@ -64,7 +64,7 @@ const AdminCommunity = () => {
 
     try {
       await CommunityDB.createCommunity(
-        { name, description, category: "general" }, // Hardcoded category for now
+        { name, description, category: "general", status: "draft" }, // Include status in create operation
         setSubmittedData,
         setLoading
       );
@@ -132,6 +132,19 @@ const AdminCommunity = () => {
     setPopupOpen(true);
   };
 
+  const handlePost = async (id: string) => {
+    try {
+      await CommunityDB.updateCommunityStatus(id, "active");
+      setSubmittedData(
+        submittedData.map((item) =>
+          item.id === id ? { ...item, status: "active" } : item
+        )
+      );
+    } catch (error) {
+      console.error("Error posting community:", error);
+    }
+  };
+
   const handleStatusChange = (event: React.ChangeEvent<{ value: unknown }>) => {
     setSelectedStatus(event.target.value as string);
   };
@@ -145,7 +158,7 @@ const AdminCommunity = () => {
       status: string;
     }[]
   ) => {
-    if (!selectedStatus || selectedStatus === "All") return data;
+    if (selectedStatus === "All") return data;
     return data.filter((item) => item.status === selectedStatus);
   };
 
@@ -242,6 +255,7 @@ const AdminCommunity = () => {
             <MenuItem value="All">All</MenuItem>
             <MenuItem value="active">Active</MenuItem>
             <MenuItem value="archived">Archived</MenuItem>
+            <MenuItem value="draft">Draft</MenuItem> {/* Added draft option */}
           </Select>
         </FormControl>
       </div>
@@ -270,6 +284,11 @@ const AdminCommunity = () => {
                   {data.status === "active" && (
                     <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
                       Active
+                    </div>
+                  )}
+                  {data.status === "draft" && (
+                    <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
+                      Draft
                     </div>
                   )}
                   <CardContent>
@@ -303,7 +322,7 @@ const AdminCommunity = () => {
                           Unarchive
                         </Button>
                       </>
-                    ) : (
+                    ) : data.status === "active" ? (
                       <>
                         <Button size="small" onClick={() => handleEdit(index)}>
                           Edit
@@ -330,6 +349,26 @@ const AdminCommunity = () => {
                           onClick={() => handleOpenDeleteDialog(data.id)}
                         >
                           Delete
+                        </Button>
+                      </>
+                    ) : (
+                      // Draft status actions
+                      <>
+                        <Button size="small" onClick={() => handleEdit(index)}>
+                          Edit
+                        </Button>
+                        <Button
+                          size="small"
+                          color="error"
+                          onClick={() => handleOpenDeleteDialog(data.id)}
+                        >
+                          Delete
+                        </Button>
+                        <Button
+                          size="small"
+                          onClick={() => handlePost(data.id)}
+                        >
+                          Post
                         </Button>
                       </>
                     )}
