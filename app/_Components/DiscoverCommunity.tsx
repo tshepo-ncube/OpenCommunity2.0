@@ -121,9 +121,9 @@ const DiscoverCommunity = () => {
           className="p-2 border border-gray-300 rounded-md w-full max-w-md"
         />
 
-        <div className="ml-2">
+        <div className="ml-2" style={{ minWidth: "165px" }}>
           <FormControl variant="outlined" className="w-full">
-            <InputLabel id="category-label">Category</InputLabel>
+            <InputLabel id="category-label">Filter by category</InputLabel>
             <Select
               labelId="category-label"
               id="category-select"
