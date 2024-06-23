@@ -6,11 +6,11 @@ import Header from "../_Components/header";
 import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
 import Image from "next/image";
+import CommunityDB from "@/database/community/community";
 import Logo from "@/lib/images/Logo.jpeg";
 import AdminCommunity from "../_Components/AdminCommunities";
 import CloseIcon from "@mui/icons-material/Close";
-import CommunityDB from "../../database/community/community";
-import { useRouter } from "next/navigation";
+
 const CreateCommunity = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [name, setName] = useState("");
@@ -24,17 +24,11 @@ const CreateCommunity = () => {
       description: string;
       picture: string;
       category: string;
-      status: "posted" | "draft" | "inactive"; // Add status to community data
     }[]
   >([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [category, setCategory] = useState<string>("general"); // Default category
-  const [filter, setFilter] = useState<string>("all"); // Filter state
   const popupRef = useRef(null);
-  const [deletePopupOpen, setDeletePopupOpen] = useState(false);
-  const [communityToDelete, setCommunityToDelete] = useState<string | null>(
-    null
-  ); // Track the community to be deleted
 
   const handleOpenPopup = () => {
     setPopupOpen(true);
@@ -62,11 +56,7 @@ const CreateCommunity = () => {
 
     setPopupOpen(false);
   };
-  const handleSaveDraft = () => {
-    // Implement save draft logic here
-    console.log("Draft saved:", { name, description, picture, category });
-    setPopupOpen(false);
-  };
+
   const handleEdit = (index: number) => {
     setName(submittedData[index].name);
     setDescription(submittedData[index].description);
@@ -104,17 +94,7 @@ const CreateCommunity = () => {
   return (
     <div className="flex-col items-center min-h-screen relative text-center">
       <Header />
-      <div className="flex justify-right flex-wrap mt-2">
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="p-2 border border-gray-300 rounded-md"
-        >
-          <option value="all">All</option>
-          <option value="posted">Posted</option>
-          <option value="draft">Drafts</option>
-          <option value="inactive">Inactive</option>
-        </select>
+      <div className="flex justify-center mt-16 mb-8 ">
         <button
           onClick={handleOpenPopup}
           className="fixed bottom-4 right-4 btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
@@ -209,12 +189,6 @@ const CreateCommunity = () => {
                 className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
               >
                 {editIndex !== null ? "Save" : "Create"}
-              </button>
-              <button
-                type="submit"
-                className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
-              >
-                {editIndex !== null ? "Save" : "Save Draft"}
               </button>
               <div className="flex justify-end">
                 <CloseIcon
