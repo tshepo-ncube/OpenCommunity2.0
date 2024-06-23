@@ -86,6 +86,16 @@ const DiscoverCommunity = () => {
     new Set(submittedData.map((data) => data.category))
   );
 
+  // Function to generate consistent color based on string input
+  const stringToColor = (str: string): string => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const color = `hsl(${Math.abs(hash) % 360}, 70%, 80%)`; // Generate HSL color
+    return color;
+  };
+
   return (
     <>
       <div className="flex justify-center mt-4">
@@ -131,16 +141,31 @@ const DiscoverCommunity = () => {
               <Grid container spacing={2} style={{ padding: 14 }}>
                 {filteredData.map((data, index) => (
                   <Grid item xs={6} md={3} key={index}>
-                    <Card sx={{ maxWidth: 345 }}>
+                    <Card
+                      sx={{
+                        position: "relative",
+                        maxWidth: 345,
+                        marginBottom: 20,
+                        padding: "6px",
+                        "&::before": {
+                          content: `"${data.category}"`,
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          backgroundColor: stringToColor(data.category),
+                          color: "#fff",
+                          padding: "2px 6px",
+                          fontSize: "0.75rem",
+                          fontWeight: "bold",
+                        },
+                      }}
+                    >
                       <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
+                        <Typography gutterBottom variant="h6" component="div">
                           {data.name}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           {data.description}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Category: {data.category}
                         </Typography>
                       </CardContent>
                       <CardActions>
