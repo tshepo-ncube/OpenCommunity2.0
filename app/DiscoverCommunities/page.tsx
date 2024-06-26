@@ -17,11 +17,11 @@ const CreateCommunity = () => {
       name: string;
       description: string;
       category: string;
-      status: string; // Add status field
+      status: string;
     }[]
   >([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [category, setCategory] = useState<string>("general"); // Default category
+  const [category, setCategory] = useState<string>("general");
   const popupRef = useRef(null);
 
   const handleOpenPopup = () => {
@@ -32,19 +32,24 @@ const CreateCommunity = () => {
     setPopupOpen(false);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent, status: string) => {
     e.preventDefault();
 
     if (editIndex !== null) {
       // Update existing community
       CommunityDB.updateCommunity(
-        { id: submittedData[editIndex].id, name, description, category },
+        {
+          id: submittedData[editIndex].id,
+          name,
+          description,
+          category,
+          status,
+        },
         setSubmittedData,
         setLoading
       );
     } else {
-      // Create new community with status set to draft
-      const status = "draft";
+      // Create new community with specified status
       CommunityDB.createCommunity(
         { name, description, category, status },
         (newCommunity) => {
@@ -111,7 +116,7 @@ const CreateCommunity = () => {
           ref={popupRef}
           className="mt-16 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-3/4 sm:h-auto lg:h-auto"
         >
-          <form onSubmit={handleFormSubmit} className="space-y-4">
+          <form className="space-y-4">
             <div>
               <label
                 htmlFor="name"
@@ -168,13 +173,14 @@ const CreateCommunity = () => {
             <div className="flex justify-end">
               <button
                 type="button"
-                onClick={handleFormSubmit}
+                onClick={(e) => handleFormSubmit(e, "draft")}
                 className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
               >
                 Save as Draft
               </button>
               <button
-                type="submit"
+                type="button"
+                onClick={(e) => handleFormSubmit(e, "active")}
                 className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
               >
                 {editIndex !== null ? "Save" : "Create"}
