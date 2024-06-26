@@ -94,6 +94,7 @@ function EventsHolder({
                     >
                       edit
                     </Button> */}
+                    <Button color="error">Archive</Button>
                     <Button
                       color="error"
                       onClick={() => {
