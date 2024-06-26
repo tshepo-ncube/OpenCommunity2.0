@@ -26,8 +26,14 @@ function EventsHolder({
 
   const formatDate = (timestamp) => {
     if (!timestamp) return "No Date"; // Handle null or undefined case
-    const date = new Date(timestamp);
-    return date.toLocaleDateString(); // Adjust format as per your preference
+    const date = timestamp.toDate(); // Convert Firestore Timestamp to Date object
+    return date.toLocaleDateString(); // Format date as per locale
+  };
+
+  const formatTime = (timestamp) => {
+    if (!timestamp) return "No Time"; // Handle null or undefined case
+    const time = timestamp.toDate(); // Convert Firestore Timestamp to Date object
+    return time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }); // Format time as per locale
   };
 
   return (
@@ -64,6 +70,16 @@ function EventsHolder({
                       color="text.secondary"
                       style={{ whiteSpace: "pre-wrap" }}
                     >
+                      <strong>Date:</strong>{" "}
+                      {`${formatDate(value.StartDate)} - ${formatDate(
+                        value.EndDate
+                      )}`}
+                      <br />
+                      <strong>Time:</strong>{" "}
+                      {`${formatTime(value.StartDate)} - ${formatTime(
+                        value.EndDate
+                      )}`}
+                      <br />
                       <strong>Location:</strong> {value.Location}
                       <br />
                       <strong>Description:</strong> {value.EventDescription}
