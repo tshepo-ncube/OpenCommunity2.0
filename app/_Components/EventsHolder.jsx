@@ -125,22 +125,30 @@ function EventsHolder({
 
   return (
     <div className="mt-4">
-      <h1 className="text-xxl">Upcoming Events</h1>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <h1 className="text-xxl">Upcoming Events</h1>
 
-      {/* Filter Dropdown */}
-      <FormControl variant="outlined" sx={{ minWidth: 120, mt: 2 }}>
-        <Select
-          value={filterStatus}
-          onChange={handleFilterChange}
-          displayEmpty
-          inputProps={{ "aria-label": "Filter by status" }}
-        >
-          <MenuItem value="all">All</MenuItem>
-          <MenuItem value="draft">Draft</MenuItem>
-          <MenuItem value="active">Active</MenuItem>
-          <MenuItem value="archived">Archived</MenuItem>
-        </Select>
-      </FormControl>
+        {/* Filter Dropdown */}
+        <FormControl variant="outlined" sx={{ minWidth: 120, mt: 1, mb: 1 }}>
+          <Select
+            value={filterStatus}
+            onChange={handleFilterChange}
+            displayEmpty
+            inputProps={{ "aria-label": "Filter by status" }}
+          >
+            <MenuItem value="all">All</MenuItem>
+            <MenuItem value="draft">Draft</MenuItem>
+            <MenuItem value="active">Active</MenuItem>
+            <MenuItem value="archived">Archived</MenuItem>
+          </Select>
+        </FormControl>
+      </div>
 
       {/* Event Cards */}
       <div style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
