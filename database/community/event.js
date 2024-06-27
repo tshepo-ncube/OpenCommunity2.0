@@ -1,16 +1,6 @@
 import DB from "../DB";
 import { StorageDB } from "../StorageDB";
 import {
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signOut,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-
-import {
   getFirestore,
   collection,
   addDoc,
@@ -24,9 +14,7 @@ import {
   where,
   runTransaction,
 } from "firebase/firestore";
-
 import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
-//import { truncateSync } from "fs";
 import { v4 } from "uuid";
 
 export default class EventDB {
@@ -35,8 +23,14 @@ export default class EventDB {
   };
 
   static createEvent = async (eventObject) => {
+    // Ensure the status field is included with a default value if not provided
+    const eventWithStatus = {
+      ...eventObject,
+      status: eventObject.status || "active",
+    };
+
     try {
-      const eventRef = await addDoc(collection(DB, "events"), eventObject);
+      const eventRef = await addDoc(collection(DB, "events"), eventWithStatus);
       console.log("Document ID: ", eventRef.id);
     } catch (e) {
       alert("error");
@@ -46,8 +40,22 @@ export default class EventDB {
 
   static editEvent = async (eventID, eventObject) => {
     const eventRef = doc(DB, "events", eventID);
-
     await updateDoc(eventRef, eventObject);
+  };
+
+  static updateEventStatus = async (id, status) => {
+    const eventRef = doc(DB, "events", id);
+
+    try {
+      // Update the status field
+      await updateDoc(eventRef, {
+        status: status,
+      });
+      console.log("Event status updated successfully.");
+    } catch (error) {
+      console.error("Error updating event status:", error);
+      throw error;
+    }
   };
 
   static getEventFromCommunityID = async (communityID, setEvents) => {
@@ -62,13 +70,9 @@ export default class EventDB {
       }
       let eventsArray = [];
       snapshot.forEach((doc) => {
-        //console.log(doc.id, "=>", doc.data());
-
+        const data = doc.data();
         const object2 = { id: doc.id };
-
-        //const combinedObject = { ...object1, ...object2 };
-
-        eventsArray.push({ ...object2, ...doc.data() });
+        eventsArray.push({ ...object2, ...data });
       });
 
       setEvents(eventsArray);

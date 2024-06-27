@@ -14,7 +14,7 @@ import Modal from "@mui/material/Modal";
 
 const style = {
   position: "absolute" as "absolute",
-  top: "50%",
+  top: "40%",
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 400,
@@ -31,6 +31,7 @@ const createEvent = (eventDetails, communityID) => {
     EventDescription: eventDetails.description,
     Location: eventDetails.location,
     CommunityID: communityID,
+    status: "active", // Ensure the status field is set to "active"
   });
 };
 
@@ -70,13 +71,13 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
         ref={formRef}
         className={`${
           isOpen ? "block" : "hidden"
-        } mt-16 fixed top-1/2  left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-3/4 sm:h-auto lg:h-auto`}
+        } fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/3 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-3/4 sm:h-auto lg:h-auto`}
       >
         <button
           onClick={onClose}
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
         >
-          close
+          x
         </button>
         <form onSubmit={handleSubmitEvent} className="space-y-4">
           <div>
@@ -203,6 +204,9 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             ></textarea>
           </div>
           <div className="flex justify-end">
+            <button className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300">
+              Save Draft
+            </button>
             <button
               type="submit"
               className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
