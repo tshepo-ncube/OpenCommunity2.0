@@ -8,7 +8,7 @@ import CardActions from "@mui/material/CardActions";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
-import { green, red } from "@mui/material/colors";
+import { green } from "@mui/material/colors";
 import Button from "@mui/material/Button";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Modal from "@mui/material/Modal";
@@ -96,6 +96,19 @@ function EventsHolder({
     }
   };
 
+  const handlePost = async (id) => {
+    try {
+      await EventDB.updateEventStatus(id, "active");
+      setAllEvents(
+        allEvents.map((event) =>
+          event.id === id ? { ...event, status: "active" } : event
+        )
+      );
+    } catch (error) {
+      console.error("Error posting event:", error);
+    }
+  };
+
   const handleCloseDeleteModal = () => {
     setOpenDeleteModal(false);
     setEventIdToDelete(null);
@@ -156,7 +169,30 @@ function EventsHolder({
                     {value.status === "archived" ? (
                       <>
                         <Button onClick={() => handleUnarchive(value.id)}>
+                          Edit
+                        </Button>
+                        <Button onClick={() => handleUnarchive(value.id)}>
                           Unarchive
+                        </Button>
+                        <Button
+                          color="error"
+                          onClick={() => handleDeleteConfirmation(value.id)}
+                        >
+                          Delete
+                        </Button>
+                      </>
+                    ) : value.status === "draft" ? (
+                      <>
+                        <Button
+                          onClick={() => {
+                            setShowEventForm(true);
+                            setEventForm(value);
+                          }}
+                        >
+                          Edit
+                        </Button>
+                        <Button onClick={() => handlePost(value.id)}>
+                          Post
                         </Button>
                         <Button
                           color="error"
@@ -205,12 +241,12 @@ function EventsHolder({
       >
         <Box sx={modalStyle}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Confirm Delettion of event
+            Confirm Deletion of event
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             Are you sure you want to permanently delete this event? Once you
-            have deleted this event you will not be able to retreive the event
-            event and its corresponding data
+            have deleted this event you will not be able to retrieve the event
+            and its corresponding data.
           </Typography>
           <Box mt={4} display="flex" justifyContent="space-between">
             <Button variant="contained" color="error" onClick={handleDelete}>
