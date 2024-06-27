@@ -13,6 +13,9 @@ import Button from "@mui/material/Button";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 
 const modalStyle = {
   position: "absolute",
@@ -37,6 +40,7 @@ function EventsHolder({
   const [loading, setLoading] = useState(true);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [eventIdToDelete, setEventIdToDelete] = useState(null);
+  const [filterStatus, setFilterStatus] = useState("all"); // State to hold filter status
 
   useEffect(() => {
     EventDB.getEventFromCommunityID(communityID, setAllEvents);
@@ -58,11 +62,7 @@ function EventsHolder({
   const handleArchive = async (id) => {
     try {
       await EventDB.updateEventStatus(id, "archived");
-      setAllEvents(
-        allEvents.map((event) =>
-          event.id === id ? { ...event, status: "archived" } : event
-        )
-      );
+      updateEventStatus(id, "archived");
     } catch (error) {
       console.error("Error archiving event:", error);
     }
@@ -71,11 +71,7 @@ function EventsHolder({
   const handleUnarchive = async (id) => {
     try {
       await EventDB.updateEventStatus(id, "active");
-      setAllEvents(
-        allEvents.map((event) =>
-          event.id === id ? { ...event, status: "active" } : event
-        )
-      );
+      updateEventStatus(id, "active");
     } catch (error) {
       console.error("Error unarchiving event:", error);
     }
@@ -99,11 +95,7 @@ function EventsHolder({
   const handlePost = async (id) => {
     try {
       await EventDB.updateEventStatus(id, "active");
-      setAllEvents(
-        allEvents.map((event) =>
-          event.id === id ? { ...event, status: "active" } : event
-        )
-      );
+      updateEventStatus(id, "active");
     } catch (error) {
       console.error("Error posting event:", error);
     }
@@ -114,18 +106,51 @@ function EventsHolder({
     setEventIdToDelete(null);
   };
 
+  const updateEventStatus = (id, status) => {
+    setAllEvents(
+      allEvents.map((event) =>
+        event.id === id ? { ...event, status: status } : event
+      )
+    );
+  };
+
+  const handleFilterChange = (event) => {
+    setFilterStatus(event.target.value);
+  };
+
+  const filteredEvents = allEvents.filter((event) => {
+    if (filterStatus === "all") return true;
+    return event.status === filterStatus;
+  });
+
   return (
     <div className="mt-4">
       <h1 className="text-xxl">Upcoming Events</h1>
 
+      {/* Filter Dropdown */}
+      <FormControl variant="outlined" sx={{ minWidth: 120, mt: 2 }}>
+        <Select
+          value={filterStatus}
+          onChange={handleFilterChange}
+          displayEmpty
+          inputProps={{ "aria-label": "Filter by status" }}
+        >
+          <MenuItem value="all">All</MenuItem>
+          <MenuItem value="draft">Draft</MenuItem>
+          <MenuItem value="active">Active</MenuItem>
+          <MenuItem value="archived">Archived</MenuItem>
+        </Select>
+      </FormControl>
+
+      {/* Event Cards */}
       <div style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
         {loading ? (
           <center>Loading...</center>
-        ) : allEvents.length === 0 ? (
+        ) : filteredEvents.length === 0 ? (
           <center>You have no entries</center>
         ) : (
           <Grid container spacing={2}>
-            {allEvents.map((value) => (
+            {filteredEvents.map((value) => (
               <Grid key={value.id} item>
                 <Card sx={{ maxWidth: 345 }}>
                   <CardHeader
@@ -233,6 +258,7 @@ function EventsHolder({
         )}
       </div>
 
+      {/* Delete Confirmation Modal */}
       <Modal
         open={openDeleteModal}
         onClose={handleCloseDeleteModal}
