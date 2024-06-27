@@ -12,17 +12,6 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 
-const style = {
-  position: "absolute" as "absolute",
-  top: "40%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-};
-
 const createEvent = (eventDetails, communityID) => {
   EventDB.createEvent({
     Name: eventDetails.eventName,
@@ -31,7 +20,7 @@ const createEvent = (eventDetails, communityID) => {
     EventDescription: eventDetails.description,
     Location: eventDetails.location,
     CommunityID: communityID,
-    status: "active", // Ensure the status field is set to "active"
+    status: eventDetails.status, // Use the status from eventDetails
   });
 };
 
@@ -44,6 +33,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     endTime: eventData.EndTime,
     location: eventData.Location,
     description: eventData.EventDescription,
+    status: "active", // Default status is "active"
   });
 
   const formRef = useRef(null);
@@ -59,6 +49,16 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   const handleSubmitEvent = (e) => {
     e.preventDefault();
     onSubmit(eventDetails); // Pass the eventDetails to the onSubmit function
+    onClose(); // Close the event form after submission
+  };
+
+  const handleSaveDraft = (e) => {
+    e.preventDefault();
+    setEventDetails((prevDetails) => ({
+      ...prevDetails,
+      status: "draft", // Set status to draft
+    }));
+    onSubmit({ ...eventDetails, status: "draft" }); // Pass the eventDetails with draft status to the onSubmit function
     onClose(); // Close the event form after submission
   };
 
@@ -79,7 +79,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
         >
           x
         </button>
-        <form onSubmit={handleSubmitEvent} className="space-y-4">
+        <form className="space-y-4">
           <div>
             <label
               htmlFor="eventName"
@@ -204,11 +204,16 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             ></textarea>
           </div>
           <div className="flex justify-end">
-            <button className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300">
+            <button
+              type="button"
+              onClick={handleSaveDraft}
+              className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+            >
               Save Draft
             </button>
             <button
               type="submit"
+              onClick={handleSubmitEvent}
               className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
             >
               Post Event
