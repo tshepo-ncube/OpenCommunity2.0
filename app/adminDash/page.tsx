@@ -242,8 +242,8 @@ const AdminDash = () => {
         </button>
       </div>
       <div className="bg-background_gray p-4 h-full">
-        <EventsHolder communityID={localStorage.getItem("CurrentCommunity")} />
         <PollsHolder communityID={localStorage.getItem("CurrentCommunity")} />
+        <EventsHolder communityID={localStorage.getItem("CurrentCommunity")} />
         {showEventForm && (
           <EventForm
             isOpen={showEventForm}
