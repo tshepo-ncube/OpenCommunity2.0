@@ -202,9 +202,6 @@ function EventsHolder({
                     {value.status === "archived" ? (
                       <>
                         <Button onClick={() => handleUnarchive(value.id)}>
-                          Edit
-                        </Button>
-                        <Button onClick={() => handleUnarchive(value.id)}>
                           Unarchive
                         </Button>
                         <Button
@@ -236,14 +233,6 @@ function EventsHolder({
                       </>
                     ) : (
                       <>
-                        <Button
-                          onClick={() => {
-                            setShowEventForm(true);
-                            setEventForm(value);
-                          }}
-                        >
-                          Edit
-                        </Button>
                         <Button
                           color="error"
                           onClick={() => handleArchive(value.id)}

@@ -15,22 +15,22 @@ import Modal from "@mui/material/Modal";
 const createEvent = (eventDetails, communityID) => {
   EventDB.createEvent({
     Name: eventDetails.eventName,
-    StartDate: new Date(`${eventDetails.startDate} ${eventDetails.startTime}`),
-    EndDate: new Date(`${eventDetails.endDate} ${eventDetails.endTime}`),
+    StartDate: new Date(eventDetails.startDateTime),
+    EndDate: new Date(eventDetails.endDateTime),
+    RsvpEndTime: new Date(eventDetails.rsvpEndDateTime),
     EventDescription: eventDetails.description,
     Location: eventDetails.location,
     CommunityID: communityID,
-    status: eventDetails.status, // Use the status from eventDetails
+    status: eventDetails.status,
   });
 };
 
 const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   const [eventDetails, setEventDetails] = useState({
     eventName: eventData.Name,
-    startDate: eventData.StartDate,
-    endDate: eventData.EndDate,
-    startTime: eventData.StartTime,
-    endTime: eventData.EndTime,
+    startDateTime: `${eventData.startDate}T${eventData.startTime}`,
+    endDateTime: `${eventData.endDate}T${eventData.endTime}`,
+    rsvpEndDateTime: "", // Initialize RSVP End Date & Time
     location: eventData.Location,
     description: eventData.EventDescription,
     status: "active", // Default status is "active"
@@ -65,13 +65,13 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-20 z-10 fixed inset-0 bg-black bg-opacity-0 backdrop-blur-md z-4"></div>
+        <div className="fixed inset-0 bg-black bg-opacity-20 z-10"></div>
       )}
       <div
         ref={formRef}
         className={`${
           isOpen ? "block" : "hidden"
-        } fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/3 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-3/4 sm:h-auto lg:h-auto`}
+        } fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 max-h-120 overflow-y-auto`}
       >
         <button
           onClick={onClose}
@@ -98,53 +98,19 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               required
             />
           </div>
-          <div>
-            <label
-              htmlFor="startDate"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Start Date
-            </label>
-            <input
-              type="date"
-              name="startDate"
-              id="startDate"
-              value={eventDetails.startDate}
-              onChange={handleChangeEvent}
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              required
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="endDate"
-              className="block text-sm font-medium text-gray-700"
-            >
-              End Date
-            </label>
-            <input
-              type="date"
-              name="endDate"
-              id="endDate"
-              value={eventDetails.endDate}
-              onChange={handleChangeEvent}
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              required
-            />
-          </div>
           <div className="flex justify-between gap-3">
             <div className="flex-1">
               <label
-                htmlFor="startTime"
+                htmlFor="startDateTime"
                 className="block text-sm font-medium text-gray-700"
               >
-                Start Time
+                Start Date & Time
               </label>
               <input
-                type="time"
-                name="startTime"
-                id="startTime"
-                value={eventDetails.startTime}
+                type="datetime-local"
+                name="startDateTime"
+                id="startDateTime"
+                value={eventDetails.startDateTime}
                 onChange={handleChangeEvent}
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                 required
@@ -152,16 +118,35 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             </div>
             <div className="flex-1">
               <label
-                htmlFor="endTime"
+                htmlFor="endDateTime"
                 className="block text-sm font-medium text-gray-700"
               >
-                End Time
+                End Date & Time
               </label>
               <input
-                type="time"
-                name="endTime"
-                id="endTime"
-                value={eventDetails.endTime}
+                type="datetime-local"
+                name="endDateTime"
+                id="endDateTime"
+                value={eventDetails.endDateTime}
+                onChange={handleChangeEvent}
+                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                required
+              />
+            </div>
+          </div>
+          <div className="flex justify-between gap-3">
+            <div className="flex-1">
+              <label
+                htmlFor="rsvpEndDateTime"
+                className="block text-sm font-medium text-gray-700"
+              >
+                RSVP End Date & Time
+              </label>
+              <input
+                type="datetime-local"
+                name="rsvpEndDateTime"
+                id="rsvpEndDateTime"
+                value={eventDetails.rsvpEndDateTime}
                 onChange={handleChangeEvent}
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                 required
