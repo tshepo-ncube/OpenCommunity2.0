@@ -231,7 +231,7 @@ const EventsHolder = ({
                           sx={{
                             bgcolor: getStatusColor(value.status),
                             color: "#fff",
-                            p: 1,
+                            p: 0.5,
                             borderRadius: "4px",
                           }}
                         >
@@ -342,7 +342,7 @@ const EventsHolder = ({
                         sx={{
                           bgcolor: getStatusColor(value.status),
                           color: "#fff",
-                          p: 1,
+                          p: 0.5,
                           borderRadius: "4px",
                         }}
                       >
