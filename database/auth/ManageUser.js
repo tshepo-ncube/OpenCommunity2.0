@@ -152,4 +152,101 @@ export default class ManageUser {
         // An error happened.
       });
   };
+
+  static joinCommunity = async (communityID) => {
+    const currentUser = localStorage.getItem("Email");
+
+    const candidatesCollectionRef = collection(DB, "users");
+
+    const q = query(candidatesCollectionRef, where("Email", "==", currentUser));
+
+    try {
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
+        console.log("No matching documents.");
+        return;
+      }
+
+      let userID;
+      snapshot.forEach((doc) => {
+        userID = doc.id;
+      });
+      const userRef = doc(DB, "users", userID);
+      const userDoc = await getDoc(userRef);
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        let joinedCommunities = userData.CommunitiesJoined;
+
+        if (joinedCommunities.includes(communityID)) {
+          alert("You already joined the community");
+        } else {
+          joinedCommunities.push(communityID);
+          try {
+            // Update the status field
+            await updateDoc(userRef, {
+              CommunitiesJoined: joinedCommunities,
+            });
+            console.log("Community Joined Updated successfully.");
+          } catch (error) {
+            console.error("Error updating community joined:", error);
+            throw error;
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error getting user ID: ", error);
+      alert(error);
+    }
+  };
+
+  // static getAllCommunities = async () => {
+  //    const currentUser = localStorage.getItem("Email");
+
+  //    const candidatesCollectionRef = collection(DB, "users");
+
+  //    const q = query(
+  //      candidatesCollectionRef,
+  //      where("Email", "==", currentUser)
+  //    );
+
+  //    try {
+  //      const snapshot = await getDocs(q);
+  //      if (snapshot.empty) {
+  //        console.log("No matching documents.");
+  //        return;
+  //      }
+
+  //      let userID;
+  //      snapshot.forEach((doc) => {
+  //        userID = doc.id;
+  //      });
+  //      const userRef = doc(DB, "users", userID);
+  //      const userDoc = await getDoc(userRef);
+
+  //      if (userDoc.exists()) {
+  //        const userData = userDoc.data();
+  //        let joinedCommunities = userData.CommunitiesJoined;
+
+  //        if (joinedCommunities.includes(communityID)) {
+  //          alert("You already joined the community");
+  //        } else {
+  //          joinedCommunities.push(communityID);
+  //          try {
+  //            // Update the status field
+  //            await updateDoc(userRef, {
+  //              CommunitiesJoined: joinedCommunities,
+  //            });
+  //            console.log("Community Joined Updated successfully.");
+  //          } catch (error) {
+  //            console.error("Error updating community joined:", error);
+  //            throw error;
+  //          }
+  //        }
+  //      }
+  //    } catch (error) {
+  //      console.error("Error getting user ID: ", error);
+  //      alert(error);
+  //    }
+  // }
 }

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../_Components/header";
 import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
@@ -13,6 +13,7 @@ import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/system";
+import ManageUser from "@/database/auth/ManageUser";
 
 // Custom styles
 const CustomTab = styled(Tab)({
@@ -61,10 +62,17 @@ function a11yProps(index: number) {
 
 function Home() {
   const [value, setValue] = React.useState(0);
+  const [profileData, setProfileData] = React.useState({
+    CommunitiesJoined: [],
+  });
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
+
+  useEffect(() => {
+    ManageUser.getProfileData(localStorage.getItem("Email"), setProfileData);
+  }, []);
 
   return (
     <>
@@ -96,27 +104,35 @@ function Home() {
             </Box>
 
             <CustomTabPanel value={value} index={0}>
-              <div>
-                <div className="mt-9">
-                  {/* Add margin-top to create space above the image */}
-                  <Image
-                    src={Logo} // Replace "/path/to/logo.png" with the path to your logo image
-                    alt="Logo"
-                    width={500} // Adjust width as needed
-                    height={500} // Adjust height as needed
-                    className="mx-auto"
-                    style={{ marginBottom: "20px" }}
-                  />
-                </div>
-                <p className="text-gray-900 text-lg">
-                  You are not a member of any communities yet.
-                </p>
-                <p className="text-gray-900 text-lg">
-                  Click on{" "}
-                  <span className="font-bold">Discover communities</span> to
-                  become a member of your very first community
-                </p>
-              </div>
+              {profileData.CommunitiesJoined.length == 0 ? (
+                <>
+                  <div>
+                    <div className="mt-9">
+                      {/* Add margin-top to create space above the image */}
+                      <Image
+                        src={Logo} // Replace "/path/to/logo.png" with the path to your logo image
+                        alt="Logo"
+                        width={500} // Adjust width as needed
+                        height={500} // Adjust height as needed
+                        className="mx-auto"
+                        style={{ marginBottom: "20px" }}
+                      />
+                    </div>
+                    <p className="text-gray-900 text-lg">
+                      You are not a member of any communities yet.
+                    </p>
+                    <p className="text-gray-900 text-lg">
+                      Click on{" "}
+                      <span className="font-bold">Discover communities</span> to
+                      become a member of your very first community
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h1>Tshepo</h1>
+                </>
+              )}
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
               <DiscoverCommunity />
