@@ -11,6 +11,10 @@ import TextField from "@mui/material/TextField";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import IconButton from "@mui/material/IconButton";
+import { green } from "@mui/material/colors";
 
 function PollsHolder({ communityID }) {
   const [allPolls, setAllPolls] = useState([]);
@@ -28,6 +32,12 @@ function PollsHolder({ communityID }) {
 
   const handleCloseForm = () => {
     setShowCreateForm(false);
+    resetForm();
+  };
+
+  const resetForm = () => {
+    setNewPollQuestion("");
+    setNewPollOptions(["", ""]);
   };
 
   const handleSavePoll = () => {
@@ -39,8 +49,7 @@ function PollsHolder({ communityID }) {
 
     PollDB.createPoll(pollObject).then(() => {
       setShowCreateForm(false);
-      setNewPollQuestion("");
-      setNewPollOptions(["", ""]);
+      resetForm();
       PollDB.getPollFromCommunityID(communityID, setAllPolls); // Refresh polls after creation
     });
   };
@@ -51,13 +60,36 @@ function PollsHolder({ communityID }) {
     setNewPollOptions(options);
   };
 
+  const handleAddOption = () => {
+    setNewPollOptions([...newPollOptions, ""]);
+  };
+
+  const handleRemoveOption = (index) => {
+    const options = [...newPollOptions];
+    options.splice(index, 1);
+    setNewPollOptions(options);
+  };
+
   return (
     <div className="mt-4 h-480">
-      <h1 className="text-xxl">Polls</h1>
-
-      <Button variant="contained" color="primary" onClick={handleCreatePoll}>
-        Create Poll
-      </Button>
+      <h1 className="text-xxl relative">
+        Polls
+        <IconButton
+          sx={{
+            borderRadius: "50%",
+            backgroundColor: green[500],
+            color: "white",
+            marginLeft: 2,
+            "&:hover": {
+              backgroundColor: green[700],
+            },
+          }}
+          onClick={handleCreatePoll}
+          aria-label="create poll"
+        >
+          <AddIcon />
+        </IconButton>
+      </h1>
 
       <div style={{ overflowX: "auto", whiteSpace: "nowrap", marginTop: 15 }}>
         {allPolls.length === 0 ? (
@@ -103,22 +135,41 @@ function PollsHolder({ communityID }) {
             value={newPollQuestion}
             onChange={(e) => setNewPollQuestion(e.target.value)}
           />
-          <TextField
-            margin="dense"
-            id="option1"
-            label="Option 1"
-            fullWidth
-            value={newPollOptions[0]}
-            onChange={(e) => handleChangeOption(0, e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            id="option2"
-            label="Option 2"
-            fullWidth
-            value={newPollOptions[1]}
-            onChange={(e) => handleChangeOption(1, e.target.value)}
-          />
+          {newPollOptions.map((option, index) => (
+            <div
+              key={index}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginBottom: 10,
+              }}
+            >
+              <TextField
+                margin="dense"
+                id={`option${index}`}
+                label={`Option ${index + 1}`}
+                fullWidth
+                value={option}
+                onChange={(e) => handleChangeOption(index, e.target.value)}
+              />
+              {index > 1 && (
+                <IconButton
+                  aria-label="remove option"
+                  onClick={() => handleRemoveOption(index)}
+                  style={{ marginLeft: 10 }}
+                >
+                  <RemoveIcon />
+                </IconButton>
+              )}
+            </div>
+          ))}
+          <IconButton
+            aria-label="add option"
+            onClick={handleAddOption}
+            style={{ marginBottom: 10 }}
+          >
+            <AddIcon />
+          </IconButton>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseForm} color="primary">
