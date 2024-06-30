@@ -159,10 +159,14 @@ function EventsHolder({
     setFilterStatus(event.target.value);
   };
 
-  const filteredEvents = allEvents.filter((event) => {
-    if (filterStatus === "all") return true;
-    return event.status === filterStatus;
+  const filteredUpcomingEvents = allEvents.filter((event) => {
+    if (filterStatus === "all") {
+      return event.status !== "past"; // Exclude past events
+    }
+    return event.status === filterStatus && event.status !== "past";
   });
+
+  const pastEvents = allEvents.filter((event) => event.status === "past");
 
   return (
     <div className="mt-4">
@@ -191,15 +195,15 @@ function EventsHolder({
         </FormControl>
       </div>
 
-      {/* Event Cards */}
+      {/* Upcoming Events Cards */}
       <div style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
         {loading ? (
           <center>Loading...</center>
-        ) : filteredEvents.length === 0 ? (
-          <center>You have no entries</center>
+        ) : filteredUpcomingEvents.length === 0 ? (
+          <center>No upcoming events</center>
         ) : (
           <Grid container spacing={2}>
-            {filteredEvents.map((value) => (
+            {filteredUpcomingEvents.map((value) => (
               <Grid key={value.id} item>
                 <Card sx={{ maxWidth: 345 }}>
                   <CardHeader
@@ -234,14 +238,14 @@ function EventsHolder({
                         value.EndDate
                       )}`}
                       <br />
-                      <strong>RSVP End:</strong>{" "}
-                      {`${formatDate(value.RsvpEndTime)} - ${formatTime(
-                        value.RsvpEndTime
-                      )}`}
-                      <br />
                       <strong>Location:</strong> {value.Location}
                       <br />
                       <strong>Description:</strong> {value.EventDescription}
+                      <br />
+                      <strong>RSVP by the:</strong>{" "}
+                      {`${formatDate(value.RsvpEndTime)} - ${formatTime(
+                        value.RsvpEndTime
+                      )}`}
                     </Typography>
                   </CardContent>
                   <CardActions disableSpacing>
@@ -277,10 +281,6 @@ function EventsHolder({
                           Delete
                         </Button>
                       </>
-                    ) : value.status === "past" ? (
-                      <Button onClick={() => handleViewResults(value)}>
-                        View Results
-                      </Button>
                     ) : (
                       <>
                         <Button
@@ -303,6 +303,66 @@ function EventsHolder({
             ))}
           </Grid>
         )}
+      </div>
+
+      {/* Past Events (Polls) */}
+      <div className="mt-4">
+        <h1 className="text-xxl">Past Events</h1>
+        <Grid container spacing={2}>
+          {pastEvents.map((value) => (
+            <Grid key={value.id} item>
+              <Card sx={{ maxWidth: 345 }}>
+                <CardHeader
+                  avatar={
+                    <Avatar sx={{ bgcolor: green[500] }} aria-label="recipe">
+                      O
+                    </Avatar>
+                  }
+                  title={value.Name}
+                  subheader={`${formatDate(value.StartDate)} - ${formatDate(
+                    value.EndDate
+                  )}`}
+                  action={
+                    <IconButton aria-label="settings">
+                      <MoreVertIcon />
+                    </IconButton>
+                  }
+                />
+                <CardContent>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    style={{ whiteSpace: "pre-wrap" }}
+                  >
+                    <strong>Date:</strong>{" "}
+                    {`${formatDate(value.StartDate)} - ${formatDate(
+                      value.EndDate
+                    )}`}
+                    <br />
+                    <strong>Time:</strong>{" "}
+                    {`${formatTime(value.StartDate)} - ${formatTime(
+                      value.EndDate
+                    )}`}
+                    <br />
+                    <strong>Location:</strong> {value.Location}
+                    <br />
+                    <strong>Description:</strong> {value.EventDescription}
+                    <br />
+                    <strong>RSVP by:</strong>{" "}
+                    {`${formatDate(value.RsvpEndTime)} - ${formatTime(
+                      value.RsvpEndTime
+                    )}`}
+                  </Typography>
+                </CardContent>
+                <CardActions disableSpacing>
+                  <Button onClick={() => handleViewResults(value)}>
+                    View Results
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
       </div>
 
       {/* Delete Confirmation Modal */}
