@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Header from "../_Components/header";
 import EventsHolder from "../_Components/EventsHolder";
 import PollsHolder from "../_Components/PollsHolder";
@@ -25,62 +25,19 @@ const createEvent = (eventDetails, communityID) => {
 const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   const [eventDetails, setEventDetails] = useState({
     eventName: eventData.Name,
-    startDateTime:
-      eventData.startDate && eventData.startTime
-        ? `${eventData.startDate}T${eventData.startTime}`
-        : "", // Combine start date and time if available
-    endDateTime:
-      eventData.endDate && eventData.endTime
-        ? `${eventData.endDate}T${eventData.endTime}`
-        : "", // Combine end date and time if available
-    rsvpEndDateTime: eventData.rsvpEndDateTime ? eventData.rsvpEndDateTime : "", // Initialize RSVP End Date & Time
+    startDateTime: `${eventData.startDate}T${eventData.startTime}`,
+    endDateTime: `${eventData.endDate}T${eventData.endTime}`,
+    rsvpEndDateTime: eventData.rsvpEndDateTime, // Initialize RSVP End Date & Time
     location: eventData.Location,
     description: eventData.EventDescription,
     status: "active", // Default status is "active"
   });
-
-  useEffect(() => {
-    // Set initial min values for endDateTime and rsvpEndDateTime when startDateTime changes
-    if (eventDetails.startDateTime) {
-      setEventDetails((prevDetails) => ({
-        ...prevDetails,
-        endDateTime: prevDetails.startDateTime, // Set endDateTime minimum to startDateTime
-        rsvpEndDateTime: prevDetails.startDateTime, // Set rsvpEndDateTime minimum to startDateTime
-      }));
-    }
-  }, [eventDetails.startDateTime]);
 
   const handleChangeEvent = (e) => {
     const { name, value } = e.target;
     setEventDetails((prevDetails) => ({
       ...prevDetails,
       [name]: value,
-    }));
-  };
-
-  const handleStartDateChange = (e) => {
-    const { value } = e.target;
-    setEventDetails((prevDetails) => ({
-      ...prevDetails,
-      startDateTime: value,
-      endDateTime: value, // Set endDateTime to startDateTime initially
-      rsvpEndDateTime: value, // Set rsvpEndDateTime to startDateTime initially
-    }));
-  };
-
-  const handleEndDateChange = (e) => {
-    const { value } = e.target;
-    setEventDetails((prevDetails) => ({
-      ...prevDetails,
-      endDateTime: value,
-    }));
-  };
-
-  const handleRsvpEndDateChange = (e) => {
-    const { value } = e.target;
-    setEventDetails((prevDetails) => ({
-      ...prevDetails,
-      rsvpEndDateTime: value,
     }));
   };
 
@@ -98,17 +55,6 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     }));
     onSubmit({ ...eventDetails, status: "draft" }); // Pass the eventDetails with draft status to the onSubmit function
     onClose(); // Close the event form after submission
-  };
-
-  // Function to get current date and time in ISO format without seconds
-  const getCurrentDateTimeISO = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
   return (
@@ -159,10 +105,9 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 name="startDateTime"
                 id="startDateTime"
                 value={eventDetails.startDateTime}
-                onChange={handleStartDateChange}
+                onChange={handleChangeEvent}
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                 required
-                min={getCurrentDateTimeISO()} // Minimum date is current date/time without seconds
               />
             </div>
             <div className="flex-1">
@@ -177,18 +122,10 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 name="endDateTime"
                 id="endDateTime"
                 value={eventDetails.endDateTime}
-                onChange={handleEndDateChange}
+                onChange={handleChangeEvent}
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                required={eventDetails.startDateTime !== ""}
-                min={eventDetails.startDateTime} // Minimum date is start date/time
-                disabled={eventDetails.startDateTime === ""}
+                required
               />
-              {eventDetails.startDateTime !== "" &&
-                eventDetails.endDateTime < eventDetails.startDateTime && (
-                  <p className="text-sm text-red-500">
-                    End Date & Time cannot be earlier than Start Date & Time
-                  </p>
-                )}
             </div>
           </div>
           <div className="flex justify-between gap-3">
@@ -204,21 +141,10 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 name="rsvpEndDateTime"
                 id="rsvpEndDateTime"
                 value={eventDetails.rsvpEndDateTime}
-                onChange={handleRsvpEndDateChange}
+                onChange={handleChangeEvent}
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                required={eventDetails.startDateTime !== ""}
-                min={eventDetails.startDateTime} // Minimum date is start date/time
-                disabled={eventDetails.startDateTime === ""}
+                required
               />
-              {eventDetails.startDateTime !== "" && (
-                <p className="text-sm text-red-500">
-                  RSVP End Date & Time cannot be earlier than Start Date & Time
-                  {eventDetails.endDateTime !== "" &&
-                    eventDetails.rsvpEndDateTime < eventDetails.endDateTime && (
-                      <> or End Date & Time</>
-                    )}
-                </p>
-              )}
             </div>
           </div>
           <div>
@@ -268,14 +194,6 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               type="submit"
               onClick={handleSubmitEvent}
               className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
-              disabled={
-                eventDetails.startDateTime === "" ||
-                eventDetails.endDateTime === "" ||
-                eventDetails.rsvpEndDateTime === "" ||
-                eventDetails.endDateTime < eventDetails.startDateTime ||
-                eventDetails.rsvpEndDateTime < eventDetails.endDateTime ||
-                eventDetails.rsvpEndDateTime < eventDetails.startDateTime
-              }
             >
               Post Event
             </button>

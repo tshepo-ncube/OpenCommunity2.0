@@ -1,46 +1,34 @@
-import React, { useState, useEffect } from "react";
-import EventDB from "../../database/community/event";
-import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
-import CardHeader from "@mui/material/CardHeader";
-import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
-import Avatar from "@mui/material/Avatar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import { green } from "@mui/material/colors";
-import Button from "@mui/material/Button";
+import React, { useEffect, useState } from "react";
+import {
+  Grid,
+  Card,
+  CardHeader,
+  CardContent,
+  Typography,
+  CardActions,
+  Button,
+  Modal,
+  Box,
+  FormControl,
+  Select,
+  MenuItem,
+} from "@mui/material";
+import { green, red, blue, yellow } from "@mui/material/colors"; // Added yellow for RSVP status
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
 
-const modalStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 300,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-  outline: "none",
-  borderRadius: 1,
-};
+import EventDB from "../../database/community/event";
 
-function EventsHolder({
+const EventsHolder = ({
   communityID,
   createEvent,
   setShowEventForm,
   setEventForm,
-}) {
+}) => {
   const [allEvents, setAllEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [eventIdToDelete, setEventIdToDelete] = useState(null);
-  const [filterStatus, setFilterStatus] = useState("all"); // State to hold filter status
+  const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
     EventDB.getEventFromCommunityID(communityID, setAllEvents);
@@ -52,11 +40,29 @@ function EventsHolder({
       const currentDate = new Date();
       const updatedEvents = await Promise.all(
         allEvents.map(async (event) => {
+          // Check if RSVP deadline has passed and status is not "past" or "archived"
           if (
-            event.status === "active" && // Check if status is active
-            event.RsvpEndTime && // Ensure RsvpEndTime exists
-            event.RsvpEndTime.toDate() < currentDate && // Check if RSVP end time is in the past
-            event.status !== "past" // Only update if status is not already 'past'
+            event.RsvpEndTime &&
+            event.RsvpEndTime.toDate() < currentDate &&
+            event.status !== "past" &&
+            event.status !== "archived"
+          ) {
+            try {
+              await EventDB.updateEventStatus(event.id, "rsvp");
+              return { ...event, status: "rsvp" };
+            } catch (error) {
+              console.error(
+                `Error updating event status for ${event.id}:`,
+                error
+              );
+              return event;
+            }
+          }
+          // Check if event end date has passed and status is not "past"
+          if (
+            event.EndDate &&
+            event.EndDate.toDate() < currentDate &&
+            event.status !== "past"
           ) {
             try {
               await EventDB.updateEventStatus(event.id, "past");
@@ -66,22 +72,20 @@ function EventsHolder({
                 `Error updating event status for ${event.id}:`,
                 error
               );
-              return event; // Return original event if update fails
+              return event;
             }
           }
-          return event; // Return unchanged event if conditions are not met
+          return event;
         })
       );
 
-      // Set state only if there are updates
       if (JSON.stringify(updatedEvents) !== JSON.stringify(allEvents)) {
         setAllEvents(updatedEvents);
       }
     };
 
-    // Call the update function initially and set interval for continuous update
     updateEventsStatus();
-    const interval = setInterval(updateEventsStatus, 60000); // Update every minute
+    const interval = setInterval(updateEventsStatus, 60000);
 
     return () => clearInterval(interval);
   }, [allEvents]);
@@ -101,7 +105,7 @@ function EventsHolder({
   const handleArchive = async (id) => {
     try {
       await EventDB.updateEventStatus(id, "archived");
-      updateEventsStatus(); // Refresh status after update
+      updateEventsStatus();
     } catch (error) {
       console.error("Error archiving event:", error);
     }
@@ -110,7 +114,7 @@ function EventsHolder({
   const handleUnarchive = async (id) => {
     try {
       await EventDB.updateEventStatus(id, "active");
-      updateEventsStatus(); // Refresh status after update
+      updateEventsStatus();
     } catch (error) {
       console.error("Error unarchiving event:", error);
     }
@@ -134,7 +138,7 @@ function EventsHolder({
   const handlePost = async (id) => {
     try {
       await EventDB.updateEventStatus(id, "active");
-      updateEventsStatus(); // Refresh status after update
+      updateEventsStatus();
     } catch (error) {
       console.error("Error posting event:", error);
     }
@@ -146,13 +150,7 @@ function EventsHolder({
   };
 
   const handleViewResults = (event) => {
-    // Handle view results action here
     console.log(`View results for event ${event.id}`);
-  };
-
-  const updateEventsStatus = () => {
-    // Dummy function to prevent direct state update inside useEffect
-    return;
   };
 
   const handleFilterChange = (event) => {
@@ -161,12 +159,27 @@ function EventsHolder({
 
   const filteredUpcomingEvents = allEvents.filter((event) => {
     if (filterStatus === "all") {
-      return event.status !== "past"; // Exclude past events
+      return event.status !== "past";
     }
     return event.status === filterStatus && event.status !== "past";
   });
 
   const pastEvents = allEvents.filter((event) => event.status === "past");
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "active":
+        return green[500];
+      case "archived":
+        return red[500];
+      case "draft":
+        return blue[500];
+      case "rsvp":
+        return yellow[500]; // Added color for RSVP status
+      default:
+        return "#000";
+    }
+  };
 
   return (
     <div className="mt-4">
@@ -179,7 +192,6 @@ function EventsHolder({
       >
         <h1 className="text-xxl">Upcoming Events</h1>
 
-        {/* Filter Dropdown */}
         <FormControl variant="outlined" sx={{ minWidth: 120, mt: 1, mb: 1 }}>
           <Select
             value={filterStatus}
@@ -195,7 +207,6 @@ function EventsHolder({
         </FormControl>
       </div>
 
-      {/* Upcoming Events Cards */}
       <div style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
         {loading ? (
           <center>Loading...</center>
@@ -207,19 +218,25 @@ function EventsHolder({
               <Grid key={value.id} item>
                 <Card sx={{ maxWidth: 345 }}>
                   <CardHeader
-                    avatar={
-                      <Avatar sx={{ bgcolor: green[500] }} aria-label="recipe">
-                        O
-                      </Avatar>
-                    }
                     title={value.Name}
                     subheader={`${formatDate(value.StartDate)} - ${formatDate(
                       value.EndDate
                     )}`}
                     action={
-                      <IconButton aria-label="settings">
-                        <MoreVertIcon />
-                      </IconButton>
+                      <Box sx={{ display: "flex", gap: "4px" }}>
+                        <Box
+                          sx={{
+                            bgcolor: getStatusColor(value.status),
+                            color: "#fff",
+                            p: 1,
+                            borderRadius: "4px",
+                          }}
+                        >
+                          <Typography variant="caption">
+                            {value.status}
+                          </Typography>
+                        </Box>
+                      </Box>
                     }
                   />
                   <CardContent>
@@ -305,7 +322,6 @@ function EventsHolder({
         )}
       </div>
 
-      {/* Past Events (Polls) */}
       <div className="mt-4">
         <h1 className="text-xxl">Past Events</h1>
         <Grid container spacing={2}>
@@ -313,19 +329,25 @@ function EventsHolder({
             <Grid key={value.id} item>
               <Card sx={{ maxWidth: 345 }}>
                 <CardHeader
-                  avatar={
-                    <Avatar sx={{ bgcolor: green[500] }} aria-label="recipe">
-                      O
-                    </Avatar>
-                  }
                   title={value.Name}
                   subheader={`${formatDate(value.StartDate)} - ${formatDate(
                     value.EndDate
                   )}`}
                   action={
-                    <IconButton aria-label="settings">
-                      <MoreVertIcon />
-                    </IconButton>
+                    <Box sx={{ display: "flex", gap: "4px" }}>
+                      <Box
+                        sx={{
+                          bgcolor: getStatusColor(value.status),
+                          color: "#fff",
+                          p: 1,
+                          borderRadius: "4px",
+                        }}
+                      >
+                        <Typography variant="caption">
+                          {value.status}
+                        </Typography>
+                      </Box>
+                    </Box>
                   }
                 />
                 <CardContent>
@@ -348,7 +370,7 @@ function EventsHolder({
                     <br />
                     <strong>Description:</strong> {value.EventDescription}
                     <br />
-                    <strong>RSVP by:</strong>{" "}
+                    <strong>RSVP by the:</strong>{" "}
                     {`${formatDate(value.RsvpEndTime)} - ${formatTime(
                       value.RsvpEndTime
                     )}`}
@@ -365,34 +387,47 @@ function EventsHolder({
         </Grid>
       </div>
 
-      {/* Delete Confirmation Modal */}
+      {/* Modal for Delete Confirmation */}
       <Modal
         open={openDeleteModal}
         onClose={handleCloseDeleteModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+        aria-labelledby="delete-event-modal-title"
+        aria-describedby="delete-event-modal-description"
       >
-        <Box sx={modalStyle}>
-          <Typography id="modal-modal-title" variant="h6" component="h2">
-            Confirm Deletion of event
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography
+            id="delete-event-modal-title"
+            variant="h6"
+            component="h2"
+            gutterBottom
+          >
+            Confirm Delete Event
           </Typography>
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-            Are you sure you want to permanently delete this event? Once you
-            have deleted this event you will not be able to retrieve the event
-            and its corresponding data.
+          <Typography id="delete-event-modal-description" sx={{ mt: 2 }}>
+            Are you sure you want to delete this event? by deleteing this event,
+            all the data associated with the event will be permanently deleted.
           </Typography>
-          <Box mt={4} display="flex" justifyContent="space-between">
-            <Button variant="contained" color="error" onClick={handleDelete}>
-              Yes
-            </Button>
-            <Button variant="contained" onClick={handleCloseDeleteModal}>
-              No
-            </Button>
-          </Box>
+          <Button onClick={handleDelete} sx={{ mt: 2 }}>
+            Delete
+          </Button>
+          <Button onClick={handleCloseDeleteModal} sx={{ mt: 2, ml: 2 }}>
+            Cancel
+          </Button>
         </Box>
       </Modal>
     </div>
   );
-}
+};
 
 export default EventsHolder;
