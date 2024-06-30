@@ -34,7 +34,6 @@ const EventsHolder = ({
     EventDB.getEventFromCommunityID(communityID, setAllEvents);
     setLoading(false);
   }, [communityID]);
-
   useEffect(() => {
     const updateEventsStatus = async () => {
       const currentDate = new Date();
@@ -42,42 +41,43 @@ const EventsHolder = ({
         allEvents.map(async (event) => {
           let updatedEvent = { ...event };
 
-          // Check if RSVP deadline has passed and status is not "past" or "archived"
-          if (
-            event.RsvpEndTime &&
-            event.RsvpEndTime.toDate() < currentDate &&
-            event.status !== "past" &&
-            event.status !== "archived"
-          ) {
-            try {
-              await EventDB.updateEventStatus(event.id, "rsvp");
-              updatedEvent.status = "rsvp";
-            } catch (error) {
-              console.error(
-                `Error updating event status for ${event.id}:`,
-                error
-              );
+          if (event.status === "active") {
+            // Check if RSVP deadline has passed and status is not "past"
+            if (
+              event.RsvpEndTime &&
+              event.RsvpEndTime.toDate() < currentDate &&
+              event.status !== "past"
+            ) {
+              try {
+                await EventDB.updateEventStatus(event.id, "rsvp");
+                updatedEvent.status = "rsvp";
+              } catch (error) {
+                console.error(
+                  `Error updating event status for ${event.id}:`,
+                  error
+                );
+              }
+            }
+
+            // Check if end date has passed and status is not "past"
+            if (
+              event.EndDate &&
+              event.EndDate.toDate() < currentDate &&
+              event.status !== "past"
+            ) {
+              try {
+                await EventDB.updateEventStatus(event.id, "past");
+                updatedEvent.status = "past";
+              } catch (error) {
+                console.error(
+                  `Error updating event status for ${event.id}:`,
+                  error
+                );
+              }
             }
           }
 
-          // Check if both end date and RSVP end time have passed
-          if (
-            event.EndDate &&
-            event.EndDate.toDate() < currentDate &&
-            event.status !== "past"
-          ) {
-            try {
-              await EventDB.updateEventStatus(event.id, "past");
-              updatedEvent.status = "past";
-            } catch (error) {
-              console.error(
-                `Error updating event status for ${event.id}:`,
-                error
-              );
-            }
-          }
-
-          // If status has changed, return updated event; otherwise, return original event
+          // Return updated event or original event if no changes
           return updatedEvent;
         })
       );
