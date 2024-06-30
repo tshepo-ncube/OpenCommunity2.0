@@ -40,6 +40,8 @@ const EventsHolder = ({
       const currentDate = new Date();
       const updatedEvents = await Promise.all(
         allEvents.map(async (event) => {
+          let updatedEvent = { ...event };
+
           // Check if RSVP deadline has passed and status is not "past" or "archived"
           if (
             event.RsvpEndTime &&
@@ -49,16 +51,16 @@ const EventsHolder = ({
           ) {
             try {
               await EventDB.updateEventStatus(event.id, "rsvp");
-              return { ...event, status: "rsvp" };
+              updatedEvent.status = "rsvp";
             } catch (error) {
               console.error(
                 `Error updating event status for ${event.id}:`,
                 error
               );
-              return event;
             }
           }
-          // Check if event end date has passed and status is not "past"
+
+          // Check if both end date and RSVP end time have passed
           if (
             event.EndDate &&
             event.EndDate.toDate() < currentDate &&
@@ -66,16 +68,17 @@ const EventsHolder = ({
           ) {
             try {
               await EventDB.updateEventStatus(event.id, "past");
-              return { ...event, status: "past" };
+              updatedEvent.status = "past";
             } catch (error) {
               console.error(
                 `Error updating event status for ${event.id}:`,
                 error
               );
-              return event;
             }
           }
-          return event;
+
+          // If status has changed, return updated event; otherwise, return original event
+          return updatedEvent;
         })
       );
 
@@ -379,6 +382,12 @@ const EventsHolder = ({
                 <CardActions disableSpacing>
                   <Button onClick={() => handleViewResults(value)}>
                     View Results
+                  </Button>
+                  <Button
+                    color="error"
+                    onClick={() => handleDeleteConfirmation(value.id)}
+                  >
+                    Delete
                   </Button>
                 </CardActions>
               </Card>
