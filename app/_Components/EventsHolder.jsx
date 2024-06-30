@@ -47,6 +47,45 @@ function EventsHolder({
     setLoading(false);
   }, [communityID]);
 
+  useEffect(() => {
+    const updateEventsStatus = async () => {
+      const currentDate = new Date();
+      const updatedEvents = await Promise.all(
+        allEvents.map(async (event) => {
+          if (
+            event.status === "active" && // Check if status is active
+            event.RsvpEndTime && // Ensure RsvpEndTime exists
+            event.RsvpEndTime.toDate() < currentDate && // Check if RSVP end time is in the past
+            event.status !== "past" // Only update if status is not already 'past'
+          ) {
+            try {
+              await EventDB.updateEventStatus(event.id, "past");
+              return { ...event, status: "past" };
+            } catch (error) {
+              console.error(
+                `Error updating event status for ${event.id}:`,
+                error
+              );
+              return event; // Return original event if update fails
+            }
+          }
+          return event; // Return unchanged event if conditions are not met
+        })
+      );
+
+      // Set state only if there are updates
+      if (JSON.stringify(updatedEvents) !== JSON.stringify(allEvents)) {
+        setAllEvents(updatedEvents);
+      }
+    };
+
+    // Call the update function initially and set interval for continuous update
+    updateEventsStatus();
+    const interval = setInterval(updateEventsStatus, 60000); // Update every minute
+
+    return () => clearInterval(interval);
+  }, [allEvents]);
+
   const formatDate = (timestamp) => {
     if (!timestamp) return "No Date";
     const date = timestamp.toDate();
@@ -62,7 +101,7 @@ function EventsHolder({
   const handleArchive = async (id) => {
     try {
       await EventDB.updateEventStatus(id, "archived");
-      updateEventStatus(id, "archived");
+      updateEventsStatus(); // Refresh status after update
     } catch (error) {
       console.error("Error archiving event:", error);
     }
@@ -71,7 +110,7 @@ function EventsHolder({
   const handleUnarchive = async (id) => {
     try {
       await EventDB.updateEventStatus(id, "active");
-      updateEventStatus(id, "active");
+      updateEventsStatus(); // Refresh status after update
     } catch (error) {
       console.error("Error unarchiving event:", error);
     }
@@ -95,7 +134,7 @@ function EventsHolder({
   const handlePost = async (id) => {
     try {
       await EventDB.updateEventStatus(id, "active");
-      updateEventStatus(id, "active");
+      updateEventsStatus(); // Refresh status after update
     } catch (error) {
       console.error("Error posting event:", error);
     }
@@ -106,12 +145,14 @@ function EventsHolder({
     setEventIdToDelete(null);
   };
 
-  const updateEventStatus = (id, status) => {
-    setAllEvents(
-      allEvents.map((event) =>
-        event.id === id ? { ...event, status: status } : event
-      )
-    );
+  const handleViewResults = (event) => {
+    // Handle view results action here
+    console.log(`View results for event ${event.id}`);
+  };
+
+  const updateEventsStatus = () => {
+    // Dummy function to prevent direct state update inside useEffect
+    return;
   };
 
   const handleFilterChange = (event) => {
@@ -193,6 +234,11 @@ function EventsHolder({
                         value.EndDate
                       )}`}
                       <br />
+                      <strong>RSVP End:</strong>{" "}
+                      {`${formatDate(value.RsvpEndTime)} - ${formatTime(
+                        value.RsvpEndTime
+                      )}`}
+                      <br />
                       <strong>Location:</strong> {value.Location}
                       <br />
                       <strong>Description:</strong> {value.EventDescription}
@@ -231,6 +277,10 @@ function EventsHolder({
                           Delete
                         </Button>
                       </>
+                    ) : value.status === "past" ? (
+                      <Button onClick={() => handleViewResults(value)}>
+                        View Results
+                      </Button>
                     ) : (
                       <>
                         <Button

@@ -1,12 +1,9 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import Header from "../_Components/header";
 import EventsHolder from "../_Components/EventsHolder";
 import PollsHolder from "../_Components/PollsHolder";
-import Fab from "@mui/material/Fab";
-import AddIcon from "@mui/icons-material/Add";
 import EventDB from "@/database/community/event";
-import PollDB from "@/database/community/poll";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -30,13 +27,11 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     eventName: eventData.Name,
     startDateTime: `${eventData.startDate}T${eventData.startTime}`,
     endDateTime: `${eventData.endDate}T${eventData.endTime}`,
-    rsvpEndDateTime: "", // Initialize RSVP End Date & Time
+    rsvpEndDateTime: eventData.rsvpEndDateTime, // Initialize RSVP End Date & Time
     location: eventData.Location,
     description: eventData.EventDescription,
     status: "active", // Default status is "active"
   });
-
-  const formRef = useRef(null);
 
   const handleChangeEvent = (e) => {
     const { name, value } = e.target;
@@ -68,7 +63,6 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
         <div className="fixed inset-0 bg-black bg-opacity-20 z-10"></div>
       )}
       <div
-        ref={formRef}
         className={`${
           isOpen ? "block" : "hidden"
         } fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 max-h-120 overflow-y-auto`}
@@ -220,10 +214,16 @@ const AdminDash = () => {
     EndTime: "",
     Location: "",
     EventDescription: "",
+    RsvpEndTime: "", // Initialize RSVP End Time
   });
 
   const handleCreateNewEvent = () => {
     setShowEventForm(!showEventForm);
+    // You can set default values or leave them empty as per your design
+    setEventForm({
+      ...eventFormData,
+      RsvpEndTime: "", // Set default value for RSVP End Time
+    });
   };
 
   const handleEventSubmit = (eventDetails) => {
