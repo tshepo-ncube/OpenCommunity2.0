@@ -48,6 +48,7 @@ export default class RegisterUser {
         Email: userData.email,
         Diet: userData.diet,
         DateUserCreated: new Date(),
+        CommunitiesJoined: [],
       };
       const docRef = await addDoc(collection(DB, "users"), data);
       console.log("Document written with ID: ", docRef.id);

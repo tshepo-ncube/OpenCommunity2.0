@@ -15,6 +15,7 @@ export default class CommunityDB {
   static createCommunity = async (item, setCommunities, setLoading) => {
     setLoading(true);
     const object = {
+      users: [],
       name: item.name,
       description: item.description,
       category: item.category,
