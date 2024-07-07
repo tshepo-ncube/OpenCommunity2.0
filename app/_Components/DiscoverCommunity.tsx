@@ -61,6 +61,10 @@ const DiscoverCommunity = () => {
     setEditIndex(index);
   };
 
+  const handleJoinCommunity = (data: any) => {
+    CommunityDB.joinCommunity(data);
+  };
+
   const filterDataByCategoryAndStatus = (
     data: {
       id: string;
@@ -183,7 +187,14 @@ const DiscoverCommunity = () => {
                         </Typography>
                       </CardContent>
                       <CardActions>
-                        <Button size="small" onClick={() => handleEdit(index)}>
+                        <Button
+                          size="small"
+                          onClick={() => {
+                            handleEdit(index);
+                            handleJoinCommunity(data);
+                            //console.log(data);
+                          }}
+                        >
                           Join
                         </Button>
                         {/* Add more actions as needed */}

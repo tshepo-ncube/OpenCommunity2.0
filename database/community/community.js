@@ -7,12 +7,15 @@ import {
   updateDoc,
   deleteDoc,
   getDocs,
+  getDoc,
 } from "firebase/firestore";
+import ManageUser from "../auth/ManageUser";
 
 export default class CommunityDB {
   static createCommunity = async (item, setCommunities, setLoading) => {
     setLoading(true);
     const object = {
+      users: [],
       name: item.name,
       description: item.description,
       category: item.category,
@@ -77,5 +80,41 @@ export default class CommunityDB {
       console.error("Error fetching communities: ", e);
     }
     setLoading(false);
+  };
+
+  static joinCommunity = async (CommunityData) => {
+    const communityRef = doc(DB, "communities", CommunityData.id);
+
+    const communityDoc = await getDoc(communityRef);
+
+    if (communityDoc.exists()) {
+      const communityData = communityDoc.data();
+      let users = communityData.users;
+      const currentUser = localStorage.getItem("Email");
+      if (users.includes(currentUser)) {
+        alert("You already joined the community.");
+      } else {
+        users.push(currentUser);
+
+        console.log("users: ", users);
+
+        try {
+          // Update the status field
+          await updateDoc(communityRef, {
+            users: users,
+          });
+          ManageUser.joinCommunity(CommunityData.id);
+          console.log("Community Users updated successfully.");
+        } catch (error) {
+          console.error("Error updating community status:", error);
+          throw error;
+        }
+      }
+
+      //console.log("Document data:", communityDoc.data());
+    } else {
+      // docSnap.data() will be undefined in this case
+      console.log("No such document!");
+    }
   };
 }
