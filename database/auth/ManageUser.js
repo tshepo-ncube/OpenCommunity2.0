@@ -1,4 +1,5 @@
 import DB from "../DB";
+import CommunityDB from "../community/community";
 import {
   getAuth,
   signInWithPopup,
@@ -113,7 +114,7 @@ export default class ManageUser {
     await updateDoc(communityRef, object);
   };
 
-  static getProfileData = async (email, setProfile) => {
+  static getProfileData = async (email, setProfile, setUserCommunities) => {
     const candidatesCollectionRef = collection(DB, "users");
     console.log(`Email : ${email}`);
     const q = query(candidatesCollectionRef, where("Email", "==", email));
@@ -129,8 +130,15 @@ export default class ManageUser {
         console.log(doc.id, "=>", doc.data());
 
         const object2 = { id: doc.id };
-
+        console.log(
+          "doc.data().CommunitiesJoined,",
+          doc.data().CommunitiesJoined
+        );
         //const combinedObject = { ...object1, ...object2 };
+        CommunityDB.getAllUserCommunities(
+          doc.data().CommunitiesJoined,
+          setUserCommunities
+        );
         setProfile({ ...doc.data(), ...object2 });
       });
     } catch (error) {

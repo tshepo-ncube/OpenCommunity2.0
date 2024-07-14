@@ -5,15 +5,29 @@ import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
 import Image from "next/image";
 import Logo from "@/lib/images/Logo.jpeg";
-import Button from "@mui/material/Button";
+
 import ButtonGroup from "@mui/material/ButtonGroup";
 import DiscoverCommunity from "../_Components/DiscoverCommunity";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
+
 import Box from "@mui/material/Box";
 import { styled } from "@mui/system";
 import ManageUser from "@/database/auth/ManageUser";
+import {
+  CircularProgress,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  CardActions,
+  Button,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
+import CommunityDB from "@/database/community/community";
 
 // Custom styles
 const CustomTab = styled(Tab)({
@@ -65,14 +79,43 @@ function Home() {
   const [profileData, setProfileData] = React.useState({
     CommunitiesJoined: [],
   });
+  const [UserCommunities, setUserCommunities] = React.useState([]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
   useEffect(() => {
-    ManageUser.getProfileData(localStorage.getItem("Email"), setProfileData);
+    ManageUser.getProfileData(
+      localStorage.getItem("Email"),
+      setProfileData,
+      setUserCommunities
+    );
   }, []);
+
+  // Function to generate consistent color based on category
+  const stringToColor = (category: string): string => {
+    switch (category.toLowerCase()) {
+      case "general":
+        return "#2196f3"; // Blue
+      case "social":
+        return "#ff9800"; // Orange
+      case "retreat":
+        return "#f44336"; // Red
+      case "sports":
+        return "#4caf50"; // Green
+      case "development":
+        return "#9c27b0"; // Purple
+      default:
+        // Generate a color based on hash if category not specified
+        let hash = 0;
+        for (let i = 0; i < category.length; i++) {
+          hash = category.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const color = `hsl(${Math.abs(hash) % 360}, 70%, 80%)`; // Fallback to HSL color
+        return color;
+    }
+  };
 
   return (
     <>
@@ -130,7 +173,59 @@ function Home() {
                 </>
               ) : (
                 <>
-                  <h1>Tshepo</h1>
+                  {/* <h1>Tshepo</h1> */}
+
+                  <Grid container spacing={2} style={{ padding: 14 }}>
+                    {UserCommunities.map((data: any, index: any) => (
+                      <Grid item xs={6} md={3} key={index}>
+                        <Card
+                          sx={{
+                            position: "relative",
+                            maxWidth: 345,
+                            marginBottom: 10,
+                            padding: "6px",
+                            "&::before": {
+                              content: `"${data.category}"`,
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              backgroundColor: stringToColor(data.category),
+                              color: "#fff",
+                              padding: "2px 6px",
+                              fontSize: "0.75rem",
+                              fontWeight: "bold",
+                            },
+                          }}
+                        >
+                          <CardContent>
+                            <Typography
+                              gutterBottom
+                              variant="h6"
+                              component="div"
+                            >
+                              {data.name}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {data.description}
+                            </Typography>
+                          </CardContent>
+                          <CardActions>
+                            {/* <Button
+                              size="small"
+                              onClick={() => {
+                                // handleEdit(index);
+                                // handleJoinCommunity(data);
+                                //console.log(data);
+                              }}
+                            >
+                              Join
+                            </Button> */}
+                            {/* Add more actions as needed */}
+                          </CardActions>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
                 </>
               )}
             </CustomTabPanel>

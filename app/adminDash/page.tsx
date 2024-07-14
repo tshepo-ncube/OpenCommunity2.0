@@ -1,5 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Autocomplete from "react-google-autocomplete";
+
 import Header from "../_Components/header";
 import EventsHolder from "../_Components/EventsHolder";
 import PollsHolder from "../_Components/PollsHolder";
@@ -56,6 +58,11 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     onSubmit({ ...eventDetails, status: "draft" }); // Pass the eventDetails with draft status to the onSubmit function
     onClose(); // Close the event form after submission
   };
+
+  useEffect(() => {
+    console.log("Updated location:", eventDetails.location);
+    console.log(eventDetails);
+  }, [eventDetails.location]);
 
   return (
     <>
@@ -154,14 +161,22 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             >
               Location
             </label>
-            <input
-              type="text"
+
+            <Autocomplete
+              apiKey={"AIzaSyA_nwBxUgw4RTZLvfRpt__cS1DIcYprbQ0"}
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               name="location"
               id="location"
-              value={eventDetails.location}
-              onChange={handleChangeEvent}
-              placeholder="Enter location"
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+              onPlaceSelected={(place) => {
+                console.log(place.formatted_address);
+
+                setEventDetails((prevDetails) => ({
+                  ...prevDetails,
+                  location: place.formatted_address,
+                }));
+                console.log(place);
+                console.log(eventDetails.location);
+              }}
               required
             />
           </div>
