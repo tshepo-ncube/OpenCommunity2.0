@@ -17,7 +17,7 @@ function Register() {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [showNext, setShowNext] = useState(false);
   const [allergies, setAllergies] = useState('');
-  const [injury, setInjury] = useState('');
+ 
 
   const handleAccountDetails = () => {
     console.log("The Account details form has been submitted");
@@ -88,16 +88,7 @@ function Register() {
                   onChange={(e) => setAllergies(e.target.value)}
                 />
               </div>
-              <div className="mb-4">
-                <label htmlFor="injury" className="block mb-2 text-sm font-medium text-gray-700">Injury</label>
-                <input
-                  type="text"
-                  id="injury"
-                  className="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
-                  value={injury}
-                  onChange={(e) => setInjury(e.target.value)}
-                />
-              </div>
+         
               <button
                 type="submit"
                 onClick={handleRegistration}

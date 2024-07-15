@@ -16,10 +16,20 @@
       "static/chunks/main-app.js",
       "static/chunks/app/Home/page.js"
     ],
-    "/Profile/page": [
+    "/DiscoverCommunities/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/Profile/page.js"
+      "static/chunks/app/DiscoverCommunities/page.js"
+    ],
+    "/adminDash/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/adminDash/page.js"
+    ],
+    "/_not-found/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/_not-found/page.js"
     ]
   }
 }

@@ -117,4 +117,42 @@ export default class CommunityDB {
       console.log("No such document!");
     }
   };
+
+  static getAllUserCommunities = async (
+    JoinedCommunities,
+    setJoinedCommunities
+  ) => {
+    console.log("getAllUserCommunities, ", JoinedCommunities);
+    // Assuming DB is your Firestore instance
+    const communitiesCollection = collection(DB, "communities");
+
+    const promises = JoinedCommunities.map(async (id) => {
+      try {
+        const docRef = doc(communitiesCollection, id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          console.log(docSnap.id, "=>", docSnap.data());
+          return { id: docSnap.id, ...docSnap.data() };
+        } else {
+          console.log("Document does not exist for ID:", id);
+          return null; // or handle as needed
+        }
+      } catch (error) {
+        console.error("Error fetching document:", id, error);
+        throw error; // or handle as needed
+      }
+    });
+
+    // Execute all promises concurrently
+    try {
+      const results = await Promise.all(promises);
+      console.log("All Communities fetched:", results);
+      setJoinedCommunities(results);
+      // Handle results here
+    } catch (error) {
+      console.error("Error fetching documents:", error);
+      // Handle error here
+    }
+  };
 }
