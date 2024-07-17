@@ -1,8 +1,0 @@
-{
-  "/DiscoverCommunities/page": "app/DiscoverCommunities/page.js",
-  "/adminDash/page": "app/adminDash/page.js",
-  "/Home/community/[id]/page": "app/Home/community/[id]/page.js",
-  "/test/page": "app/test/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/Home/page": "app/Home/page.js"
-}

@@ -18,6 +18,7 @@ import {
   TwitterIcon,
 } from "react-share";
 import { RWebShare } from "react-web-share";
+import PollDB from "@/database/community/poll";
 
 export default function CommunityPage({ params }) {
   const upcomingEvents = [
@@ -38,6 +39,8 @@ export default function CommunityPage({ params }) {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [allPolls, setAllPolls] = useState();
+
   const [community, setCommunity] = useState(null);
 
   useEffect(() => {
@@ -55,6 +58,7 @@ export default function CommunityPage({ params }) {
             return;
           }
           console.log("Community data:", snapshot.data()); // Log the fetched data
+
           setCommunity(snapshot.data());
         } catch (error) {
           console.error("Error getting document: ", error);
@@ -64,7 +68,24 @@ export default function CommunityPage({ params }) {
       };
       fetchCommunity();
     }
+
+    PollDB.getPollFromCommunityID(id, setAllPolls);
   }, [id]);
+
+  useEffect(() => {
+    console.log("All Polls : ", allPolls);
+    PollDB.checkIfPollExists(
+      "IiLHMfnUZqgrR4OIyfcQ",
+      params.id,
+      "z1A3da1dkVqpbPj78poi"
+    );
+  }, [allPolls]);
+
+  const handlePollOptionSelection = (pollId, selectedOption) => {
+    console.log(`Poll ID: ${pollId}, Selected Option: ${selectedOption}`);
+    PollDB.voteFromPollId(pollId, selectedOption);
+    // Perform any additional logic or state updates here
+  };
 
   //   useEffect(() => {
   //     setStudentURL(window.location.href);
@@ -112,11 +133,12 @@ export default function CommunityPage({ params }) {
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative p-16">
           <div className="container mx-auto text-center p-4">
-            <h1 className="text-4xl font-bold mb-4">The Drinking Club</h1>
+            <h1 className="text-4xl font-bold mb-4">{community.name}</h1>
             <p className="text-lg">
-              Join Us every Thursdays and Wednesdays for drinking. We meet and
+              {/* Join Us every Thursdays and Wednesdays for drinking. We meet and
               drink and the balcony. If you're an intern, all drinks are on the
-              company by the way!
+              company by the way! */}
+              {community.description}
             </p>
           </div>
 
@@ -167,27 +189,41 @@ export default function CommunityPage({ params }) {
         <div className="rounded border border-black bg-openbox-green p-4">
           <h2 className="text-2xl font-semibold mb-4">Polls</h2>
           <ul className="space-y-4">
-            {polls.map((poll) => (
+            {allPolls.map((poll) => (
               <li key={poll.id} className="p-4 bg-white shadow rounded-md">
-                <h3 className="text-xl font-medium">{poll.question}</h3>
-                <div className="mt-2">
-                  <input
-                    type="radio"
-                    name={`poll-${poll.id}`}
-                    id={`poll-${poll.id}-option-1`}
-                    className="mr-2"
-                  />
-                  <label htmlFor={`poll-${poll.id}-option-1`}>Option 1</label>
-                </div>
-                <div className="mt-2">
-                  <input
-                    type="radio"
-                    name={`poll-${poll.id}`}
-                    id={`poll-${poll.id}-option-2`}
-                    className="mr-2"
-                  />
-                  <label htmlFor={`poll-${poll.id}-option-2`}>Option 2</label>
-                </div>
+                <h3 className="text-xl font-medium">{poll.Question}</h3>
+
+                {/* {poll.Options.map((poll_option) => (
+                  <div className="mt-2">
+                    <input
+                      type="radio"
+                      name={`poll-${poll.id}`}
+                      id={`poll-${poll.id}-option-2`}
+                      className="mr-2"
+                    />
+                    <label htmlFor={`poll-${poll.id}-option-2`}>
+                      {poll_option}
+                    </label>
+                  </div>
+                ))} */}
+
+                {poll.Opt.map((poll_option, poll_option_index) => (
+                  <div className="mt-2">
+                    <input
+                      type="radio"
+                      name={`poll-${poll.id}`}
+                      id={`poll-${poll.id}-opt-${poll_option_index}`}
+                      className="mr-2"
+                      onChange={() =>
+                        handlePollOptionSelection(poll.id, poll_option.title)
+                      }
+                      disabled={true}
+                    />
+                    <label htmlFor={`poll-${poll.id}-option-2`}>
+                      {poll_option.title}
+                    </label>
+                  </div>
+                ))}
               </li>
             ))}
           </ul>

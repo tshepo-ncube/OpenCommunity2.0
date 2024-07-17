@@ -76,4 +76,88 @@ export default class PollDB {
       alert(error);
     }
   };
+
+  static voteFromPollId = async (pollId, selectedOption) => {
+    console.log("starting transaction soon...");
+
+    const poll_ref = doc(DB, "polls", pollId);
+
+    try {
+      // Start a transaction
+      await runTransaction(DB, async (transaction) => {
+        // Get the current data of the document
+        const docSnapshot = await transaction.get(poll_ref);
+
+        // Check if the document exists
+        if (!docSnapshot.exists()) {
+          throw new Error("Poll document does not exist!");
+        }
+
+        const pollData = docSnapshot.data();
+
+        // Creating a copy of pollData instead of a reference.
+        const newPollData = JSON.parse(JSON.stringify(pollData));
+
+        // Find the option that matches the selected option and increment its votes
+        const optionIndex = newPollData.Opt.findIndex(
+          (option) => option.title === selectedOption
+        );
+
+        if (optionIndex !== -1) {
+          newPollData.Opt[optionIndex].votes += 1;
+        } else {
+          throw new Error("Selected option not found in poll data!");
+        }
+
+        // Update the document with the new poll data
+        transaction.update(poll_ref, newPollData);
+      });
+
+      console.log("Vote incremented successfully!");
+    } catch (error) {
+      console.error("Transaction failed: ", error);
+    }
+  };
+
+  static checkIfPollExists = async (userId, communityId, pollId) => {
+    const userRef = doc(DB, "users", userId);
+
+    try {
+      const userDoc = await getDoc(userRef);
+
+      if (!userDoc.exists()) {
+        throw new Error("User document does not exist!");
+      }
+
+      const userData = userDoc.data();
+      const { MyCommunities } = userData;
+
+      // Find the community by community_id
+      const community = MyCommunities.find(
+        (comm) => comm.community_id === communityId
+      );
+
+      if (!community) {
+        throw new Error("Community does not exist for the user!");
+      }
+
+      // Check if the poll_id exists in polls_engaged
+      const pollEngaged = community.polls_engaged.find(
+        (poll) => poll.poll_id === pollId
+      );
+
+      if (pollEngaged) {
+        console.log(
+          `Poll ID ${pollId} exists in polls_engaged with selected option: ${pollEngaged.selected_option}`
+        );
+        return true;
+      } else {
+        console.log(`Poll ID ${pollId} does not exist in polls_engaged.`);
+        return false;
+      }
+    } catch (error) {
+      console.error("Error checking poll existence: ", error);
+      return false;
+    }
+  };
 }
