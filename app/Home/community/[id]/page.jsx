@@ -40,6 +40,7 @@ export default function CommunityPage({ params }) {
   const [loading, setLoading] = useState(true);
 
   const [allPolls, setAllPolls] = useState();
+  const [pollsUpdated, setPollsUpdated] = useState(false);
 
   const [community, setCommunity] = useState(null);
 
@@ -76,34 +77,119 @@ export default function CommunityPage({ params }) {
     console.log("All Polls : ", allPolls);
 
     if (allPolls) {
-      allPolls.forEach((obj) => {
-        PollDB.checkIfPollExists(
-          "IiLHMfnUZqgrR4OIyfcQ",
-          params.id,
-          obj.id //"bQEIfk3NmMBngJeZEmFZ"
-        )
-          .then((result) => {
-            console.log(result);
-            if (result) {
-              console.log("The result: ", result);
-              obj.selected = true;
-              obj.selected_option = result;
-            } else {
-              console.log("The result: ", result);
-              obj.selected = false;
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-          });
-        // You can set this to any value you need
-      });
+      // allPolls.forEach((obj) => {
+      //   PollDB.checkIfPollExists(
+      //     "IiLHMfnUZqgrR4OIyfcQ",
+      //     params.id,
+      //     obj.id //"bQEIfk3NmMBngJeZEmFZ"
+      //   )
+      //     .then((result) => {
+      //       console.log(result);
+      //       if (result) {
+      //         console.log("The result: ", result);
+      //         obj.selected = true;
+      //         obj.selected_option = result;
+      //       } else {
+      //         console.log("The result: ", result);
+      //         obj.selected = false;
+      //       }
+      //     })
+      //     .catch((error) => {
+      //       console.error("Error:", error);
+      //     });
+      //   // You can set this to any value you need
+      // });
+
+      // const updatedArray = allPolls.map((obj) => {
+      //   PollDB.checkIfPollExists(
+      //     "IiLHMfnUZqgrR4OIyfcQ",
+      //     params.id,
+      //     obj.id //"bQEIfk3NmMBngJeZEmFZ"
+      //   )
+      //     .then((result) => {
+      //       console.log(result);
+      //       if (result) {
+      //         console.log("The result: ", result);
+      //         obj.selected = true;
+      //         obj.selected_option = result;
+      //         return {
+      //           ...obj,
+      //           selected: true, // Example of a dynamic value based on existing properties
+      //           selected_option: result,
+      //         };
+      //       } else {
+      //         console.log("The result: ", result);
+      //         obj.selected = false;
+      //         return {
+      //           ...obj,
+      //           selected: false, // Example of a dynamic value based on existing properties
+      //         };
+      //       }
+      //     })
+      //     .catch((error) => {
+      //       console.error("Error:", error);
+      //     });
+      // });
+
+      // console.log("Updated All Polls: ", updatedArray);
+      // setAllPolls(updatedArray);
+
+      if (!pollsUpdated) {
+        updatePolls();
+        setPollsUpdated(true);
+      }
     }
   }, [allPolls]);
+  const updatePolls = async () => {
+    const updatedArray = await Promise.all(
+      allPolls.map(async (obj) => {
+        try {
+          const result = await PollDB.checkIfPollExists(
+            "IiLHMfnUZqgrR4OIyfcQ",
+            params.id,
+            obj.id
+          );
+          console.log(result);
+          if (result) {
+            console.log("The result: ", result);
+            obj.selected = true;
+            obj.selected_option = result;
+            return {
+              ...obj,
+              selected: true,
+              selected_option: result,
+            };
+          } else {
+            console.log("The result: ", result);
+            obj.selected = false;
+            return {
+              ...obj,
+              selected: false,
+            };
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          return obj; // Return the original object in case of an error
+        }
+      })
+    );
+
+    console.log("Updated All Polls: ", updatedArray);
+    setAllPolls(updatedArray);
+  };
 
   const handlePollOptionSelection = (pollId, selectedOption) => {
     console.log(`Poll ID: ${pollId}, Selected Option: ${selectedOption}`);
-    PollDB.voteFromPollId(pollId, selectedOption);
+    PollDB.voteFromPollId(params.id, pollId, selectedOption)
+      .then((result) => {
+        //console.log("Vote Result : ", result);
+        setPollsUpdated(false);
+        PollDB.getPollFromCommunityID(id, setAllPolls);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+    //
     // Perform any additional logic or state updates here
   };
 
@@ -234,14 +320,19 @@ export default function CommunityPage({ params }) {
                       name={`poll-${poll.id}`}
                       id={`poll-${poll.id}-opt-${poll_option_index}`}
                       className="mr-2"
-                      // onChange={() =>
-                      //   handlePollOptionSelection(poll.id, poll_option.title)
-                      // }
+                      onChange={() =>
+                        handlePollOptionSelection(poll.id, poll_option.title)
+                      }
                       disabled={poll.selected ? true : false}
                       // checked={
                       //   poll.selected &&
                       //   poll.selected_option === poll_option.title
                       // }
+                      checked={
+                        poll.selected &&
+                        poll.selected_option === poll_option.title
+                      }
+                      //checked
                     />
                     <label htmlFor={`poll-${poll.id}-option-2`}>
                       {poll_option.title}

@@ -9,7 +9,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-
+import ManageUser from "../auth/ManageUser";
 import {
   getFirestore,
   collection,
@@ -77,7 +77,7 @@ export default class PollDB {
     }
   };
 
-  static voteFromPollId = async (pollId, selectedOption) => {
+  static voteFromPollId = async (community_id, pollId, selectedOption) => {
     console.log("starting transaction soon...");
 
     const poll_ref = doc(DB, "polls", pollId);
@@ -114,6 +114,16 @@ export default class PollDB {
       });
 
       console.log("Vote incremented successfully!");
+      // Example usage
+
+      const docID = "IiLHMfnUZqgrR4OIyfcQ"; // Replace with your actual user document ID
+      //const communityID = "3aRAVKLx6yysV4LZyLow"; // Replace with actual community ID
+      const newPoll = {
+        poll_id: pollId,
+        selected_option: selectedOption,
+      };
+
+      ManageUser.addPollToCommunity(docID, community_id, newPoll);
     } catch (error) {
       console.error("Transaction failed: ", error);
     }
