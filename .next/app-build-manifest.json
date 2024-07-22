@@ -25,11 +25,14 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/adminDash/page.js"
+<<<<<<< Updated upstream
     ],
     "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/_not-found/page.js"
+=======
+>>>>>>> Stashed changes
     ]
   }
 }
