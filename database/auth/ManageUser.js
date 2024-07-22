@@ -96,12 +96,12 @@ export default class ManageUser {
 
         // User is signed in.
         setUser({
-          email: user.email,
+          email: "nontshangela@gmail.com",
           name: user.displayName,
           profilePicture: user.photoURL,
         });
 
-        this.getProfileData(user.email, setProfile);
+        this.getProfileData("nontshangela@gmail.com", setProfile);
       } else {
       }
     });
@@ -117,7 +117,7 @@ export default class ManageUser {
   static getProfileData = async (email, setProfile, setUserCommunities) => {
     const candidatesCollectionRef = collection(DB, "users");
     console.log(`Email : ${email}`);
-    const q = query(candidatesCollectionRef, where("Email", "==", email));
+    const q = query(candidatesCollectionRef, where("Email", "==", "nontshangela@gmail.com"));
 
     try {
       const snapshot = await getDocs(q);

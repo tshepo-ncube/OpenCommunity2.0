@@ -74,11 +74,31 @@ export default function CommunityPage({ params }) {
 
   useEffect(() => {
     console.log("All Polls : ", allPolls);
-    PollDB.checkIfPollExists(
-      "IiLHMfnUZqgrR4OIyfcQ",
-      params.id,
-      "z1A3da1dkVqpbPj78poi"
-    );
+
+    if (allPolls) {
+      allPolls.forEach((obj) => {
+        PollDB.checkIfPollExists(
+          "IiLHMfnUZqgrR4OIyfcQ",
+          params.id,
+          obj.id //"bQEIfk3NmMBngJeZEmFZ"
+        )
+          .then((result) => {
+            console.log(result);
+            if (result) {
+              console.log("The result: ", result);
+              obj.selected = true;
+              obj.selected_option = result;
+            } else {
+              console.log("The result: ", result);
+              obj.selected = false;
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+        // You can set this to any value you need
+      });
+    }
   }, [allPolls]);
 
   const handlePollOptionSelection = (pollId, selectedOption) => {
@@ -214,10 +234,14 @@ export default function CommunityPage({ params }) {
                       name={`poll-${poll.id}`}
                       id={`poll-${poll.id}-opt-${poll_option_index}`}
                       className="mr-2"
-                      onChange={() =>
-                        handlePollOptionSelection(poll.id, poll_option.title)
-                      }
-                      disabled={true}
+                      // onChange={() =>
+                      //   handlePollOptionSelection(poll.id, poll_option.title)
+                      // }
+                      disabled={poll.selected ? true : false}
+                      // checked={
+                      //   poll.selected &&
+                      //   poll.selected_option === poll_option.title
+                      // }
                     />
                     <label htmlFor={`poll-${poll.id}-option-2`}>
                       {poll_option.title}

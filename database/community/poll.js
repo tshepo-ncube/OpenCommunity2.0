@@ -150,14 +150,14 @@ export default class PollDB {
         console.log(
           `Poll ID ${pollId} exists in polls_engaged with selected option: ${pollEngaged.selected_option}`
         );
-        return true;
+        return pollEngaged.selected_option;
       } else {
         console.log(`Poll ID ${pollId} does not exist in polls_engaged.`);
-        return false;
+        return null;
       }
     } catch (error) {
       console.error("Error checking poll existence: ", error);
-      return false;
+      return null;
     }
   };
 }
