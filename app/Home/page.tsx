@@ -196,6 +196,15 @@ function Home() {
                               fontWeight: "bold",
                             },
                           }}
+                          onClick={() => {
+                            window.open(
+                              `http://localhost:3000/Home/community/${data.id}`,
+                              //"_self"
+                              "_blank"
+                            );
+
+                            conso;
+                          }}
                         >
                           <CardContent>
                             <Typography

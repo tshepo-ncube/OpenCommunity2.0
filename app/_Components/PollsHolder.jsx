@@ -26,6 +26,10 @@ function PollsHolder({ communityID }) {
     PollDB.getPollFromCommunityID(communityID, setAllPolls);
   }, [communityID]);
 
+  useEffect(() => {
+    console.log("All Polls : ", allPolls);
+  }, [allPolls]);
+
   const handleCreatePoll = () => {
     setShowCreateForm(true);
   };
@@ -106,9 +110,9 @@ function PollsHolder({ communityID }) {
                       {value.Question}
                     </Typography>
                     <Typography variant="body2" color="textSecondary">
-                      {value.Options.map((option, index) => (
+                      {value.Opt.map((option, index) => (
                         <p key={index} className="text-gray-700">
-                          {index + 1}. {option}
+                          {index + 1}. {option.title}
                         </p>
                       ))}
                     </Typography>
