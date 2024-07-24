@@ -147,11 +147,11 @@ const CreateCommunity = () => {
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                 required
               >
-                <option value="general">General</option>
-                <option value="sports">Sports/Fitness</option>
-                <option value="social">Social Activities</option>
-                <option value="retreat">Company Retreat</option>
-                <option value="development">Professional Development</option>
+                <option value="General">General</option>
+                <option value="Sports">Sports/Fitness</option>
+                <option value="Social">Social Activities</option>
+                <option value="Retreat">Company Retreat</option>
+                <option value="Development">Professional Development</option>
               </select>
             </div>
             <div>

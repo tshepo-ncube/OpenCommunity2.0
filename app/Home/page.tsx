@@ -96,15 +96,15 @@ function Home() {
   // Function to generate consistent color based on category
   const stringToColor = (category: string): string => {
     switch (category.toLowerCase()) {
-      case "general":
+      case "General":
         return "#2196f3"; // Blue
-      case "social":
+      case "Social":
         return "#ff9800"; // Orange
-      case "retreat":
+      case "Retreat":
         return "#f44336"; // Red
-      case "sports":
+      case "Sports":
         return "#4caf50"; // Green
-      case "development":
+      case "Development":
         return "#9c27b0"; // Purple
       default:
         // Generate a color based on hash if category not specified
