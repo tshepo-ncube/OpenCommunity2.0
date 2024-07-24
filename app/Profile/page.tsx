@@ -48,6 +48,28 @@ function a11yProps(index: number) {
   };
 }
 
+const dietaryRequirements = [
+  "None",
+  "Vegetarian",
+  "Vegan",
+  "Gluten-Free",
+  "Keto",
+  "Halal",
+  "Kosher"
+];
+
+const foodAllergies = [
+  "None",
+  "Peanuts",
+  "Tree nuts",
+  "Milk",
+  "Eggs",
+  "Wheat",
+  "Soy",
+  "Fish",
+  "Shellfish"
+];
+
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("personalDetails");
   const [loggedIn, setLoggedIn] = useState(false);
@@ -451,6 +473,48 @@ const Profile = () => {
               <div className="mb-4">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="diet"
+                >
+                  Dietary Requirements:
+                </label>
+                <select
+                  name="Diet"
+                  id="diet"
+                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  value={profile.Diet}
+                  onChange={handleProfileChange}
+                >
+                  {dietaryRequirements.map((diet) => (
+                    <option key={diet} value={diet}>
+                      {diet}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="allergies"
+                >
+                  Food Allergies:
+                </label>
+                <select
+                  name="Allergies"
+                  id="allergies"
+                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  value={profile.Allergies}
+                  onChange={handleProfileChange}
+                >
+                  {foodAllergies.map((allergy) => (
+                    <option key={allergy} value={allergy}>
+                      {allergy}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* <div className="mb-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="allergies"
                 >
                   Dietary Requirements:
@@ -479,7 +543,7 @@ const Profile = () => {
                   value={profile.Allergies}
                   onChange={handleProfileChange}
                 />
-              </div>
+              </div> */}
               {/* <div className="mb-4">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
