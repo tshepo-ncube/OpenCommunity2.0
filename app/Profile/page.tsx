@@ -7,6 +7,8 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 
 import {
   getAuth,
@@ -46,6 +48,28 @@ function a11yProps(index: number) {
   };
 }
 
+const dietaryRequirements = [
+  "None",
+  "Vegetarian",
+  "Vegan",
+  "Gluten-Free",
+  "Keto",
+  "Halal",
+  "Kosher"
+];
+
+const foodAllergies = [
+  "None",
+  "Peanuts",
+  "Tree nuts",
+  "Milk",
+  "Eggs",
+  "Wheat",
+  "Soy",
+  "Fish",
+  "Shellfish"
+];
+
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("personalDetails");
   const [loggedIn, setLoggedIn] = useState(false);
@@ -74,7 +98,7 @@ const Profile = () => {
     email: "john.doe@example.com",
     password: "password",
     allergies: ["Nuts"],
-    injuries: "None",
+    //injuries: "None",
     diet: "None",
   });
 
@@ -85,7 +109,7 @@ const Profile = () => {
     lastName: user.lastName,
     email: user.email,
     allergies: user.allergies.join(", "),
-    injuries: user.injuries,
+    //injuries: user.injuries,
     diet: user.diet,
     currentPassword: "",
     newPassword: "",
@@ -141,7 +165,7 @@ const Profile = () => {
         lastName: formData.lastName,
         email: formData.email,
         allergies: formData.allergies.split(",").map((item) => item.trim()),
-        injuries: formData.injuries,
+        //injuries: formData.injuries,
       };
       setUser(updatedUser);
     } else if (activeTab === "passwordReset") {
@@ -168,10 +192,19 @@ const Profile = () => {
     }
   };
 
+  const handleClose = () => {
+    router.back();
+  };
+
   return (
     <div className="flex justify-center mt-10">
       <div className="w-full sm:w-2/3 lg:w-1/2 px-6 py-4 bg-white shadow-md rounded-lg">
-        <h1 className="text-xl font-semibold mb-4">User Settings</h1>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-xl font-semibold mb-4">User Settings</h1>
+          <IconButton onClick={handleClose}>
+            <CloseIcon />
+          </IconButton>
+        </div>
         {/* <div className="flex">
           <ul className="w-1/4 pr-4">
             <li
@@ -371,7 +404,7 @@ const Profile = () => {
             bgcolor: "background.paper", //green
             display: "flex",
             padding: 2,
-            height: "200",
+            height: "100%",
           }}
         >
           <Tabs
@@ -380,7 +413,7 @@ const Profile = () => {
             value={profile.Name}
             onChange={handleChange}
             aria-label="Vertical tabs example"
-            sx={{ borderRight: 1, borderColor: "divider" }}
+            sx={{ borderRight: 1, borderColor: "divider", minWidth: '200px' }}
           >
             <Tab label="Personal Details" {...a11yProps(0)} />
             <Tab label="Password Reset" {...a11yProps(1)} />
@@ -440,6 +473,48 @@ const Profile = () => {
               <div className="mb-4">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="diet"
+                >
+                  Dietary Requirements:
+                </label>
+                <select
+                  name="Diet"
+                  id="diet"
+                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  value={profile.Diet}
+                  onChange={handleProfileChange}
+                >
+                  {dietaryRequirements.map((diet) => (
+                    <option key={diet} value={diet}>
+                      {diet}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
+                  htmlFor="allergies"
+                >
+                  Food Allergies:
+                </label>
+                <select
+                  name="Allergies"
+                  id="allergies"
+                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  value={profile.Allergies}
+                  onChange={handleProfileChange}
+                >
+                  {foodAllergies.map((allergy) => (
+                    <option key={allergy} value={allergy}>
+                      {allergy}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {/* <div className="mb-4">
+                <label
+                  className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="allergies"
                 >
                   Dietary Requirements:
@@ -468,8 +543,8 @@ const Profile = () => {
                   value={profile.Allergies}
                   onChange={handleProfileChange}
                 />
-              </div>
-              <div className="mb-4">
+              </div> */}
+              {/* <div className="mb-4">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor="injuries"
@@ -483,7 +558,7 @@ const Profile = () => {
                   value={profile.Injuries}
                   onChange={handleProfileChange}
                 ></textarea>
-              </div>
+              </div> */}
               <div className="mb-4">
                 <button
                   type="submit"
