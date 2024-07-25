@@ -8,8 +8,8 @@ import { Button } from '@mui/material';
 
 const Welcome = () => {
   return (
-    <div className='relatie min-h-screen bg-white flex flex-col items-center justify-center'>
-            <div className="flex flex-col items-center">
+    <div className='relatie min-h-screen bg-white flex flex-col items-center pt-14'>
+            <div className="mb-4">
                 <Image
                     src={OCLogo}
                     alt='Open Box Logo'
