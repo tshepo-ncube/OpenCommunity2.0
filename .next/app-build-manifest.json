@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/adminDash/page": [
+    "/DiscoverCommunities/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/adminDash/page.js"
+      "static/chunks/app/DiscoverCommunities/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
@@ -11,20 +11,20 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/page": [
+    "/adminDash/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+      "static/chunks/app/adminDash/page.js"
+    ],
+    "/Profile/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/Profile/page.js"
     ],
     "/Home/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/Home/page.js"
-    ],
-    "/DiscoverCommunities/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/DiscoverCommunities/page.js"
     ],
     "/userview/page": [
       "static/chunks/webpack.js",

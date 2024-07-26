@@ -25,7 +25,14 @@ const CreateCommunity = () => {
   const [category, setCategory] = useState<string>("general");
   const [view, setView] = useState<string>("Communities");
   const [userName, setUserName] = useState("");
+  const [userSurname, setUserSurname] = useState("");
   const [userEmail, setUserEmail] = useState("");
+  const [userPhone, setUserPhone] = useState("");
+  const [roles, setRoles] = useState<{ user: boolean; admin: boolean }>({
+    user: false,
+    admin: false,
+  });
+
   const popupRef = useRef(null);
   const userPopupRef = useRef(null);
 
@@ -43,6 +50,11 @@ const CreateCommunity = () => {
 
   const handleCloseUserPopup = () => {
     setUserPopupOpen(false);
+  };
+
+  const handleRoleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setRoles((prevRoles) => ({ ...prevRoles, [name]: checked }));
   };
 
   const handleFormSubmit = (e: React.FormEvent, status: string) => {
@@ -249,24 +261,24 @@ const CreateCommunity = () => {
               </p>
               <p className="text-gray-900 text-lg">
                 Click on <span className="font-bold">create community</span> to
-                become an admin of your very first community
+                get started.
               </p>
             </div>
           ) : (
-            <div>
-              <AdminCommunity communities={submittedData} />
-            </div>
+            <AdminCommunity
+              submittedData={submittedData}
+              handleEdit={handleEdit}
+            />
           )}
         </>
       ) : (
-        <div className="text-center mt-16">
-          {/* Add User Button */}
-          <div className="flex justify-end mt-4 mr-4">
+        <>
+          <div className="flex justify-center mt-4 mb-8">
             <button
               onClick={handleOpenUserPopup}
               className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
             >
-              + Add a User
+              + ADD USER
             </button>
           </div>
 
@@ -285,13 +297,29 @@ const CreateCommunity = () => {
                     htmlFor="userName"
                     className="block text-sm font-medium text-gray-700"
                   >
-                    Name
+                    First Name
                   </label>
                   <input
                     type="text"
                     id="userName"
                     value={userName}
                     onChange={(e) => setUserName(e.target.value)}
+                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="userSurname"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Last Name
+                  </label>
+                  <input
+                    type="text"
+                    id="userSurname"
+                    value={userSurname}
+                    onChange={(e) => setUserSurname(e.target.value)}
                     className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                     required
                   />
@@ -312,12 +340,68 @@ const CreateCommunity = () => {
                     required
                   />
                 </div>
+                <div>
+                  <label
+                    htmlFor="userPhone"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    id="userPhone"
+                    value={userPhone}
+                    onChange={(e) => setUserPhone(e.target.value)}
+                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Role
+                  </label>
+                  <div className="flex gap-4 mt-2">
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id="userRole"
+                        name="user"
+                        checked={roles.user}
+                        onChange={handleRoleChange}
+                        className="mr-2"
+                      />
+                      <label
+                        htmlFor="userRole"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        User
+                      </label>
+                    </div>
+                    <div className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id="adminRole"
+                        name="admin"
+                        checked={roles.admin}
+                        onChange={handleRoleChange}
+                        className="mr-2"
+                      />
+                      <label
+                        htmlFor="adminRole"
+                        className="text-sm font-medium text-gray-700"
+                      >
+                        Admin
+                      </label>
+                    </div>
+                  </div>
+                </div>
 
                 <div className="flex justify-end">
                   <button
                     type="button"
-                    onClick={() => console.log("User added")}
-                    className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                    onClick={handleCloseUserPopup}
+                    className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
                     Add User
                   </button>
@@ -331,7 +415,7 @@ const CreateCommunity = () => {
               </form>
             </div>
           )}
-        </div>
+        </>
       )}
     </div>
   );

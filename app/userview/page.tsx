@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Autocomplete from "react-google-autocomplete";
 import Header from "../_Components/header";
-import EventsHolder from "../_Components/EventsHolder";
+import EventsHolder1 from "../_Components/EventsHolder1";
 import PollsHolder from "../_Components/PollsHolder";
 
 const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
@@ -197,7 +197,7 @@ const AdminDash = () => {
       <Header />
       <div className="bg-background_gray p-4 h-full">
         <PollsHolder communityID={localStorage.getItem("CurrentCommunity")} />
-        <EventsHolder communityID={localStorage.getItem("CurrentCommunity")} />
+        <EventsHolder1 communityID={localStorage.getItem("CurrentCommunity")} />
         {showEventForm && (
           <EventForm
             isOpen={showEventForm}

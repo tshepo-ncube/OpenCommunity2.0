@@ -10,7 +10,6 @@ import {
   Modal,
   Box,
 } from "@mui/material";
-import { green, red, blue, yellow } from "@mui/material/colors";
 import EventDB from "../../database/community/event";
 
 const EventsHolder = ({
@@ -18,11 +17,13 @@ const EventsHolder = ({
   createEvent,
   setShowEventForm,
   setEventForm,
+  isMember, // Assume this prop indicates if the user is a community member
 }) => {
   const [allEvents, setAllEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [eventIdToDelete, setEventIdToDelete] = useState(null);
+  const [openJoinPopup, setOpenJoinPopup] = useState(false);
 
   useEffect(() => {
     EventDB.getEventFromCommunityID(communityID, setAllEvents);
@@ -149,19 +150,14 @@ const EventsHolder = ({
     console.log(`View results for event ${event.id}`);
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "active":
-        return green[500];
-      case "archived":
-        return red[500];
-      case "draft":
-        return blue[500];
-      case "rsvp":
-        return yellow[500];
-      default:
-        return "#000";
+  const handleCardClick = (event) => {
+    if (["rsvp", "active"].includes(event.status)) {
+      setOpenJoinPopup(true);
     }
+  };
+
+  const handleCloseJoinPopup = () => {
+    setOpenJoinPopup(false);
   };
 
   const upcomingEvents = allEvents.filter((event) => event.status !== "past");
@@ -188,30 +184,25 @@ const EventsHolder = ({
           <Grid container spacing={2}>
             {upcomingEvents.map((value) => (
               <Grid key={value.id} item>
-                <Card sx={{ maxWidth: 345 }}>
+                <Card
+                  sx={{ maxWidth: 345, position: "relative" }}
+                  onClick={() => handleCardClick(value)}
+                >
                   <CardHeader
                     title={value.Name}
                     subheader={`${formatDate(value.StartDate)} - ${formatDate(
                       value.EndDate
                     )}`}
-                    action={
-                      <Box sx={{ display: "flex", gap: "4px" }}>
-                        <Box
-                          sx={{
-                            bgcolor: getStatusColor(value.status),
-                            color: "#fff",
-                            p: 0.5,
-                            borderRadius: "4px",
-                          }}
-                        >
-                          <Typography variant="caption">
-                            {value.status}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    }
                   />
-                  <CardContent>
+                  <CardContent
+                    sx={{
+                      position: "relative",
+                      filter: ["rsvp", "active"].includes(value.status)
+                        ? "blur(4px)"
+                        : "none", // Apply blur effect conditionally
+                      transition: "filter 0.3s",
+                    }}
+                  >
                     <Typography
                       variant="body2"
                       color="text.secondary"
@@ -271,20 +262,7 @@ const EventsHolder = ({
                         </Button>
                       </>
                     ) : (
-                      <>
-                        <Button
-                          color="error"
-                          onClick={() => handleArchive(value.id)}
-                        >
-                          Archive
-                        </Button>
-                        <Button
-                          color="error"
-                          onClick={() => handleDeleteConfirmation(value.id)}
-                        >
-                          Delete
-                        </Button>
-                      </>
+                      <></>
                     )}
                   </CardActions>
                 </Card>
@@ -299,30 +277,24 @@ const EventsHolder = ({
         <Grid container spacing={2}>
           {pastEvents.map((value) => (
             <Grid key={value.id} item>
-              <Card sx={{ maxWidth: 345 }}>
+              <Card
+                sx={{ maxWidth: 345 }}
+                onClick={() => handleCardClick(value)}
+              >
                 <CardHeader
                   title={value.Name}
                   subheader={`${formatDate(value.StartDate)} - ${formatDate(
                     value.EndDate
                   )}`}
-                  action={
-                    <Box sx={{ display: "flex", gap: "4px" }}>
-                      <Box
-                        sx={{
-                          bgcolor: getStatusColor(value.status),
-                          color: "#fff",
-                          p: 0.5,
-                          borderRadius: "4px",
-                        }}
-                      >
-                        <Typography variant="caption">
-                          {value.status}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  }
                 />
-                <CardContent>
+                <CardContent
+                  sx={{
+                    filter: ["rsvp", "active"].includes(value.status)
+                      ? "blur(4px)"
+                      : "none", // Apply blur effect conditionally
+                    transition: "filter 0.3s",
+                  }}
+                >
                   <Typography
                     variant="body2"
                     color="text.secondary"
@@ -349,8 +321,12 @@ const EventsHolder = ({
                   </Typography>
                 </CardContent>
                 <CardActions disableSpacing>
-                  <Button onClick={() => handleViewResults(value)}>
-                    View Results
+                  <Button
+                    color="primary"
+                    onClick={() => handleViewResults(value)}
+                    disabled={["rsvp", "active"].includes(value.status)} // Disable button conditionally
+                  >
+                    View rating & comments
                   </Button>
                 </CardActions>
               </Card>
@@ -359,42 +335,65 @@ const EventsHolder = ({
         </Grid>
       </div>
 
-      <Modal
-        open={openDeleteModal}
-        onClose={handleCloseDeleteModal}
-        aria-labelledby="modal-title"
-        aria-describedby="modal-description"
-      >
+      {/* Delete Confirmation Modal */}
+      <Modal open={openDeleteModal} onClose={handleCloseDeleteModal}>
         <Box
           sx={{
             position: "absolute",
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 400,
+            width: 300,
             bgcolor: "background.paper",
             border: "2px solid #000",
             boxShadow: 24,
             p: 4,
           }}
         >
-          <Typography id="modal-title" variant="h6" component="h2">
-            Confirm Deletion
-          </Typography>
-          <Typography id="modal-description" sx={{ mt: 2 }}>
+          <Typography variant="h6" component="h2">
             Are you sure you want to delete this event?
           </Typography>
-          <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
-            <Button
-              onClick={handleDelete}
-              color="error"
-              variant="contained"
-              sx={{ mr: 1 }}
-            >
-              Delete
+          <Box sx={{ mt: 2, display: "flex", gap: "8px" }}>
+            <Button variant="contained" color="primary" onClick={handleDelete}>
+              Yes
             </Button>
-            <Button onClick={handleCloseDeleteModal} variant="outlined">
-              Cancel
+            <Button
+              variant="outlined"
+              color="secondary"
+              onClick={handleCloseDeleteModal}
+            >
+              No
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+
+      {/* Join Community Popup */}
+      <Modal open={openJoinPopup} onClose={handleCloseJoinPopup}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 300,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography variant="h6" component="h2">
+            Please join this community in order to have access the events and
+            information offered
+          </Typography>
+          <Box sx={{ mt: 2, display: "flex", gap: "8px" }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleCloseJoinPopup}
+            >
+              Close
             </Button>
           </Box>
         </Box>
