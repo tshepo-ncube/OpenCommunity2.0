@@ -13,7 +13,7 @@ import {
   FormControl,
 } from "@mui/material";
 import CommunityDB from "../../database/community/community";
-
+import { useRouter } from "next/navigation";
 const DiscoverCommunity = () => {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
@@ -31,6 +31,8 @@ const DiscoverCommunity = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string>("active");
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchCommunities = async () => {
@@ -196,6 +198,15 @@ const DiscoverCommunity = () => {
                           }}
                         >
                           Join
+                        </Button>
+                        <Button
+                          size="small"
+                          onClick={() => {
+                            localStorage.setItem("CurrentCommunity", data.id);
+                            router.push("/userview");
+                          }}
+                        >
+                          View
                         </Button>
                         {/* Add more actions as needed */}
                       </CardActions>

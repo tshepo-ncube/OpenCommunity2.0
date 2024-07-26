@@ -185,7 +185,7 @@ const AdminCommunity = () => {
 
         return (
           <div key={status} className="mb-4">
-            <h2 className="text-xl font-bold mb-4 text-left">
+            <h2 className="text-xl font-bold mb-4">
               {status.charAt(0).toUpperCase() + status.slice(1)}
             </h2>
             {events.length === 0 ? (
@@ -337,7 +337,12 @@ const AdminCommunity = () => {
                   </div>
                 )}
                 <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
+                  <Typography
+                    gutterBottom
+                    variant="h5"
+                    component="div"
+                    align="left"
+                  >
                     {data.name}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">

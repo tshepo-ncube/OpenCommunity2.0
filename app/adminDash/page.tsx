@@ -5,6 +5,7 @@ import Autocomplete from "react-google-autocomplete";
 import Header from "../_Components/header";
 import EventsHolder from "../_Components/EventsHolder";
 import PollsHolder from "../_Components/PollsHolder";
+import MapComponent from "../_Components/MapComponent";
 import EventDB from "@/database/community/event";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -34,6 +35,11 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     description: eventData.EventDescription,
     status: "active", // Default status is "active"
   });
+  // Initialize mapCenter with default values
+  // const [mapCenter, setMapCenter] = useState({
+  // lat: 37.7749, // Default to San Francisco
+  //  lng: -122.4194,
+  // });
 
   const handleChangeEvent = (e) => {
     const { name, value } = e.target;
@@ -180,6 +186,11 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               required
             />
           </div>
+          {/*
+<div className="relative h-64">
+  <MapComponent center={mapCenter} zoom={15} />
+</div>
+*/}
           <div>
             <label
               htmlFor="description"
