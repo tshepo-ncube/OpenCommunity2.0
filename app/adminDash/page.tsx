@@ -35,11 +35,6 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     description: eventData.EventDescription,
     status: "active", // Default status is "active"
   });
-  // Initialize mapCenter with default values
-  // const [mapCenter, setMapCenter] = useState({
-  // lat: 37.7749, // Default to San Francisco
-  //  lng: -122.4194,
-  // });
 
   const handleChangeEvent = (e) => {
     const { name, value } = e.target;
@@ -186,11 +181,6 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               required
             />
           </div>
-          {/*
-<div className="relative h-64">
-  <MapComponent center={mapCenter} zoom={15} />
-</div>
-*/}
           <div>
             <label
               htmlFor="description"
@@ -242,10 +232,10 @@ const AdminDash = () => {
     EventDescription: "",
     RsvpEndTime: "", // Initialize RSVP End Time
   });
+  const [currentView, setCurrentView] = useState("infoManagement");
 
   const handleCreateNewEvent = () => {
     setShowEventForm(!showEventForm);
-    // You can set default values or leave them empty as per your design
     setEventForm({
       ...eventFormData,
       RsvpEndTime: "", // Set default value for RSVP End Time
@@ -268,15 +258,57 @@ const AdminDash = () => {
         </button>
       </div>
       <div className="bg-background_gray p-4 h-full">
-        <PollsHolder communityID={localStorage.getItem("CurrentCommunity")} />
-        <EventsHolder communityID={localStorage.getItem("CurrentCommunity")} />
-        {showEventForm && (
-          <EventForm
-            isOpen={showEventForm}
-            onClose={handleCreateNewEvent}
-            onSubmit={handleEventSubmit}
-            eventData={eventFormData}
-          />
+        <div className="flex justify-center mb-4">
+          <button
+            onClick={() => setCurrentView("infoManagement")}
+            className={`px-4 py-2 rounded-l-lg ${
+              currentView === "infoManagement"
+                ? "bg-green-500 text-white"
+                : "bg-gray-200"
+            }`}
+          >
+            Info Management
+          </button>
+          <button
+            onClick={() => setCurrentView("usersManagement")}
+            className={`px-4 py-2 rounded-r-lg ${
+              currentView === "usersManagement"
+                ? "bg-green-500 text-white"
+                : "bg-gray-200"
+            }`}
+          >
+            Users Management
+          </button>
+        </div>
+        {currentView === "infoManagement" && (
+          <div>
+            <PollsHolder
+              communityID={localStorage.getItem("CurrentCommunity")}
+            />
+            <EventsHolder
+              communityID={localStorage.getItem("CurrentCommunity")}
+            />
+            {showEventForm && (
+              <EventForm
+                isOpen={showEventForm}
+                onClose={handleCreateNewEvent}
+                onSubmit={handleEventSubmit}
+                eventData={eventFormData}
+              />
+            )}
+          </div>
+        )}
+        {currentView === "usersManagement" && (
+          <div>
+            <Typography variant="h6" className="mb-4">
+              Community Members
+            </Typography>
+            {/* Add your user management content here */}
+            <Box>
+              {/* Replace with actual user management content */}
+              <p>User management section content goes here.</p>
+            </Box>
+          </div>
         )}
       </div>
     </div>

@@ -80,31 +80,32 @@ function Home() {
     CommunitiesJoined: [],
   });
   const [UserCommunities, setUserCommunities] = React.useState([]);
+  const [email, setEmail] = React.useState("");
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
   useEffect(() => {
-    ManageUser.getProfileData(
-      localStorage.getItem("Email"),
-      setProfileData,
-      setUserCommunities
-    );
+    const userEmail = localStorage.getItem("Email");
+    if (userEmail) {
+      setEmail(userEmail);
+      ManageUser.getProfileData(userEmail, setProfileData, setUserCommunities);
+    }
   }, []);
 
   // Function to generate consistent color based on category
   const stringToColor = (category: string): string => {
     switch (category.toLowerCase()) {
-      case "General":
+      case "general":
         return "#2196f3"; // Blue
-      case "Social":
+      case "social":
         return "#ff9800"; // Orange
-      case "Retreat":
+      case "retreat":
         return "#f44336"; // Red
-      case "Sports":
+      case "sports":
         return "#4caf50"; // Green
-      case "Development":
+      case "development":
         return "#9c27b0"; // Purple
       default:
         // Generate a color based on hash if category not specified
@@ -121,9 +122,9 @@ function Home() {
     <>
       <div className="App text-center">
         <Header />
-
         <center>
           <Box sx={{ width: "100%" }}>
+            <Typography variant="h4">Hello, {email}</Typography>
             <Box
               sx={{
                 borderBottom: "5px solid white", // Set the border color to green
@@ -147,7 +148,7 @@ function Home() {
             </Box>
 
             <CustomTabPanel value={value} index={0}>
-              {profileData.CommunitiesJoined.length == 0 ? (
+              {profileData.CommunitiesJoined.length === 0 ? (
                 <>
                   <div>
                     <div className="mt-9">
@@ -167,7 +168,7 @@ function Home() {
                     <p className="text-gray-900 text-lg">
                       Click on{" "}
                       <span className="font-bold">Discover communities</span> to
-                      become a member of your very first community
+                      become a member of your very first community.
                     </p>
                   </div>
                 </>
@@ -202,8 +203,6 @@ function Home() {
                               //"_self"
                               "_blank"
                             );
-
-                            conso;
                           }}
                         >
                           <CardContent>
@@ -219,16 +218,6 @@ function Home() {
                             </Typography>
                           </CardContent>
                           <CardActions>
-                            {/* <Button
-                              size="small"
-                              onClick={() => {
-                                // handleEdit(index);
-                                // handleJoinCommunity(data);
-                                //console.log(data);
-                              }}
-                            >
-                              Join
-                            </Button> */}
                             {/* Add more actions as needed */}
                           </CardActions>
                         </Card>
@@ -239,7 +228,7 @@ function Home() {
               )}
             </CustomTabPanel>
             <CustomTabPanel value={value} index={1}>
-              <DiscoverCommunity />
+              <DiscoverCommunity email={email} />
             </CustomTabPanel>
           </Box>
         </center>

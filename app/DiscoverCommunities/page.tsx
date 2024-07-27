@@ -12,74 +12,55 @@ const CreateCommunity = () => {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [description, setDescription] = useState("");
-  const [submittedData, setSubmittedData] = useState<
-    {
-      id: string;
-      name: string;
-      description: string;
-      category: string;
-      status: string;
-    }[]
-  >([]);
-  const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [category, setCategory] = useState<string>("general");
-  const [view, setView] = useState<string>("Communities");
+  const [submittedData, setSubmittedData] = useState([]);
+  const [editIndex, setEditIndex] = useState(null);
+  const [category, setCategory] = useState("general");
+  const [view, setView] = useState("Communities");
   const [userName, setUserName] = useState("");
   const [userSurname, setUserSurname] = useState("");
   const [userEmail, setUserEmail] = useState("");
   const [userPhone, setUserPhone] = useState("");
-  const [roles, setRoles] = useState<{ user: boolean; admin: boolean }>({
-    user: false,
-    admin: false,
-  });
+  const [roles, setRoles] = useState({ user: false, admin: false });
 
   const popupRef = useRef(null);
   const userPopupRef = useRef(null);
 
-  const handleOpenPopup = () => {
-    setPopupOpen(true);
-  };
+  const handleOpenPopup = () => setPopupOpen(true);
+  const handleClosePopup = () => setPopupOpen(false);
 
-  const handleClosePopup = () => {
-    setPopupOpen(false);
-  };
+  const handleOpenUserPopup = () => setUserPopupOpen(true);
+  const handleCloseUserPopup = () => setUserPopupOpen(false);
 
-  const handleOpenUserPopup = () => {
-    setUserPopupOpen(true);
-  };
-
-  const handleCloseUserPopup = () => {
-    setUserPopupOpen(false);
-  };
-
-  const handleRoleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleRoleChange = (e) => {
     const { name, checked } = e.target;
     setRoles((prevRoles) => ({ ...prevRoles, [name]: checked }));
   };
 
-  const handleFormSubmit = (e: React.FormEvent, status: string) => {
+  const handleFormSubmit = (e, status) => {
     e.preventDefault();
 
+    const communityData = {
+      name,
+      description,
+      category,
+      status,
+    };
+
     if (editIndex !== null) {
-      // Update existing community
       CommunityDB.updateCommunity(
-        {
-          id: submittedData[editIndex].id,
-          name,
-          description,
-          category,
-          status,
+        { id: submittedData[editIndex].id, ...communityData },
+        (updatedData) => {
+          const updatedSubmittedData = [...submittedData];
+          updatedSubmittedData[editIndex] = updatedData;
+          setSubmittedData(updatedSubmittedData);
         },
-        setSubmittedData,
         setLoading
       );
     } else {
-      // Create new community with specified status
       CommunityDB.createCommunity(
-        { name, description, category, status },
-        (newCommunity) => {
-          setSubmittedData((prevData) => [...prevData, newCommunity]);
-        },
+        communityData,
+        (newCommunity) =>
+          setSubmittedData((prevData) => [...prevData, newCommunity]),
         setLoading
       );
     }
@@ -91,7 +72,7 @@ const CreateCommunity = () => {
     setPopupOpen(false);
   };
 
-  const handleEdit = (index: number) => {
+  const handleEdit = (index) => {
     setName(submittedData[index].name);
     setDescription(submittedData[index].description);
     setCategory(submittedData[index].category);
@@ -107,7 +88,7 @@ const CreateCommunity = () => {
   }, []);
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    const handleClickOutside = (event) => {
       if (popupRef.current && !popupRef.current.contains(event.target)) {
         setPopupOpen(false);
       }
@@ -117,10 +98,9 @@ const CreateCommunity = () => {
       ) {
         setUserPopupOpen(false);
       }
-    }
+    };
 
     document.addEventListener("mousedown", handleClickOutside);
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -243,12 +223,10 @@ const CreateCommunity = () => {
                   >
                     {editIndex !== null ? "Save" : "Create"}
                   </button>
-                  <div className="flex justify-end">
-                    <CloseIcon
-                      className="absolute top-4 right-4 text-black-500 cursor-pointer"
-                      onClick={handleClosePopup}
-                    />
-                  </div>
+                  <CloseIcon
+                    className="absolute top-4 right-4 text-black-500 cursor-pointer"
+                    onClick={handleClosePopup}
+                  />
                 </div>
               </form>
             </div>
@@ -278,7 +256,7 @@ const CreateCommunity = () => {
               onClick={handleOpenUserPopup}
               className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
             >
-              + ADD USER
+              + ADD A USER
             </button>
           </div>
 
@@ -289,7 +267,7 @@ const CreateCommunity = () => {
           {isUserPopupOpen && (
             <div
               ref={userPopupRef}
-              className="mt-16 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-auto"
+              className="mt-16 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-3/4 sm:h-auto lg:h-auto"
             >
               <form className="space-y-4">
                 <div>
@@ -357,60 +335,52 @@ const CreateCommunity = () => {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Role
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="userRole"
+                    name="user"
+                    checked={roles.user}
+                    onChange={handleRoleChange}
+                    className="mr-2"
+                  />
+                  <label
+                    htmlFor="userRole"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    User
                   </label>
-                  <div className="flex gap-4 mt-2">
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id="userRole"
-                        name="user"
-                        checked={roles.user}
-                        onChange={handleRoleChange}
-                        className="mr-2"
-                      />
-                      <label
-                        htmlFor="userRole"
-                        className="text-sm font-medium text-gray-700"
-                      >
-                        User
-                      </label>
-                    </div>
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id="adminRole"
-                        name="admin"
-                        checked={roles.admin}
-                        onChange={handleRoleChange}
-                        className="mr-2"
-                      />
-                      <label
-                        htmlFor="adminRole"
-                        className="text-sm font-medium text-gray-700"
-                      >
-                        Admin
-                      </label>
-                    </div>
-                  </div>
+                </div>
+
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="adminRole"
+                    name="admin"
+                    checked={roles.admin}
+                    onChange={handleRoleChange}
+                    className="mr-2"
+                  />
+                  <label
+                    htmlFor="adminRole"
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Admin
+                  </label>
                 </div>
 
                 <div className="flex justify-end">
                   <button
-                    type="button"
+                    type="submit"
                     onClick={handleCloseUserPopup}
                     className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
                     Add User
                   </button>
-                  <div className="flex justify-end">
-                    <CloseIcon
-                      className="absolute top-4 right-4 text-black-500 cursor-pointer"
-                      onClick={handleCloseUserPopup}
-                    />
-                  </div>
+                  <CloseIcon
+                    className="absolute top-4 right-4 text-black-500 cursor-pointer"
+                    onClick={handleCloseUserPopup}
+                  />
                 </div>
               </form>
             </div>

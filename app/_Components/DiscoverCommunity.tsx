@@ -14,7 +14,12 @@ import {
 } from "@mui/material";
 import CommunityDB from "../../database/community/community";
 import { useRouter } from "next/navigation";
-const DiscoverCommunity = () => {
+
+interface DiscoverCommunityProps {
+  email: string;
+}
+
+const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -25,6 +30,7 @@ const DiscoverCommunity = () => {
       description: string;
       category: string;
       status: string; // Include status in state
+      users: string[]; // Add users field to state
     }[]
   >([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
@@ -63,8 +69,21 @@ const DiscoverCommunity = () => {
     setEditIndex(index);
   };
 
-  const handleJoinCommunity = (data: any) => {
-    CommunityDB.joinCommunity(data);
+  const handleJoinCommunity = async (data: any) => {
+    const isJoined = await CommunityDB.joinCommunity(data);
+    if (isJoined) {
+      // Update the state to reflect the joined status
+      const updatedData = submittedData.map((community) => {
+        if (community.id === data.id) {
+          return {
+            ...community,
+            users: [...community.users, email],
+          };
+        }
+        return community;
+      });
+      setSubmittedData(updatedData);
+    }
   };
 
   const filterDataByCategoryAndStatus = (
@@ -74,6 +93,7 @@ const DiscoverCommunity = () => {
       description: string;
       category: string;
       status: string;
+      users: string[];
     }[]
   ) => {
     return data.filter(
@@ -189,16 +209,18 @@ const DiscoverCommunity = () => {
                         </Typography>
                       </CardContent>
                       <CardActions>
-                        <Button
-                          size="small"
-                          onClick={() => {
-                            handleEdit(index);
-                            handleJoinCommunity(data);
-                            //console.log(data);
-                          }}
-                        >
-                          Join
-                        </Button>
+                        {data.users && data.users.includes(email) ? (
+                          <Button size="small" disabled>
+                            Joined
+                          </Button>
+                        ) : (
+                          <Button
+                            size="small"
+                            onClick={() => handleJoinCommunity(data)}
+                          >
+                            Join
+                          </Button>
+                        )}
                         <Button
                           size="small"
                           onClick={() => {
@@ -208,7 +230,6 @@ const DiscoverCommunity = () => {
                         >
                           View
                         </Button>
-                        {/* Add more actions as needed */}
                       </CardActions>
                     </Card>
                   </Grid>
@@ -217,10 +238,7 @@ const DiscoverCommunity = () => {
             )}
           </>
         ) : (
-          <CircularProgress
-            color="success"
-            style={{ marginTop: 20, width: 150, height: 150, color: "#bcd727" }}
-          />
+          <CircularProgress />
         )}
       </div>
     </>
