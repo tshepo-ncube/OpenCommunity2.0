@@ -24,13 +24,13 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      router.push("/");
+      router.push("/Home");
     }
   }, [user]);
 
-  useEffect(() => {
-    ManageUser.manageUserState(setUser, setIsSignedIn);
-  }, []);
+  // useEffect(() => {
+  //   ManageUser.manageUserState(setUser, setIsSignedIn);
+  // }, []);
 
   const handleShowNext = () => {};
   const handleRegistration = (e) => {
