@@ -5,12 +5,11 @@ import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
 import Image from "next/image";
 import Logo from "@/lib/images/Logo.jpeg";
-
 import ButtonGroup from "@mui/material/ButtonGroup";
 import DiscoverCommunity from "../_Components/DiscoverCommunity";
+import MyCommunities from "../_Components/MyCommunities";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-
 import Box from "@mui/material/Box";
 import { styled } from "@mui/system";
 import ManageUser from "@/database/auth/ManageUser";
@@ -80,17 +79,18 @@ function Home() {
     CommunitiesJoined: [],
   });
   const [UserCommunities, setUserCommunities] = React.useState([]);
+  const [email, setEmail] = React.useState("");
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
   useEffect(() => {
-    ManageUser.getProfileData(
-      localStorage.getItem("Email"),
-      setProfileData,
-      setUserCommunities
-    );
+    const userEmail = localStorage.getItem("Email");
+    if (userEmail) {
+      setEmail(userEmail);
+      ManageUser.getProfileData(userEmail, setProfileData, setUserCommunities);
+    }
   }, []);
 
   // Function to generate consistent color based on category
@@ -121,7 +121,6 @@ function Home() {
     <>
       <div className="App text-center">
         <Header />
-
         <center>
           <Box sx={{ width: "100%" }}>
             <Box
@@ -147,97 +146,11 @@ function Home() {
             </Box>
 
             <CustomTabPanel value={value} index={0}>
-              {profileData.CommunitiesJoined.length == 0 ? (
-                <>
-                  <div>
-                    <div className="mt-9">
-                      {/* Add margin-top to create space above the image */}
-                      <Image
-                        src={Logo} // Replace "/path/to/logo.png" with the path to your logo image
-                        alt="Logo"
-                        width={500} // Adjust width as needed
-                        height={500} // Adjust height as needed
-                        className="mx-auto"
-                        style={{ marginBottom: "20px" }}
-                      />
-                    </div>
-                    <p className="text-gray-900 text-lg">
-                      You are not a member of any communities yet.
-                    </p>
-                    <p className="text-gray-900 text-lg">
-                      Click on{" "}
-                      <span className="font-bold">Discover communities</span> to
-                      become a member of your very first community
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  {/* <h1>Tshepo</h1> */}
-
-                  <Grid container spacing={2} style={{ padding: 14 }}>
-                    {UserCommunities.map((data: any, index: any) => (
-                      <Grid item xs={6} md={3} key={index}>
-                        <Card
-                          sx={{
-                            position: "relative",
-                            maxWidth: 345,
-                            marginBottom: 10,
-                            padding: "6px",
-                            "&::before": {
-                              content: `"${data.category}"`,
-                              position: "absolute",
-                              top: 0,
-                              left: 0,
-                              backgroundColor: stringToColor(data.category),
-                              color: "#fff",
-                              padding: "2px 6px",
-                              fontSize: "0.75rem",
-                              fontWeight: "bold",
-                            },
-                          }}
-                          onClick={() => {
-                            window.open(
-                              `http://localhost:3000/Home/community/${data.id}`,
-                              //"_self"
-                              "_blank"
-                            );
-                          }}
-                        >
-                          <CardContent>
-                            <Typography
-                              gutterBottom
-                              variant="h6"
-                              component="div"
-                            >
-                              {data.name}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              {data.description}
-                            </Typography>
-                          </CardContent>
-                          <CardActions>
-                            {/* <Button
-                              size="small"
-                              onClick={() => {
-                                // handleEdit(index);
-                                // handleJoinCommunity(data);
-                                //console.log(data);
-                              }}
-                            >
-                              Join
-                            </Button> */}
-                            {/* Add more actions as needed */}
-                          </CardActions>
-                        </Card>
-                      </Grid>
-                    ))}
-                  </Grid>
-                </>
-              )}
+              <MyCommunities email={email} />
             </CustomTabPanel>
+
             <CustomTabPanel value={value} index={1}>
-              <DiscoverCommunity />
+              <DiscoverCommunity email={email} />
             </CustomTabPanel>
           </Box>
         </center>

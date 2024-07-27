@@ -9,13 +9,8 @@ import {
   Button,
   Modal,
   Box,
-  FormControl,
-  Select,
-  MenuItem,
 } from "@mui/material";
-import { green, red, blue, yellow } from "@mui/material/colors"; // Added yellow for RSVP status
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-
+import { green, red, blue, yellow } from "@mui/material/colors";
 import EventDB from "../../database/community/event";
 
 const EventsHolder = ({
@@ -28,56 +23,54 @@ const EventsHolder = ({
   const [loading, setLoading] = useState(true);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [eventIdToDelete, setEventIdToDelete] = useState(null);
-  const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
     EventDB.getEventFromCommunityID(communityID, setAllEvents);
     setLoading(false);
   }, [communityID]);
+
   useEffect(() => {
     const updateEventsStatus = async () => {
       const currentDate = new Date();
       const updatedEvents = await Promise.all(
         allEvents.map(async (event) => {
           let updatedEvent = { ...event };
+          let newStatus = event.status;
 
-          if (event.status === "active") {
-            // Check if RSVP deadline has passed and status is not "past"
+          // Check RSVP end time
+          if (event.RsvpEndTime && event.RsvpEndTime.toDate() > currentDate) {
+            if (event.status !== "rsvp") {
+              newStatus = "rsvp";
+            }
+          } else if (event.EndDate && event.EndDate.toDate() < currentDate) {
+            if (event.status !== "past") {
+              newStatus = "past";
+            }
+          } else {
+            // Current date is after RSVP end time but before end date
             if (
               event.RsvpEndTime &&
-              event.RsvpEndTime.toDate() < currentDate &&
-              event.status !== "past"
+              event.RsvpEndTime.toDate() <= currentDate
             ) {
-              try {
-                await EventDB.updateEventStatus(event.id, "rsvp");
-                updatedEvent.status = "rsvp";
-              } catch (error) {
-                console.error(
-                  `Error updating event status for ${event.id}:`,
-                  error
-                );
-              }
-            }
-
-            // Check if end date has passed and status is not "past"
-            if (
-              event.EndDate &&
-              event.EndDate.toDate() < currentDate &&
-              event.status !== "past"
-            ) {
-              try {
-                await EventDB.updateEventStatus(event.id, "past");
-                updatedEvent.status = "past";
-              } catch (error) {
-                console.error(
-                  `Error updating event status for ${event.id}:`,
-                  error
-                );
+              if (event.status !== "active") {
+                newStatus = "active";
               }
             }
           }
 
-          // Return updated event or original event if no changes
+          // Update status if changed
+          if (newStatus !== event.status) {
+            try {
+              await EventDB.updateEventStatus(event.id, newStatus);
+              updatedEvent.status = newStatus;
+            } catch (error) {
+              console.error(
+                `Error updating event status for ${event.id}:`,
+                error
+              );
+            }
+          }
+
           return updatedEvent;
         })
       );
@@ -156,19 +149,6 @@ const EventsHolder = ({
     console.log(`View results for event ${event.id}`);
   };
 
-  const handleFilterChange = (event) => {
-    setFilterStatus(event.target.value);
-  };
-
-  const filteredUpcomingEvents = allEvents.filter((event) => {
-    if (filterStatus === "all") {
-      return event.status !== "past";
-    }
-    return event.status === filterStatus && event.status !== "past";
-  });
-
-  const pastEvents = allEvents.filter((event) => event.status === "past");
-
   const getStatusColor = (status) => {
     switch (status) {
       case "active":
@@ -178,11 +158,14 @@ const EventsHolder = ({
       case "draft":
         return blue[500];
       case "rsvp":
-        return yellow[500]; // Added color for RSVP status
+        return yellow[500];
       default:
         return "#000";
     }
   };
+
+  const upcomingEvents = allEvents.filter((event) => event.status !== "past");
+  const pastEvents = allEvents.filter((event) => event.status === "past");
 
   return (
     <div className="mt-4">
@@ -194,30 +177,16 @@ const EventsHolder = ({
         }}
       >
         <h1 className="text-xxl">Upcoming Events</h1>
-
-        <FormControl variant="outlined" sx={{ minWidth: 120, mt: 1, mb: 1 }}>
-          <Select
-            value={filterStatus}
-            onChange={handleFilterChange}
-            displayEmpty
-            inputProps={{ "aria-label": "Filter by status" }}
-          >
-            <MenuItem value="all">All</MenuItem>
-            <MenuItem value="draft">Draft</MenuItem>
-            <MenuItem value="active">Active</MenuItem>
-            <MenuItem value="archived">Archived</MenuItem>
-          </Select>
-        </FormControl>
       </div>
 
       <div style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
         {loading ? (
           <center>Loading...</center>
-        ) : filteredUpcomingEvents.length === 0 ? (
+        ) : upcomingEvents.length === 0 ? (
           <center>No upcoming events</center>
         ) : (
           <Grid container spacing={2}>
-            {filteredUpcomingEvents.map((value) => (
+            {upcomingEvents.map((value) => (
               <Grid key={value.id} item>
                 <Card sx={{ maxWidth: 345 }}>
                   <CardHeader
@@ -383,12 +352,6 @@ const EventsHolder = ({
                   <Button onClick={() => handleViewResults(value)}>
                     View Results
                   </Button>
-                  <Button
-                    color="error"
-                    onClick={() => handleDeleteConfirmation(value.id)}
-                  >
-                    Delete
-                  </Button>
                 </CardActions>
               </Card>
             </Grid>
@@ -396,12 +359,11 @@ const EventsHolder = ({
         </Grid>
       </div>
 
-      {/* Modal for Delete Confirmation */}
       <Modal
         open={openDeleteModal}
         onClose={handleCloseDeleteModal}
-        aria-labelledby="delete-event-modal-title"
-        aria-describedby="delete-event-modal-description"
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
       >
         <Box
           sx={{
@@ -411,28 +373,30 @@ const EventsHolder = ({
             transform: "translate(-50%, -50%)",
             width: 400,
             bgcolor: "background.paper",
+            border: "2px solid #000",
             boxShadow: 24,
             p: 4,
           }}
         >
-          <Typography
-            id="delete-event-modal-title"
-            variant="h6"
-            component="h2"
-            gutterBottom
-          >
-            Confirm Delete Event
+          <Typography id="modal-title" variant="h6" component="h2">
+            Confirm Deletion
           </Typography>
-          <Typography id="delete-event-modal-description" sx={{ mt: 2 }}>
-            Are you sure you want to delete this event? by deleteing this event,
-            all the data associated with the event will be permanently deleted.
+          <Typography id="modal-description" sx={{ mt: 2 }}>
+            Are you sure you want to delete this event?
           </Typography>
-          <Button onClick={handleDelete} sx={{ mt: 2 }}>
-            Delete
-          </Button>
-          <Button onClick={handleCloseDeleteModal} sx={{ mt: 2, ml: 2 }}>
-            Cancel
-          </Button>
+          <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+            <Button
+              onClick={handleDelete}
+              color="error"
+              variant="contained"
+              sx={{ mr: 1 }}
+            >
+              Delete
+            </Button>
+            <Button onClick={handleCloseDeleteModal} variant="outlined">
+              Cancel
+            </Button>
+          </Box>
         </Box>
       </Modal>
     </div>

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   CircularProgress,
   Grid,
@@ -11,10 +11,17 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import CommunityDB from "../../database/community/community";
+import { useRouter } from "next/navigation";
 
-const DiscoverCommunity = () => {
+interface DiscoverCommunityProps {
+  email: string;
+}
+
+const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -24,13 +31,18 @@ const DiscoverCommunity = () => {
       name: string;
       description: string;
       category: string;
-      status: string; // Include status in state
+      status: string;
+      users: string[];
     }[]
   >([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string>("active");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchCommunities = async () => {
@@ -61,8 +73,60 @@ const DiscoverCommunity = () => {
     setEditIndex(index);
   };
 
-  const handleJoinCommunity = (data: any) => {
-    CommunityDB.joinCommunity(data);
+  const handleJoinCommunity = async (data: any) => {
+    const result = await CommunityDB.joinCommunity(data.id, email);
+    if (result.success) {
+      // Update the state to reflect the joined status
+      const updatedData = submittedData.map((community) => {
+        if (community.id === data.id) {
+          return {
+            ...community,
+            users: [...community.users, email],
+          };
+        }
+        return community;
+      });
+      setSubmittedData(updatedData);
+
+      // Set Snackbar message and open it
+      setSnackbarMessage(
+        `Congrats! You have now joined the "${data.name}" community.`
+      );
+      setOpenSnackbar(true);
+    } else {
+      alert(result.message);
+    }
+  };
+
+  const handleLeaveCommunity = async (data: any) => {
+    const result = await CommunityDB.leaveCommunity(data.id, email);
+    if (result.success) {
+      // Update the state to reflect the left status
+      const updatedData = submittedData.map((community) => {
+        if (community.id === data.id) {
+          return {
+            ...community,
+            users: community.users.filter((user) => user !== email), // Remove email from users list
+          };
+        }
+        return community;
+      });
+      setSubmittedData(updatedData);
+
+      // Set Snackbar message and open it
+      setSnackbarMessage(`You have left the "${data.name}" community.`);
+      setOpenSnackbar(true);
+    } else {
+      alert(result.message);
+    }
+  };
+
+  const handleViewCommunity = (data: any) => {
+    router.push(`/userview?id=${data.id}`);
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
   };
 
   const filterDataByCategoryAndStatus = (
@@ -72,6 +136,7 @@ const DiscoverCommunity = () => {
       description: string;
       category: string;
       status: string;
+      users: string[];
     }[]
   ) => {
     return data.filter(
@@ -187,17 +252,34 @@ const DiscoverCommunity = () => {
                         </Typography>
                       </CardContent>
                       <CardActions>
-                        <Button
-                          size="small"
-                          onClick={() => {
-                            handleEdit(index);
-                            handleJoinCommunity(data);
-                            //console.log(data);
-                          }}
-                        >
-                          Join
-                        </Button>
-                        {/* Add more actions as needed */}
+                        {data.users.includes(email) ? (
+                          <>
+                            <Button size="small" disabled>
+                              Joined
+                            </Button>
+                            <Button
+                              size="small"
+                              onClick={() => handleLeaveCommunity(data)}
+                            >
+                              Leave Community
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button
+                              size="small"
+                              onClick={() => handleJoinCommunity(data)}
+                            >
+                              Join
+                            </Button>
+                            <Button
+                              size="small"
+                              onClick={() => handleViewCommunity(data)}
+                            >
+                              View
+                            </Button>
+                          </>
+                        )}
                       </CardActions>
                     </Card>
                   </Grid>
@@ -206,12 +288,20 @@ const DiscoverCommunity = () => {
             )}
           </>
         ) : (
-          <CircularProgress
-            color="success"
-            style={{ marginTop: 20, width: 150, height: 150, color: "#bcd727" }}
-          />
+          <CircularProgress />
         )}
       </div>
+
+      {/* Snackbar for notifications */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="success">
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
