@@ -112,6 +112,43 @@ export default class CommunityDB {
     }
   };
 
+  static leaveCommunity = async (communityId, userEmail) => {
+    const communityRef = doc(DB, "communities", communityId);
+    const communityDoc = await getDoc(communityRef);
+
+    if (communityDoc.exists()) {
+      const communityData = communityDoc.data();
+      let users = communityData.users || [];
+
+      if (!users.includes(userEmail)) {
+        // User is not in the community
+        return {
+          success: false,
+          message: "You are not a member of this community.",
+        };
+      } else {
+        users = users.filter((user) => user !== userEmail);
+
+        try {
+          await updateDoc(communityRef, {
+            users: users,
+          });
+          console.log("User removed from community successfully.");
+          return {
+            success: true,
+            message: "You have successfully left the community.",
+          };
+        } catch (error) {
+          console.error("Error updating community users:", error);
+          throw error;
+        }
+      }
+    } else {
+      console.log("No such document!");
+      return { success: false, message: "Community does not exist." };
+    }
+  };
+
   static getAllUserCommunities = async (
     joinedCommunities,
     setJoinedCommunities

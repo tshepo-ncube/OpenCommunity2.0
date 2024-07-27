@@ -106,7 +106,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
         if (community.id === data.id) {
           return {
             ...community,
-            users: community.users.filter((user) => user !== email),
+            users: community.users.filter((user) => user !== email), // Remove email from users list
           };
         }
         return community;
