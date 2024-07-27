@@ -70,11 +70,10 @@ export default function CommunityPage({ params }) {
         }
       };
       fetchCommunity();
+      PollDB.getPollFromCommunityIDForUser(id, setAllPolls);
+
+      EventDB.getEventFromCommunityID(id, setAllEvents);
     }
-
-    PollDB.getPollFromCommunityIDForUser(id, setAllPolls);
-
-    EventDB.getEventFromCommunityID(id, setAllEvents);
   }, [id]);
 
   useEffect(() => {
