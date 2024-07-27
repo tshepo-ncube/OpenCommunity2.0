@@ -19,6 +19,7 @@ import {
 } from "react-share";
 import { RWebShare } from "react-web-share";
 import PollDB from "@/database/community/poll";
+import EventDB from "@/database/community/event";
 
 export default function CommunityPage({ params }) {
   const upcomingEvents = [
@@ -40,8 +41,9 @@ export default function CommunityPage({ params }) {
   const [loading, setLoading] = useState(true);
 
   const [allPolls, setAllPolls] = useState();
+  const [allEvents, setAllEvents] = useState();
   const [pollsUpdated, setPollsUpdated] = useState(false);
-
+  const [USER_ID, setUSER_ID] = useState(localStorage.getItem("UserID"));
   const [community, setCommunity] = useState(null);
 
   useEffect(() => {
@@ -70,7 +72,9 @@ export default function CommunityPage({ params }) {
       fetchCommunity();
     }
 
-    PollDB.getPollFromCommunityID(id, setAllPolls);
+    PollDB.getPollFromCommunityIDForUser(id, setAllPolls);
+
+    EventDB.getEventFromCommunityID(id, setAllEvents);
   }, [id]);
 
   useEffect(() => {
@@ -140,12 +144,16 @@ export default function CommunityPage({ params }) {
       }
     }
   }, [allPolls]);
+
+  useEffect(() => {
+    console.log("All Events: ", allEvents);
+  }, [allEvents]);
   const updatePolls = async () => {
     const updatedArray = await Promise.all(
       allPolls.map(async (obj) => {
         try {
           const result = await PollDB.checkIfPollExists(
-            "IiLHMfnUZqgrR4OIyfcQ",
+            USER_ID,
             params.id,
             obj.id
           );
@@ -184,7 +192,7 @@ export default function CommunityPage({ params }) {
       .then((result) => {
         //console.log("Vote Result : ", result);
         setPollsUpdated(false);
-        PollDB.getPollFromCommunityID(id, setAllPolls);
+        PollDB.getPollFromCommunityIDForUser(id, setAllPolls);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -223,6 +231,38 @@ export default function CommunityPage({ params }) {
 
   if (!community) {
     return <div>No Community found with ID: {id}</div>;
+  }
+
+  function fixDateString(dateStr) {
+    // Extract parts from the input string
+    const regex =
+      /^(\w+ \d{1,2}, \d{4}) at (\d{1,2}:\d{2}:\d{2} [APM]+) UTC([+-]\d{1,2})$/;
+    const match = dateStr.match(regex);
+
+    if (!match) {
+      throw new Error("Invalid date format");
+    }
+
+    const [, datePart, timePart, offsetPart] = match;
+
+    // Convert the time part to 24-hour format
+    const [time, period] = timePart.split(" ");
+    let [hours, minutes, seconds] = time.split(":").map(Number);
+
+    if (period === "PM" && hours !== 12) {
+      hours += 12;
+    } else if (period === "AM" && hours === 12) {
+      hours = 0;
+    }
+
+    // Construct the new date string in ISO format
+    const isoDateStr = `${datePart.replace(/,/, "")}T${hours
+      .toString()
+      .padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}${offsetPart}:00`;
+
+    return isoDateStr;
   }
 
   return (
@@ -282,10 +322,17 @@ export default function CommunityPage({ params }) {
         <div className="rounded border border-black bg-openbox-green p-4">
           <h2 className="text-2xl font-semibold mb-4">Upcoming Events</h2>
           <ul className="space-y-4">
-            {upcomingEvents.map((event) => (
+            {/* {upcomingEvents.map((event) => (
               <li key={event.id} className="p-4 bg-white shadow rounded-md">
                 <h3 className="text-xl font-medium">{event.title}</h3>
                 <p className="text-gray-500">{event.date}</p>
+              </li>
+            ))} */}
+
+            {allEvents.map((event) => (
+              <li key={event.id} className="p-4 bg-white shadow rounded-md">
+                <h3 className="text-xl font-medium">{event.Name}</h3>
+                <p className="text-gray-500">{event.Location}</p>
               </li>
             ))}
           </ul>

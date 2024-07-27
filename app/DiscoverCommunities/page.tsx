@@ -5,12 +5,15 @@ import Header from "../_Components/header";
 import CommunityDB from "@/database/community/community";
 import AdminCommunity from "../_Components/AdminCommunities";
 import CloseIcon from "@mui/icons-material/Close";
-
+import axios from "axios";
+import ChannelMicrosoftApi from "../../api/MicrosoftGraph/createTeamsChannel";
 const CreateCommunity = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [description, setDescription] = useState("");
+  const [response, setResponse] = useState(null);
+  const [error, setError] = useState(null);
   const [submittedData, setSubmittedData] = useState<
     {
       id: string;
@@ -32,11 +35,12 @@ const CreateCommunity = () => {
     setPopupOpen(false);
   };
 
-  const handleFormSubmit = (e: React.FormEvent, status: string) => {
+  const handleFormSubmit = async (e: React.FormEvent, status: string) => {
     e.preventDefault();
 
     if (editIndex !== null) {
       // Update existing community
+
       CommunityDB.updateCommunity(
         {
           id: submittedData[editIndex].id,
@@ -49,14 +53,30 @@ const CreateCommunity = () => {
         setLoading
       );
     } else {
-      // Create new community with specified status
-      CommunityDB.createCommunity(
-        { name, description, category, status },
-        (newCommunity) => {
-          setSubmittedData((prevData) => [...prevData, newCommunity]);
-        },
-        setLoading
-      );
+      try {
+        const res = await axios.post("http://localhost:8080/createChannel", {
+          name,
+          description,
+          category,
+          status,
+        });
+        console.log(res.data);
+        const channelObject = res.data;
+
+        //channel created succesffully
+
+        CommunityDB.createCommunity(
+          channelObject,
+          setSubmittedData,
+          setLoading
+        );
+        setResponse(res.data);
+        window.location.reload();
+      } catch (err) {
+        setError(err.response?.data || "An error occurred");
+      } finally {
+        setLoading(false);
+      }
     }
 
     setName("");
@@ -80,6 +100,14 @@ const CreateCommunity = () => {
       setLoading(false);
     }, setLoading);
   }, []);
+
+  useEffect(() => {
+    // CommunityDB.getAllCommunities((data) => {
+    //   setSubmittedData(data);
+    //   setLoading(false);
+    // }, setLoading);
+    console.log("Communities Changed!!!");
+  }, [submittedData]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {

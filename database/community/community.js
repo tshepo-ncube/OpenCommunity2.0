@@ -16,7 +16,10 @@ export default class CommunityDB {
     setLoading(true);
     const object = {
       users: [],
-      name: item.name,
+      channelID: item.id,
+      name: item.displayName,
+      createdDateTime: item.createdDateTime,
+      webUrl: item.webUrl,
       description: item.description,
       category: item.category,
       status: item.status || "active", // Include status field with default value "active"
