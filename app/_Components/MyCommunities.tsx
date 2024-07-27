@@ -23,8 +23,6 @@ interface DiscoverCommunityProps {
 
 const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
   const [loading, setLoading] = useState(true);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
   const [submittedData, setSubmittedData] = useState<
     {
       id: string;
@@ -35,7 +33,6 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
       users: string[];
     }[]
   >([]);
-  const [editIndex, setEditIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string>("active");
@@ -56,73 +53,9 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
     fetchCommunities();
   }, []);
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    CommunityDB.createCommunity(
-      { name, description, category: "general" }, // Assuming a default category
-      setSubmittedData,
-      setLoading
-    );
-    setName("");
-    setDescription("");
-  };
-
-  const handleEdit = (index: number) => {
-    setName(submittedData[index].name);
-    setDescription(submittedData[index].description);
-    setEditIndex(index);
-  };
-
-  const handleJoinCommunity = async (data: any) => {
-    const result = await CommunityDB.joinCommunity(data.id, email);
-    if (result.success) {
-      // Update the state to reflect the joined status
-      const updatedData = submittedData.map((community) => {
-        if (community.id === data.id) {
-          return {
-            ...community,
-            users: [...community.users, email],
-          };
-        }
-        return community;
-      });
-      setSubmittedData(updatedData);
-
-      // Set Snackbar message and open it
-      setSnackbarMessage(
-        `Congrats! You have now joined the "${data.name}" community.`
-      );
-      setOpenSnackbar(true);
-    } else {
-      alert(result.message);
-    }
-  };
-
-  const handleLeaveCommunity = async (data: any) => {
-    const result = await CommunityDB.leaveCommunity(data.id, email);
-    if (result.success) {
-      // Update the state to reflect the left status
-      const updatedData = submittedData.map((community) => {
-        if (community.id === data.id) {
-          return {
-            ...community,
-            users: community.users.filter((user) => user !== email), // Remove email from users list
-          };
-        }
-        return community;
-      });
-      setSubmittedData(updatedData);
-
-      // Set Snackbar message and open it
-      setSnackbarMessage(`You have left the "${data.name}" community.`);
-      setOpenSnackbar(true);
-    } else {
-      alert(result.message);
-    }
-  };
-
   const handleViewCommunity = (data: any) => {
-    router.push(`/userview?id=${data.id}`);
+    // Redirect to the specified path format with community ID
+    router.push(`/Home/community/${data.id}`);
   };
 
   const handleCloseSnackbar = () => {
@@ -139,14 +72,18 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
       users: string[];
     }[]
   ) => {
-    return data.filter(
-      (item) =>
-        item.category.toLowerCase().includes(selectedCategory.toLowerCase()) &&
-        item.status === selectedStatus &&
-        `${item.name.toLowerCase()} ${item.description.toLowerCase()} ${item.category.toLowerCase()}`.includes(
-          searchQuery.toLowerCase()
-        )
-    );
+    return data
+      .filter((item) => item.users.includes(email)) // Only include communities joined by the user
+      .filter(
+        (item) =>
+          item.category
+            .toLowerCase()
+            .includes(selectedCategory.toLowerCase()) &&
+          item.status === selectedStatus &&
+          `${item.name.toLowerCase()} ${item.description.toLowerCase()} ${item.category.toLowerCase()}`.includes(
+            searchQuery.toLowerCase()
+          )
+      );
   };
 
   const filteredData = filterDataByCategoryAndStatus(submittedData);
@@ -184,7 +121,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
       <div className="flex justify-center mt-4">
         <input
           type="text"
-          placeholder="Search communities..."
+          placeholder="Search my communities..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="p-2 border border-gray-300 rounded-md w-full max-w-md"
@@ -252,34 +189,12 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
                         </Typography>
                       </CardContent>
                       <CardActions>
-                        {data.users.includes(email) ? (
-                          <>
-                            <Button size="small" disabled>
-                              Joined
-                            </Button>
-                            <Button
-                              size="small"
-                              onClick={() => handleLeaveCommunity(data)}
-                            >
-                              Leave Community
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            <Button
-                              size="small"
-                              onClick={() => handleJoinCommunity(data)}
-                            >
-                              Join
-                            </Button>
-                            <Button
-                              size="small"
-                              onClick={() => handleViewCommunity(data)}
-                            >
-                              View
-                            </Button>
-                          </>
-                        )}
+                        <Button
+                          size="small"
+                          onClick={() => handleViewCommunity(data)}
+                        >
+                          View
+                        </Button>
                       </CardActions>
                     </Card>
                   </Grid>
