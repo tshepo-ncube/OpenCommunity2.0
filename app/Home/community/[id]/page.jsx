@@ -1,6 +1,5 @@
 "use client";
-
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
@@ -32,20 +31,15 @@ export default function CommunityPage({ params }) {
   const [community, setCommunity] = useState(null);
 
   useEffect(() => {
-    console.log("useEffect called"); // Log to ensure useEffect is called
     if (id) {
-      console.log("Fetching community with ID:", id); // Log the ID being fetched
       const fetchCommunity = async () => {
         const communityRef = doc(db, "communities", id);
         try {
           const snapshot = await getDoc(communityRef);
           if (!snapshot.exists()) {
-            console.log("No such document!");
             setLoading(false);
             return;
           }
-          console.log("Community data:", snapshot.data()); // Log the fetched data
-
           setCommunity(snapshot.data());
         } catch (error) {
           console.error("Error getting document: ", error);
@@ -60,17 +54,11 @@ export default function CommunityPage({ params }) {
   }, [id]);
 
   useEffect(() => {
-    console.log("All Polls: ", allPolls);
-
     if (allPolls.length > 0 && !pollsUpdated) {
       updatePolls();
       setPollsUpdated(true);
     }
   }, [allPolls]);
-
-  useEffect(() => {
-    console.log("All Events: ", allEvents);
-  }, [allEvents]);
 
   const updatePolls = async () => {
     const updatedArray = await Promise.all(
@@ -81,16 +69,13 @@ export default function CommunityPage({ params }) {
             params.id,
             obj.id
           );
-          console.log(result);
           if (result) {
-            console.log("The result: ", result);
             return {
               ...obj,
               selected: true,
               selected_option: result,
             };
           } else {
-            console.log("The result: ", result);
             return {
               ...obj,
               selected: false,
@@ -98,17 +83,15 @@ export default function CommunityPage({ params }) {
           }
         } catch (error) {
           console.error("Error:", error);
-          return obj; // Return the original object in case of an error
+          return obj;
         }
       })
     );
 
-    console.log("Updated All Polls: ", updatedArray);
     setAllPolls(updatedArray);
   };
 
   const handlePollOptionSelection = (pollId, selectedOption) => {
-    console.log(`Poll ID: ${pollId}, Selected Option: ${selectedOption}`);
     PollDB.voteFromPollId(params.id, pollId, selectedOption)
       .then(() => {
         setPollsUpdated(false);
@@ -135,37 +118,22 @@ export default function CommunityPage({ params }) {
     return <div>No Community found with ID: {id}</div>;
   }
 
-  function fixDateString(dateStr) {
-    // Extract parts from the input string
-    const regex =
-      /^(\w+ \d{1,2}, \d{4}) at (\d{1,2}:\d{2}:\d{2} [APM]+) UTC([+-]\d{1,2})$/;
-    const match = dateStr.match(regex);
-
-    if (!match) {
-      throw new Error("Invalid date format");
-    }
-
-    const [, datePart, timePart, offsetPart] = match;
-
-    // Convert the time part to 24-hour format
-    const [time, period] = timePart.split(" ");
-    let [hours, minutes, seconds] = time.split(":").map(Number);
-
-    if (period === "PM" && hours !== 12) {
-      hours += 12;
-    } else if (period === "AM" && hours === 12) {
-      hours = 0;
-    }
-
-    // Construct the new date string in ISO format
-    const isoDateStr = `${datePart.replace(/,/, "")}T${hours
-      .toString()
-      .padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds
-      .toString()
-      .padStart(2, "0")}${offsetPart}:00`;
-
-    return isoDateStr;
+  function formatDate(dateStr) {
+    return new Date(dateStr).toLocaleDateString();
   }
+
+  function formatTime(dateStr) {
+    return new Date(dateStr).toLocaleTimeString();
+  }
+
+  // Filter events based on status
+  const upcomingEvents = allEvents.filter(
+    (event) => event.status === "active" || event.status === "rsvp"
+  );
+
+  const pastEvents = allEvents.filter(
+    (event) => event.status === "past" // Adjust filtering based on your status or date
+  );
 
   return (
     <div className="">
@@ -218,12 +186,32 @@ export default function CommunityPage({ params }) {
         <div className="rounded border border-black bg-openbox-green p-4">
           <h2 className="text-2xl font-semibold mb-4">Upcoming Events</h2>
           <ul className="space-y-4">
-            {allEvents.map((event) => (
-              <li key={event.id} className="p-4 bg-white shadow rounded-md">
-                <h3 className="text-xl font-medium">{event.Name}</h3>
-                <p className="text-gray-500">{event.Location}</p>
-              </li>
-            ))}
+            {upcomingEvents.length > 0 ? (
+              upcomingEvents.map((event) => (
+                <li key={event.id} className="p-4 bg-white shadow rounded-md">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    style={{ whiteSpace: "pre-wrap" }}
+                  >
+                    <h3 className="text-xl font-semibold mb-2">{event.Name}</h3>
+                    <strong>Description:</strong> {event.EventDescription}
+                    <br />
+                    <strong>Location:</strong> {event.Location}
+                    <br />
+                    <strong>Start Date:</strong> {formatDate(event.StartDate)}
+                    <br />
+                    <strong>End Date:</strong> {formatDate(event.EndDate)}
+                    <br />
+                    <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
+                  </Typography>
+                </li>
+              ))
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No upcoming events.
+              </Typography>
+            )}
           </ul>
         </div>
 
@@ -255,20 +243,41 @@ export default function CommunityPage({ params }) {
             ))}
           </ul>
         </div>
+      </div>
 
-        {/* Share */}
-        <div className="rounded border border-black bg-openbox-green p-4">
-          <h2 className="text-2xl font-semibold mb-4">Share Community</h2>
-          <div className="flex justify-around">
-            <FacebookShareCount url={window.location.href} />
-            <TwitterIcon size={32} round />
-            <PinterestShareCount url={window.location.href} />
-            <RedditShareCount url={window.location.href} />
-            <TumblrShareCount url={window.location.href} />
-            <VKShareCount url={window.location.href} />
-            <OKShareCount url={window.location.href} />
-            <HatenaShareCount url={window.location.href} />
-          </div>
+      {/* Past Events Section */}
+      <div className="p-8">
+        <h2 className="text-2xl font-semibold mb-4">Past Events</h2>
+        <div className="flex overflow-x-auto space-x-6">
+          {pastEvents.length > 0 ? (
+            pastEvents.map((event) => (
+              <div
+                key={event.id}
+                className="flex-none w-80 bg-white shadow rounded-md p-4"
+              >
+                <h3 className="text-xl font-semibold mb-2">{event.Name}</h3>
+                <p>
+                  <strong>Description:</strong> {event.EventDescription}
+                </p>
+                <p>
+                  <strong>Location:</strong> {event.Location}
+                </p>
+                <p>
+                  <strong>Start Date:</strong> {formatDate(event.StartDate)}
+                </p>
+                <p>
+                  <strong>End Date:</strong> {formatDate(event.EndDate)}
+                </p>
+                <p>
+                  <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
+                </p>
+              </div>
+            ))
+          ) : (
+            <Typography variant="body2" color="text.secondary">
+              No past events.
+            </Typography>
+          )}
         </div>
       </div>
     </div>
