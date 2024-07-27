@@ -202,8 +202,6 @@ function Home() {
                               //"_self"
                               "_blank"
                             );
-
-                            conso;
                           }}
                         >
                           <CardContent>

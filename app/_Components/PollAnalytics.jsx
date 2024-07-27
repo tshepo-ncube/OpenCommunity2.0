@@ -20,21 +20,33 @@ import { Bar } from "react-chartjs-2";
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-export default function CandidateGenderGraph() {
+// Generate random colors for each dataset
+const generateRandomColor = () => {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
+export default function PollAnalytics({ poll }) {
+  console.log("This is poll from analytics ", poll);
+
+  // Extracting labels and data from poll object
+  const labels = poll.Options;
+  const dataValues = poll.Opt.map((opt) => opt.votes);
+
+  // Generate colors for each bar
+  const backgroundColors = labels.map(() => generateRandomColor());
+
   const data = {
-    labels: ["Gender"],
+    labels: labels,
     datasets: [
       {
-        label: "Female",
-        data: [12], // Hardcoded data for female
-        backgroundColor: "aqua",
-        borderColor: "black",
-        borderWidth: 1,
-      },
-      {
-        label: "Male",
-        data: [18], // Hardcoded data for male
-        backgroundColor: "red",
+        label: "Votes",
+        data: dataValues,
+        backgroundColor: backgroundColors,
         borderColor: "black",
         borderWidth: 1,
       },
@@ -51,21 +63,22 @@ export default function CandidateGenderGraph() {
       y: {
         beginAtZero: true, // Set to true to begin at zero
         min: 0, // Set the minimum value
-        max: 20, // Set the maximum value
+        max: Math.max(...dataValues) + 5, // Adjust the max value based on the data
       },
     },
   };
 
   return (
     <Box sx={{ flexGrow: 1, padding: 4 }}>
+      <h1 className="text-3xl text-black">{poll.Question}</h1>
       <Box sx={{ flexGrow: 1 }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={12} md={6} lg={6}>
+          <Grid item xs={12} sm={12} md={12} lg={12}>
             <Bar
               style={{ padding: 20, width: "80%" }}
               data={data}
               options={options}
-            ></Bar>
+            />
           </Grid>
         </Grid>
       </Box>

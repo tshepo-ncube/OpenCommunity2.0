@@ -66,6 +66,40 @@ export default class ManageUser {
       });
   };
 
+  static storeUserID = async (userEmail) => {
+    const candidatesCollectionRef = collection(DB, "users");
+    console.log(`Email : ${email}`);
+    const q = query(candidatesCollectionRef, where("Email", "==", userEmail));
+
+    try {
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
+        console.log("No matching user from Email : ", userEmail);
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        console.log(doc.id, "=>", doc.data());
+
+        localStorage.setItem("UserID", doc.id);
+
+        const object2 = { id: doc.id };
+        console.log(
+          "doc.data().CommunitiesJoined,",
+          doc.data().CommunitiesJoined
+        );
+        //const combinedObject = { ...object1, ...object2 };
+        CommunityDB.getAllUserCommunities(
+          doc.data().CommunitiesJoined,
+          setUserCommunities
+        );
+        setProfile({ ...doc.data(), ...object2 });
+      });
+    } catch (error) {
+      console.error("Error getting Profile Data: ", error);
+      alert(error);
+    }
+  };
   static editPassword = (newPassword, setError) => {
     const auth = getAuth();
 
@@ -117,10 +151,7 @@ export default class ManageUser {
   static getProfileData = async (email, setProfile, setUserCommunities) => {
     const candidatesCollectionRef = collection(DB, "users");
     console.log(`Email : ${email}`);
-    const q = query(
-      candidatesCollectionRef,
-      where("Email", "==", "nontshangela@gmail.com")
-    );
+    const q = query(candidatesCollectionRef, where("Email", "==", email));
 
     try {
       const snapshot = await getDocs(q);

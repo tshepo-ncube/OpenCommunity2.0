@@ -67,7 +67,57 @@ export default class PollDB {
 
         //const combinedObject = { ...object1, ...object2 };
 
+        // if(doc.data().PollCloseDate)
+
         pollsArray.push({ ...object2, ...doc.data() });
+      });
+
+      setPolls(pollsArray);
+    } catch (error) {
+      console.error("Error getting poll Data: ", error);
+      alert(error);
+    }
+  };
+
+  static getPollFromCommunityIDForUser = async (communityID, setPolls) => {
+    const pollsRef = collection(DB, "polls");
+    const q = query(pollsRef, where("CommunityID", "==", communityID));
+
+    try {
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
+        console.log("No matching documents.");
+        return;
+      }
+      let pollsArray = [];
+      snapshot.forEach((doc) => {
+        //console.log(doc.id, "=>", doc.data());
+
+        const object2 = { id: doc.id };
+
+        //const combinedObject = { ...object1, ...object2 };
+
+        // if(doc.data().PollCloseDate)
+
+        const date1 = new Date(
+          "Wed Jul 17 2024 00:00:00 GMT+0200 (South Africa Standard Time)"
+        );
+        const date2 = new Date(
+          "Thu Jul 18 2024 00:00:00 GMT+0200 (South Africa Standard Time)"
+        );
+
+        const givenDate = new Date(doc.data().PollCloseDate);
+        const currentDate = new Date();
+
+        if (givenDate > currentDate) {
+          console.log("The given date has passed.");
+          pollsArray.push({ ...object2, ...doc.data() });
+          console.log("User can still vote");
+          // Perform your action here
+        } else {
+          console.log("The given date has not passed.");
+          console.log("User can not vote on the poll");
+        }
       });
 
       setPolls(pollsArray);
@@ -116,7 +166,7 @@ export default class PollDB {
       console.log("Vote incremented successfully!");
       // Example usage
 
-      const docID = "IiLHMfnUZqgrR4OIyfcQ"; // Replace with your actual user document ID
+      const docID = localStorage.getItem("UserID"); // Replace with your actual user document ID
       //const communityID = "3aRAVKLx6yysV4LZyLow"; // Replace with actual community ID
       const newPoll = {
         poll_id: pollId,
