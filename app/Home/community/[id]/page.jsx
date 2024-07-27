@@ -1,9 +1,8 @@
 "use client";
+
 import { CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
-import { ThreeDots } from "react-loader-spinner";
 import { useRouter } from "next/navigation";
-import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import db from "../../../../database/DB";
 
@@ -22,26 +21,12 @@ import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
 
 export default function CommunityPage({ params }) {
-  const upcomingEvents = [
-    { id: 1, title: "Community Picnic", date: "2024-07-20" },
-    { id: 2, title: "Yoga Session", date: "2024-07-22" },
-  ];
-
-  const polls = [
-    { id: 1, question: "Which event should we host next?" },
-    { id: 2, question: "Preferred time for yoga sessions?" },
-  ];
-
-  const pastEvents = [
-    { id: 1, title: "Music Concert", date: "2024-07-10" },
-    { id: 2, title: "Art Exhibition", date: "2024-07-05" },
-  ];
   const { id } = params;
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const [allPolls, setAllPolls] = useState();
-  const [allEvents, setAllEvents] = useState();
+  const [allPolls, setAllPolls] = useState([]);
+  const [allEvents, setAllEvents] = useState([]);
   const [pollsUpdated, setPollsUpdated] = useState(false);
   const [USER_ID, setUSER_ID] = useState(localStorage.getItem("UserID"));
   const [community, setCommunity] = useState(null);
@@ -50,7 +35,6 @@ export default function CommunityPage({ params }) {
     console.log("useEffect called"); // Log to ensure useEffect is called
     if (id) {
       console.log("Fetching community with ID:", id); // Log the ID being fetched
-      //setCommunity(id);
       const fetchCommunity = async () => {
         const communityRef = doc(db, "communities", id);
         try {
@@ -71,82 +55,23 @@ export default function CommunityPage({ params }) {
       };
       fetchCommunity();
       PollDB.getPollFromCommunityIDForUser(id, setAllPolls);
-
       EventDB.getEventFromCommunityID(id, setAllEvents);
     }
   }, [id]);
 
   useEffect(() => {
-    console.log("All Polls : ", allPolls);
+    console.log("All Polls: ", allPolls);
 
-    if (allPolls) {
-      // allPolls.forEach((obj) => {
-      //   PollDB.checkIfPollExists(
-      //     "IiLHMfnUZqgrR4OIyfcQ",
-      //     params.id,
-      //     obj.id //"bQEIfk3NmMBngJeZEmFZ"
-      //   )
-      //     .then((result) => {
-      //       console.log(result);
-      //       if (result) {
-      //         console.log("The result: ", result);
-      //         obj.selected = true;
-      //         obj.selected_option = result;
-      //       } else {
-      //         console.log("The result: ", result);
-      //         obj.selected = false;
-      //       }
-      //     })
-      //     .catch((error) => {
-      //       console.error("Error:", error);
-      //     });
-      //   // You can set this to any value you need
-      // });
-
-      // const updatedArray = allPolls.map((obj) => {
-      //   PollDB.checkIfPollExists(
-      //     "IiLHMfnUZqgrR4OIyfcQ",
-      //     params.id,
-      //     obj.id //"bQEIfk3NmMBngJeZEmFZ"
-      //   )
-      //     .then((result) => {
-      //       console.log(result);
-      //       if (result) {
-      //         console.log("The result: ", result);
-      //         obj.selected = true;
-      //         obj.selected_option = result;
-      //         return {
-      //           ...obj,
-      //           selected: true, // Example of a dynamic value based on existing properties
-      //           selected_option: result,
-      //         };
-      //       } else {
-      //         console.log("The result: ", result);
-      //         obj.selected = false;
-      //         return {
-      //           ...obj,
-      //           selected: false, // Example of a dynamic value based on existing properties
-      //         };
-      //       }
-      //     })
-      //     .catch((error) => {
-      //       console.error("Error:", error);
-      //     });
-      // });
-
-      // console.log("Updated All Polls: ", updatedArray);
-      // setAllPolls(updatedArray);
-
-      if (!pollsUpdated) {
-        updatePolls();
-        setPollsUpdated(true);
-      }
+    if (allPolls.length > 0 && !pollsUpdated) {
+      updatePolls();
+      setPollsUpdated(true);
     }
   }, [allPolls]);
 
   useEffect(() => {
     console.log("All Events: ", allEvents);
   }, [allEvents]);
+
   const updatePolls = async () => {
     const updatedArray = await Promise.all(
       allPolls.map(async (obj) => {
@@ -159,8 +84,6 @@ export default function CommunityPage({ params }) {
           console.log(result);
           if (result) {
             console.log("The result: ", result);
-            obj.selected = true;
-            obj.selected_option = result;
             return {
               ...obj,
               selected: true,
@@ -168,7 +91,6 @@ export default function CommunityPage({ params }) {
             };
           } else {
             console.log("The result: ", result);
-            obj.selected = false;
             return {
               ...obj,
               selected: false,
@@ -188,33 +110,14 @@ export default function CommunityPage({ params }) {
   const handlePollOptionSelection = (pollId, selectedOption) => {
     console.log(`Poll ID: ${pollId}, Selected Option: ${selectedOption}`);
     PollDB.voteFromPollId(params.id, pollId, selectedOption)
-      .then((result) => {
-        //console.log("Vote Result : ", result);
+      .then(() => {
         setPollsUpdated(false);
         PollDB.getPollFromCommunityIDForUser(id, setAllPolls);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-    //
-    // Perform any additional logic or state updates here
   };
-
-  //   useEffect(() => {
-  //     setStudentURL(window.location.href);
-  //     const urlParams = new URLSearchParams(window.location.search);
-  //     const hashParam = urlParams.get("hash");
-  //     const interactRefParam = urlParams.get("interact_ref");
-
-  //     if (hashParam && interactRefParam) {
-  //       console.log(hashParam);
-  //       console.log(interactRefParam);
-
-  //       finishPayment(interactRefParam);
-  //     } else {
-  //       console.log("Not waiting...");
-  //     }
-  //   }, []);
 
   if (loading) {
     return (
@@ -275,16 +178,10 @@ export default function CommunityPage({ params }) {
         }}
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative p-16">
           <div className="container mx-auto text-center p-4">
             <h1 className="text-4xl font-bold mb-4">{community.name}</h1>
-            <p className="text-lg">
-              {/* Join Us every Thursdays and Wednesdays for drinking. We meet and
-              drink and the balcony. If you're an intern, all drinks are on the
-              company by the way! */}
-              {community.description}
-            </p>
+            <p className="text-lg">{community.description}</p>
           </div>
 
           <center>
@@ -308,7 +205,7 @@ export default function CommunityPage({ params }) {
               }}
               onClick={() => console.log("shared successfully!")}
             >
-              <button className="bg-white rounded text-black px-6 py-1 mx-2  border border-gray-300">
+              <button className="bg-white rounded text-black px-6 py-1 mx-2 border border-gray-300">
                 invite
               </button>
             </RWebShare>
@@ -321,13 +218,6 @@ export default function CommunityPage({ params }) {
         <div className="rounded border border-black bg-openbox-green p-4">
           <h2 className="text-2xl font-semibold mb-4">Upcoming Events</h2>
           <ul className="space-y-4">
-            {/* {upcomingEvents.map((event) => (
-              <li key={event.id} className="p-4 bg-white shadow rounded-md">
-                <h3 className="text-xl font-medium">{event.title}</h3>
-                <p className="text-gray-500">{event.date}</p>
-              </li>
-            ))} */}
-
             {allEvents.map((event) => (
               <li key={event.id} className="p-4 bg-white shadow rounded-md">
                 <h3 className="text-xl font-medium">{event.Name}</h3>
@@ -344,23 +234,8 @@ export default function CommunityPage({ params }) {
             {allPolls.map((poll) => (
               <li key={poll.id} className="p-4 bg-white shadow rounded-md">
                 <h3 className="text-xl font-medium">{poll.Question}</h3>
-
-                {/* {poll.Options.map((poll_option) => (
-                  <div className="mt-2">
-                    <input
-                      type="radio"
-                      name={`poll-${poll.id}`}
-                      id={`poll-${poll.id}-option-2`}
-                      className="mr-2"
-                    />
-                    <label htmlFor={`poll-${poll.id}-option-2`}>
-                      {poll_option}
-                    </label>
-                  </div>
-                ))} */}
-
                 {poll.Opt.map((poll_option, poll_option_index) => (
-                  <div className="mt-2">
+                  <div className="mt-2" key={poll_option_index}>
                     <input
                       type="radio"
                       name={`poll-${poll.id}`}
@@ -369,18 +244,9 @@ export default function CommunityPage({ params }) {
                       onChange={() =>
                         handlePollOptionSelection(poll.id, poll_option.title)
                       }
-                      disabled={poll.selected ? true : false}
-                      // checked={
-                      //   poll.selected &&
-                      //   poll.selected_option === poll_option.title
-                      // }
-                      checked={
-                        poll.selected &&
-                        poll.selected_option === poll_option.title
-                      }
-                      //checked
+                      checked={poll.selected_option === poll_option.title}
                     />
-                    <label htmlFor={`poll-${poll.id}-option-2`}>
+                    <label htmlFor={`poll-${poll.id}-opt-${poll_option_index}`}>
                       {poll_option.title}
                     </label>
                   </div>
@@ -390,17 +256,19 @@ export default function CommunityPage({ params }) {
           </ul>
         </div>
 
-        {/* Past Events */}
-        <div className="rounded border border-gray-300 bg-openbox-green p-4">
-          <h2 className="text-2xl font-semibold mb-4">Past Events</h2>
-          <ul className="space-y-4">
-            {pastEvents.map((event) => (
-              <li key={event.id} className="p-4 bg-white shadow rounded-md">
-                <h3 className="text-xl font-medium">{event.title}</h3>
-                <p className="text-gray-500">{event.date}</p>
-              </li>
-            ))}
-          </ul>
+        {/* Share */}
+        <div className="rounded border border-black bg-openbox-green p-4">
+          <h2 className="text-2xl font-semibold mb-4">Share Community</h2>
+          <div className="flex justify-around">
+            <FacebookShareCount url={window.location.href} />
+            <TwitterIcon size={32} round />
+            <PinterestShareCount url={window.location.href} />
+            <RedditShareCount url={window.location.href} />
+            <TumblrShareCount url={window.location.href} />
+            <VKShareCount url={window.location.href} />
+            <OKShareCount url={window.location.href} />
+            <HatenaShareCount url={window.location.href} />
+          </div>
         </div>
       </div>
     </div>

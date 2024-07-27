@@ -73,6 +73,7 @@ export default class EventDB {
         const data = doc.data();
         const object2 = { id: doc.id };
         eventsArray.push({ ...object2, ...data });
+        // console.log(data);
       });
 
       setEvents(eventsArray);
