@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   CircularProgress,
   Grid,
@@ -11,6 +11,8 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import CommunityDB from "../../database/community/community";
 import { useRouter } from "next/navigation";
@@ -29,14 +31,16 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
       name: string;
       description: string;
       category: string;
-      status: string; // Include status in state
-      users: string[]; // Add users field to state
+      status: string;
+      users: string[];
     }[]
   >([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedStatus, setSelectedStatus] = useState<string>("active");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const router = useRouter();
 
@@ -70,8 +74,8 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
   };
 
   const handleJoinCommunity = async (data: any) => {
-    const isJoined = await CommunityDB.joinCommunity(data);
-    if (isJoined) {
+    const result = await CommunityDB.joinCommunity(data.id, email);
+    if (result.success) {
       // Update the state to reflect the joined status
       const updatedData = submittedData.map((community) => {
         if (community.id === data.id) {
@@ -83,7 +87,46 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
         return community;
       });
       setSubmittedData(updatedData);
+
+      // Set Snackbar message and open it
+      setSnackbarMessage(
+        `Congrats! You have now joined the "${data.name}" community.`
+      );
+      setOpenSnackbar(true);
+    } else {
+      alert(result.message);
     }
+  };
+
+  const handleLeaveCommunity = async (data: any) => {
+    const result = await CommunityDB.leaveCommunity(data.id, email);
+    if (result.success) {
+      // Update the state to reflect the left status
+      const updatedData = submittedData.map((community) => {
+        if (community.id === data.id) {
+          return {
+            ...community,
+            users: community.users.filter((user) => user !== email),
+          };
+        }
+        return community;
+      });
+      setSubmittedData(updatedData);
+
+      // Set Snackbar message and open it
+      setSnackbarMessage(`You have left the "${data.name}" community.`);
+      setOpenSnackbar(true);
+    } else {
+      alert(result.message);
+    }
+  };
+
+  const handleViewCommunity = (data: any) => {
+    router.push(`/userview?id=${data.id}`);
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
   };
 
   const filterDataByCategoryAndStatus = (
@@ -209,27 +252,34 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
                         </Typography>
                       </CardContent>
                       <CardActions>
-                        {data.users && data.users.includes(email) ? (
-                          <Button size="small" disabled>
-                            Joined
-                          </Button>
+                        {data.users.includes(email) ? (
+                          <>
+                            <Button size="small" disabled>
+                              Joined
+                            </Button>
+                            <Button
+                              size="small"
+                              onClick={() => handleLeaveCommunity(data)}
+                            >
+                              Leave Community
+                            </Button>
+                          </>
                         ) : (
-                          <Button
-                            size="small"
-                            onClick={() => handleJoinCommunity(data)}
-                          >
-                            Join
-                          </Button>
+                          <>
+                            <Button
+                              size="small"
+                              onClick={() => handleJoinCommunity(data)}
+                            >
+                              Join
+                            </Button>
+                            <Button
+                              size="small"
+                              onClick={() => handleViewCommunity(data)}
+                            >
+                              View
+                            </Button>
+                          </>
                         )}
-                        <Button
-                          size="small"
-                          onClick={() => {
-                            localStorage.setItem("CurrentCommunity", data.id);
-                            router.push("/userview");
-                          }}
-                        >
-                          View
-                        </Button>
                       </CardActions>
                     </Card>
                   </Grid>
@@ -241,6 +291,17 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
           <CircularProgress />
         )}
       </div>
+
+      {/* Snackbar for notifications */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="success">
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

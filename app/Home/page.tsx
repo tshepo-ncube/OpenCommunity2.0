@@ -124,7 +124,6 @@ function Home() {
         <Header />
         <center>
           <Box sx={{ width: "100%" }}>
-            <Typography variant="h4">Hello, {email}</Typography>
             <Box
               sx={{
                 borderBottom: "5px solid white", // Set the border color to green
