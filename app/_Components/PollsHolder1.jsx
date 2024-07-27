@@ -16,11 +16,12 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import IconButton from "@mui/material/IconButton";
 import { green } from "@mui/material/colors";
 
-function PollsHolder({ communityID }) {
+function PollsHolder({ communityID, userJoined }) {
   const [allPolls, setAllPolls] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newPollQuestion, setNewPollQuestion] = useState("");
   const [newPollOptions, setNewPollOptions] = useState(["", ""]);
+  const [openPopup, setOpenPopup] = useState(false);
 
   useEffect(() => {
     PollDB.getPollFromCommunityID(communityID, setAllPolls);
@@ -74,26 +75,19 @@ function PollsHolder({ communityID }) {
     setNewPollOptions(options);
   };
 
+  const handleCardClick = () => {
+    if (!userJoined) {
+      setOpenPopup(true);
+    }
+  };
+
+  const handleClosePopup = () => {
+    setOpenPopup(false);
+  };
+
   return (
     <div className="mt-4 h-480">
-      <h1 className="text-xxl relative">
-        Polls
-        <IconButton
-          sx={{
-            borderRadius: "50%",
-            backgroundColor: green[500],
-            color: "white",
-            marginLeft: 2,
-            "&:hover": {
-              backgroundColor: green[700],
-            },
-          }}
-          onClick={handleCreatePoll}
-          aria-label="create poll"
-        >
-          <AddIcon />
-        </IconButton>
-      </h1>
+      <h1 className="text-xxl relative">Polls</h1>
 
       <div style={{ overflowX: "auto", whiteSpace: "nowrap", marginTop: 15 }}>
         {allPolls.length === 0 ? (
@@ -104,7 +98,14 @@ function PollsHolder({ communityID }) {
           <Grid container justifyContent="flex-start" spacing={2}>
             {allPolls.map((value) => (
               <Grid key={value.id} item xs={12} sm={6} md={4} lg={3}>
-                <Card>
+                <Card
+                  onClick={handleCardClick}
+                  style={{
+                    filter: userJoined ? "none" : "blur(4px)",
+                    pointerEvents: userJoined ? "auto" : "none",
+                    opacity: userJoined ? 1 : 0.6,
+                  }}
+                >
                   <CardContent>
                     <Typography variant="h6" gutterBottom>
                       {value.Question}
@@ -181,6 +182,20 @@ function PollsHolder({ communityID }) {
           </Button>
           <Button onClick={handleSavePoll} color="primary">
             Save Poll
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openPopup} onClose={handleClosePopup}>
+        <DialogTitle>Join Community</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Join the community to see the polls.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClosePopup} color="primary">
+            OK
           </Button>
         </DialogActions>
       </Dialog>
