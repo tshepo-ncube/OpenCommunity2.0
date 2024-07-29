@@ -23,6 +23,9 @@ const EventsHolder = ({
   const [loading, setLoading] = useState(true);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [eventIdToDelete, setEventIdToDelete] = useState(null);
+  const [openAnalyticsModal, setOpenAnalyticsModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [rsvpEmails, setRsvpEmails] = useState([]);
 
   useEffect(() => {
     EventDB.getEventFromCommunityID(communityID, setAllEvents);
@@ -145,8 +148,23 @@ const EventsHolder = ({
     setEventIdToDelete(null);
   };
 
-  const handleViewResults = (event) => {
-    console.log(`View results for event ${event.id}`);
+  const handleViewAnalytics = async (event) => {
+    setSelectedEvent(event);
+    try {
+      // Fetch RSVP emails
+      const rsvpData = await EventDB.getEventRsvpEmails(event.id);
+      setRsvpEmails(rsvpData || []);
+    } catch (error) {
+      console.error("Error fetching RSVP data:", error);
+      setRsvpEmails([]);
+    }
+    setOpenAnalyticsModal(true);
+  };
+
+  const handleCloseAnalyticsModal = () => {
+    setOpenAnalyticsModal(false);
+    setSelectedEvent(null);
+    setRsvpEmails([]);
   };
 
   const getStatusColor = (status) => {
@@ -272,11 +290,8 @@ const EventsHolder = ({
                       </>
                     ) : (
                       <>
-                        <Button
-                          color="error"
-                          onClick={() => handleArchive(value.id)}
-                        >
-                          Archive
+                        <Button onClick={() => handleViewAnalytics(value)}>
+                          View Analytics
                         </Button>
                         <Button
                           color="error"
@@ -294,76 +309,88 @@ const EventsHolder = ({
         )}
       </div>
 
-      <div className="mt-4">
+      <div className="mt-8">
         <h1 className="text-xxl">Past Events</h1>
-        <Grid container spacing={2}>
-          {pastEvents.map((value) => (
-            <Grid key={value.id} item>
-              <Card sx={{ maxWidth: 345 }}>
-                <CardHeader
-                  title={value.Name}
-                  subheader={`${formatDate(value.StartDate)} - ${formatDate(
-                    value.EndDate
-                  )}`}
-                  action={
-                    <Box sx={{ display: "flex", gap: "4px" }}>
-                      <Box
-                        sx={{
-                          bgcolor: getStatusColor(value.status),
-                          color: "#fff",
-                          p: 0.5,
-                          borderRadius: "4px",
-                        }}
+        <div style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
+          {loading ? (
+            <center>Loading...</center>
+          ) : pastEvents.length === 0 ? (
+            <center>No past events</center>
+          ) : (
+            <Grid container spacing={2}>
+              {pastEvents.map((value) => (
+                <Grid key={value.id} item>
+                  <Card sx={{ maxWidth: 345 }}>
+                    <CardHeader
+                      title={value.Name}
+                      subheader={`${formatDate(value.StartDate)} - ${formatDate(
+                        value.EndDate
+                      )}`}
+                      action={
+                        <Box sx={{ display: "flex", gap: "4px" }}>
+                          <Box
+                            sx={{
+                              bgcolor: getStatusColor(value.status),
+                              color: "#fff",
+                              p: 0.5,
+                              borderRadius: "4px",
+                            }}
+                          >
+                            <Typography variant="caption">
+                              {value.status}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      }
+                    />
+                    <CardContent>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        style={{ whiteSpace: "pre-wrap" }}
                       >
-                        <Typography variant="caption">
-                          {value.status}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  }
-                />
-                <CardContent>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    style={{ whiteSpace: "pre-wrap" }}
-                  >
-                    <strong>Date:</strong>{" "}
-                    {`${formatDate(value.StartDate)} - ${formatDate(
-                      value.EndDate
-                    )}`}
-                    <br />
-                    <strong>Time:</strong>{" "}
-                    {`${formatTime(value.StartDate)} - ${formatTime(
-                      value.EndDate
-                    )}`}
-                    <br />
-                    <strong>Location:</strong> {value.Location}
-                    <br />
-                    <strong>Description:</strong> {value.EventDescription}
-                    <br />
-                    <strong>RSVP by the:</strong>{" "}
-                    {`${formatDate(value.RsvpEndTime)} - ${formatTime(
-                      value.RsvpEndTime
-                    )}`}
-                  </Typography>
-                </CardContent>
-                <CardActions disableSpacing>
-                  <Button onClick={() => handleViewResults(value)}>
-                    View Results
-                  </Button>
-                </CardActions>
-              </Card>
+                        <strong>Date:</strong>{" "}
+                        {`${formatDate(value.StartDate)} - ${formatDate(
+                          value.EndDate
+                        )}`}
+                        <br />
+                        <strong>Time:</strong>{" "}
+                        {`${formatTime(value.StartDate)} - ${formatTime(
+                          value.EndDate
+                        )}`}
+                        <br />
+                        <strong>Location:</strong> {value.Location}
+                        <br />
+                        <strong>Description:</strong> {value.EventDescription}
+                        <br />
+                        <strong>RSVP by the:</strong>{" "}
+                        {`${formatDate(value.RsvpEndTime)} - ${formatTime(
+                          value.RsvpEndTime
+                        )}`}
+                      </Typography>
+                    </CardContent>
+                    <CardActions disableSpacing>
+                      <Button
+                        color="error"
+                        onClick={() => handleDeleteConfirmation(value.id)}
+                      >
+                        Delete
+                      </Button>
+                    </CardActions>
+                  </Card>
+                </Grid>
+              ))}
             </Grid>
-          ))}
-        </Grid>
+          )}
+        </div>
       </div>
 
+      {/* Delete Modal */}
       <Modal
         open={openDeleteModal}
         onClose={handleCloseDeleteModal}
-        aria-labelledby="modal-title"
-        aria-describedby="modal-description"
+        aria-labelledby="delete-modal-title"
+        aria-describedby="delete-modal-description"
       >
         <Box
           sx={{
@@ -378,25 +405,59 @@ const EventsHolder = ({
             p: 4,
           }}
         >
-          <Typography id="modal-title" variant="h6" component="h2">
+          <Typography id="delete-modal-title" variant="h6" component="h2">
             Confirm Deletion
           </Typography>
-          <Typography id="modal-description" sx={{ mt: 2 }}>
+          <Typography id="delete-modal-description" sx={{ mt: 2 }}>
             Are you sure you want to delete this event?
           </Typography>
-          <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
-            <Button
-              onClick={handleDelete}
-              color="error"
-              variant="contained"
-              sx={{ mr: 1 }}
-            >
+          <Box sx={{ mt: 2 }}>
+            <Button onClick={handleDelete} color="error" variant="contained">
               Delete
             </Button>
-            <Button onClick={handleCloseDeleteModal} variant="outlined">
+            <Button onClick={handleCloseDeleteModal} sx={{ ml: 2 }}>
               Cancel
             </Button>
           </Box>
+        </Box>
+      </Modal>
+
+      {/* Analytics Modal */}
+      <Modal
+        open={openAnalyticsModal}
+        onClose={handleCloseAnalyticsModal}
+        aria-labelledby="analytics-modal-title"
+        aria-describedby="analytics-modal-description"
+      >
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography id="analytics-modal-title" variant="h6" component="h2">
+            Analytics for {selectedEvent?.Name}
+          </Typography>
+          <Typography id="analytics-modal-description" sx={{ mt: 2 }}>
+            <strong>RSVP List:</strong>
+            <ul>
+              {rsvpEmails.length > 0 ? (
+                rsvpEmails.map((email, index) => <li key={index}>{email}</li>)
+              ) : (
+                <li>No RSVPs yet.</li>
+              )}
+            </ul>
+          </Typography>
+          <Button onClick={handleCloseAnalyticsModal} sx={{ mt: 2 }}>
+            Close
+          </Button>
         </Box>
       </Modal>
     </div>
