@@ -10,11 +10,10 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
-import { RWebShare } from "react-web-share";
 
 export default function CommunityPage({ params }) {
   const { id } = params;
@@ -59,6 +58,22 @@ export default function CommunityPage({ params }) {
       setPollsUpdated(true);
     }
   }, [allPolls]);
+
+  useEffect(() => {
+    // Fetch RSVP status for each event when the component loads
+    const fetchRSVPStatus = async () => {
+      const updatedRSVPState = {};
+      for (const event of allEvents) {
+        const isRSVPed =
+          event.rsvp && event.rsvp.includes(localStorage.getItem("Email"));
+        updatedRSVPState[event.id] = isRSVPed;
+      }
+      setRsvpState(updatedRSVPState);
+    };
+    if (allEvents.length > 0) {
+      fetchRSVPStatus();
+    }
+  }, [allEvents]);
 
   const updatePolls = async () => {
     const updatedArray = await Promise.all(
@@ -255,9 +270,7 @@ export default function CommunityPage({ params }) {
                 </li>
               ))
             ) : (
-              <Typography variant="body2" color="text.secondary">
-                No upcoming events.
-              </Typography>
+              <Typography>No upcoming events</Typography>
             )}
           </ul>
         </div>
@@ -291,85 +304,36 @@ export default function CommunityPage({ params }) {
                     <br />
                     <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
                   </Typography>
-                  <Button
-                    variant="text"
-                    color="primary"
-                    className="mt-4 w-full"
-                    onClick={() => handleCommentReview(event.Name)}
-                  >
-                    Leave a Comment & Review
-                  </Button>
+                  <div className="mt-4">
+                    <Button
+                      variant="text"
+                      color="primary"
+                      className="w-full"
+                      onClick={() => handleCommentReview(event.Name)}
+                    >
+                      Leave a Comment & Review
+                    </Button>
+                  </div>
                 </li>
               ))
             ) : (
-              <Typography variant="body2" color="text.secondary">
-                No past events.
-              </Typography>
-            )}
-          </ul>
-        </div>
-
-        {/* Polls */}
-        <div className="rounded border border-black bg-openbox-green p-4">
-          <h2 className="text-2xl font-semibold mb-4">Polls</h2>
-          <ul className="space-y-4">
-            {allPolls.length > 0 ? (
-              allPolls.map((poll) => (
-                <li key={poll.id} className="p-4 bg-white shadow rounded-md">
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    style={{ whiteSpace: "pre-wrap" }}
-                  >
-                    <div className="border-b-2 border-gray-300 mb-2">
-                      <h3 className="text-xl font-semibold">{poll.Question}</h3>
-                    </div>
-                    {poll.Options && poll.Options.length > 0 ? (
-                      poll.Options.map((option) => (
-                        <div key={option} className="flex items-center">
-                          <input
-                            type="radio"
-                            id={`${poll.id}-${option}`}
-                            name={`poll-${poll.id}`}
-                            value={option}
-                            checked={poll.selected_option === option}
-                            disabled={poll.selected}
-                            onChange={() =>
-                              handlePollOptionSelection(poll.id, option)
-                            }
-                          />
-                          <label
-                            htmlFor={`${poll.id}-${option}`}
-                            className="ml-2"
-                          >
-                            {option}
-                          </label>
-                        </div>
-                      ))
-                    ) : (
-                      <Typography variant="body2" color="text.secondary">
-                        No options available.
-                      </Typography>
-                    )}
-                  </Typography>
-                </li>
-              ))
-            ) : (
-              <Typography variant="body2" color="text.secondary">
-                No polls available.
-              </Typography>
+              <Typography>No past events</Typography>
             )}
           </ul>
         </div>
       </div>
 
-      {/* Review Dialog */}
+      {/* Dialog for Comment and Review */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>
           Leave a Review and Comment about {currentEvent}
         </DialogTitle>
-        <DialogContent>{/* Add your review form here */}</DialogContent>
-        <Button onClick={handleCloseDialog}>Close</Button>
+        <DialogContent>
+          {/* Add your comment and review form here */}
+          <Button onClick={handleCloseDialog} color="primary">
+            Close
+          </Button>
+        </DialogContent>
       </Dialog>
     </div>
   );

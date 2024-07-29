@@ -103,4 +103,20 @@ export default class EventDB {
       throw error;
     }
   };
+
+  static isUserRSVPed = async (eventID, email) => {
+    const eventRef = doc(DB, "events", eventID);
+
+    try {
+      const eventDoc = await getDoc(eventRef);
+      if (eventDoc.exists()) {
+        const eventData = eventDoc.data();
+        return eventData.rsvp && eventData.rsvp.includes(email);
+      }
+      return false;
+    } catch (error) {
+      console.error("Error checking RSVP status:", error);
+      throw error;
+    }
+  };
 }
