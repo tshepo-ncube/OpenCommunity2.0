@@ -1,67 +1,44 @@
 "use client";
-import { CircularProgress } from "@mui/material";
+import {
+  CircularProgress,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Button,
+  Alert,
+} from "@mui/material";
 import { useEffect, useState } from "react";
-import { ThreeDots } from "react-loader-spinner";
 import { useRouter } from "next/navigation";
-import { initializeApp } from "firebase/app";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import db from "../../../../database/DB";
-
-import {
-  FacebookShareCount,
-  HatenaShareCount,
-  OKShareCount,
-  PinterestShareCount,
-  RedditShareCount,
-  TumblrShareCount,
-  VKShareCount,
-  TwitterIcon,
-} from "react-share";
-import { RWebShare } from "react-web-share";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
+import { RWebShare } from "react-web-share";
 
 export default function CommunityPage({ params }) {
-  const upcomingEvents = [
-    { id: 1, title: "Community Picnic", date: "2024-07-20" },
-    { id: 2, title: "Yoga Session", date: "2024-07-22" },
-  ];
-
-  const polls = [
-    { id: 1, question: "Which event should we host next?" },
-    { id: 2, question: "Preferred time for yoga sessions?" },
-  ];
-
-  const pastEvents = [
-    { id: 1, title: "Music Concert", date: "2024-07-10" },
-    { id: 2, title: "Art Exhibition", date: "2024-07-05" },
-  ];
   const { id } = params;
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const [allPolls, setAllPolls] = useState();
-  const [allEvents, setAllEvents] = useState();
+  const [allPolls, setAllPolls] = useState([]);
+  const [allEvents, setAllEvents] = useState([]);
   const [pollsUpdated, setPollsUpdated] = useState(false);
   const [USER_ID, setUSER_ID] = useState(localStorage.getItem("UserID"));
   const [community, setCommunity] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [currentEvent, setCurrentEvent] = useState(null);
+  const [alertOpen, setAlertOpen] = useState(false);
 
   useEffect(() => {
-    console.log("useEffect called"); // Log to ensure useEffect is called
     if (id) {
-      console.log("Fetching community with ID:", id); // Log the ID being fetched
-      //setCommunity(id);
       const fetchCommunity = async () => {
         const communityRef = doc(db, "communities", id);
         try {
           const snapshot = await getDoc(communityRef);
           if (!snapshot.exists()) {
-            console.log("No such document!");
             setLoading(false);
             return;
           }
-          console.log("Community data:", snapshot.data()); // Log the fetched data
-
           setCommunity(snapshot.data());
         } catch (error) {
           console.error("Error getting document: ", error);
@@ -71,82 +48,17 @@ export default function CommunityPage({ params }) {
       };
       fetchCommunity();
       PollDB.getPollFromCommunityIDForUser(id, setAllPolls);
-
       EventDB.getEventFromCommunityID(id, setAllEvents);
     }
   }, [id]);
 
   useEffect(() => {
-    console.log("All Polls : ", allPolls);
-
-    if (allPolls) {
-      // allPolls.forEach((obj) => {
-      //   PollDB.checkIfPollExists(
-      //     "IiLHMfnUZqgrR4OIyfcQ",
-      //     params.id,
-      //     obj.id //"bQEIfk3NmMBngJeZEmFZ"
-      //   )
-      //     .then((result) => {
-      //       console.log(result);
-      //       if (result) {
-      //         console.log("The result: ", result);
-      //         obj.selected = true;
-      //         obj.selected_option = result;
-      //       } else {
-      //         console.log("The result: ", result);
-      //         obj.selected = false;
-      //       }
-      //     })
-      //     .catch((error) => {
-      //       console.error("Error:", error);
-      //     });
-      //   // You can set this to any value you need
-      // });
-
-      // const updatedArray = allPolls.map((obj) => {
-      //   PollDB.checkIfPollExists(
-      //     "IiLHMfnUZqgrR4OIyfcQ",
-      //     params.id,
-      //     obj.id //"bQEIfk3NmMBngJeZEmFZ"
-      //   )
-      //     .then((result) => {
-      //       console.log(result);
-      //       if (result) {
-      //         console.log("The result: ", result);
-      //         obj.selected = true;
-      //         obj.selected_option = result;
-      //         return {
-      //           ...obj,
-      //           selected: true, // Example of a dynamic value based on existing properties
-      //           selected_option: result,
-      //         };
-      //       } else {
-      //         console.log("The result: ", result);
-      //         obj.selected = false;
-      //         return {
-      //           ...obj,
-      //           selected: false, // Example of a dynamic value based on existing properties
-      //         };
-      //       }
-      //     })
-      //     .catch((error) => {
-      //       console.error("Error:", error);
-      //     });
-      // });
-
-      // console.log("Updated All Polls: ", updatedArray);
-      // setAllPolls(updatedArray);
-
-      if (!pollsUpdated) {
-        updatePolls();
-        setPollsUpdated(true);
-      }
+    if (allPolls.length > 0 && !pollsUpdated) {
+      updatePolls();
+      setPollsUpdated(true);
     }
   }, [allPolls]);
 
-  useEffect(() => {
-    console.log("All Events: ", allEvents);
-  }, [allEvents]);
   const updatePolls = async () => {
     const updatedArray = await Promise.all(
       allPolls.map(async (obj) => {
@@ -156,19 +68,13 @@ export default function CommunityPage({ params }) {
             params.id,
             obj.id
           );
-          console.log(result);
           if (result) {
-            console.log("The result: ", result);
-            obj.selected = true;
-            obj.selected_option = result;
             return {
               ...obj,
               selected: true,
               selected_option: result,
             };
           } else {
-            console.log("The result: ", result);
-            obj.selected = false;
             return {
               ...obj,
               selected: false,
@@ -176,45 +82,42 @@ export default function CommunityPage({ params }) {
           }
         } catch (error) {
           console.error("Error:", error);
-          return obj; // Return the original object in case of an error
+          return obj;
         }
       })
     );
 
-    console.log("Updated All Polls: ", updatedArray);
     setAllPolls(updatedArray);
   };
 
   const handlePollOptionSelection = (pollId, selectedOption) => {
-    console.log(`Poll ID: ${pollId}, Selected Option: ${selectedOption}`);
     PollDB.voteFromPollId(params.id, pollId, selectedOption)
-      .then((result) => {
-        //console.log("Vote Result : ", result);
+      .then(() => {
         setPollsUpdated(false);
         PollDB.getPollFromCommunityIDForUser(id, setAllPolls);
       })
       .catch((error) => {
         console.error("Error:", error);
       });
-    //
-    // Perform any additional logic or state updates here
   };
 
-  //   useEffect(() => {
-  //     setStudentURL(window.location.href);
-  //     const urlParams = new URLSearchParams(window.location.search);
-  //     const hashParam = urlParams.get("hash");
-  //     const interactRefParam = urlParams.get("interact_ref");
+  const handleCommentReview = (eventName) => {
+    setCurrentEvent(eventName);
+    setOpenDialog(true);
+  };
 
-  //     if (hashParam && interactRefParam) {
-  //       console.log(hashParam);
-  //       console.log(interactRefParam);
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setCurrentEvent(null);
+  };
 
-  //       finishPayment(interactRefParam);
-  //     } else {
-  //       console.log("Not waiting...");
-  //     }
-  //   }, []);
+  const handleClosedEventClick = () => {
+    setAlertOpen(true);
+  };
+
+  const handleCloseAlert = () => {
+    setAlertOpen(false);
+  };
 
   if (loading) {
     return (
@@ -232,37 +135,17 @@ export default function CommunityPage({ params }) {
     return <div>No Community found with ID: {id}</div>;
   }
 
-  function fixDateString(dateStr) {
-    // Extract parts from the input string
-    const regex =
-      /^(\w+ \d{1,2}, \d{4}) at (\d{1,2}:\d{2}:\d{2} [APM]+) UTC([+-]\d{1,2})$/;
-    const match = dateStr.match(regex);
+  const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
+  const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString();
 
-    if (!match) {
-      throw new Error("Invalid date format");
-    }
+  // Filter events based on status
+  const upcomingEvents = allEvents.filter(
+    (event) => event.status === "active" || event.status === "rsvp"
+  );
 
-    const [, datePart, timePart, offsetPart] = match;
-
-    // Convert the time part to 24-hour format
-    const [time, period] = timePart.split(" ");
-    let [hours, minutes, seconds] = time.split(":").map(Number);
-
-    if (period === "PM" && hours !== 12) {
-      hours += 12;
-    } else if (period === "AM" && hours === 12) {
-      hours = 0;
-    }
-
-    // Construct the new date string in ISO format
-    const isoDateStr = `${datePart.replace(/,/, "")}T${hours
-      .toString()
-      .padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds
-      .toString()
-      .padStart(2, "0")}${offsetPart}:00`;
-
-    return isoDateStr;
-  }
+  const pastEvents = allEvents.filter(
+    (event) => event.status === "past" // Adjust filtering based on your status or date
+  );
 
   return (
     <div className="">
@@ -275,16 +158,10 @@ export default function CommunityPage({ params }) {
         }}
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative p-16">
           <div className="container mx-auto text-center p-4">
             <h1 className="text-4xl font-bold mb-4">{community.name}</h1>
-            <p className="text-lg">
-              {/* Join Us every Thursdays and Wednesdays for drinking. We meet and
-              drink and the balcony. If you're an intern, all drinks are on the
-              company by the way! */}
-              {community.description}
-            </p>
+            <p className="text-lg">{community.description}</p>
           </div>
 
           <center>
@@ -308,7 +185,7 @@ export default function CommunityPage({ params }) {
               }}
               onClick={() => console.log("shared successfully!")}
             >
-              <button className="bg-white rounded text-black px-6 py-1 mx-2  border border-gray-300">
+              <button className="bg-white rounded text-black px-6 py-1 mx-2 border border-gray-300">
                 invite
               </button>
             </RWebShare>
@@ -321,19 +198,50 @@ export default function CommunityPage({ params }) {
         <div className="rounded border border-black bg-openbox-green p-4">
           <h2 className="text-2xl font-semibold mb-4">Upcoming Events</h2>
           <ul className="space-y-4">
-            {/* {upcomingEvents.map((event) => (
-              <li key={event.id} className="p-4 bg-white shadow rounded-md">
-                <h3 className="text-xl font-medium">{event.title}</h3>
-                <p className="text-gray-500">{event.date}</p>
-              </li>
-            ))} */}
-
-            {allEvents.map((event) => (
-              <li key={event.id} className="p-4 bg-white shadow rounded-md">
-                <h3 className="text-xl font-medium">{event.Name}</h3>
-                <p className="text-gray-500">{event.Location}</p>
-              </li>
-            ))}
+            {upcomingEvents.length > 0 ? (
+              upcomingEvents.map((event) => (
+                <li key={event.id} className="p-4 bg-white shadow rounded-md">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    style={{ whiteSpace: "pre-wrap" }}
+                  >
+                    <div className="border-b-2 border-gray-300 mb-2">
+                      <h3 className="text-xl font-semibold">{event.Name}</h3>
+                    </div>
+                    <strong>Description:</strong> {event.EventDescription}
+                    <br />
+                    <strong>Location:</strong> {event.Location}
+                    <br />
+                    <strong>Start Date:</strong> {formatDate(event.StartDate)}
+                    <br />
+                    <strong>End Date:</strong> {formatDate(event.EndDate)}
+                    <br />
+                    <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
+                  </Typography>
+                  <div className="mt-4">
+                    {event.status === "active" ? (
+                      <Button
+                        variant="text"
+                        color="secondary"
+                        className="w-full"
+                        onClick={handleClosedEventClick}
+                      >
+                        Closed
+                      </Button>
+                    ) : event.status === "rsvp" ? (
+                      <Button variant="text" color="primary" className="w-full">
+                        RSVP
+                      </Button>
+                    ) : null}
+                  </div>
+                </li>
+              ))
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No upcoming events.
+              </Typography>
+            )}
           </ul>
         </div>
 
@@ -344,43 +252,19 @@ export default function CommunityPage({ params }) {
             {allPolls.map((poll) => (
               <li key={poll.id} className="p-4 bg-white shadow rounded-md">
                 <h3 className="text-xl font-medium">{poll.Question}</h3>
-
-                {/* {poll.Options.map((poll_option) => (
-                  <div className="mt-2">
-                    <input
-                      type="radio"
-                      name={`poll-${poll.id}`}
-                      id={`poll-${poll.id}-option-2`}
-                      className="mr-2"
-                    />
-                    <label htmlFor={`poll-${poll.id}-option-2`}>
-                      {poll_option}
-                    </label>
-                  </div>
-                ))} */}
-
                 {poll.Opt.map((poll_option, poll_option_index) => (
-                  <div className="mt-2">
+                  <div key={`${poll.id}-opt-${poll_option_index}`}>
                     <input
                       type="radio"
+                      id={`${poll.id}-opt-${poll_option_index}`}
                       name={`poll-${poll.id}`}
-                      id={`poll-${poll.id}-opt-${poll_option_index}`}
-                      className="mr-2"
+                      value={poll_option.value}
                       onChange={() =>
-                        handlePollOptionSelection(poll.id, poll_option.title)
+                        handlePollOptionSelection(poll.id, poll_option.value)
                       }
-                      disabled={poll.selected ? true : false}
-                      // checked={
-                      //   poll.selected &&
-                      //   poll.selected_option === poll_option.title
-                      // }
-                      checked={
-                        poll.selected &&
-                        poll.selected_option === poll_option.title
-                      }
-                      //checked
+                      checked={poll.selected_option === poll_option.value}
                     />
-                    <label htmlFor={`poll-${poll.id}-option-2`}>
+                    <label htmlFor={`${poll.id}-opt-${poll_option_index}`}>
                       {poll_option.title}
                     </label>
                   </div>
@@ -391,18 +275,70 @@ export default function CommunityPage({ params }) {
         </div>
 
         {/* Past Events */}
-        <div className="rounded border border-gray-300 bg-openbox-green p-4">
+        <div className="rounded border border-black bg-openbox-green p-4">
           <h2 className="text-2xl font-semibold mb-4">Past Events</h2>
           <ul className="space-y-4">
-            {pastEvents.map((event) => (
-              <li key={event.id} className="p-4 bg-white shadow rounded-md">
-                <h3 className="text-xl font-medium">{event.title}</h3>
-                <p className="text-gray-500">{event.date}</p>
-              </li>
-            ))}
+            {pastEvents.length > 0 ? (
+              pastEvents.map((event) => (
+                <li key={event.id} className="p-4 bg-white shadow rounded-md">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    style={{ whiteSpace: "pre-wrap" }}
+                  >
+                    <div className="border-b-2 border-gray-300 mb-2">
+                      <h3 className="text-xl font-semibold">{event.Name}</h3>
+                    </div>
+                    <strong>Description:</strong> {event.EventDescription}
+                    <br />
+                    <strong>Location:</strong> {event.Location}
+                    <br />
+                    <strong>Start Date:</strong> {formatDate(event.StartDate)}
+                    <br />
+                    <strong>End Date:</strong> {formatDate(event.EndDate)}
+                  </Typography>
+                  <div className="mt-4">
+                    {event.status === "past" && (
+                      <Button
+                        variant="text"
+                        color="primary"
+                        className="w-full"
+                        onClick={() => handleCommentReview(event.Name)}
+                      >
+                        Leave a Comment & Review
+                      </Button>
+                    )}
+                  </div>
+                </li>
+              ))
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No past events.
+              </Typography>
+            )}
           </ul>
         </div>
       </div>
+
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>
+          Leave a Review and Comment about {currentEvent}
+        </DialogTitle>
+        <DialogContent>
+          {/* Content for leaving a review and comment */}
+          <Typography>
+            This is where the review and comment form would go.
+          </Typography>
+          <Button onClick={handleCloseDialog}>Close</Button>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={alertOpen} onClose={handleCloseAlert}>
+        <DialogContent>
+          <Typography>RSVP for this event has closed.</Typography>
+          <Button onClick={handleCloseAlert}>Close</Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
