@@ -28,6 +28,7 @@ export default function CommunityPage({ params }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [currentEvent, setCurrentEvent] = useState(null);
   const [alertOpen, setAlertOpen] = useState(false);
+  const [rsvpState, setRsvpState] = useState({}); // Track RSVP state for each event
 
   useEffect(() => {
     if (id) {
@@ -119,6 +120,26 @@ export default function CommunityPage({ params }) {
     setAlertOpen(false);
   };
 
+  const handleRSVP = async (eventID) => {
+    try {
+      await EventDB.addRSVP(eventID, localStorage.getItem("Email"));
+      setRsvpState((prev) => ({ ...prev, [eventID]: true }));
+    } catch (error) {
+      console.error("Error RSVPing:", error);
+    }
+  };
+
+  const handleLeave = async (eventID) => {
+    try {
+      await EventDB.removeRSVP(eventID, localStorage.getItem("Email"));
+      setRsvpState((prev) => ({ ...prev, [eventID]: false }));
+    } catch (error) {
+      console.error("Error removing RSVP:", error);
+    }
+  };
+
+  const isRSVPed = (eventID) => rsvpState[eventID] || false;
+
   if (loading) {
     return (
       <div>
@@ -158,38 +179,13 @@ export default function CommunityPage({ params }) {
         }}
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="relative p-16">
-          <div className="container mx-auto text-center p-4">
-            <h1 className="text-4xl font-bold mb-4">{community.name}</h1>
-            <p className="text-lg">{community.description}</p>
-          </div>
-
-          <center>
-            <button
-              onClick={() => {
-                window.open(
-                  "https://teams.microsoft.com/l/channel/19%3Ab862f05c7a864cdc8446d54bbecc9024%40thread.tacv2/Drinking%20Club%20Channel?groupId=3b8c7688-b69d-43a0-8ca0-7a1a5bffa665&tenantId=",
-                  "_blank"
-                );
-              }}
-              className="bg-white rounded text-black px-6 py-1 mx-2 border border-gray-300"
-            >
-              teams
-            </button>
-
-            <RWebShare
-              data={{
-                text: `Community Name - ${community.name}`,
-                url: `http://localhost:3000/${id}`,
-                title: `Community Name - ${community.name}`,
-              }}
-              onClick={() => console.log("shared successfully!")}
-            >
-              <button className="bg-white rounded text-black px-6 py-1 mx-2 border border-gray-300">
-                invite
-              </button>
-            </RWebShare>
-          </center>
+        <div className="relative z-10 text-center">
+          <Typography variant="h2" gutterBottom>
+            {community.CommunityName}
+          </Typography>
+          <Typography variant="h4" gutterBottom>
+            {community.Description}
+          </Typography>
         </div>
       </div>
 
@@ -215,7 +211,11 @@ export default function CommunityPage({ params }) {
                     <br />
                     <strong>Start Date:</strong> {formatDate(event.StartDate)}
                     <br />
+                    <strong>Start Time:</strong> {formatTime(event.StartDate)}
+                    <br />
                     <strong>End Date:</strong> {formatDate(event.EndDate)}
+                    <br />
+                    <strong>End Time:</strong> {formatTime(event.EndDate)}
                     <br />
                     <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
                   </Typography>
@@ -229,11 +229,28 @@ export default function CommunityPage({ params }) {
                       >
                         Closed
                       </Button>
-                    ) : event.status === "rsvp" ? (
-                      <Button variant="text" color="primary" className="w-full">
-                        RSVP
-                      </Button>
-                    ) : null}
+                    ) : (
+                      event.status === "rsvp" &&
+                      (isRSVPed(event.id) ? (
+                        <Button
+                          variant="text"
+                          color="secondary"
+                          className="w-full"
+                          onClick={() => handleLeave(event.id)}
+                        >
+                          UN RSVP
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="text"
+                          color="primary"
+                          className="w-full"
+                          onClick={() => handleRSVP(event.id)}
+                        >
+                          RSVP
+                        </Button>
+                      ))
+                    )}
                   </div>
                 </li>
               ))
@@ -242,35 +259,6 @@ export default function CommunityPage({ params }) {
                 No upcoming events.
               </Typography>
             )}
-          </ul>
-        </div>
-
-        {/* Polls */}
-        <div className="rounded border border-black bg-openbox-green p-4">
-          <h2 className="text-2xl font-semibold mb-4">Polls</h2>
-          <ul className="space-y-4">
-            {allPolls.map((poll) => (
-              <li key={poll.id} className="p-4 bg-white shadow rounded-md">
-                <h3 className="text-xl font-medium">{poll.Question}</h3>
-                {poll.Opt.map((poll_option, poll_option_index) => (
-                  <div key={`${poll.id}-opt-${poll_option_index}`}>
-                    <input
-                      type="radio"
-                      id={`${poll.id}-opt-${poll_option_index}`}
-                      name={`poll-${poll.id}`}
-                      value={poll_option.value}
-                      onChange={() =>
-                        handlePollOptionSelection(poll.id, poll_option.value)
-                      }
-                      checked={poll.selected_option === poll_option.value}
-                    />
-                    <label htmlFor={`${poll.id}-opt-${poll_option_index}`}>
-                      {poll_option.title}
-                    </label>
-                  </div>
-                ))}
-              </li>
-            ))}
           </ul>
         </div>
 
@@ -295,20 +283,22 @@ export default function CommunityPage({ params }) {
                     <br />
                     <strong>Start Date:</strong> {formatDate(event.StartDate)}
                     <br />
+                    <strong>Start Time:</strong> {formatTime(event.StartDate)}
+                    <br />
                     <strong>End Date:</strong> {formatDate(event.EndDate)}
+                    <br />
+                    <strong>End Time:</strong> {formatTime(event.EndDate)}
+                    <br />
+                    <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
                   </Typography>
-                  <div className="mt-4">
-                    {event.status === "past" && (
-                      <Button
-                        variant="text"
-                        color="primary"
-                        className="w-full"
-                        onClick={() => handleCommentReview(event.Name)}
-                      >
-                        Leave a Comment & Review
-                      </Button>
-                    )}
-                  </div>
+                  <Button
+                    variant="text"
+                    color="primary"
+                    className="mt-4 w-full"
+                    onClick={() => handleCommentReview(event.Name)}
+                  >
+                    Leave a Comment & Review
+                  </Button>
                 </li>
               ))
             ) : (
@@ -318,26 +308,68 @@ export default function CommunityPage({ params }) {
             )}
           </ul>
         </div>
+
+        {/* Polls */}
+        <div className="rounded border border-black bg-openbox-green p-4">
+          <h2 className="text-2xl font-semibold mb-4">Polls</h2>
+          <ul className="space-y-4">
+            {allPolls.length > 0 ? (
+              allPolls.map((poll) => (
+                <li key={poll.id} className="p-4 bg-white shadow rounded-md">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    style={{ whiteSpace: "pre-wrap" }}
+                  >
+                    <div className="border-b-2 border-gray-300 mb-2">
+                      <h3 className="text-xl font-semibold">{poll.Question}</h3>
+                    </div>
+                    {poll.Options && poll.Options.length > 0 ? (
+                      poll.Options.map((option) => (
+                        <div key={option} className="flex items-center">
+                          <input
+                            type="radio"
+                            id={`${poll.id}-${option}`}
+                            name={`poll-${poll.id}`}
+                            value={option}
+                            checked={poll.selected_option === option}
+                            disabled={poll.selected}
+                            onChange={() =>
+                              handlePollOptionSelection(poll.id, option)
+                            }
+                          />
+                          <label
+                            htmlFor={`${poll.id}-${option}`}
+                            className="ml-2"
+                          >
+                            {option}
+                          </label>
+                        </div>
+                      ))
+                    ) : (
+                      <Typography variant="body2" color="text.secondary">
+                        No options available.
+                      </Typography>
+                    )}
+                  </Typography>
+                </li>
+              ))
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No polls available.
+              </Typography>
+            )}
+          </ul>
+        </div>
       </div>
 
+      {/* Review Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>
           Leave a Review and Comment about {currentEvent}
         </DialogTitle>
-        <DialogContent>
-          {/* Content for leaving a review and comment */}
-          <Typography>
-            This is where the review and comment form would go.
-          </Typography>
-          <Button onClick={handleCloseDialog}>Close</Button>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={alertOpen} onClose={handleCloseAlert}>
-        <DialogContent>
-          <Typography>RSVP for this event has closed.</Typography>
-          <Button onClick={handleCloseAlert}>Close</Button>
-        </DialogContent>
+        <DialogContent>{/* Add your review form here */}</DialogContent>
+        <Button onClick={handleCloseDialog}>Close</Button>
       </Dialog>
     </div>
   );

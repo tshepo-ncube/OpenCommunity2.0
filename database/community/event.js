@@ -1,5 +1,4 @@
 import DB from "../DB";
-import { StorageDB } from "../StorageDB";
 import {
   getFirestore,
   collection,
@@ -12,12 +11,9 @@ import {
   getDocs,
   query,
   where,
-  runTransaction,
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
-import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
-import { v4 } from "uuid";
 
 export default class EventDB {
   static deleteEvent = async (id) => {
@@ -25,7 +21,6 @@ export default class EventDB {
   };
 
   static createEvent = async (eventObject) => {
-    // Ensure the status field is included with a default value if not provided
     const eventWithStatus = {
       ...eventObject,
       status: eventObject.status || "active",
@@ -35,7 +30,7 @@ export default class EventDB {
       const eventRef = await addDoc(collection(DB, "events"), eventWithStatus);
       console.log("Document ID: ", eventRef.id);
     } catch (e) {
-      alert("error");
+      alert("Error adding document");
       console.log("Error adding document: ", e);
     }
   };
@@ -49,10 +44,7 @@ export default class EventDB {
     const eventRef = doc(DB, "events", id);
 
     try {
-      // Update the status field
-      await updateDoc(eventRef, {
-        status: status,
-      });
+      await updateDoc(eventRef, { status });
       console.log("Event status updated successfully.");
     } catch (error) {
       console.error("Error updating event status:", error);
@@ -84,29 +76,31 @@ export default class EventDB {
     }
   };
 
-  static rsvpToEvent = async (eventId, userEmail) => {
-    const eventRef = doc(DB, "events", eventId);
+  static addRSVP = async (eventID, email) => {
+    const eventRef = doc(DB, "events", eventID);
+
     try {
       await updateDoc(eventRef, {
-        rsvp: arrayUnion(userEmail),
+        rsvp: arrayUnion(email),
       });
+      console.log("RSVP added successfully.");
     } catch (error) {
       console.error("Error adding RSVP:", error);
       throw error;
     }
   };
 
-  static removeRsvpFromEvent = async (eventId, userEmail) => {
-    const eventRef = doc(DB, "events", eventId);
+  static removeRSVP = async (eventID, email) => {
+    const eventRef = doc(DB, "events", eventID);
+
     try {
       await updateDoc(eventRef, {
-        rsvp: arrayRemove(userEmail),
+        rsvp: arrayRemove(email),
       });
+      console.log("RSVP removed successfully.");
     } catch (error) {
       console.error("Error removing RSVP:", error);
       throw error;
     }
   };
-
-  // Add more methods for event-related operations as needed
 }
