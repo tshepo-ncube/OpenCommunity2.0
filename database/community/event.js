@@ -13,6 +13,8 @@ import {
   query,
   where,
   runTransaction,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 import { v4 } from "uuid";
@@ -73,7 +75,6 @@ export default class EventDB {
         const data = doc.data();
         const object2 = { id: doc.id };
         eventsArray.push({ ...object2, ...data });
-        // console.log(data);
       });
 
       setEvents(eventsArray);
@@ -82,4 +83,30 @@ export default class EventDB {
       alert(error);
     }
   };
+
+  static rsvpToEvent = async (eventId, userEmail) => {
+    const eventRef = doc(DB, "events", eventId);
+    try {
+      await updateDoc(eventRef, {
+        rsvp: arrayUnion(userEmail),
+      });
+    } catch (error) {
+      console.error("Error adding RSVP:", error);
+      throw error;
+    }
+  };
+
+  static removeRsvpFromEvent = async (eventId, userEmail) => {
+    const eventRef = doc(DB, "events", eventId);
+    try {
+      await updateDoc(eventRef, {
+        rsvp: arrayRemove(userEmail),
+      });
+    } catch (error) {
+      console.error("Error removing RSVP:", error);
+      throw error;
+    }
+  };
+
+  // Add more methods for event-related operations as needed
 }

@@ -1,34 +1,33 @@
 "use client";
-import { CircularProgress, Typography } from "@mui/material";
+import {
+  CircularProgress,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Button,
+  Alert,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import db from "../../../../database/DB";
-
-import {
-  FacebookShareCount,
-  HatenaShareCount,
-  OKShareCount,
-  PinterestShareCount,
-  RedditShareCount,
-  TumblrShareCount,
-  VKShareCount,
-  TwitterIcon,
-} from "react-share";
-import { RWebShare } from "react-web-share";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
+import { RWebShare } from "react-web-share";
 
 export default function CommunityPage({ params }) {
   const { id } = params;
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const [allPolls, setAllPolls] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [pollsUpdated, setPollsUpdated] = useState(false);
   const [USER_ID, setUSER_ID] = useState(localStorage.getItem("UserID"));
   const [community, setCommunity] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [currentEvent, setCurrentEvent] = useState(null);
+  const [alertOpen, setAlertOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -102,6 +101,24 @@ export default function CommunityPage({ params }) {
       });
   };
 
+  const handleCommentReview = (eventName) => {
+    setCurrentEvent(eventName);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setCurrentEvent(null);
+  };
+
+  const handleClosedEventClick = () => {
+    setAlertOpen(true);
+  };
+
+  const handleCloseAlert = () => {
+    setAlertOpen(false);
+  };
+
   if (loading) {
     return (
       <div>
@@ -118,13 +135,8 @@ export default function CommunityPage({ params }) {
     return <div>No Community found with ID: {id}</div>;
   }
 
-  function formatDate(dateStr) {
-    return new Date(dateStr).toLocaleDateString();
-  }
-
-  function formatTime(dateStr) {
-    return new Date(dateStr).toLocaleTimeString();
-  }
+  const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
+  const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString();
 
   // Filter events based on status
   const upcomingEvents = allEvents.filter(
@@ -194,7 +206,9 @@ export default function CommunityPage({ params }) {
                     color="text.secondary"
                     style={{ whiteSpace: "pre-wrap" }}
                   >
-                    <h3 className="text-xl font-semibold mb-2">{event.Name}</h3>
+                    <div className="border-b-2 border-gray-300 mb-2">
+                      <h3 className="text-xl font-semibold">{event.Name}</h3>
+                    </div>
                     <strong>Description:</strong> {event.EventDescription}
                     <br />
                     <strong>Location:</strong> {event.Location}
@@ -205,6 +219,22 @@ export default function CommunityPage({ params }) {
                     <br />
                     <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
                   </Typography>
+                  <div className="mt-4">
+                    {event.status === "active" ? (
+                      <Button
+                        variant="text"
+                        color="secondary"
+                        className="w-full"
+                        onClick={handleClosedEventClick}
+                      >
+                        Closed
+                      </Button>
+                    ) : event.status === "rsvp" ? (
+                      <Button variant="text" color="primary" className="w-full">
+                        RSVP
+                      </Button>
+                    ) : null}
+                  </div>
                 </li>
               ))
             ) : (
@@ -223,18 +253,18 @@ export default function CommunityPage({ params }) {
               <li key={poll.id} className="p-4 bg-white shadow rounded-md">
                 <h3 className="text-xl font-medium">{poll.Question}</h3>
                 {poll.Opt.map((poll_option, poll_option_index) => (
-                  <div className="mt-2" key={poll_option_index}>
+                  <div key={`${poll.id}-opt-${poll_option_index}`}>
                     <input
                       type="radio"
+                      id={`${poll.id}-opt-${poll_option_index}`}
                       name={`poll-${poll.id}`}
-                      id={`poll-${poll.id}-opt-${poll_option_index}`}
-                      className="mr-2"
+                      value={poll_option.value}
                       onChange={() =>
-                        handlePollOptionSelection(poll.id, poll_option.title)
+                        handlePollOptionSelection(poll.id, poll_option.value)
                       }
-                      checked={poll.selected_option === poll_option.title}
+                      checked={poll.selected_option === poll_option.value}
                     />
-                    <label htmlFor={`poll-${poll.id}-opt-${poll_option_index}`}>
+                    <label htmlFor={`${poll.id}-opt-${poll_option_index}`}>
                       {poll_option.title}
                     </label>
                   </div>
@@ -243,43 +273,72 @@ export default function CommunityPage({ params }) {
             ))}
           </ul>
         </div>
-      </div>
 
-      {/* Past Events Section */}
-      <div className="p-8">
-        <h2 className="text-2xl font-semibold mb-4">Past Events</h2>
-        <div className="flex overflow-x-auto space-x-6">
-          {pastEvents.length > 0 ? (
-            pastEvents.map((event) => (
-              <div
-                key={event.id}
-                className="flex-none w-80 bg-white shadow rounded-md p-4"
-              >
-                <h3 className="text-xl font-semibold mb-2">{event.Name}</h3>
-                <p>
-                  <strong>Description:</strong> {event.EventDescription}
-                </p>
-                <p>
-                  <strong>Location:</strong> {event.Location}
-                </p>
-                <p>
-                  <strong>Start Date:</strong> {formatDate(event.StartDate)}
-                </p>
-                <p>
-                  <strong>End Date:</strong> {formatDate(event.EndDate)}
-                </p>
-                <p>
-                  <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
-                </p>
-              </div>
-            ))
-          ) : (
-            <Typography variant="body2" color="text.secondary">
-              No past events.
-            </Typography>
-          )}
+        {/* Past Events */}
+        <div className="rounded border border-black bg-openbox-green p-4">
+          <h2 className="text-2xl font-semibold mb-4">Past Events</h2>
+          <ul className="space-y-4">
+            {pastEvents.length > 0 ? (
+              pastEvents.map((event) => (
+                <li key={event.id} className="p-4 bg-white shadow rounded-md">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    style={{ whiteSpace: "pre-wrap" }}
+                  >
+                    <div className="border-b-2 border-gray-300 mb-2">
+                      <h3 className="text-xl font-semibold">{event.Name}</h3>
+                    </div>
+                    <strong>Description:</strong> {event.EventDescription}
+                    <br />
+                    <strong>Location:</strong> {event.Location}
+                    <br />
+                    <strong>Start Date:</strong> {formatDate(event.StartDate)}
+                    <br />
+                    <strong>End Date:</strong> {formatDate(event.EndDate)}
+                  </Typography>
+                  <div className="mt-4">
+                    {event.status === "past" && (
+                      <Button
+                        variant="text"
+                        color="primary"
+                        className="w-full"
+                        onClick={() => handleCommentReview(event.Name)}
+                      >
+                        Leave a Comment & Review
+                      </Button>
+                    )}
+                  </div>
+                </li>
+              ))
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No past events.
+              </Typography>
+            )}
+          </ul>
         </div>
       </div>
+
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>
+          Leave a Review and Comment about {currentEvent}
+        </DialogTitle>
+        <DialogContent>
+          {/* Content for leaving a review and comment */}
+          <Typography>
+            This is where the review and comment form would go.
+          </Typography>
+          <Button onClick={handleCloseDialog}>Close</Button>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={alertOpen} onClose={handleCloseAlert}>
+        <DialogContent>
+          <Typography>RSVP for this event has closed.</Typography>
+          <Button onClick={handleCloseAlert}>Close</Button>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
