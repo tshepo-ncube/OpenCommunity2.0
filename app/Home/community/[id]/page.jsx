@@ -6,15 +6,16 @@ import {
   DialogTitle,
   DialogContent,
   Button,
-  Alert,
+  TextField,
+  Rating,
+  DialogActions,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
-import { RWebShare } from "react-web-share";
 
 export default function CommunityPage({ params }) {
   const { id } = params;
@@ -27,8 +28,12 @@ export default function CommunityPage({ params }) {
   const [community, setCommunity] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [currentEvent, setCurrentEvent] = useState(null);
+  const [comment, setComment] = useState("");
+  const [rating, setRating] = useState(0);
+  const [selectedImages, setSelectedImages] = useState([]);
   const [alertOpen, setAlertOpen] = useState(false);
-
+  const [rsvpState, setRsvpState] = useState({}); // Track RSVP state for each event
+  const [currentEventObject, setCurrentEventObject] = useState(null);
   useEffect(() => {
     if (id) {
       const fetchCommunity = async () => {
@@ -53,11 +58,31 @@ export default function CommunityPage({ params }) {
   }, [id]);
 
   useEffect(() => {
+    console.log(selectedImages);
+  }, [selectedImages]);
+
+  useEffect(() => {
     if (allPolls.length > 0 && !pollsUpdated) {
       updatePolls();
       setPollsUpdated(true);
     }
   }, [allPolls]);
+
+  useEffect(() => {
+    // Fetch RSVP status for each event when the component loads
+    const fetchRSVPStatus = async () => {
+      const updatedRSVPState = {};
+      for (const event of allEvents) {
+        const isRSVPed =
+          event.rsvp && event.rsvp.includes(localStorage.getItem("Email"));
+        updatedRSVPState[event.id] = isRSVPed;
+      }
+      setRsvpState(updatedRSVPState);
+    };
+    if (allEvents.length > 0) {
+      fetchRSVPStatus();
+    }
+  }, [allEvents]);
 
   const updatePolls = async () => {
     const updatedArray = await Promise.all(
@@ -101,14 +126,18 @@ export default function CommunityPage({ params }) {
       });
   };
 
-  const handleCommentReview = (eventName) => {
-    setCurrentEvent(eventName);
+  const handleCommentReview = (event) => {
+    setCurrentEvent(event.eventName);
+    setCurrentEventObject(event);
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setCurrentEvent(null);
+    setComment("");
+    setRating(0);
+    setSelectedImages([]);
   };
 
   const handleClosedEventClick = () => {
@@ -117,6 +146,31 @@ export default function CommunityPage({ params }) {
 
   const handleCloseAlert = () => {
     setAlertOpen(false);
+  };
+
+  const handleRSVP = async (eventID) => {
+    try {
+      await EventDB.addRSVP(eventID, localStorage.getItem("Email"));
+      setRsvpState((prev) => ({ ...prev, [eventID]: true }));
+    } catch (error) {
+      console.error("Error RSVPing:", error);
+    }
+  };
+
+  const handleLeave = async (eventID) => {
+    try {
+      await EventDB.removeRSVP(eventID, localStorage.getItem("Email"));
+      setRsvpState((prev) => ({ ...prev, [eventID]: false }));
+    } catch (error) {
+      console.error("Error removing RSVP:", error);
+    }
+  };
+
+  const isRSVPed = (eventID) => rsvpState[eventID] || false;
+
+  const handleImageUpload = (event) => {
+    const files = Array.from(event.target.files);
+    setSelectedImages((prevImages) => [...prevImages, ...files]);
   };
 
   if (loading) {
@@ -147,6 +201,22 @@ export default function CommunityPage({ params }) {
     (event) => event.status === "past" // Adjust filtering based on your status or date
   );
 
+  const handleSubmitReview = () => {
+    const newReview = {
+      Comment: comment,
+
+      Rating: rating,
+    };
+
+    //Call the function to add the review
+    // EventDB.addReview("3jBBeJTzU4ozzianyqeM", newReview);
+
+    EventDB.handleImageUpload(currentEventObject.id, selectedImages, newReview);
+  };
+
+  // useEffect(() => {
+  //   console.log(currentEventObject);
+  // }, [currentEventObject]);
   return (
     <div className="">
       <div
@@ -158,38 +228,13 @@ export default function CommunityPage({ params }) {
         }}
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="relative p-16">
-          <div className="container mx-auto text-center p-4">
-            <h1 className="text-4xl font-bold mb-4">{community.name}</h1>
-            <p className="text-lg">{community.description}</p>
-          </div>
-
-          <center>
-            <button
-              onClick={() => {
-                window.open(
-                  "https://teams.microsoft.com/l/channel/19%3Ab862f05c7a864cdc8446d54bbecc9024%40thread.tacv2/Drinking%20Club%20Channel?groupId=3b8c7688-b69d-43a0-8ca0-7a1a5bffa665&tenantId=",
-                  "_blank"
-                );
-              }}
-              className="bg-white rounded text-black px-6 py-1 mx-2 border border-gray-300"
-            >
-              teams
-            </button>
-
-            <RWebShare
-              data={{
-                text: `Community Name - ${community.name}`,
-                url: `http://localhost:3000/${id}`,
-                title: `Community Name - ${community.name}`,
-              }}
-              onClick={() => console.log("shared successfully!")}
-            >
-              <button className="bg-white rounded text-black px-6 py-1 mx-2 border border-gray-300">
-                invite
-              </button>
-            </RWebShare>
-          </center>
+        <div className="relative z-10 text-center">
+          <Typography variant="h2" gutterBottom>
+            {community.CommunityName}
+          </Typography>
+          <Typography variant="h4" gutterBottom>
+            {community.Description}
+          </Typography>
         </div>
       </div>
 
@@ -215,7 +260,11 @@ export default function CommunityPage({ params }) {
                     <br />
                     <strong>Start Date:</strong> {formatDate(event.StartDate)}
                     <br />
+                    <strong>Start Time:</strong> {formatTime(event.StartDate)}
+                    <br />
                     <strong>End Date:</strong> {formatDate(event.EndDate)}
+                    <br />
+                    <strong>End Time:</strong> {formatTime(event.EndDate)}
                     <br />
                     <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
                   </Typography>
@@ -229,18 +278,33 @@ export default function CommunityPage({ params }) {
                       >
                         Closed
                       </Button>
-                    ) : event.status === "rsvp" ? (
-                      <Button variant="text" color="primary" className="w-full">
-                        RSVP
-                      </Button>
-                    ) : null}
+                    ) : (
+                      event.status === "rsvp" &&
+                      (isRSVPed(event.id) ? (
+                        <Button
+                          variant="contained"
+                          color="secondary"
+                          className="w-full"
+                          onClick={() => handleLeave(event.id)}
+                        >
+                          UN RSVP
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          className="w-full"
+                          onClick={() => handleRSVP(event.id)}
+                        >
+                          RSVP
+                        </Button>
+                      ))
+                    )}
                   </div>
                 </li>
               ))
             ) : (
-              <Typography variant="body2" color="text.secondary">
-                No upcoming events.
-              </Typography>
+              <Typography>No upcoming events</Typography>
             )}
           </ul>
         </div>
@@ -248,30 +312,42 @@ export default function CommunityPage({ params }) {
         {/* Polls */}
         <div className="rounded border border-black bg-openbox-green p-4">
           <h2 className="text-2xl font-semibold mb-4">Polls</h2>
-          <ul className="space-y-4">
-            {allPolls.map((poll) => (
-              <li key={poll.id} className="p-4 bg-white shadow rounded-md">
-                <h3 className="text-xl font-medium">{poll.Question}</h3>
-                {poll.Opt.map((poll_option, poll_option_index) => (
-                  <div key={`${poll.id}-opt-${poll_option_index}`}>
-                    <input
-                      type="radio"
-                      id={`${poll.id}-opt-${poll_option_index}`}
-                      name={`poll-${poll.id}`}
-                      value={poll_option.value}
-                      onChange={() =>
-                        handlePollOptionSelection(poll.id, poll_option.value)
-                      }
-                      checked={poll.selected_option === poll_option.value}
-                    />
-                    <label htmlFor={`${poll.id}-opt-${poll_option_index}`}>
-                      {poll_option.title}
-                    </label>
-                  </div>
-                ))}
-              </li>
-            ))}
-          </ul>
+          {allPolls.length > 0 ? (
+            allPolls.map((poll, index) => (
+              <div key={index} className="p-4 bg-white shadow rounded-md mb-4">
+                <Typography variant="body2" color="text.secondary">
+                  <h3 className="text-xl font-semibold border-b-2 border-gray-300 mb-2">
+                    {poll.question}
+                  </h3>
+                  <ul>
+                    {Array.isArray(poll.options) && poll.options.length > 0 ? (
+                      poll.options.map((option, idx) => (
+                        <li key={idx} className="mt-2">
+                          <button
+                            className={`w-full text-left px-4 py-2 rounded ${
+                              poll.selected && poll.selected_option === option
+                                ? "bg-openbox-blue text-white"
+                                : "bg-gray-100"
+                            }`}
+                            onClick={() =>
+                              handlePollOptionSelection(poll.id, option)
+                            }
+                            disabled={poll.selected}
+                          >
+                            {option}
+                          </button>
+                        </li>
+                      ))
+                    ) : (
+                      <li>No options available</li>
+                    )}
+                  </ul>
+                </Typography>
+              </div>
+            ))
+          ) : (
+            <Typography>No polls available</Typography>
+          )}
         </div>
 
         {/* Past Events */}
@@ -295,26 +371,25 @@ export default function CommunityPage({ params }) {
                     <br />
                     <strong>Start Date:</strong> {formatDate(event.StartDate)}
                     <br />
+                    <strong>Start Time:</strong> {formatTime(event.StartDate)}
+                    <br />
                     <strong>End Date:</strong> {formatDate(event.EndDate)}
+                    <br />
+                    <strong>End Time:</strong> {formatTime(event.EndDate)}
                   </Typography>
-                  <div className="mt-4">
-                    {event.status === "past" && (
-                      <Button
-                        variant="text"
-                        color="primary"
-                        className="w-full"
-                        onClick={() => handleCommentReview(event.Name)}
-                      >
-                        Leave a Comment & Review
-                      </Button>
-                    )}
-                  </div>
+                  <Button
+                    variant="text"
+                    color="primary"
+                    className="w-full mt-2"
+                    onClick={() => handleCommentReview(event)}
+                    style={{ color: "blue" }} // Styling as blue text
+                  >
+                    Leave a Comment & Review
+                  </Button>
                 </li>
               ))
             ) : (
-              <Typography variant="body2" color="text.secondary">
-                No past events.
-              </Typography>
+              <Typography>No past events</Typography>
             )}
           </ul>
         </div>
@@ -325,19 +400,69 @@ export default function CommunityPage({ params }) {
           Leave a Review and Comment about {currentEvent}
         </DialogTitle>
         <DialogContent>
-          {/* Content for leaving a review and comment */}
-          <Typography>
-            This is where the review and comment form would go.
-          </Typography>
-          <Button onClick={handleCloseDialog}>Close</Button>
+          <TextField
+            label="Comment"
+            fullWidth
+            multiline
+            rows={4}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
+          <Typography component="legend">Rating</Typography>
+          <Rating
+            name="simple-controlled"
+            value={rating}
+            onChange={(event, newValue) => {
+              setRating(newValue);
+            }}
+          />
+          <Typography component="legend">Upload Images</Typography>
+          <input
+            accept="image/*"
+            id="contained-button-file"
+            multiple
+            type="file"
+            onChange={handleImageUpload}
+            style={{ display: "none" }}
+          />
+          <label htmlFor="contained-button-file">
+            <Button
+              variant="contained"
+              color="primary"
+              component="span"
+              style={{ marginTop: "10px" }}
+            >
+              Upload
+            </Button>
+          </label>
+          {selectedImages.length > 0 && (
+            <div className="mt-2">
+              <Typography component="legend">Selected Images</Typography>
+              <div className="flex flex-wrap">
+                {selectedImages.map((image, index) => (
+                  <img
+                    key={index}
+                    src={URL.createObjectURL(image)}
+                    alt={`Selected ${index}`}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      marginRight: "10px",
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </DialogContent>
-      </Dialog>
-
-      <Dialog open={alertOpen} onClose={handleCloseAlert}>
-        <DialogContent>
-          <Typography>RSVP for this event has closed.</Typography>
-          <Button onClick={handleCloseAlert}>Close</Button>
-        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmitReview} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
       </Dialog>
     </div>
   );

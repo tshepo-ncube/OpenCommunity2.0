@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Autocomplete from "react-google-autocomplete";
+import CommunityDB from "@/database/community/community";
 
 import Header from "../_Components/header";
 import EventsHolder from "../_Components/EventsHolder";
@@ -30,10 +31,10 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     eventName: eventData.Name,
     startDateTime: `${eventData.startDate}T${eventData.startTime}`,
     endDateTime: `${eventData.endDate}T${eventData.endTime}`,
-    rsvpEndDateTime: eventData.rsvpEndDateTime, // Initialize RSVP End Date & Time
+    rsvpEndDateTime: eventData.rsvpEndDateTime,
     location: eventData.Location,
     description: eventData.EventDescription,
-    status: "active", // Default status is "active"
+    status: "active",
   });
 
   const handleChangeEvent = (e) => {
@@ -46,18 +47,14 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
 
   const handleSubmitEvent = (e) => {
     e.preventDefault();
-    onSubmit(eventDetails); // Pass the eventDetails to the onSubmit function
-    onClose(); // Close the event form after submission
+    onSubmit(eventDetails);
+    onClose();
   };
 
   const handleSaveDraft = (e) => {
     e.preventDefault();
-    setEventDetails((prevDetails) => ({
-      ...prevDetails,
-      status: "draft", // Set status to draft
-    }));
-    onSubmit({ ...eventDetails, status: "draft" }); // Pass the eventDetails with draft status to the onSubmit function
-    onClose(); // Close the event form after submission
+    onSubmit({ ...eventDetails, status: "draft" });
+    onClose();
   };
 
   useEffect(() => {
@@ -169,14 +166,10 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               name="location"
               id="location"
               onPlaceSelected={(place) => {
-                console.log(place.formatted_address);
-
                 setEventDetails((prevDetails) => ({
                   ...prevDetails,
                   location: place.formatted_address,
                 }));
-                console.log(place);
-                console.log(eventDetails.location);
               }}
               required
             />
@@ -230,21 +223,38 @@ const AdminDash = () => {
     EndTime: "",
     Location: "",
     EventDescription: "",
-    RsvpEndTime: "", // Initialize RSVP End Time
+    RsvpEndTime: "",
   });
   const [currentView, setCurrentView] = useState("infoManagement");
+  const [users, setUsers] = useState([]);
 
   const handleCreateNewEvent = () => {
     setShowEventForm(!showEventForm);
     setEventForm({
       ...eventFormData,
-      RsvpEndTime: "", // Set default value for RSVP End Time
+      RsvpEndTime: "",
     });
   };
 
   const handleEventSubmit = (eventDetails) => {
     createEvent(eventDetails, localStorage.getItem("CurrentCommunity"));
   };
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (currentView === "usersManagement") {
+        const communityId = localStorage.getItem("CurrentCommunity");
+        const result = await CommunityDB.getCommunityUsers(communityId);
+        if (result.success) {
+          setUsers(result.users);
+        } else {
+          console.error(result.message);
+        }
+      }
+    };
+
+    fetchUsers();
+  }, [currentView]);
 
   return (
     <div className="bg-background_gray h-full">
@@ -303,10 +313,18 @@ const AdminDash = () => {
             <Typography variant="h6" className="mb-4">
               Community Members
             </Typography>
-            {/* Add your user management content here */}
             <Box>
-              {/* Replace with actual user management content */}
-              <p>User management section content goes here.</p>
+              {users.length > 0 ? (
+                <ul className="space-y-2">
+                  {users.map((user, index) => (
+                    <li key={index} className="bg-white p-3 rounded shadow">
+                      {user}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No users found in this community.</p>
+              )}
             </Box>
           </div>
         )}
