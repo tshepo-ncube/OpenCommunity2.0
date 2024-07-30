@@ -17,8 +17,10 @@ import {
   TableRow,
   Paper,
 } from "@mui/material";
-import { green, red, blue, yellow } from "@mui/material/colors";
+import * as XLSX from "xlsx";
+import AnalyticsDB from "../../database/community/analytics";
 import EventDB from "../../database/community/event";
+import { green, red, blue, yellow } from "@mui/material/colors";
 
 const EventsHolder = ({
   communityID,
@@ -33,6 +35,13 @@ const EventsHolder = ({
   const [openAnalyticsModal, setOpenAnalyticsModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [rsvpEmails, setRsvpEmails] = useState([]);
+  const [analyticsData, setAnalyticsData] = useState([]);
+
+  useEffect(() => {
+    AnalyticsDB.getUsersDetailsByEmails(rsvpEmails).then((userDetailsList) => {
+      setAnalyticsData(userDetailsList);
+    });
+  }, [rsvpEmails]);
 
   useEffect(() => {
     EventDB.getEventFromCommunityID(communityID, setAllEvents);
@@ -174,6 +183,24 @@ const EventsHolder = ({
     setRsvpEmails([]);
   };
 
+  const exportToExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(
+      analyticsData.map((data) => ({
+        Email: data.Email,
+        Name: data.Name,
+        Surname: data.Surname,
+        Telephone: data.Telephone,
+        Allergy: data.Allergies,
+        Diet: data.Diet,
+      }))
+    );
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Analytics Data");
+
+    XLSX.writeFile(wb, "AnalyticsData.xlsx");
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case "active":
@@ -300,12 +327,14 @@ const EventsHolder = ({
                         <Button onClick={() => handleViewAnalytics(value)}>
                           View Analytics
                         </Button>
-                        <Button
-                          color="error"
-                          onClick={() => handleDeleteConfirmation(value.id)}
-                        >
-                          Delete
-                        </Button>
+                        {value.status === "active" && (
+                          <Button
+                            color="error"
+                            onClick={() => handleArchive(value.id)}
+                          >
+                            Archive
+                          </Button>
+                        )}
                       </>
                     )}
                   </CardActions>
@@ -316,8 +345,15 @@ const EventsHolder = ({
         )}
       </div>
 
-      <div className="mt-8">
+      <div
+        style={{
+          marginTop: "30px",
+          borderTop: "1px solid black",
+          paddingTop: "20px",
+        }}
+      >
         <h1 className="text-xxl">Past Events</h1>
+
         <div style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
           {loading ? (
             <center>Loading...</center>
@@ -377,12 +413,17 @@ const EventsHolder = ({
                       </Typography>
                     </CardContent>
                     <CardActions disableSpacing>
-                      <Button
-                        color="error"
-                        onClick={() => handleDeleteConfirmation(value.id)}
-                      >
-                        Delete
+                      <Button onClick={() => handleViewAnalytics(value)}>
+                        View Analytics
                       </Button>
+                      {value.status !== "archived" && (
+                        <Button
+                          color="error"
+                          onClick={() => handleArchive(value.id)}
+                        >
+                          Archive
+                        </Button>
+                      )}
                     </CardActions>
                   </Card>
                 </Grid>
@@ -406,13 +447,15 @@ const EventsHolder = ({
             p: 4,
           }}
         >
-          <Typography variant="h6">
+          <Typography variant="h6" component="h2">
             Are you sure you want to delete this event?
           </Typography>
-          <Button onClick={handleDelete} color="error" variant="contained">
-            Delete
-          </Button>
-          <Button onClick={handleCloseDeleteModal}>Cancel</Button>
+          <Box sx={{ mt: 2 }}>
+            <Button color="error" onClick={handleDelete} sx={{ mr: 2 }}>
+              Delete
+            </Button>
+            <Button onClick={handleCloseDeleteModal}>Cancel</Button>
+          </Box>
         </Box>
       </Modal>
 
@@ -422,7 +465,7 @@ const EventsHolder = ({
             position: "absolute",
             top: "50%",
             left: "50%",
-            height: 600, // Increase height
+            height: 600,
             transform: "translate(-50%, -50%)",
             width: 990,
             bgcolor: "background.paper",
@@ -447,23 +490,31 @@ const EventsHolder = ({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rsvpEmails.length === 0 ? (
+                {analyticsData.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={2}>No RSVP data available</TableCell>
+                    <TableCell colSpan={6}>No RSVP data available</TableCell>
                   </TableRow>
                 ) : (
-                  rsvpEmails.map((email) => (
-                    <TableRow key={email}>
-                      <TableCell>{email}</TableCell>
+                  analyticsData.map((data) => (
+                    <TableRow key={data.Email}>
+                      <TableCell>{data.Email}</TableCell>
+                      <TableCell>{data.Name}</TableCell>
+                      <TableCell>{data.Surname}</TableCell>
+                      <TableCell>{data.Telephone}</TableCell>
+                      <TableCell>{data.Allergies}</TableCell>
+                      <TableCell>{data.Diet}</TableCell>
                     </TableRow>
                   ))
                 )}
               </TableBody>
             </Table>
           </TableContainer>
-          <Button onClick={handleCloseAnalyticsModal} sx={{ mt: 2 }}>
-            Close
-          </Button>
+          <Box sx={{ mt: 2 }}>
+            <Button onClick={exportToExcel} sx={{ mr: 2 }}>
+              Export to Excel
+            </Button>
+            <Button onClick={handleCloseAnalyticsModal}>Close</Button>
+          </Box>
         </Box>
       </Modal>
     </div>
