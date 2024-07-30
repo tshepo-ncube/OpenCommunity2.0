@@ -1,4 +1,5 @@
 "use client";
+import { RWebShare } from "react-web-share";
 import {
   CircularProgress,
   Typography,
@@ -44,6 +45,7 @@ export default function CommunityPage({ params }) {
             setLoading(false);
             return;
           }
+          console.log(snapshot.data());
           setCommunity(snapshot.data());
         } catch (error) {
           console.error("Error getting document: ", error);
@@ -62,11 +64,16 @@ export default function CommunityPage({ params }) {
   }, [selectedImages]);
 
   useEffect(() => {
+    console.log("All Polls Changed: ", allPolls);
     if (allPolls.length > 0 && !pollsUpdated) {
       updatePolls();
       setPollsUpdated(true);
     }
   }, [allPolls]);
+
+  useEffect(() => {
+    console.log("Community: ", community);
+  }, [community]);
 
   useEffect(() => {
     // Fetch RSVP status for each event when the component loads
@@ -220,7 +227,7 @@ export default function CommunityPage({ params }) {
   return (
     <div className="">
       <div
-        className="relative text-white py-4"
+        className="relative text-white py-4 h-80"
         style={{
           backgroundImage:
             "url('https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
@@ -228,19 +235,45 @@ export default function CommunityPage({ params }) {
         }}
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="relative z-10 text-center">
+        <div className="relative z-10 text-center py-20">
           <Typography variant="h2" gutterBottom>
-            {community.CommunityName}
+            {community.name}
           </Typography>
           <Typography variant="h4" gutterBottom>
-            {community.Description}
+            {community.description}
           </Typography>
+          <center>
+            <button
+              onClick={() => {
+                window.open(
+                  "https://teams.microsoft.com/l/channel/19%3Ab862f05c7a864cdc8446d54bbecc9024%40thread.tacv2/Drinking%20Club%20Channel?groupId=3b8c7688-b69d-43a0-8ca0-7a1a5bffa665&tenantId=",
+                  "_blank"
+                );
+              }}
+              className="bg-white rounded text-black px-6 py-1 mx-2 border border-gray-300"
+            >
+              teams
+            </button>
+
+            <RWebShare
+              data={{
+                text: `Community Name - ${community.name}`,
+                url: `http://localhost:3000/${id}`,
+                title: `Community Name - ${community.name}`,
+              }}
+              onClick={() => console.log("shared successfully!")}
+            >
+              <button className="bg-white rounded text-black px-6 py-1 mx-2  border border-gray-300">
+                invite
+              </button>
+            </RWebShare>
+          </center>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8">
         {/* Upcoming Events */}
-        <div className="rounded border border-black bg-openbox-green p-4">
+        <div className="rounded   bg-gray-50 p-4">
           <h2 className="text-2xl font-semibold mb-4">Upcoming Events</h2>
           <ul className="space-y-4">
             {upcomingEvents.length > 0 ? (
@@ -310,18 +343,18 @@ export default function CommunityPage({ params }) {
         </div>
 
         {/* Polls */}
-        <div className="rounded border border-black bg-openbox-green p-4">
+        <div className="rounded   bg-gray-50 p-4">
           <h2 className="text-2xl font-semibold mb-4">Polls</h2>
           {allPolls.length > 0 ? (
             allPolls.map((poll, index) => (
               <div key={index} className="p-4 bg-white shadow rounded-md mb-4">
                 <Typography variant="body2" color="text.secondary">
                   <h3 className="text-xl font-semibold border-b-2 border-gray-300 mb-2">
-                    {poll.question}
+                    {poll.Question}
                   </h3>
                   <ul>
-                    {Array.isArray(poll.options) && poll.options.length > 0 ? (
-                      poll.options.map((option, idx) => (
+                    {/* {Array.isArray(poll.Options) && poll.Options.length > 0 ? (
+                      poll.Options.map((option, idx) => (
                         <li key={idx} className="mt-2">
                           <button
                             className={`w-full text-left px-4 py-2 rounded ${
@@ -340,7 +373,37 @@ export default function CommunityPage({ params }) {
                       ))
                     ) : (
                       <li>No options available</li>
-                    )}
+                    )} */}
+
+                    {poll.Opt.map((poll_option, poll_option_index) => (
+                      <div className="mt-2">
+                        <input
+                          type="radio"
+                          name={`poll-${poll.id}`}
+                          id={`poll-${poll.id}-opt-${poll_option_index}`}
+                          className="mr-2"
+                          onChange={() =>
+                            handlePollOptionSelection(
+                              poll.id,
+                              poll_option.title
+                            )
+                          }
+                          disabled={poll.selected ? true : false}
+                          // checked={
+                          //   poll.selected &&
+                          //   poll.selected_option === poll_option.title
+                          // }
+                          checked={
+                            poll.selected &&
+                            poll.selected_option === poll_option.title
+                          }
+                          //checked
+                        />
+                        <label htmlFor={`poll-${poll.id}-option-2`}>
+                          {poll_option.title}
+                        </label>
+                      </div>
+                    ))}
                   </ul>
                 </Typography>
               </div>
@@ -351,7 +414,7 @@ export default function CommunityPage({ params }) {
         </div>
 
         {/* Past Events */}
-        <div className="rounded border border-black bg-openbox-green p-4">
+        <div className="rounded  bg-gray-50 p-4">
           <h2 className="text-2xl font-semibold mb-4">Past Events</h2>
           <ul className="space-y-4">
             {pastEvents.length > 0 ? (
