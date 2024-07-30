@@ -561,7 +561,7 @@ const AdminCommunity = () => {
                         color="error"
                         onClick={() => handleOpenDeleteDialog(data.id)}
                       >
-                        Delete
+                        Delete.
                       </Button>
                     </>
                   ) : (
