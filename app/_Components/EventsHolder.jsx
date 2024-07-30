@@ -9,6 +9,13 @@ import {
   Button,
   Modal,
   Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
 } from "@mui/material";
 import { green, red, blue, yellow } from "@mui/material/colors";
 import EventDB from "../../database/community/event";
@@ -385,13 +392,7 @@ const EventsHolder = ({
         </div>
       </div>
 
-      {/* Delete Modal */}
-      <Modal
-        open={openDeleteModal}
-        onClose={handleCloseDeleteModal}
-        aria-labelledby="delete-modal-title"
-        aria-describedby="delete-modal-description"
-      >
+      <Modal open={openDeleteModal} onClose={handleCloseDeleteModal}>
         <Box
           sx={{
             position: "absolute",
@@ -405,56 +406,61 @@ const EventsHolder = ({
             p: 4,
           }}
         >
-          <Typography id="delete-modal-title" variant="h6" component="h2">
-            Confirm Deletion
-          </Typography>
-          <Typography id="delete-modal-description" sx={{ mt: 2 }}>
+          <Typography variant="h6">
             Are you sure you want to delete this event?
           </Typography>
-          <Box sx={{ mt: 2 }}>
-            <Button onClick={handleDelete} color="error" variant="contained">
-              Delete
-            </Button>
-            <Button onClick={handleCloseDeleteModal} sx={{ ml: 2 }}>
-              Cancel
-            </Button>
-          </Box>
+          <Button onClick={handleDelete} color="error" variant="contained">
+            Delete
+          </Button>
+          <Button onClick={handleCloseDeleteModal}>Cancel</Button>
         </Box>
       </Modal>
 
-      {/* Analytics Modal */}
-      <Modal
-        open={openAnalyticsModal}
-        onClose={handleCloseAnalyticsModal}
-        aria-labelledby="analytics-modal-title"
-        aria-describedby="analytics-modal-description"
-      >
+      <Modal open={openAnalyticsModal} onClose={handleCloseAnalyticsModal}>
         <Box
           sx={{
             position: "absolute",
             top: "50%",
             left: "50%",
+            height: 600, // Increase height
             transform: "translate(-50%, -50%)",
-            width: 400,
+            width: 990,
             bgcolor: "background.paper",
             border: "2px solid #000",
             boxShadow: 24,
             p: 4,
           }}
         >
-          <Typography id="analytics-modal-title" variant="h6" component="h2">
-            Analytics for {selectedEvent?.Name}
+          <Typography variant="h6">
+            {selectedEvent ? `Analytics for ${selectedEvent.Name}` : ""}
           </Typography>
-          <Typography id="analytics-modal-description" sx={{ mt: 2 }}>
-            <strong>RSVP List:</strong>
-            <ul>
-              {rsvpEmails.length > 0 ? (
-                rsvpEmails.map((email, index) => <li key={index}>{email}</li>)
-              ) : (
-                <li>No RSVPs yet.</li>
-              )}
-            </ul>
-          </Typography>
+          <TableContainer component={Paper} sx={{ mt: 2 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Surname</TableCell>
+                  <TableCell>Telephone</TableCell>
+                  <TableCell>Allergy</TableCell>
+                  <TableCell>Diet</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rsvpEmails.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={2}>No RSVP data available</TableCell>
+                  </TableRow>
+                ) : (
+                  rsvpEmails.map((email) => (
+                    <TableRow key={email}>
+                      <TableCell>{email}</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
           <Button onClick={handleCloseAnalyticsModal} sx={{ mt: 2 }}>
             Close
           </Button>
