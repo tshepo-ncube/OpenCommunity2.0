@@ -33,7 +33,7 @@ export default function CandidateGenderGraph() {
 
   return (
     <Box sx={{ flexGrow: 1, padding: 4 }}>
-      <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 relative">
+      <div className="w-full max-w-sm bg-white border border-gray_og rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 relative">
         <a href="#">
           <img
             className="h-40 w-full rounded-t-lg object-cover"

@@ -78,6 +78,13 @@ function Home() {
   const [profileData, setProfileData] = React.useState({
     CommunitiesJoined: [],
   });
+
+  const [activeTab, setActiveTab] = useState("My Communities");
+
+  const handleTabClick = (tab: any) => {
+    setActiveTab(tab);
+    console.log(tab);
+  };
   const [UserCommunities, setUserCommunities] = React.useState([]);
   const [email, setEmail] = React.useState("");
 
@@ -119,11 +126,43 @@ function Home() {
 
   return (
     <>
-      <div className="App text-center">
+      <div className="App text-center ">
         <Header />
-        <center>
-          <Box sx={{ width: "100%" }}>
-            <Box
+        <center className="mt-18">
+          <Box sx={{ width: "100%", marginTop: 10 }}>
+            <div className="flex justify-center mt-6">
+              <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+                <ul className="flex flex-wrap -mb-px">
+                  <li className="me-2">
+                    <a
+                      href="#"
+                      onClick={() => handleTabClick("My Communities")}
+                      className={`inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+                        activeTab === "My Communities"
+                          ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                          : "border-transparent"
+                      }`}
+                    >
+                      My Communities
+                    </a>
+                  </li>
+                  <li className="me-2">
+                    <a
+                      href="#"
+                      onClick={() => handleTabClick("Discover Communities")}
+                      className={`inline-block p-4 border-b-2 rounded-t-lg ${
+                        activeTab === "Discover Communities"
+                          ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                          : "hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 border-transparent"
+                      }`}
+                    >
+                      Discover Communities
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            {/* <Box
               sx={{
                 borderBottom: "5px solid white", // Set the border color to green
                 borderColor: "white",
@@ -143,15 +182,25 @@ function Home() {
                 <CustomTab label="My Communities" {...a11yProps(0)} />
                 <CustomTab label="Discover Communities" {...a11yProps(1)} />
               </Tabs>
-            </Box>
+            </Box> */}
 
-            <CustomTabPanel value={value} index={0}>
+            {/* <CustomTabPanel value={value} index={0}>
               <MyCommunities email={email} />
             </CustomTabPanel>
 
             <CustomTabPanel value={value} index={1}>
               <DiscoverCommunity email={email} />
-            </CustomTabPanel>
+            </CustomTabPanel> */}
+
+            {activeTab === "My Communities" ? (
+              <>
+                <MyCommunities email={email} />
+              </>
+            ) : (
+              <>
+                <DiscoverCommunity email={email} />
+              </>
+            )}
           </Box>
         </center>
       </div>

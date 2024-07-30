@@ -90,7 +90,7 @@ function Header() {
 
   return (
     <div>
-      <CustomAppBar position="static">
+      <CustomAppBar position="fixed" style={{ marginBottom: 30 }}>
         <Toolbar>
           <IconButton
             color="inherit"

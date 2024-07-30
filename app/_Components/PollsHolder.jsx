@@ -133,13 +133,14 @@ function PollsHolder({ communityID }) {
       <h1 className="text-xxl relative">
         Active Polls
         <IconButton
+          className="bg-openbox-green text-openbox-green"
           sx={{
             borderRadius: "50%",
-            backgroundColor: green[500],
+            backgroundColor: "#bcd727",
             color: "white",
             marginLeft: 2,
             "&:hover": {
-              backgroundColor: green[700],
+              backgroundColor: "#819417",
             },
           }}
           onClick={handleCreatePoll}
@@ -160,18 +161,34 @@ function PollsHolder({ communityID }) {
               <Grid key={value.id} item xs={12} sm={6} md={4} lg={3}>
                 <Card>
                   <CardContent>
-                    <Typography variant="h6" gutterBottom>
+                    <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">
                       {value.Question}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
+                    </h3>
+
+                    <ul class="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                       {value.Opt.map((option, index) => (
-                        <p key={index} className="text-gray-700">
-                          {index + 1}. {option.title}
-                        </p>
+                        <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                          <div class="flex items-center ps-3">
+                            <input
+                              disabled
+                              id="list-radio-license"
+                              type="radio"
+                              value=""
+                              name="list-radio"
+                              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                            />
+                            <label
+                              for="list-radio-license"
+                              class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >
+                              {option.title}
+                            </label>
+                          </div>
+                        </li>
                       ))}
-                    </Typography>
+                    </ul>
                   </CardContent>
-                  <CardActions>
+                  <CardActions style={{ marginTop: -12 }}>
                     <Button>Analytics</Button>
                     <Button color="error">Delete Poll</Button>
                   </CardActions>
@@ -212,26 +229,35 @@ function PollsHolder({ communityID }) {
               <Grid key={value.id} item xs={12} sm={6} md={4} lg={3}>
                 <Card>
                   <CardContent>
-                    <Typography variant="h6" gutterBottom>
+                    <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">
                       {value.Question}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
+                    </h3>
+
+                    <ul class="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                       {value.Opt.map((option, index) => (
-                        <p key={index} className="text-gray-700">
-                          {index + 1}. {option.title}
-                        </p>
+                        <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
+                          <div class="flex items-center ps-3">
+                            <input
+                              disabled
+                              id="list-radio-license"
+                              type="radio"
+                              value=""
+                              name="list-radio"
+                              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                            />
+                            <label
+                              for="list-radio-license"
+                              class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                            >
+                              {option.title}
+                            </label>
+                          </div>
+                        </li>
                       ))}
-                    </Typography>
+                    </ul>
                   </CardContent>
-                  <CardActions>
-                    <Button
-                      onClick={() => {
-                        setAnalyticsPollPointer(value);
-                        setShowAnalyticsForm(true);
-                      }}
-                    >
-                      Analytics
-                    </Button>
+                  <CardActions style={{ marginTop: -12 }}>
+                    <Button>Analytics</Button>
                     <Button color="error">Delete Poll</Button>
                   </CardActions>
                 </Card>

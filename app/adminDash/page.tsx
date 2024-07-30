@@ -263,7 +263,7 @@ const AdminDash = () => {
             onClick={() => setCurrentView("infoManagement")}
             className={`px-4 py-2 rounded-l-lg ${
               currentView === "infoManagement"
-                ? "bg-green-500 text-white"
+                ? "bg-openbox-green text-white"
                 : "bg-gray-200"
             }`}
           >

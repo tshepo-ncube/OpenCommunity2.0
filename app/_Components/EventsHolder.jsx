@@ -13,6 +13,8 @@ import {
 import { green, red, blue, yellow } from "@mui/material/colors";
 import EventDB from "../../database/community/event";
 
+import AddIcon from "@mui/icons-material/Add";
+import IconButton from "@mui/material/IconButton";
 const EventsHolder = ({
   communityID,
   createEvent,
@@ -176,8 +178,28 @@ const EventsHolder = ({
           justifyContent: "space-between",
         }}
       >
-        <h1 className="text-xxl">Upcoming Events</h1>
+        {/* <h1 className="text-xxl">Upcoming Events</h1> */}
       </div>
+
+      <h1 className="text-xxl relative my-4">
+        Upcoming Events
+        <IconButton
+          className="bg-openbox-green text-openbox-green"
+          sx={{
+            borderRadius: "50%",
+            backgroundColor: "#bcd727",
+            color: "white",
+            marginLeft: 2,
+            "&:hover": {
+              backgroundColor: "#819417",
+            },
+          }}
+          // onClick={handleCreatePoll}
+          aria-label="create poll"
+        >
+          <AddIcon />
+        </IconButton>
+      </h1>
 
       <div style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
         {loading ? (
