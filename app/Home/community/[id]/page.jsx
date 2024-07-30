@@ -33,7 +33,7 @@ export default function CommunityPage({ params }) {
   const [selectedImages, setSelectedImages] = useState([]);
   const [alertOpen, setAlertOpen] = useState(false);
   const [rsvpState, setRsvpState] = useState({}); // Track RSVP state for each event
-
+  const [currentEventObject, setCurrentEventObject] = useState(null);
   useEffect(() => {
     if (id) {
       const fetchCommunity = async () => {
@@ -56,6 +56,10 @@ export default function CommunityPage({ params }) {
       EventDB.getEventFromCommunityID(id, setAllEvents);
     }
   }, [id]);
+
+  useEffect(() => {
+    console.log(selectedImages);
+  }, [selectedImages]);
 
   useEffect(() => {
     if (allPolls.length > 0 && !pollsUpdated) {
@@ -122,8 +126,9 @@ export default function CommunityPage({ params }) {
       });
   };
 
-  const handleCommentReview = (eventName) => {
-    setCurrentEvent(eventName);
+  const handleCommentReview = (event) => {
+    setCurrentEvent(event.eventName);
+    setCurrentEventObject(event);
     setOpenDialog(true);
   };
 
@@ -196,6 +201,22 @@ export default function CommunityPage({ params }) {
     (event) => event.status === "past" // Adjust filtering based on your status or date
   );
 
+  const handleSubmitReview = () => {
+    const newReview = {
+      Comment: comment,
+
+      Rating: rating,
+    };
+
+    //Call the function to add the review
+    // EventDB.addReview("3jBBeJTzU4ozzianyqeM", newReview);
+
+    EventDB.handleImageUpload(currentEventObject.id, selectedImages, newReview);
+  };
+
+  // useEffect(() => {
+  //   console.log(currentEventObject);
+  // }, [currentEventObject]);
   return (
     <div className="">
       <div
@@ -360,7 +381,7 @@ export default function CommunityPage({ params }) {
                     variant="text"
                     color="primary"
                     className="w-full mt-2"
-                    onClick={() => handleCommentReview(event.Name)}
+                    onClick={() => handleCommentReview(event)}
                     style={{ color: "blue" }} // Styling as blue text
                   >
                     Leave a Comment & Review
@@ -438,7 +459,7 @@ export default function CommunityPage({ params }) {
           <Button onClick={handleCloseDialog} color="secondary">
             Cancel
           </Button>
-          <Button onClick={handleCloseDialog} color="primary">
+          <Button onClick={handleSubmitReview} color="primary">
             Submit
           </Button>
         </DialogActions>

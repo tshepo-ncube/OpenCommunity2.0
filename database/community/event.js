@@ -14,6 +14,8 @@ import {
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import StorageDB from "../StorageDB";
 
 export default class EventDB {
   static deleteEvent = async (id) => {
@@ -158,4 +160,68 @@ export default class EventDB {
       throw e;
     }
   };
+
+  // Function to add a new review
+  static addReview = async (documentId, imageUrls, newReview) => {
+    // Reference to the document where you want to add the review
+    const reviewDocRef = doc(DB, "events", documentId); // Replace 'yourCollection' with your collection name
+    newReview.ReviewImages = imageUrls;
+    try {
+      // Add the new review to the 'Reviews' array field
+      await updateDoc(reviewDocRef, {
+        Reviews: arrayUnion(newReview), // Use arrayUnion to avoid duplicates
+      });
+      console.log("Review added successfully");
+    } catch (error) {
+      console.error("Error adding review: ", error);
+    }
+  };
+
+  static handleImageUpload = async (
+    document_id,
+    array_files,
+    review_object
+  ) => {
+    // const files = Array.from(event.target.files);
+
+    // Array to hold URLs of uploaded images
+    const imageUrls = [];
+
+    for (const file of array_files) {
+      // Create a storage reference
+      const storageRef = ref(StorageDB, `images/${file.name}`);
+
+      try {
+        // Upload file
+        const snapshot = await uploadBytes(storageRef, file);
+
+        // Get the download URL
+        const url = await getDownloadURL(snapshot.ref);
+        imageUrls.push(url);
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
+    }
+
+    // Optionally, store the image URLs in Firestore or use them as needed
+    console.log("Uploaded image URLs:", imageUrls);
+    EventDB.addReview(document_id, imageUrls, review_object);
+  };
+
+  // static addImagesToFirestore = async (
+  //   documentId,
+  //   imageUrls,
+  //   review_object
+  // ) => {
+  //   const docRef = doc(DB, "events", documentId); // Replace with your collection and document ID
+
+  //   try {
+  //     await updateDoc(docRef, {
+  //       Images: arrayUnion(...imageUrls), // Add new image URLs to the existing array
+  //     });
+  //     console.log("Image URLs added to Firestore successfully");
+  //   } catch (error) {
+  //     console.error("Error adding image URLs to Firestore:", error);
+  //   }
+  // };
 }
