@@ -6,7 +6,9 @@ import {
   DialogTitle,
   DialogContent,
   Button,
-  Alert,
+  TextField,
+  Rating,
+  DialogActions,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -26,6 +28,9 @@ export default function CommunityPage({ params }) {
   const [community, setCommunity] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [currentEvent, setCurrentEvent] = useState(null);
+  const [comment, setComment] = useState("");
+  const [rating, setRating] = useState(0);
+  const [selectedImages, setSelectedImages] = useState([]);
   const [alertOpen, setAlertOpen] = useState(false);
   const [rsvpState, setRsvpState] = useState({}); // Track RSVP state for each event
 
@@ -125,6 +130,9 @@ export default function CommunityPage({ params }) {
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setCurrentEvent(null);
+    setComment("");
+    setRating(0);
+    setSelectedImages([]);
   };
 
   const handleClosedEventClick = () => {
@@ -154,6 +162,11 @@ export default function CommunityPage({ params }) {
   };
 
   const isRSVPed = (eventID) => rsvpState[eventID] || false;
+
+  const handleImageUpload = (event) => {
+    const files = Array.from(event.target.files);
+    setSelectedImages((prevImages) => [...prevImages, ...files]);
+  };
 
   if (loading) {
     return (
@@ -248,7 +261,7 @@ export default function CommunityPage({ params }) {
                       event.status === "rsvp" &&
                       (isRSVPed(event.id) ? (
                         <Button
-                          variant="text"
+                          variant="contained"
                           color="secondary"
                           className="w-full"
                           onClick={() => handleLeave(event.id)}
@@ -257,7 +270,7 @@ export default function CommunityPage({ params }) {
                         </Button>
                       ) : (
                         <Button
-                          variant="text"
+                          variant="contained"
                           color="primary"
                           className="w-full"
                           onClick={() => handleRSVP(event.id)}
@@ -273,6 +286,47 @@ export default function CommunityPage({ params }) {
               <Typography>No upcoming events</Typography>
             )}
           </ul>
+        </div>
+
+        {/* Polls */}
+        <div className="rounded border border-black bg-openbox-green p-4">
+          <h2 className="text-2xl font-semibold mb-4">Polls</h2>
+          {allPolls.length > 0 ? (
+            allPolls.map((poll, index) => (
+              <div key={index} className="p-4 bg-white shadow rounded-md mb-4">
+                <Typography variant="body2" color="text.secondary">
+                  <h3 className="text-xl font-semibold border-b-2 border-gray-300 mb-2">
+                    {poll.question}
+                  </h3>
+                  <ul>
+                    {Array.isArray(poll.options) && poll.options.length > 0 ? (
+                      poll.options.map((option, idx) => (
+                        <li key={idx} className="mt-2">
+                          <button
+                            className={`w-full text-left px-4 py-2 rounded ${
+                              poll.selected && poll.selected_option === option
+                                ? "bg-openbox-blue text-white"
+                                : "bg-gray-100"
+                            }`}
+                            onClick={() =>
+                              handlePollOptionSelection(poll.id, option)
+                            }
+                            disabled={poll.selected}
+                          >
+                            {option}
+                          </button>
+                        </li>
+                      ))
+                    ) : (
+                      <li>No options available</li>
+                    )}
+                  </ul>
+                </Typography>
+              </div>
+            ))
+          ) : (
+            <Typography>No polls available</Typography>
+          )}
         </div>
 
         {/* Past Events */}
@@ -301,19 +355,16 @@ export default function CommunityPage({ params }) {
                     <strong>End Date:</strong> {formatDate(event.EndDate)}
                     <br />
                     <strong>End Time:</strong> {formatTime(event.EndDate)}
-                    <br />
-                    <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
                   </Typography>
-                  <div className="mt-4">
-                    <Button
-                      variant="text"
-                      color="primary"
-                      className="w-full"
-                      onClick={() => handleCommentReview(event.Name)}
-                    >
-                      Leave a Comment & Review
-                    </Button>
-                  </div>
+                  <Button
+                    variant="text"
+                    color="primary"
+                    className="w-full mt-2"
+                    onClick={() => handleCommentReview(event.Name)}
+                    style={{ color: "blue" }} // Styling as blue text
+                  >
+                    Leave a Comment & Review
+                  </Button>
                 </li>
               ))
             ) : (
@@ -323,17 +374,74 @@ export default function CommunityPage({ params }) {
         </div>
       </div>
 
-      {/* Dialog for Comment and Review */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>
           Leave a Review and Comment about {currentEvent}
         </DialogTitle>
         <DialogContent>
-          {/* Add your comment and review form here */}
-          <Button onClick={handleCloseDialog} color="primary">
-            Close
-          </Button>
+          <TextField
+            label="Comment"
+            fullWidth
+            multiline
+            rows={4}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
+          <Typography component="legend">Rating</Typography>
+          <Rating
+            name="simple-controlled"
+            value={rating}
+            onChange={(event, newValue) => {
+              setRating(newValue);
+            }}
+          />
+          <Typography component="legend">Upload Images</Typography>
+          <input
+            accept="image/*"
+            id="contained-button-file"
+            multiple
+            type="file"
+            onChange={handleImageUpload}
+            style={{ display: "none" }}
+          />
+          <label htmlFor="contained-button-file">
+            <Button
+              variant="contained"
+              color="primary"
+              component="span"
+              style={{ marginTop: "10px" }}
+            >
+              Upload
+            </Button>
+          </label>
+          {selectedImages.length > 0 && (
+            <div className="mt-2">
+              <Typography component="legend">Selected Images</Typography>
+              <div className="flex flex-wrap">
+                {selectedImages.map((image, index) => (
+                  <img
+                    key={index}
+                    src={URL.createObjectURL(image)}
+                    alt={`Selected ${index}`}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      marginRight: "10px",
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleCloseDialog} color="primary">
+            Submit
+          </Button>
+        </DialogActions>
       </Dialog>
     </div>
   );
