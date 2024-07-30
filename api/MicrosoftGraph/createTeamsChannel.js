@@ -1,6 +1,9 @@
 //import CommunityDB from "../../database/community/community";
-import axios from "axios";
-import qs from "qs";
+//import axios from "axios";
+//import qs from "qs";
+
+const axios = require("axios");
+const qs = require("qs");
 
 export default class ChannelMicrosoftApi {
   static getAccessToken = async () => {

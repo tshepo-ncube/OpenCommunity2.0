@@ -194,7 +194,7 @@ const AdminCommunity = () => {
               <Grid container spacing={2} className="p-4">
                 {events.map((data, index) => (
                   <Grid item xs={6} md={3} key={index}>
-                    <Card className="relative">
+                    {/* <Card className="relative">
                       {data.status === "archived" && (
                         <div className="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
                           Archived
@@ -304,7 +304,170 @@ const AdminCommunity = () => {
                           </>
                         )}
                       </CardActions>
-                    </Card>
+                    </Card> */}
+
+                    <div className="w-full max-w-sm bg-white border border-gray_og rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 relative">
+                      <a href="#">
+                        <img
+                          className="h-40 w-full rounded-t-lg object-cover"
+                          src="https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGRyaW5rc3xlbnwwfHwwfHx8MA%3D%3D"
+                          alt="product image"
+                        />
+                      </a>
+
+                      {data.status === "archived" && (
+                        <div
+                          style={{ position: "absolute", top: 12, left: 10 }}
+                          className="absolute bg-orange-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10"
+                        >
+                          Archived
+                        </div>
+                      )}
+                      {data.status === "active" && (
+                        <div
+                          style={{ position: "absolute", top: 12, left: 10 }}
+                          className="absolute bg-green-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10"
+                        >
+                          Active
+                        </div>
+                      )}
+                      {data.status === "draft" && (
+                        <div
+                          style={{ position: "absolute", top: 12, left: 10 }}
+                          className="absolute bg-blue-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10"
+                        >
+                          Draft
+                        </div>
+                      )}
+
+                      <div className="mt-4 px-5 pb-5">
+                        <a href="#">
+                          <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                            {data.name}
+                          </h5>
+                        </a>
+                        <div className="flex items-center mt-2.5 mb-5">
+                          <div className="flex items-center space-x-1 rtl:space-x-reverse"></div>
+                          <div className="text-sm text-black py-1  font-semibold">
+                            {data.description}
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          {/* <>
+              <Button size="small" onClick={() => {}}>
+                Edit
+              </Button>
+              <Button
+                size="small"
+                onClick={() => {
+                  // localStorage.setItem(
+                  //   "CurrentCommunity",
+                  //   data.id
+                  // );
+                }}
+              >
+                View
+              </Button>
+              <Button size="small" color="error" onClick={() => {}}>
+                Archive
+              </Button>
+              <Button size="small" color="error" onClick={() => {}}>
+                Delete
+              </Button>
+            </> */}
+
+                          <CardActions>
+                            {data.status === "archived" ? (
+                              <>
+                                <Button
+                                  size="small"
+                                  onClick={() => handleEdit(index)}
+                                >
+                                  Edit
+                                </Button>
+                                <Button
+                                  size="small"
+                                  color="error"
+                                  onClick={() =>
+                                    handleOpenDeleteDialog(data.id)
+                                  }
+                                >
+                                  Delete
+                                </Button>
+                                <Button
+                                  size="small"
+                                  onClick={() => handleUnarchive(data.id)}
+                                >
+                                  Unarchive
+                                </Button>
+                              </>
+                            ) : data.status === "active" ? (
+                              <>
+                                <Button
+                                  size="small"
+                                  onClick={() => handleEdit(index)}
+                                >
+                                  Edit
+                                </Button>
+                                <Button
+                                  size="small"
+                                  onClick={() => {
+                                    localStorage.setItem(
+                                      "CurrentCommunity",
+                                      data.id
+                                    );
+                                    router.push("/adminDash");
+                                  }}
+                                >
+                                  View
+                                </Button>
+                                <Button
+                                  size="small"
+                                  color="error"
+                                  onClick={() => handleArchive(data.id)}
+                                >
+                                  Archive
+                                </Button>
+                                <Button
+                                  size="small"
+                                  color="error"
+                                  onClick={() =>
+                                    handleOpenDeleteDialog(data.id)
+                                  }
+                                >
+                                  Delete
+                                </Button>
+                              </>
+                            ) : (
+                              // Draft status actions
+                              <>
+                                <Button
+                                  size="small"
+                                  onClick={() => handleEdit(index)}
+                                >
+                                  Edit
+                                </Button>
+                                <Button
+                                  size="small"
+                                  onClick={() => handlePost(data.id)}
+                                >
+                                  Post
+                                </Button>
+                                <Button
+                                  size="small"
+                                  color="error"
+                                  onClick={() =>
+                                    handleOpenDeleteDialog(data.id)
+                                  }
+                                >
+                                  Delete
+                                </Button>
+                              </>
+                            )}
+                          </CardActions>
+                        </div>
+                      </div>
+                    </div>
                   </Grid>
                 ))}
               </Grid>

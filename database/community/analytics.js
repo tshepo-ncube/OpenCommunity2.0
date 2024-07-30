@@ -1,5 +1,4 @@
 import DB from "../DB";
-
 import { StorageDB } from "../StorageDB";
 
 import {
@@ -30,8 +29,8 @@ import {
 } from "firebase/firestore";
 
 import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
-
 //import { truncateSync } from "fs";
+import { v4 } from "uuid";
 
 export default class AnalyticsDB {
   static getUsersDetailsByEmails = async (emails) => {
@@ -39,7 +38,6 @@ export default class AnalyticsDB {
 
     try {
       // Reference to the collection where your documents are stored
-
       const usersRef = collection(DB, "users");
 
       for (const email of emails) {
