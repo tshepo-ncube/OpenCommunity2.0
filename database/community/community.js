@@ -185,4 +185,33 @@ export default class CommunityDB {
       console.error("Error fetching documents:", error);
     }
   };
+  static getCommunityUsers = async (communityId) => {
+    try {
+      const communityRef = doc(DB, "communities", communityId);
+      const communityDoc = await getDoc(communityRef);
+
+      if (communityDoc.exists()) {
+        const communityData = communityDoc.data();
+        return {
+          success: true,
+          users: communityData.users || [],
+          message: "Users retrieved successfully.",
+        };
+      } else {
+        console.log("No such community!");
+        return {
+          success: false,
+          users: [],
+          message: "Community does not exist.",
+        };
+      }
+    } catch (error) {
+      console.error("Error fetching community users:", error);
+      return {
+        success: false,
+        users: [],
+        message: "Error fetching community users.",
+      };
+    }
+  };
 }
