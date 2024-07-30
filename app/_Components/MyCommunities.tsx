@@ -376,6 +376,15 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
                 Delete
               </Button>
             </> */}
+
+                          <CardActions>
+                            <Button
+                              size="small"
+                              onClick={() => handleViewCommunity(data)}
+                            >
+                              View
+                            </Button>
+                          </CardActions>
                         </div>
                       </div>
                     </div>
