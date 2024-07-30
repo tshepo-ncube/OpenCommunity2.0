@@ -554,14 +554,14 @@ const AdminCommunity = () => {
                         color="error"
                         onClick={() => handleArchive(data.id)}
                       >
-                        Archive
+                        Archive.
                       </Button>
                       <Button
                         size="small"
                         color="error"
                         onClick={() => handleOpenDeleteDialog(data.id)}
                       >
-                        Delete.
+                        Delete
                       </Button>
                     </>
                   ) : (
