@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   CircularProgress,
   Grid,
@@ -11,10 +11,19 @@ import {
   MenuItem,
   InputLabel,
   FormControl,
+  Snackbar,
+  Alert,
 } from "@mui/material";
+import { IconButton, Menu } from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CommunityDB from "../../database/community/community";
+import { useRouter } from "next/navigation";
 
-const DiscoverCommunity = () => {
+interface DiscoverCommunityProps {
+  email: string;
+}
+
+const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -24,13 +33,18 @@ const DiscoverCommunity = () => {
       name: string;
       description: string;
       category: string;
-      status: string; // Include status in state
+      status: string;
+      users: string[];
     }[]
   >([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("general");
   const [selectedStatus, setSelectedStatus] = useState<string>("active");
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchCommunities = async () => {
@@ -61,8 +75,60 @@ const DiscoverCommunity = () => {
     setEditIndex(index);
   };
 
-  const handleJoinCommunity = (data: any) => {
-    CommunityDB.joinCommunity(data);
+  const handleJoinCommunity = async (data: any) => {
+    const result = await CommunityDB.joinCommunity(data.id, email);
+    if (result.success) {
+      // Update the state to reflect the joined status
+      const updatedData = submittedData.map((community) => {
+        if (community.id === data.id) {
+          return {
+            ...community,
+            users: [...community.users, email],
+          };
+        }
+        return community;
+      });
+      setSubmittedData(updatedData);
+
+      // Set Snackbar message and open it
+      setSnackbarMessage(
+        `Congrats! You have now joined the "${data.name}" community.`
+      );
+      setOpenSnackbar(true);
+    } else {
+      alert(result.message);
+    }
+  };
+
+  const handleLeaveCommunity = async (data: any) => {
+    const result = await CommunityDB.leaveCommunity(data.id, email);
+    if (result.success) {
+      // Update the state to reflect the left status
+      const updatedData = submittedData.map((community) => {
+        if (community.id === data.id) {
+          return {
+            ...community,
+            users: community.users.filter((user) => user !== email), // Remove email from users list
+          };
+        }
+        return community;
+      });
+      setSubmittedData(updatedData);
+
+      // Set Snackbar message and open it
+      setSnackbarMessage(`You have left the "${data.name}" community.`);
+      setOpenSnackbar(true);
+    } else {
+      alert(result.message);
+    }
+  };
+
+  const handleViewCommunity = (data: any) => {
+    router.push(`/userview?id=${data.id}`);
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
   };
 
   const filterDataByCategoryAndStatus = (
@@ -72,6 +138,7 @@ const DiscoverCommunity = () => {
       description: string;
       category: string;
       status: string;
+      users: string[];
     }[]
   ) => {
     return data.filter(
@@ -114,38 +181,118 @@ const DiscoverCommunity = () => {
     }
   };
 
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  //const [selectedCategory, setSelectedCategory] = useState("All categories");
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
+
+  const selectCategory = (category) => {
+    setSelectedCategory(category);
+    setDropdownOpen(false); // Close the dropdown after selecting a category
+  };
+
   return (
     <>
-      <div className="flex justify-center mt-4">
-        <input
-          type="text"
-          placeholder="Search communities..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="p-2 border border-gray-300 rounded-md w-full max-w-md"
-        />
-
-        <div className="ml-2" style={{ minWidth: "165px" }}>
-          <FormControl variant="outlined" className="w-full">
-            <InputLabel id="category-label">Filter by category</InputLabel>
-            <Select
-              labelId="category-label"
-              id="category-select"
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              label="Category"
+      <div className="flex justify-center mt-4 mb-2">
+        <form className="max-w-lg mx-auto w-full z-90">
+          <div className="flex relative">
+            <label
+              htmlFor="search-dropdown"
+              className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
             >
-              <MenuItem value="">
-                <em>All</em>
-              </MenuItem>
-              {uniqueCategories.map((category) => (
-                <MenuItem key={category} value={category}>
-                  {category}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </div>
+              Your Email
+            </label>
+
+            <div className="relative w-full">
+              <button className="absolute top-0 start-0 mr-44 p-2.5 text-sm font-medium h-full text-white bg-openbox-green rounded-s-lg border border-openbox-green hover:bg-openbox-green focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                <svg
+                  className="w-4 h-4"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                  />
+                </svg>
+                <span className="sr-only">Search</span>
+              </button>
+              <input
+                placeholder="Search my communities..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                type="search"
+                id="search-dropdown"
+                className="ml-8 block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-s-lg border-s-gray-50 border-s-2 border border-gray-300"
+                required
+              />
+            </div>
+
+            <label
+              htmlFor="search-dropdown"
+              className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+            >
+              Your Email
+            </label>
+
+            <button
+              id="dropdown-button"
+              onClick={toggleDropdown}
+              type="button"
+              className="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-e-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600"
+            >
+              {selectedCategory}
+              <svg
+                className="w-2.5 h-2.5 ms-2.5"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 10 6"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="m1 1 4 4 4-4"
+                />
+              </svg>
+            </button>
+            {dropdownOpen && (
+              <div
+                id="dropdown"
+                className="absolute right-0 mt-12 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
+              >
+                <ul
+                  className="py-2 text-sm  text-gray-700 dark:text-gray-200 z-99"
+                  aria-labelledby="dropdown-button"
+                >
+                  {uniqueCategories.map((category) => (
+                    <li key={category}>
+                      <button
+                        type="button"
+                        className="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                        onClick={() => {
+                          selectCategory(category);
+                          setSelectedCategory(category);
+                        }}
+                      >
+                        {category}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </form>
       </div>
 
       <div className="flex justify-center flex-wrap mt-2">
@@ -159,59 +306,114 @@ const DiscoverCommunity = () => {
               <Grid container spacing={2} style={{ padding: 14 }}>
                 {filteredData.map((data, index) => (
                   <Grid item xs={6} md={3} key={index}>
-                    <Card
-                      sx={{
-                        position: "relative",
-                        maxWidth: 345,
-                        marginBottom: 10,
-                        padding: "6px",
-                        "&::before": {
-                          content: `"${data.category}"`,
+                    <div className="w-full max-w-sm bg-white border border-gray_og rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 relative">
+                      <a href="#">
+                        <img
+                          className="h-40 w-full rounded-t-lg object-cover"
+                          src="https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGRyaW5rc3xlbnwwfHwwfHx8MA%3D%3D"
+                          alt="product image"
+                        />
+                      </a>
+
+                      <div
+                        style={{
                           position: "absolute",
-                          top: 0,
-                          left: 0,
+                          top: 12,
+                          left: 10,
                           backgroundColor: stringToColor(data.category),
-                          color: "#fff",
-                          padding: "2px 6px",
-                          fontSize: "0.75rem",
-                          fontWeight: "bold",
-                        },
-                      }}
-                    >
-                      <CardContent>
-                        <Typography gutterBottom variant="h6" component="div">
-                          {data.name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {data.description}
-                        </Typography>
-                      </CardContent>
-                      <CardActions>
-                        <Button
-                          size="small"
-                          onClick={() => {
-                            handleEdit(index);
-                            handleJoinCommunity(data);
-                            //console.log(data);
-                          }}
-                        >
-                          Join
-                        </Button>
-                        {/* Add more actions as needed */}
-                      </CardActions>
-                    </Card>
+                        }}
+                        className="absolute text-white px-2 py-1 rounded-md text-xs font-bold z-10"
+                      >
+                        {data.category}
+                      </div>
+                      <div className="mt-4 px-5 pb-5">
+                        <a href="#">
+                          <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                            {data.name}
+                          </h5>
+                        </a>
+                        <div className="flex items-center mt-2.5 mb-5">
+                          <div className="flex items-center space-x-1 rtl:space-x-reverse"></div>
+                          <div className="text-sm text-black py-1  font-semibold">
+                            {data.description}
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          {/* <>
+              <Button size="small" onClick={() => {}}>
+                Edit
+              </Button>
+              <Button
+                size="small"
+                onClick={() => {
+                  // localStorage.setItem(
+                  //   "CurrentCommunity",
+                  //   data.id
+                  // );
+                }}
+              >
+                View
+              </Button>
+              <Button size="small" color="error" onClick={() => {}}>
+                Archive
+              </Button>
+              <Button size="small" color="error" onClick={() => {}}>
+                Delete
+              </Button>
+            </> */}
+                          <CardActions>
+                            {data.users.includes(email) ? (
+                              <>
+                                <Button size="small" disabled>
+                                  Joined
+                                </Button>
+                                <Button
+                                  size="small"
+                                  onClick={() => handleLeaveCommunity(data)}
+                                >
+                                  Leave Community
+                                </Button>
+                              </>
+                            ) : (
+                              <>
+                                <Button
+                                  size="small"
+                                  onClick={() => handleJoinCommunity(data)}
+                                >
+                                  Join
+                                </Button>
+                                <Button
+                                  size="small"
+                                  onClick={() => handleViewCommunity(data)}
+                                >
+                                  View
+                                </Button>
+                              </>
+                            )}
+                          </CardActions>
+                        </div>
+                      </div>
+                    </div>
                   </Grid>
                 ))}
               </Grid>
             )}
           </>
         ) : (
-          <CircularProgress
-            color="success"
-            style={{ marginTop: 20, width: 150, height: 150, color: "#bcd727" }}
-          />
+          <CircularProgress />
         )}
       </div>
+
+      {/* Snackbar for notifications */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="success">
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 };

@@ -20,17 +20,17 @@ const Login = () => {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [showNext, setShowNext] = useState(false);
   const [allergies, setAllergies] = useState("");
-  const [injury, setInjury] = useState("");
+  //const [injury, setInjury] = useState("");
 
   useEffect(() => {
     if (user) {
-      router.push("/");
+      router.push("/Home");
     }
   }, [user]);
 
-  useEffect(() => {
-    ManageUser.manageUserState(setUser, setIsSignedIn);
-  }, []);
+  // useEffect(() => {
+  //   ManageUser.manageUserState(setUser, setIsSignedIn);
+  // }, []);
 
   const handleShowNext = () => {};
   const handleRegistration = (e) => {
@@ -40,7 +40,7 @@ const Login = () => {
     } else {
       if (
         allergies === "" &&
-        injury === "" &&
+        //injury === "" &&
         name === null &&
         surname === null &&
         email === null
@@ -48,7 +48,7 @@ const Login = () => {
         setError("Please complete the form.");
       } else {
         RegisterUser.registerUser(
-          { name, surname, email, password, diet, allergies, injury },
+          { name, surname, email, password, diet, allergies },
           setUser,
           setError
         );
@@ -110,22 +110,6 @@ const Login = () => {
                     />
                   </div>
                 </div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="text"
-                    className="block mb-2 text-sm font-medium text-black"
-                  >
-                    Injuries
-                  </label>
-                  <input
-                    type="text"
-                    id="injuries"
-                    className="w-full px-3 py-2 rounded-lg border-2 border-gray outline-none focus:border-indigo-500"
-                    placeholder="Injuries"
-                    onChange={(e) => setInjury(e.target.value)}
-                    required
-                  />
-                </div>
 
                 {error && (
                   <p className="error-message text-red text-center">{error}</p>
@@ -143,7 +127,7 @@ const Login = () => {
 
                     <button
                       onClick={handleRegistration}
-                      className="w-full bg-openbox-green hover:bg-hover-obgreen focus:bg-hover-obgreen text-white rounded-lg px-3 py-3 font-semibold"
+                      className="w-full bg-blue-500 hover:bg-blue-700 focus:bg-blue-700 text-white rounded-lg px-3 py-3 font-semibold"
                     >
                       Register
                     </button>
@@ -285,7 +269,7 @@ const Login = () => {
 
                     <button
                       onClick={handleRegistration}
-                      className="w-full bg-openbox-green hover:bg-hover-obgreen focus:bg-hover-obgreen text-white rounded-lg px-3 py-3 font-semibold"
+                      className="w-full bg-blue-500 hover:bg-blue-700 focus:bg-blue-700 text-white rounded-lg px-3 py-3 font-semibold"
                     >
                       Register
                     </button>

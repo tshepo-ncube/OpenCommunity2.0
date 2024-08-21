@@ -16,32 +16,38 @@ function Register() {
   const [user, setUser] = useState(null);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [showNext, setShowNext] = useState(false);
-  const [allergies, setAllergies] = useState('');
- 
+  const [allergies, setAllergies] = useState("");
 
   const handleAccountDetails = () => {
     console.log("The Account details form has been submitted");
     // This function will deal with sending the account details information to be stored in FireStore
   };
 
-  useEffect(() => {
-    if (user) {
-      router.push("/");
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (user) {
+  //     router.push("/");
+  //   }
+  // }, [user]);
 
-  useEffect(() => {
-    ManageUser.manageUserState(setUser, setIsSignedIn);
-  }, []);
+  // useEffect(() => {
+  //   ManageUser.manageUserState(setUser, setIsSignedIn);
+  // }, []);
 
   const handleRegistration = (e) => {
     e.preventDefault();
     if (confirmPassword !== password) {
       setError("Passwords do not match.");
     } else {
-      if (allergies === "" && injury === "" && name === null && surname === null && email === null) {
+      if (
+        allergies === "" &&
+        injury === "" &&
+        name === null &&
+        surname === null &&
+        email === null
+      ) {
         setError("Please complete the form.");
       } else {
+        console.log("Registering the user right now!!!");
         RegisterUser.registerUser(
           { name, surname, email, password, diet },
           setUser,
@@ -63,7 +69,12 @@ function Register() {
           <div className="flex flex-col p-8 items-center justify-center px-6 py-8 mx-auto lg:py-0">
             <div className="w-full bg-white p-8 rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
               <div className="mb-4">
-                <label htmlFor="dietaryRequirement" className="block mb-2 text-sm font-medium text-gray-700">Dietary Requirements</label>
+                <label
+                  htmlFor="dietaryRequirement"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Dietary Requirements
+                </label>
                 <select
                   id="dietaryRequirement"
                   className="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:border-blue-500"
@@ -79,7 +90,12 @@ function Register() {
                 </select>
               </div>
               <div className="mb-4">
-                <label htmlFor="allergies" className="block mb-2 text-sm font-medium text-gray-700">Allergies</label>
+                <label
+                  htmlFor="allergies"
+                  className="block mb-2 text-sm font-medium text-gray-700"
+                >
+                  Allergies
+                </label>
                 <input
                   type="text"
                   id="allergies"
@@ -88,7 +104,7 @@ function Register() {
                   onChange={(e) => setAllergies(e.target.value)}
                 />
               </div>
-         
+
               <button
                 type="submit"
                 onClick={handleRegistration}
@@ -106,7 +122,9 @@ function Register() {
               <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                 <form className="space-y-4 md:space-y-6" action="#">
                   <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                      Name
+                    </label>
                     <input
                       type="name"
                       name="name"
@@ -118,7 +136,9 @@ function Register() {
                     />
                   </div>
                   <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Surname</label>
+                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                      Surname
+                    </label>
                     <input
                       type="surname"
                       name="surname"
@@ -130,7 +150,9 @@ function Register() {
                     />
                   </div>
                   <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                      Email
+                    </label>
                     <input
                       type="email"
                       name="email"
@@ -142,7 +164,9 @@ function Register() {
                     />
                   </div>
                   <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                      Password
+                    </label>
                     <input
                       type="password"
                       name="password"
@@ -154,7 +178,9 @@ function Register() {
                     />
                   </div>
                   <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Confirm Password</label>
+                    <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                      Confirm Password
+                    </label>
                     <input
                       type="password"
                       name="password"
