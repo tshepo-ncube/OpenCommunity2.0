@@ -1,5 +1,6 @@
 "use client";
 import { RWebShare } from "react-web-share";
+import axios from "axios";
 import {
   CircularProgress,
   Typography,
@@ -26,7 +27,7 @@ export default function CommunityPage({ params }) {
   const [allEvents, setAllEvents] = useState([]);
   const [pollsUpdated, setPollsUpdated] = useState(false);
   const [USER_ID, setUSER_ID] = useState(localStorage.getItem("UserID"));
-  const [community, setCommunity] = useState(null);
+  const [community, setCommunity] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
   const [currentEvent, setCurrentEvent] = useState(null);
   const [comment, setComment] = useState("");
@@ -155,10 +156,38 @@ export default function CommunityPage({ params }) {
     setAlertOpen(false);
   };
 
-  const handleRSVP = async (eventID) => {
+  const handleRSVP = async (event) => {
+    console.log(event);
     try {
-      await EventDB.addRSVP(eventID, localStorage.getItem("Email"));
-      setRsvpState((prev) => ({ ...prev, [eventID]: true }));
+      await EventDB.addRSVP(event.id, localStorage.getItem("Email"));
+      setRsvpState((prev) => ({ ...prev, [event.id]: true }));
+
+      // const { subject, body, start, end, location, email } = req.body;
+      let subject = `${event.Name} Meeting Invite`;
+      let location = event.Location;
+      let start = new Date(event.StartDate.seconds * 1000).toISOString();
+      let end = new Date(event.EndDate.seconds * 1000).toISOString();
+      let email = localStorage.getItem("Email");
+      let body = `This is an invite to ${event.Name}`;
+      // const date =
+      // console.log(date.toISOString()); // Output: "2024-08-09T06:00:00.000Z"
+      console.log("sending....");
+      try {
+        const res = await axios.post(
+          "http://localhost:8080/sendEventInvite",
+          { subject, body, start, end, location, email },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log(res.data);
+        let data = res.data;
+      } catch (err) {
+        console.log(err);
+        console.log("error");
+      }
     } catch (error) {
       console.error("Error RSVPing:", error);
     }
@@ -196,7 +225,30 @@ export default function CommunityPage({ params }) {
     return <div>No Community found with ID: {id}</div>;
   }
 
-  const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
+  // const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
+
+  // const formatDate = (dateObj) =>
+  //   new Date(dateObj.seconds * 1000).toISOString();
+
+  const formatDate = (dateObj) => {
+    const isoString = new Date(dateObj.seconds * 1000).toISOString();
+    const date = new Date(isoString);
+
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    const dateString = date.toLocaleDateString("en-US", options);
+
+    const hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+
+    const timeString = `${hours}:${minutes.toString().padStart(2, "0")} UTC`;
+
+    return `${dateString} at ${timeString}`;
+  };
   const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString();
 
   // Filter events based on status
@@ -236,23 +288,22 @@ export default function CommunityPage({ params }) {
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative z-10 text-center py-20">
-          <Typography variant="h2" gutterBottom>
+          <Typography variant="h2" className="font-bold" gutterBottom>
             {community.name}
           </Typography>
-          <Typography variant="h4" gutterBottom>
-            {community.description}
-          </Typography>
-          <center>
+          <p className="text-md text-white">{community.description}</p>
+          <center className="mt-6">
             <button
               onClick={() => {
                 window.open(
-                  "https://teams.microsoft.com/l/channel/19%3Ab862f05c7a864cdc8446d54bbecc9024%40thread.tacv2/Drinking%20Club%20Channel?groupId=3b8c7688-b69d-43a0-8ca0-7a1a5bffa665&tenantId=",
+                  `${community.WebUrl}`,
+                  // "https://teams.microsoft.com/l/channel/19%3a28846b557cf84441955bb303c21d5543%40thread.tacv2/Modjajiii?groupId=5e98ea06-b4c1-4f72-a52f-f84260611fef&tenantId=bd82620c-6975-47c3-9533-ab6b5493ada3",
                   "_blank"
                 );
               }}
               className="bg-white rounded text-black px-6 py-1 mx-2 border border-gray-300"
             >
-              teams
+              Visit Teams Channel
             </button>
 
             <RWebShare
@@ -264,7 +315,7 @@ export default function CommunityPage({ params }) {
               onClick={() => console.log("shared successfully!")}
             >
               <button className="bg-white rounded text-black px-6 py-1 mx-2  border border-gray-300">
-                invite
+                Invite
               </button>
             </RWebShare>
           </center>
@@ -293,12 +344,12 @@ export default function CommunityPage({ params }) {
                     <br />
                     <strong>Start Date:</strong> {formatDate(event.StartDate)}
                     <br />
-                    <strong>Start Time:</strong> {formatTime(event.StartDate)}
-                    <br />
+                    {/* <strong>Start Time:</strong> {formatTime(event.StartDate)}
+                    <br /> */}
                     <strong>End Date:</strong> {formatDate(event.EndDate)}
                     <br />
-                    <strong>End Time:</strong> {formatTime(event.EndDate)}
-                    <br />
+                    {/* <strong>End Time:</strong> {formatTime(event.EndDate)}
+                    <br /> */}
                     <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
                   </Typography>
                   <div className="mt-4">
@@ -327,7 +378,7 @@ export default function CommunityPage({ params }) {
                           variant="contained"
                           color="primary"
                           className="w-full"
-                          onClick={() => handleRSVP(event.id)}
+                          onClick={() => handleRSVP(event)}
                         >
                           RSVP
                         </Button>
@@ -434,11 +485,11 @@ export default function CommunityPage({ params }) {
                     <br />
                     <strong>Start Date:</strong> {formatDate(event.StartDate)}
                     <br />
-                    <strong>Start Time:</strong> {formatTime(event.StartDate)}
-                    <br />
+                    {/* <strong>Start Time:</strong> {formatTime(event.StartDate)}
+                    <br /> */}
                     <strong>End Date:</strong> {formatDate(event.EndDate)}
-                    <br />
-                    <strong>End Time:</strong> {formatTime(event.EndDate)}
+                    {/* <br />
+                    <strong>End Time:</strong> {formatTime(event.EndDate)} */}
                   </Typography>
                   <Button
                     variant="text"

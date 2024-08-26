@@ -259,14 +259,14 @@ const AdminDash = () => {
   return (
     <div className="bg-background_gray h-full">
       <Header />
-      <div className="flex flex-col fixed bottom-7 right-4">
+      {/* <div className="flex flex-col fixed bottom-7 right-4">
         <button
           onClick={handleCreateNewEvent}
           className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
         >
           + EVENT
         </button>
-      </div>
+      </div> */}
       <div className="bg-background_gray p-4 h-full">
         <div className="flex justify-center mb-4">
           <button
@@ -283,7 +283,7 @@ const AdminDash = () => {
             onClick={() => setCurrentView("usersManagement")}
             className={`px-4 py-2 rounded-r-lg ${
               currentView === "usersManagement"
-                ? "bg-green-500 text-white"
+                ? "bg-openbox-green text-white"
                 : "bg-gray-200"
             }`}
           >
@@ -297,6 +297,7 @@ const AdminDash = () => {
             />
             <EventsHolder
               communityID={localStorage.getItem("CurrentCommunity")}
+              handleCreateNewEvent={handleCreateNewEvent}
             />
             {showEventForm && (
               <EventForm
