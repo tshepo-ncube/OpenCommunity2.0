@@ -31,6 +31,7 @@ const navItems = [
   "Home",
   "Profile",
   "Admin View",
+  "View Recommendations",
   "Recommend a community",
   "Outlook",
   "Teams",
@@ -66,6 +67,8 @@ function Header() {
       router.push("/Home");
     } else if (item === "Recommend a community") {
       router.push("/Recommendations");
+    } else if (item === "View Recommendations") {
+      router.push("/recom");
     }
   };
 
