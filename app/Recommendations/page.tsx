@@ -52,12 +52,12 @@ const CommunityRecommendationPage: React.FC = () => {
           },
         }}
       />
-      <div className="max-w-xl mx-auto p-8 text-center">
+      <div className="max-w-2xl mx-auto p-8 bg-white rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold mb-4">Community Recommendation</h1>
         <p className="text-lg mb-8">
           Recommend a new community group by filling out the form below:
         </p>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6 mt-6">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
           <div className="text-left">
             <label
               htmlFor="communityName"
