@@ -12,27 +12,14 @@ import {
 import ManageUser from "../auth/ManageUser";
 
 export default class CommunityDB {
-  static createCommunity = async (
-    item,
-    setCommunities,
-    setLoading,
-    channelData
-  ) => {
+  static createCommunity = async (item, setCommunities, setLoading) => {
     setLoading(true);
-
     const object = {
       users: [],
-      name: item.name, // CommunityDB.createCommunity(
-      //   communityData,
-      //   (newCommunity) =>
-      //     setSubmittedData((prevData) => [...prevData, newCommunity]),
-      //   setLoading
-      // );
+      name: item.name,
       description: item.description,
       category: item.category,
       status: item.status || "active", // Include status field with default value "active"
-      WebUrl: channelData.WebUrl,
-      ChannelID: channelData.ChannelID,
     };
     try {
       const docRef = await addDoc(collection(DB, "communities"), object);
