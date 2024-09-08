@@ -256,15 +256,15 @@ const EventsHolder = ({
       }))
     );
 
-    // Set title and filename based on context
+    // Create a safe sheet title and filename
     let sheetTitle;
     let fileName;
 
     if (context === "rsvp") {
-      sheetTitle = `RSVP List - ${eventName}`;
+      sheetTitle = `RSVP_List_${eventName}`.substring(0, 31); // Truncate if necessary
       fileName = `RSVP_List_${eventName.replace(/\s+/g, "_")}.xlsx`;
     } else if (context === "analytics") {
-      sheetTitle = `Analytics - ${eventName}`;
+      sheetTitle = `Analytics_${eventName}`.substring(0, 31); // Truncate if necessary
       fileName = `Analytics_${eventName.replace(/\s+/g, "_")}.xlsx`;
     }
 
