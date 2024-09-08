@@ -550,7 +550,7 @@ export default function CommunityPage({ params }) {
                     color="primary"
                     className="w-full mt-2"
                     onClick={() => handleCommentReview(event)}
-                    style={{ color: "blue" }} // Styling as blue text
+                    style={{ color: "green" }} // Styling as blue text
                   >
                     Comment & Review
                   </Button>
@@ -564,7 +564,7 @@ export default function CommunityPage({ params }) {
       </div>
 
       <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Leave a Review</DialogTitle>
+        <DialogTitle>Leave a Comment & Review</DialogTitle>
         <DialogContent>
           <Typography variant="h6">{currentEvent}</Typography>
           <TextField
