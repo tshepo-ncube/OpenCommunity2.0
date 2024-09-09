@@ -11,6 +11,8 @@ import {
   TextField,
   Rating,
   DialogActions,
+  Snackbar, // Import Snackbar
+  Alert, // Import Alert for Snackbar
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -36,6 +38,24 @@ export default function CommunityPage({ params }) {
   const [alertOpen, setAlertOpen] = useState(false);
   const [rsvpState, setRsvpState] = useState({}); // Track RSVP state for each event
   const [currentEventObject, setCurrentEventObject] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar state
+  const [snackbarMessage, setSnackbarMessage] = useState(""); // Snackbar message
+
+  const [eventRatings, setEventRatings] = useState({});
+
+  useEffect(() => {
+    const fetchEventRatings = async () => {
+      const ratings = {};
+      for (const event of allEvents) {
+        ratings[event.id] = await getAverageRating(event.id);
+      }
+      setEventRatings(ratings);
+    };
+
+    if (allEvents.length > 0) {
+      fetchEventRatings();
+    }
+  }, [allEvents]);
   useEffect(() => {
     if (id) {
       const fetchCommunity = async () => {
@@ -121,6 +141,20 @@ export default function CommunityPage({ params }) {
     );
 
     setAllPolls(updatedArray);
+  };
+  const getAverageRating = async (eventId) => {
+    try {
+      const ratings = await EventDB.getRatingsForEvent(eventId);
+      const totalRating = ratings.reduce(
+        (acc, rating) => acc + rating.Rating,
+        0
+      );
+      const averageRating = totalRating / ratings.length;
+      return averageRating || 0; // Return 0 if there are no ratings
+    } catch (error) {
+      console.error("Error fetching ratings:", error);
+      return 0; // Default to 0 if there's an error
+    }
   };
 
   const handlePollOptionSelection = (pollId, selectedOption) => {
@@ -260,17 +294,31 @@ export default function CommunityPage({ params }) {
     (event) => event.status === "past" // Adjust filtering based on your status or date
   );
 
-  const handleSubmitReview = () => {
+  const handleSubmitReview = async () => {
     const newReview = {
       Comment: comment,
-
       Rating: rating,
     };
 
-    //Call the function to add the review
-    // EventDB.addReview("3jBBeJTzU4ozzianyqeM", newReview);
+    try {
+      // Call the function to add the review and handle image upload
+      await EventDB.handleImageUpload(
+        currentEventObject.id,
+        selectedImages,
+        newReview
+      );
 
-    EventDB.handleImageUpload(currentEventObject.id, selectedImages, newReview);
+      // Show success message in the Snackbar
+      setSnackbarMessage("Review submitted successfully!");
+      setSnackbarOpen(true);
+
+      // Close the dialog
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      setSnackbarMessage("Failed to submit review.");
+      setSnackbarOpen(true);
+    }
   };
 
   // useEffect(() => {
@@ -490,15 +538,21 @@ export default function CommunityPage({ params }) {
                     <strong>End Date:</strong> {formatDate(event.EndDate)}
                     {/* <br />
                     <strong>End Time:</strong> {formatTime(event.EndDate)} */}
+                    <br /> <strong></strong>
+                    <Rating
+                      value={event.averageRating}
+                      precision={0.1}
+                      readOnly
+                    />
                   </Typography>
                   <Button
                     variant="text"
                     color="primary"
                     className="w-full mt-2"
                     onClick={() => handleCommentReview(event)}
-                    style={{ color: "blue" }} // Styling as blue text
+                    style={{ color: "green" }} // Styling as blue text
                   >
-                    Leave a Comment & Review
+                    Comment & Review
                   </Button>
                 </li>
               ))
@@ -509,75 +563,91 @@ export default function CommunityPage({ params }) {
         </div>
       </div>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        fullWidth
+        maxWidth="md"
+      >
         <DialogTitle>
-          Leave a Review and Comment about {currentEvent}
+          Leave a Review and Comment about {currentEventObject?.eventName}
         </DialogTitle>
         <DialogContent>
-          <TextField
-            label="Comment"
-            fullWidth
-            multiline
-            rows={4}
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-          />
-          <Typography component="legend">Rating</Typography>
-          <Rating
-            name="simple-controlled"
-            value={rating}
-            onChange={(event, newValue) => {
-              setRating(newValue);
-            }}
-          />
-          <Typography component="legend">Upload Images</Typography>
-          <input
-            accept="image/*"
-            id="contained-button-file"
-            multiple
-            type="file"
-            onChange={handleImageUpload}
-            style={{ display: "none" }}
-          />
-          <label htmlFor="contained-button-file">
-            <Button
-              variant="contained"
-              color="primary"
-              component="span"
-              style={{ marginTop: "10px" }}
-            >
-              Upload
-            </Button>
-          </label>
-          {selectedImages.length > 0 && (
-            <div className="mt-2">
-              <Typography component="legend">Selected Images</Typography>
-              <div className="flex flex-wrap">
-                {selectedImages.map((image, index) => (
-                  <img
-                    key={index}
-                    src={URL.createObjectURL(image)}
-                    alt={`Selected ${index}`}
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      marginRight: "10px",
-                    }}
-                  />
-                ))}
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            {/* Left Section: Comment Form */}
+            <div style={{ flex: 1, marginRight: "20px" }}>
+              <TextField
+                label="Comment"
+                multiline
+                rows={4}
+                fullWidth
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                variant="outlined"
+                margin="dense"
+              />
+              <Rating
+                name="event-rating"
+                value={rating}
+                onChange={(e, newRating) => setRating(newRating)}
+              />
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleImageUpload}
+                style={{ marginTop: "10px" }}
+              />
+            </div>
+
+            {/* Right Section: Display Existing Comments */}
+            <div style={{ flex: 1, marginLeft: "20px" }}>
+              <Typography variant="h6">Reviews and Comments</Typography>
+              <div style={{ maxHeight: "300px", overflowY: "auto" }}>
+                {currentEventObject?.comments?.length > 0 ? (
+                  currentEventObject.comments.map((review, index) => (
+                    <div key={index} style={{ marginBottom: "20px" }}>
+                      <Typography variant="subtitle1">
+                        {review.Comment}
+                      </Typography>
+                      <Rating value={review.Rating} readOnly />
+                    </div>
+                  ))
+                ) : (
+                  <Typography>
+                    No reviews yet. Be the first to comment!
+                  </Typography>
+                )}
               </div>
             </div>
-          )}
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleSubmitReview} color="primary">
+          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button
+            onClick={handleSubmitReview}
+            variant="contained"
+            color="primary"
+          >
             Submit
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity={
+            snackbarMessage === "Failed to submit review." ? "error" : "success"
+          }
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

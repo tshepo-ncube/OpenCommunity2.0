@@ -277,7 +277,7 @@ const AdminDash = () => {
                 : "bg-gray-200"
             }`}
           >
-            Info Management
+            Community Management
           </button>
           <button
             onClick={() => setCurrentView("usersManagement")}
