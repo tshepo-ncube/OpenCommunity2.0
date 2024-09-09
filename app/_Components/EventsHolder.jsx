@@ -599,7 +599,7 @@ const EventsHolder = ({
 
             transform: "translate(-50%, -50%)",
 
-            width: 600,
+            width: 700,
 
             bgcolor: "background.paper",
 

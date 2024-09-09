@@ -29,7 +29,7 @@ export default class RecommendationDB {
       name,
       description,
       userEmail, // Include the user's email in the recommendation
-      ...additionalData, // Any additional fields to add
+      category: additionalData.category, // Include the category from additionalData
       createdAt: new Date(), // Timestamp for when the recommendation was created
     };
 
@@ -45,7 +45,6 @@ export default class RecommendationDB {
       throw e;
     }
   };
-
   // Function to delete a recommendation by ID
   static deleteRecommendation = async (id) => {
     try {

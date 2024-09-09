@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import Header from "../_Components/header";
 import { toast, Toaster } from "react-hot-toast";
@@ -8,6 +7,7 @@ import RecommendationDB from "@/database/community/recommendation";
 const CommunityRecommendationPage: React.FC = () => {
   const [communityName, setCommunityName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [category, setCategory] = useState<string>("General"); // Default category value
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -19,16 +19,17 @@ const CommunityRecommendationPage: React.FC = () => {
         throw new Error("User email not found. Please log in.");
       }
 
-      // Save the recommendation to the database
+      // Save the recommendation to the database, passing the category
       await RecommendationDB.createRecommendation(
         communityName,
         description,
-        { userEmail } // Pass the userEmail as additional data
+        { userEmail, category } // Include the category
       );
 
       // Clear form inputs after successful submission
       setCommunityName("");
       setDescription("");
+      setCategory("General"); // Reset the category to the default value
 
       // Show success message in a snack bar
       toast.success("Your community recommendation has been submitted!");
@@ -90,6 +91,25 @@ const CommunityRecommendationPage: React.FC = () => {
               required
               className="w-full p-3 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[100px]"
             />
+          </div>
+          <div className="text-left">
+            <label
+              htmlFor="category"
+              className="block text-lg font-medium mb-2"
+            >
+              Category:
+            </label>
+            <select
+              id="category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full p-3 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="General">General</option>
+              <option value="Sport">Sports</option>
+              <option value="Sport">Social</option>
+              <option value="Development">Development</option>
+            </select>
           </div>
           <button
             type="submit"

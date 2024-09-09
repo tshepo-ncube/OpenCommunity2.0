@@ -563,46 +563,74 @@ export default function CommunityPage({ params }) {
         </div>
       </div>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Leave a Comment & Review</DialogTitle>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle>
+          Leave a Review and Comment about {currentEventObject?.eventName}
+        </DialogTitle>
         <DialogContent>
-          <Typography variant="h6">{currentEvent}</Typography>
-          <TextField
-            label="Comment"
-            variant="outlined"
-            fullWidth
-            multiline
-            rows={4}
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-          />
-          <Rating
-            name="simple-controlled"
-            value={rating}
-            onChange={(event, newValue) => setRating(newValue)}
-          />
-          <input
-            accept="image/*"
-            type="file"
-            multiple
-            onChange={handleImageUpload}
-          />
-          {selectedImages.length > 0 && (
-            <div>
-              {selectedImages.map((image, index) => (
-                <img
-                  key={index}
-                  src={URL.createObjectURL(image)}
-                  alt="Selected"
-                  style={{ width: 100, height: 100 }}
-                />
-              ))}
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            {/* Left Section: Comment Form */}
+            <div style={{ flex: 1, marginRight: "20px" }}>
+              <TextField
+                label="Comment"
+                multiline
+                rows={4}
+                fullWidth
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                variant="outlined"
+                margin="dense"
+              />
+              <Rating
+                name="event-rating"
+                value={rating}
+                onChange={(e, newRating) => setRating(newRating)}
+              />
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleImageUpload}
+                style={{ marginTop: "10px" }}
+              />
             </div>
-          )}
+
+            {/* Right Section: Display Existing Comments */}
+            <div style={{ flex: 1, marginLeft: "20px" }}>
+              <Typography variant="h6">Reviews and Comments</Typography>
+              <div style={{ maxHeight: "300px", overflowY: "auto" }}>
+                {currentEventObject?.comments?.length > 0 ? (
+                  currentEventObject.comments.map((review, index) => (
+                    <div key={index} style={{ marginBottom: "20px" }}>
+                      <Typography variant="subtitle1">
+                        {review.Comment}
+                      </Typography>
+                      <Rating value={review.Rating} readOnly />
+                    </div>
+                  ))
+                ) : (
+                  <Typography>
+                    No reviews yet. Be the first to comment!
+                  </Typography>
+                )}
+              </div>
+            </div>
+          </div>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleSubmitReview}>Submit</Button>
+          <Button
+            onClick={handleSubmitReview}
+            variant="contained"
+            color="primary"
+          >
+            Submit
+          </Button>
         </DialogActions>
       </Dialog>
 

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import RecommendationDB from "@/database/community/recommendation"; // Import your DB module
 import Header from "../_Components/header"; // Import the Header component
-import { FaHeart, FaRegHeart } from "react-icons/fa"; // Import heart icons
+import { FaHeart, FaRegHeart, FaPlus } from "react-icons/fa"; // Import heart and plus icons
 
 const mutedLimeGreen = "#d0e43f"; // Muted version of #bcd727
 
@@ -30,7 +30,8 @@ const RecommendationsTable: React.FC = () => {
   const handleEmailClick = (
     email: string,
     name: string,
-    description: string
+    description: string,
+    category: string // Add category parameter
   ) => {
     const subject = encodeURIComponent(
       "OpenCommunity Community Recommendation"
@@ -38,7 +39,8 @@ const RecommendationsTable: React.FC = () => {
     const body = encodeURIComponent(
       `Hello,\n\nI am contacting you regarding your community recommendation.\n\n` +
         `Name: ${name}\n` +
-        `Description: ${description}\n\n` +
+        `Description: ${description}\n` +
+        `Category: ${category}\n\n` + // Include category in the body
         `Best regards,`
     );
     const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
@@ -55,6 +57,11 @@ const RecommendationsTable: React.FC = () => {
       }
       return updatedLikes;
     });
+  };
+
+  const handleAddClick = (id: string) => {
+    // Handle the add button click event (custom logic can go here)
+    alert(`Add button clicked for recommendation with id: ${id}`);
   };
 
   // Sort recommendations to show liked ones first
@@ -80,7 +87,11 @@ const RecommendationsTable: React.FC = () => {
               {/* Empty header for heart column */}
               <th className="p-4 text-left">Name</th>
               <th className="p-4 text-left">Description</th>
+              <th className="p-4 text-left">Category</th>{" "}
+              {/* Added category header */}
               <th className="p-4 text-left">Email</th>
+              <th className="p-4 text-left w-12"></th>{" "}
+              {/* Empty header for add button */}
             </tr>
           </thead>
           <tbody>
@@ -103,6 +114,8 @@ const RecommendationsTable: React.FC = () => {
                 </td>
                 <td className="p-4 text-gray-800">{rec.name}</td>
                 <td className="p-4 text-gray-600">{rec.description}</td>
+                <td className="p-4 text-gray-600">{rec.category}</td>{" "}
+                {/* Display category */}
                 <td className="p-4">
                   <a
                     href="#"
@@ -111,13 +124,22 @@ const RecommendationsTable: React.FC = () => {
                       handleEmailClick(
                         rec.userEmail,
                         rec.name,
-                        rec.description
+                        rec.description,
+                        rec.category // Pass category here
                       );
                     }}
                     className="text-blue-600 hover:underline transition-colors"
                   >
                     {rec.userEmail}
                   </a>
+                </td>
+                <td className="p-4 text-center">
+                  <button
+                    onClick={() => handleAddClick(rec.id)}
+                    className="text-xl hover:text-green-600 transition-colors"
+                  >
+                    <FaPlus style={{ color: mutedLimeGreen }} />
+                  </button>
                 </td>
               </tr>
             ))}
