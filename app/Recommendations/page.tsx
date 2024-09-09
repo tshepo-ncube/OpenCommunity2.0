@@ -105,8 +105,8 @@ const CommunityRecommendationPage: React.FC = () => {
               onChange={(e) => setCategory(e.target.value)}
               className="w-full p-3 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="General">General</option>
-              <option value="Sport">Sports</option>
+              <option value="General">general</option>
+              <option value="Sports">Sports</option>
               <option value="Sport">Social</option>
               <option value="Development">Development</option>
             </select>

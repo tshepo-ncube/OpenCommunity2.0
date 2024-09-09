@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import RecommendationDB from "@/database/community/recommendation"; // Import your DB module
+import CommunityDB from "@/database/community/community"; // Import CommunityDB
 import Header from "../_Components/header"; // Import the Header component
 import { FaHeart, FaRegHeart, FaPlus } from "react-icons/fa"; // Import heart and plus icons
 import Swal from "sweetalert2"; // Import SweetAlert2
@@ -109,13 +110,33 @@ const RecommendationsTable: React.FC = () => {
     });
 
     if (formValues) {
-      console.log("Form values:", formValues);
-      // Handle form submission logic here
-      // You can differentiate between "Save Draft" and "Create Community" actions
-      if (Swal.getConfirmButton()?.innerText === "Create Community") {
-        // Create Community logic here
-      } else if (Swal.getCancelButton()?.innerText === "Save Draft") {
-        // Save Draft logic here
+      // Create Community logic
+      try {
+        await CommunityDB.createCommunity(
+          formValues,
+          () => {},
+          () => {}
+        );
+        await RecommendationDB.deleteRecommendation(rec.id); // Assuming you have a deleteRecommendation method
+        // Update recommendations list
+        const updatedRecommendations =
+          await RecommendationDB.getAllRecommendations();
+        setRecommendations(updatedRecommendations);
+        Swal.fire(
+          "Success",
+          "Community created and recommendation removed.",
+          "success"
+        );
+      } catch (error) {
+        console.error(
+          "Error creating community or deleting recommendation:",
+          error
+        );
+        Swal.fire(
+          "Error",
+          "There was an error creating the community or deleting the recommendation.",
+          "error"
+        );
       }
     }
   };
