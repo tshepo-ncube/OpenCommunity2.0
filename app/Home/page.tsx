@@ -128,8 +128,8 @@ function Home() {
     <>
       <div className="App text-center ">
         <Header />
-        <center className="mt-18">
-          <Box sx={{ width: "100%", marginTop: 10 }}>
+        <center className="mt-8">
+          <Box sx={{ width: "100%", marginTop: 4 }}>
             <div className="flex justify-center mt-6">
               <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
                 <ul className="flex flex-wrap -mb-px">
@@ -162,6 +162,7 @@ function Home() {
                 </ul>
               </div>
             </div>
+
             {/* <Box
               sx={{
                 borderBottom: "5px solid white", // Set the border color to green

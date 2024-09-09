@@ -189,7 +189,7 @@ function PollsHolder({ communityID }) {
                     </ul>
                   </CardContent>
                   <CardActions style={{ marginTop: -12 }}>
-                    <Button>Analytics</Button>
+                    {/* <Button>Analytics</Button> */}
                     <Button color="error">Delete Poll</Button>
                   </CardActions>
                 </Card>
@@ -257,7 +257,15 @@ function PollsHolder({ communityID }) {
                     </ul>
                   </CardContent>
                   <CardActions style={{ marginTop: -12 }}>
-                    <Button>Analytics</Button>
+                    <Button
+                      onClick={() => {
+                        setAnalyticsPollPointer(value);
+                        setShowAnalyticsForm(true);
+                        // showAnalyticsForm
+                      }}
+                    >
+                      View Results
+                    </Button>
                     <Button color="error">Delete Poll</Button>
                   </CardActions>
                 </Card>

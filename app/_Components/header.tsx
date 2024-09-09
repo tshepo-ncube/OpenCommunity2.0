@@ -1,11 +1,10 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Sidebar from "../_Components/sidebar";
 import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
 import Image from "next/image";
 import Logo from "@/lib/images/Logo1.png";
-import { useState } from "react";
 import PropTypes from "prop-types";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -25,12 +24,15 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import ManageUser from "@/database/auth/ManageUser";
 import { useRouter } from "next/navigation";
 import { styled } from "@mui/system";
+import Switch from "@mui/material/Switch"; // Import Switch component
 
 const drawerWidth = 240;
 const navItems = [
   "Home",
   "Profile",
   "Admin View",
+  "View Recommendations",
+  "Recommend a community",
   "Outlook",
   "Teams",
   "Logout",
@@ -63,6 +65,10 @@ function Header() {
       router.push("/DiscoverCommunities");
     } else if (item === "Home") {
       router.push("/Home");
+    } else if (item === "Recommend a community") {
+      router.push("/Recommendations");
+    } else if (item === "View Recommendations") {
+      router.push("/recom");
     }
   };
 
@@ -104,6 +110,8 @@ function Header() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             OPEN COMMUNITY
           </Typography>
+          {/* Add Switch before the AccountCircle icon */}
+          <Switch color="default" />
           <IconButton
             size="large"
             aria-label="account of current user"

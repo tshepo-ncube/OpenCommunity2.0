@@ -39,7 +39,8 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
   >([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("general");
+  const [selectedCategory, setSelectedCategory] =
+    useState<string>("All Communities");
   const [selectedStatus, setSelectedStatus] = useState<string>("active");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -130,7 +131,6 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
-
   const filterDataByCategoryAndStatus = (
     data: {
       id: string;
@@ -141,21 +141,50 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
       users: string[];
     }[]
   ) => {
-    return data.filter(
-      (item) =>
-        item.category.toLowerCase().includes(selectedCategory.toLowerCase()) &&
-        item.status === selectedStatus &&
+    return data.filter((item) => {
+      const categoryMatch =
+        selectedCategory.toLowerCase() === "all communities" ||
+        item.category.toLowerCase().includes(selectedCategory.toLowerCase());
+
+      const statusMatch =
+        selectedStatus.toLowerCase() === "all communities" ||
+        item.status === selectedStatus;
+
+      const searchQueryMatch =
         `${item.name.toLowerCase()} ${item.description.toLowerCase()} ${item.category.toLowerCase()}`.includes(
           searchQuery.toLowerCase()
-        )
-    );
+        );
+
+      return categoryMatch && statusMatch && searchQueryMatch;
+    });
   };
+
+  // const filterDataByCategoryAndStatus = (
+  //   data: {
+  //     id: string;
+  //     name: string;
+  //     description: string;
+  //     category: string;
+  //     status: string;
+  //     users: string[];
+  //   }[]
+  // ) => {
+  //   return data.filter(
+  //     (item) =>
+  //       item.category.toLowerCase().includes(selectedCategory.toLowerCase()) &&
+  //       item.status === selectedStatus &&
+  //       `${item.name.toLowerCase()} ${item.description.toLowerCase()} ${item.category.toLowerCase()}`.includes(
+  //         searchQuery.toLowerCase()
+  //       )
+  //   );
+  // };
 
   const filteredData = filterDataByCategoryAndStatus(submittedData);
 
   const uniqueCategories = Array.from(
     new Set(submittedData.map((data) => data.category))
   );
+  uniqueCategories.unshift("All Communities");
 
   // Function to generate consistent color based on category
   const stringToColor = (category: string): string => {

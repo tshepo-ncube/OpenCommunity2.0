@@ -1,5 +1,6 @@
 "use client";
 import { RWebShare } from "react-web-share";
+import axios from "axios";
 import {
   CircularProgress,
   Typography,
@@ -10,6 +11,8 @@ import {
   TextField,
   Rating,
   DialogActions,
+  Snackbar, // Import Snackbar
+  Alert, // Import Alert for Snackbar
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -26,7 +29,7 @@ export default function CommunityPage({ params }) {
   const [allEvents, setAllEvents] = useState([]);
   const [pollsUpdated, setPollsUpdated] = useState(false);
   const [USER_ID, setUSER_ID] = useState(localStorage.getItem("UserID"));
-  const [community, setCommunity] = useState(null);
+  const [community, setCommunity] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
   const [currentEvent, setCurrentEvent] = useState(null);
   const [comment, setComment] = useState("");
@@ -35,6 +38,24 @@ export default function CommunityPage({ params }) {
   const [alertOpen, setAlertOpen] = useState(false);
   const [rsvpState, setRsvpState] = useState({}); // Track RSVP state for each event
   const [currentEventObject, setCurrentEventObject] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar state
+  const [snackbarMessage, setSnackbarMessage] = useState(""); // Snackbar message
+
+  const [eventRatings, setEventRatings] = useState({});
+
+  useEffect(() => {
+    const fetchEventRatings = async () => {
+      const ratings = {};
+      for (const event of allEvents) {
+        ratings[event.id] = await getAverageRating(event.id);
+      }
+      setEventRatings(ratings);
+    };
+
+    if (allEvents.length > 0) {
+      fetchEventRatings();
+    }
+  }, [allEvents]);
   useEffect(() => {
     if (id) {
       const fetchCommunity = async () => {
@@ -121,6 +142,20 @@ export default function CommunityPage({ params }) {
 
     setAllPolls(updatedArray);
   };
+  const getAverageRating = async (eventId) => {
+    try {
+      const ratings = await EventDB.getRatingsForEvent(eventId);
+      const totalRating = ratings.reduce(
+        (acc, rating) => acc + rating.Rating,
+        0
+      );
+      const averageRating = totalRating / ratings.length;
+      return averageRating || 0; // Return 0 if there are no ratings
+    } catch (error) {
+      console.error("Error fetching ratings:", error);
+      return 0; // Default to 0 if there's an error
+    }
+  };
 
   const handlePollOptionSelection = (pollId, selectedOption) => {
     PollDB.voteFromPollId(params.id, pollId, selectedOption)
@@ -155,10 +190,38 @@ export default function CommunityPage({ params }) {
     setAlertOpen(false);
   };
 
-  const handleRSVP = async (eventID) => {
+  const handleRSVP = async (event) => {
+    console.log(event);
     try {
-      await EventDB.addRSVP(eventID, localStorage.getItem("Email"));
-      setRsvpState((prev) => ({ ...prev, [eventID]: true }));
+      await EventDB.addRSVP(event.id, localStorage.getItem("Email"));
+      setRsvpState((prev) => ({ ...prev, [event.id]: true }));
+
+      // const { subject, body, start, end, location, email } = req.body;
+      let subject = `${event.Name} Meeting Invite`;
+      let location = event.Location;
+      let start = new Date(event.StartDate.seconds * 1000).toISOString();
+      let end = new Date(event.EndDate.seconds * 1000).toISOString();
+      let email = localStorage.getItem("Email");
+      let body = `This is an invite to ${event.Name}`;
+      // const date =
+      // console.log(date.toISOString()); // Output: "2024-08-09T06:00:00.000Z"
+      console.log("sending....");
+      try {
+        const res = await axios.post(
+          "http://localhost:8080/sendEventInvite",
+          { subject, body, start, end, location, email },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log(res.data);
+        let data = res.data;
+      } catch (err) {
+        console.log(err);
+        console.log("error");
+      }
     } catch (error) {
       console.error("Error RSVPing:", error);
     }
@@ -196,7 +259,30 @@ export default function CommunityPage({ params }) {
     return <div>No Community found with ID: {id}</div>;
   }
 
-  const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
+  // const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
+
+  // const formatDate = (dateObj) =>
+  //   new Date(dateObj.seconds * 1000).toISOString();
+
+  const formatDate = (dateObj) => {
+    const isoString = new Date(dateObj.seconds * 1000).toISOString();
+    const date = new Date(isoString);
+
+    const options = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    const dateString = date.toLocaleDateString("en-US", options);
+
+    const hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+
+    const timeString = `${hours}:${minutes.toString().padStart(2, "0")} UTC`;
+
+    return `${dateString} at ${timeString}`;
+  };
   const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString();
 
   // Filter events based on status
@@ -208,17 +294,31 @@ export default function CommunityPage({ params }) {
     (event) => event.status === "past" // Adjust filtering based on your status or date
   );
 
-  const handleSubmitReview = () => {
+  const handleSubmitReview = async () => {
     const newReview = {
       Comment: comment,
-
       Rating: rating,
     };
 
-    //Call the function to add the review
-    // EventDB.addReview("3jBBeJTzU4ozzianyqeM", newReview);
+    try {
+      // Call the function to add the review and handle image upload
+      await EventDB.handleImageUpload(
+        currentEventObject.id,
+        selectedImages,
+        newReview
+      );
 
-    EventDB.handleImageUpload(currentEventObject.id, selectedImages, newReview);
+      // Show success message in the Snackbar
+      setSnackbarMessage("Review submitted successfully!");
+      setSnackbarOpen(true);
+
+      // Close the dialog
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      setSnackbarMessage("Failed to submit review.");
+      setSnackbarOpen(true);
+    }
   };
 
   // useEffect(() => {
@@ -236,23 +336,22 @@ export default function CommunityPage({ params }) {
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
         <div className="relative z-10 text-center py-20">
-          <Typography variant="h2" gutterBottom>
+          <Typography variant="h2" className="font-bold" gutterBottom>
             {community.name}
           </Typography>
-          <Typography variant="h4" gutterBottom>
-            {community.description}
-          </Typography>
-          <center>
+          <p className="text-md text-white">{community.description}</p>
+          <center className="mt-6">
             <button
               onClick={() => {
                 window.open(
-                  "https://teams.microsoft.com/l/channel/19%3Ab862f05c7a864cdc8446d54bbecc9024%40thread.tacv2/Drinking%20Club%20Channel?groupId=3b8c7688-b69d-43a0-8ca0-7a1a5bffa665&tenantId=",
+                  `${community.WebUrl}`,
+                  // "https://teams.microsoft.com/l/channel/19%3a28846b557cf84441955bb303c21d5543%40thread.tacv2/Modjajiii?groupId=5e98ea06-b4c1-4f72-a52f-f84260611fef&tenantId=bd82620c-6975-47c3-9533-ab6b5493ada3",
                   "_blank"
                 );
               }}
               className="bg-white rounded text-black px-6 py-1 mx-2 border border-gray-300"
             >
-              teams
+              Visit Teams Channel
             </button>
 
             <RWebShare
@@ -264,7 +363,7 @@ export default function CommunityPage({ params }) {
               onClick={() => console.log("shared successfully!")}
             >
               <button className="bg-white rounded text-black px-6 py-1 mx-2  border border-gray-300">
-                invite
+                Invite
               </button>
             </RWebShare>
           </center>
@@ -293,12 +392,12 @@ export default function CommunityPage({ params }) {
                     <br />
                     <strong>Start Date:</strong> {formatDate(event.StartDate)}
                     <br />
-                    <strong>Start Time:</strong> {formatTime(event.StartDate)}
-                    <br />
+                    {/* <strong>Start Time:</strong> {formatTime(event.StartDate)}
+                    <br /> */}
                     <strong>End Date:</strong> {formatDate(event.EndDate)}
                     <br />
-                    <strong>End Time:</strong> {formatTime(event.EndDate)}
-                    <br />
+                    {/* <strong>End Time:</strong> {formatTime(event.EndDate)}
+                    <br /> */}
                     <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
                   </Typography>
                   <div className="mt-4">
@@ -327,7 +426,7 @@ export default function CommunityPage({ params }) {
                           variant="contained"
                           color="primary"
                           className="w-full"
-                          onClick={() => handleRSVP(event.id)}
+                          onClick={() => handleRSVP(event)}
                         >
                           RSVP
                         </Button>
@@ -434,20 +533,26 @@ export default function CommunityPage({ params }) {
                     <br />
                     <strong>Start Date:</strong> {formatDate(event.StartDate)}
                     <br />
-                    <strong>Start Time:</strong> {formatTime(event.StartDate)}
-                    <br />
+                    {/* <strong>Start Time:</strong> {formatTime(event.StartDate)}
+                    <br /> */}
                     <strong>End Date:</strong> {formatDate(event.EndDate)}
-                    <br />
-                    <strong>End Time:</strong> {formatTime(event.EndDate)}
+                    {/* <br />
+                    <strong>End Time:</strong> {formatTime(event.EndDate)} */}
+                    <br /> <strong></strong>
+                    <Rating
+                      value={event.averageRating}
+                      precision={0.1}
+                      readOnly
+                    />
                   </Typography>
                   <Button
                     variant="text"
                     color="primary"
                     className="w-full mt-2"
                     onClick={() => handleCommentReview(event)}
-                    style={{ color: "blue" }} // Styling as blue text
+                    style={{ color: "green" }} // Styling as blue text
                   >
-                    Leave a Comment & Review
+                    Comment & Review
                   </Button>
                 </li>
               ))
@@ -458,75 +563,91 @@ export default function CommunityPage({ params }) {
         </div>
       </div>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        fullWidth
+        maxWidth="md"
+      >
         <DialogTitle>
-          Leave a Review and Comment about {currentEvent}
+          Leave a Review and Comment about {currentEventObject?.eventName}
         </DialogTitle>
         <DialogContent>
-          <TextField
-            label="Comment"
-            fullWidth
-            multiline
-            rows={4}
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-          />
-          <Typography component="legend">Rating</Typography>
-          <Rating
-            name="simple-controlled"
-            value={rating}
-            onChange={(event, newValue) => {
-              setRating(newValue);
-            }}
-          />
-          <Typography component="legend">Upload Images</Typography>
-          <input
-            accept="image/*"
-            id="contained-button-file"
-            multiple
-            type="file"
-            onChange={handleImageUpload}
-            style={{ display: "none" }}
-          />
-          <label htmlFor="contained-button-file">
-            <Button
-              variant="contained"
-              color="primary"
-              component="span"
-              style={{ marginTop: "10px" }}
-            >
-              Upload
-            </Button>
-          </label>
-          {selectedImages.length > 0 && (
-            <div className="mt-2">
-              <Typography component="legend">Selected Images</Typography>
-              <div className="flex flex-wrap">
-                {selectedImages.map((image, index) => (
-                  <img
-                    key={index}
-                    src={URL.createObjectURL(image)}
-                    alt={`Selected ${index}`}
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      marginRight: "10px",
-                    }}
-                  />
-                ))}
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            {/* Left Section: Comment Form */}
+            <div style={{ flex: 1, marginRight: "20px" }}>
+              <TextField
+                label="Comment"
+                multiline
+                rows={4}
+                fullWidth
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                variant="outlined"
+                margin="dense"
+              />
+              <Rating
+                name="event-rating"
+                value={rating}
+                onChange={(e, newRating) => setRating(newRating)}
+              />
+              <input
+                type="file"
+                multiple
+                accept="image/*"
+                onChange={handleImageUpload}
+                style={{ marginTop: "10px" }}
+              />
+            </div>
+
+            {/* Right Section: Display Existing Comments */}
+            <div style={{ flex: 1, marginLeft: "20px" }}>
+              <Typography variant="h6">Reviews and Comments</Typography>
+              <div style={{ maxHeight: "300px", overflowY: "auto" }}>
+                {currentEventObject?.comments?.length > 0 ? (
+                  currentEventObject.comments.map((review, index) => (
+                    <div key={index} style={{ marginBottom: "20px" }}>
+                      <Typography variant="subtitle1">
+                        {review.Comment}
+                      </Typography>
+                      <Rating value={review.Rating} readOnly />
+                    </div>
+                  ))
+                ) : (
+                  <Typography>
+                    No reviews yet. Be the first to comment!
+                  </Typography>
+                )}
               </div>
             </div>
-          )}
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
-            Cancel
-          </Button>
-          <Button onClick={handleSubmitReview} color="primary">
+          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button
+            onClick={handleSubmitReview}
+            variant="contained"
+            color="primary"
+          >
             Submit
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity={
+            snackbarMessage === "Failed to submit review." ? "error" : "success"
+          }
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

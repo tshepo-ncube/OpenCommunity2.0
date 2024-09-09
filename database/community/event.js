@@ -1,3 +1,4 @@
+// EventDB.jsx
 import DB from "../DB";
 import {
   getFirestore,
@@ -177,13 +178,12 @@ export default class EventDB {
     }
   };
 
+  // Function to handle image uploads and add the review
   static handleImageUpload = async (
     document_id,
     array_files,
     review_object
   ) => {
-    // const files = Array.from(event.target.files);
-
     // Array to hold URLs of uploaded images
     const imageUrls = [];
 
@@ -208,20 +208,21 @@ export default class EventDB {
     EventDB.addReview(document_id, imageUrls, review_object);
   };
 
-  // static addImagesToFirestore = async (
-  //   documentId,
-  //   imageUrls,
-  //   review_object
-  // ) => {
-  //   const docRef = doc(DB, "events", documentId); // Replace with your collection and document ID
-
-  //   try {
-  //     await updateDoc(docRef, {
-  //       Images: arrayUnion(...imageUrls), // Add new image URLs to the existing array
-  //     });
-  //     console.log("Image URLs added to Firestore successfully");
-  //   } catch (error) {
-  //     console.error("Error adding image URLs to Firestore:", error);
-  //   }
-  // };
+  // Function to add a comment with rating
+  static addComment = async (eventID, comment, rating) => {
+    const eventRef = doc(DB, "events", eventID);
+    try {
+      await updateDoc(eventRef, {
+        Comments: arrayUnion({
+          userEmail: "user@example.com", // Replace with the actual user email
+          comment,
+          rating,
+        }),
+      });
+      console.log("Comment added successfully.");
+    } catch (e) {
+      console.error("Error adding comment:", e);
+      throw e;
+    }
+  };
 }

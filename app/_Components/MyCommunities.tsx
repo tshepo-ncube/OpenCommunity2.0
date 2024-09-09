@@ -36,7 +36,9 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
     }[]
   >([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("general");
+
+  const [selectedCategory, setSelectedCategory] =
+    useState<string>("All Communities");
   const [selectedStatus, setSelectedStatus] = useState<string>("active");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
@@ -84,24 +86,55 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
     }[]
   ) => {
     return data
-      .filter((item) => item.users.includes(email)) // Only include communities joined by the user
-      .filter(
-        (item) =>
-          item.category
-            .toLowerCase()
-            .includes(selectedCategory.toLowerCase()) &&
-          item.status === selectedStatus &&
+      .filter((item) => item.users.includes(email))
+      .filter((item) => {
+        const categoryMatch =
+          selectedCategory.toLowerCase() === "all communities" ||
+          item.category.toLowerCase().includes(selectedCategory.toLowerCase());
+
+        const statusMatch =
+          selectedStatus.toLowerCase() === "all communities" ||
+          item.status === selectedStatus;
+
+        const searchQueryMatch =
           `${item.name.toLowerCase()} ${item.description.toLowerCase()} ${item.category.toLowerCase()}`.includes(
             searchQuery.toLowerCase()
-          )
-      );
+          );
+
+        return categoryMatch && statusMatch && searchQueryMatch;
+      });
   };
+
+  // const filterDataByCategoryAndStatus = (
+  //   data: {
+  //     id: string;
+  //     name: string;
+  //     description: string;
+  //     category: string;
+  //     status: string;
+  //     users: string[];
+  //   }[]
+  // ) => {
+  //   return data
+  //     .filter((item) => item.users.includes(email)) // Only include communities joined by the user
+  //     .filter(
+  //       (item) =>
+  //         item.category
+  //           .toLowerCase()
+  //           .includes(selectedCategory.toLowerCase()) &&
+  //         item.status === selectedStatus &&
+  //         `${item.name.toLowerCase()} ${item.description.toLowerCase()} ${item.category.toLowerCase()}`.includes(
+  //           searchQuery.toLowerCase()
+  //         )
+  //     );
+  // };
 
   const filteredData = filterDataByCategoryAndStatus(submittedData);
 
   const uniqueCategories = Array.from(
     new Set(submittedData.map((data) => data.category))
   );
+  uniqueCategories.unshift("All Communities");
 
   // Function to generate consistent color based on category
   const stringToColor = (category: string): string => {
@@ -254,7 +287,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
             ) : (
               <Grid container spacing={2} style={{ padding: 14 }}>
                 {filteredData.map((data, index) => (
-                  <Grid item xs={6} md={3} key={index}>
+                  <Grid item xs={6} md={4} lg={4} key={index}>
                     {/* <Card
                       sx={{
                         position: "relative",
@@ -300,7 +333,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
                           alt="product image"
                         />
                       </a>
-                      <IconButton
+                      {/* <IconButton
                         aria-label="more"
                         aria-controls="long-menu"
                         aria-haspopup="true"
@@ -328,7 +361,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
                         <MenuItem onClick={handleClose} color="error">
                           Delete
                         </MenuItem>
-                      </Menu>
+                      </Menu> */}
 
                       <div
                         style={{
