@@ -7,7 +7,7 @@ import RecommendationDB from "@/database/community/recommendation";
 const CommunityRecommendationPage: React.FC = () => {
   const [communityName, setCommunityName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
-  const [category, setCategory] = useState<string>("General"); // Default category value
+  const [category, setCategory] = useState<string>("general"); // Default category value
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -29,7 +29,7 @@ const CommunityRecommendationPage: React.FC = () => {
       // Clear form inputs after successful submission
       setCommunityName("");
       setDescription("");
-      setCategory("General"); // Reset the category to the default value
+      setCategory("general"); // Reset the category to the default value
 
       // Show success message in a snack bar
       toast.success("Your community recommendation has been submitted!");
@@ -105,9 +105,9 @@ const CommunityRecommendationPage: React.FC = () => {
               onChange={(e) => setCategory(e.target.value)}
               className="w-full p-3 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="General">general</option>
+              <option value="general">general</option>
               <option value="Sports">Sports</option>
-              <option value="Sport">Social</option>
+              <option value="Social">Social</option>
               <option value="Development">Development</option>
             </select>
           </div>

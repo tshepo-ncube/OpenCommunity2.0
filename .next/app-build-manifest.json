@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/page": [
+    "/recom/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+      "static/chunks/app/recom/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
@@ -11,20 +11,15 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
+    "/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/page.js"
+    ],
     "/Home/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/Home/page.js"
-    ],
-    "/Home/community/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/Home/community/[id]/page.js"
-    ],
-    "/recom/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/recom/page.js"
     ],
     "/Recommendations/page": [
       "static/chunks/webpack.js",
@@ -35,11 +30,6 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/DiscoverCommunities/page.js"
-    ],
-    "/adminDash/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/adminDash/page.js"
     ]
   }
 }
