@@ -11,15 +11,68 @@ import {
   TextField,
   Rating,
   DialogActions,
-  Snackbar, // Import Snackbar
-  Alert, // Import Alert for Snackbar
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { doc, getDoc } from "firebase/firestore";
 import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
+
+const CountdownTimer = ({ date }) => {
+  const targetDate = new Date("August 30, 2024 08:00:00 UTC").getTime();
+
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  function calculateTimeLeft() {
+    const now = new Date().getTime();
+    const difference = targetDate - now;
+
+    let timeLeft = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+
+    if (difference > 0) {
+      timeLeft = {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor(
+          (difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        ),
+        minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((difference % (1000 * 60)) / 1000),
+      };
+    }
+
+    return timeLeft;
+  }
+
+  return (
+    <div className="grid grid-flow-col gap-5 text-center auto-cols-max">
+      <div className="flex flex-col">
+        <span className="countdown font-mono text-5xl">{timeLeft.days}</span>
+        days
+      </div>
+      <div className="flex flex-col">
+        <span className="countdown font-mono text-5xl">{timeLeft.hours}</span>
+        hours
+      </div>
+      <div className="flex flex-col">
+        <span className="countdown font-mono text-5xl">{timeLeft.minutes}</span>
+        min
+      </div>
+      <div className="flex flex-col">
+        <span className="countdown font-mono text-5xl">{timeLeft.seconds}</span>
+        sec
+      </div>
+    </div>
+  );
+};
 
 export default function CommunityPage({ params }) {
   const { id } = params;
@@ -38,24 +91,6 @@ export default function CommunityPage({ params }) {
   const [alertOpen, setAlertOpen] = useState(false);
   const [rsvpState, setRsvpState] = useState({}); // Track RSVP state for each event
   const [currentEventObject, setCurrentEventObject] = useState(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar state
-  const [snackbarMessage, setSnackbarMessage] = useState(""); // Snackbar message
-
-  const [eventRatings, setEventRatings] = useState({});
-
-  useEffect(() => {
-    const fetchEventRatings = async () => {
-      const ratings = {};
-      for (const event of allEvents) {
-        ratings[event.id] = await getAverageRating(event.id);
-      }
-      setEventRatings(ratings);
-    };
-
-    if (allEvents.length > 0) {
-      fetchEventRatings();
-    }
-  }, [allEvents]);
   useEffect(() => {
     if (id) {
       const fetchCommunity = async () => {
@@ -141,20 +176,6 @@ export default function CommunityPage({ params }) {
     );
 
     setAllPolls(updatedArray);
-  };
-  const getAverageRating = async (eventId) => {
-    try {
-      const ratings = await EventDB.getRatingsForEvent(eventId);
-      const totalRating = ratings.reduce(
-        (acc, rating) => acc + rating.Rating,
-        0
-      );
-      const averageRating = totalRating / ratings.length;
-      return averageRating || 0; // Return 0 if there are no ratings
-    } catch (error) {
-      console.error("Error fetching ratings:", error);
-      return 0; // Default to 0 if there's an error
-    }
   };
 
   const handlePollOptionSelection = (pollId, selectedOption) => {
@@ -294,31 +315,17 @@ export default function CommunityPage({ params }) {
     (event) => event.status === "past" // Adjust filtering based on your status or date
   );
 
-  const handleSubmitReview = async () => {
+  const handleSubmitReview = () => {
     const newReview = {
       Comment: comment,
+
       Rating: rating,
     };
 
-    try {
-      // Call the function to add the review and handle image upload
-      await EventDB.handleImageUpload(
-        currentEventObject.id,
-        selectedImages,
-        newReview
-      );
+    //Call the function to add the review
+    // EventDB.addReview("3jBBeJTzU4ozzianyqeM", newReview);
 
-      // Show success message in the Snackbar
-      setSnackbarMessage("Review submitted successfully!");
-      setSnackbarOpen(true);
-
-      // Close the dialog
-      handleCloseDialog();
-    } catch (error) {
-      console.error("Error submitting review:", error);
-      setSnackbarMessage("Failed to submit review.");
-      setSnackbarOpen(true);
-    }
+    EventDB.handleImageUpload(currentEventObject.id, selectedImages, newReview);
   };
 
   // useEffect(() => {
@@ -383,6 +390,9 @@ export default function CommunityPage({ params }) {
                     color="text.secondary"
                     style={{ whiteSpace: "pre-wrap" }}
                   >
+                    <center>
+                      <CountdownTimer date={event.StartDate} />
+                    </center>
                     <div className="border-b-2 border-gray-300 mb-2">
                       <h3 className="text-xl font-semibold">{event.Name}</h3>
                     </div>
@@ -538,21 +548,15 @@ export default function CommunityPage({ params }) {
                     <strong>End Date:</strong> {formatDate(event.EndDate)}
                     {/* <br />
                     <strong>End Time:</strong> {formatTime(event.EndDate)} */}
-                    <br /> <strong></strong>
-                    <Rating
-                      value={event.averageRating}
-                      precision={0.1}
-                      readOnly
-                    />
                   </Typography>
                   <Button
                     variant="text"
                     color="primary"
                     className="w-full mt-2"
                     onClick={() => handleCommentReview(event)}
-                    style={{ color: "green" }} // Styling as blue text
+                    style={{ color: "blue" }} // Styling as blue text
                   >
-                    Comment & Review
+                    Leave a Comment & Review
                   </Button>
                 </li>
               ))
@@ -563,91 +567,75 @@ export default function CommunityPage({ params }) {
         </div>
       </div>
 
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        fullWidth
-        maxWidth="md"
-      >
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>
-          Leave a Review and Comment about {currentEventObject?.eventName}
+          Leave a Review and Comment about {currentEvent}
         </DialogTitle>
         <DialogContent>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            {/* Left Section: Comment Form */}
-            <div style={{ flex: 1, marginRight: "20px" }}>
-              <TextField
-                label="Comment"
-                multiline
-                rows={4}
-                fullWidth
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                variant="outlined"
-                margin="dense"
-              />
-              <Rating
-                name="event-rating"
-                value={rating}
-                onChange={(e, newRating) => setRating(newRating)}
-              />
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handleImageUpload}
-                style={{ marginTop: "10px" }}
-              />
-            </div>
-
-            {/* Right Section: Display Existing Comments */}
-            <div style={{ flex: 1, marginLeft: "20px" }}>
-              <Typography variant="h6">Reviews and Comments</Typography>
-              <div style={{ maxHeight: "300px", overflowY: "auto" }}>
-                {currentEventObject?.comments?.length > 0 ? (
-                  currentEventObject.comments.map((review, index) => (
-                    <div key={index} style={{ marginBottom: "20px" }}>
-                      <Typography variant="subtitle1">
-                        {review.Comment}
-                      </Typography>
-                      <Rating value={review.Rating} readOnly />
-                    </div>
-                  ))
-                ) : (
-                  <Typography>
-                    No reviews yet. Be the first to comment!
-                  </Typography>
-                )}
+          <TextField
+            label="Comment"
+            fullWidth
+            multiline
+            rows={4}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
+          <Typography component="legend">Rating</Typography>
+          <Rating
+            name="simple-controlled"
+            value={rating}
+            onChange={(event, newValue) => {
+              setRating(newValue);
+            }}
+          />
+          <Typography component="legend">Upload Images</Typography>
+          <input
+            accept="image/*"
+            id="contained-button-file"
+            multiple
+            type="file"
+            onChange={handleImageUpload}
+            style={{ display: "none" }}
+          />
+          <label htmlFor="contained-button-file">
+            <Button
+              variant="contained"
+              color="primary"
+              component="span"
+              style={{ marginTop: "10px" }}
+            >
+              Upload
+            </Button>
+          </label>
+          {selectedImages.length > 0 && (
+            <div className="mt-2">
+              <Typography component="legend">Selected Images</Typography>
+              <div className="flex flex-wrap">
+                {selectedImages.map((image, index) => (
+                  <img
+                    key={index}
+                    src={URL.createObjectURL(image)}
+                    alt={`Selected ${index}`}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      marginRight: "10px",
+                    }}
+                  />
+                ))}
               </div>
             </div>
-          </div>
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button
-            onClick={handleSubmitReview}
-            variant="contained"
-            color="primary"
-          >
+          <Button onClick={handleCloseDialog} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmitReview} color="primary">
             Submit
           </Button>
         </DialogActions>
       </Dialog>
-
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={() => setSnackbarOpen(false)}
-      >
-        <Alert
-          onClose={() => setSnackbarOpen(false)}
-          severity={
-            snackbarMessage === "Failed to submit review." ? "error" : "success"
-          }
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
     </div>
   );
 }
