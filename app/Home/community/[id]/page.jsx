@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import UserDB from "@/database/community/users";
 import { doc, getDoc } from "firebase/firestore";
 import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
@@ -357,8 +358,9 @@ export default function CommunityPage({ params }) {
   };
 
   // useEffect(() => {
-  //   console.log(currentEventObject);
-  // }, [currentEventObject]);
+  //   console.log("Adding points...");
+  //   UserDB.addPoints();
+  // }, []);
   return (
     <div className="">
       <div

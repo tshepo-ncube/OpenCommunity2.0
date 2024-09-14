@@ -1,10 +1,9 @@
 {
   "pages": {
-    "/Home/community/[id]/page": [
+    "/Register/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/Home/community/[id]/page.css",
-      "static/chunks/app/Home/community/[id]/page.js"
+      "static/chunks/app/Register/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
@@ -12,36 +11,10 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/Home/page": [
+    "/test/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/Home/page.js"
-    ],
-    "/DiscoverCommunities/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/DiscoverCommunities/page.js"
-    ],
-    "/adminDash/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/adminDash/page.js"
-    ],
-    "/calendar/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/calendar/page.css",
-      "static/chunks/app/calendar/page.js"
-    ],
-    "/Profile/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/Profile/page.js"
-    ],
-    "/recom/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/recom/page.js"
+      "static/chunks/app/test/page.js"
     ]
   }
 }

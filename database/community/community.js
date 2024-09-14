@@ -10,6 +10,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import ManageUser from "../auth/ManageUser";
+import UserDB from "./users";
 
 export default class CommunityDB {
   static createCommunity = async (item, setCommunities, setLoading) => {
@@ -107,6 +108,7 @@ export default class CommunityDB {
           });
           ManageUser.joinCommunity(CommunityData.id);
           console.log("Community Users updated successfully.");
+          UserDB.addPoints(5);
         } catch (error) {
           console.error("Error updating community status:", error);
           throw error;
@@ -214,6 +216,7 @@ export default class CommunityDB {
             users: users,
           });
           console.log("Community Users updated successfully.");
+          UserDB.addPoints(5);
           return {
             success: true,
             message: "You have successfully joined the community!",
@@ -251,6 +254,7 @@ export default class CommunityDB {
             users: users,
           });
           console.log("User removed from community successfully.");
+          UserDB.removePoints(5);
           return {
             success: true,
             message: "You have successfully left the community.",
