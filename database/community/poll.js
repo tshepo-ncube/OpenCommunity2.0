@@ -28,6 +28,7 @@ import {
 import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 //import { truncateSync } from "fs";
 import { v4 } from "uuid";
+import UserDB from "./users";
 
 export default class PollDB {
   static deletePoll = async (id) => {
@@ -172,7 +173,7 @@ export default class PollDB {
         poll_id: pollId,
         selected_option: selectedOption,
       };
-
+      UserDB.addPoints(16);
       ManageUser.addPollToCommunity(docID, community_id, newPoll);
     } catch (error) {
       console.error("Transaction failed: ", error);

@@ -14,10 +14,28 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import UserDB from "@/database/community/users";
 import { doc, getDoc } from "firebase/firestore";
 import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
+
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import { format, parse, startOfWeek, getDay } from "date-fns";
+import enUS from "date-fns/locale/en-US";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+
+const locales = {
+  "en-US": enUS,
+};
+
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  locales,
+});
 
 const CountdownTimer = ({ date }) => {
   const targetDate = new Date("August 30, 2024 08:00:00 UTC").getTime();
@@ -92,6 +110,19 @@ export default function CommunityPage({ params }) {
   const [rsvpState, setRsvpState] = useState({}); // Track RSVP state for each event
   const [currentEventObject, setCurrentEventObject] = useState(null);
 
+<<<<<<< HEAD
+=======
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  const events = [
+    {
+      title: "Soccer Fun Day",
+      start: new Date(),
+      end: new Date(),
+      color: "#bcd727",
+    },
+  ];
+>>>>>>> 4b7ff80c280005b210b592a046d8b3e4668b53d9
   useEffect(() => {
     if (id) {
       const fetchCommunity = async () => {
@@ -331,8 +362,9 @@ export default function CommunityPage({ params }) {
   };
 
   // useEffect(() => {
-  //   console.log(currentEventObject);
-  // }, [currentEventObject]);
+  //   console.log("Adding points...");
+  //   UserDB.addPoints();
+  // }, []);
   return (
     <div className="">
       <div
@@ -378,6 +410,34 @@ export default function CommunityPage({ params }) {
           </center>
         </div>
       </div>
+
+      <center>
+        <div className="p-12">
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            date={currentDate}
+            style={{ height: 300 }}
+            onNavigate={(date) => setCurrentDate(date)}
+            onView={(view) => console.log(view)}
+            defaultView="month"
+            // Customizing event appearance
+            eventPropGetter={(event) => {
+              const backgroundColor = event.color || "#3174ad"; // Default color if none provided
+              return {
+                style: {
+                  backgroundColor,
+                  color: "white", // Text color for better contrast
+                  borderRadius: "5px", // Optional: round the corners of the event box
+                  border: "none", // Optional: remove the default border
+                },
+              };
+            }}
+          />
+        </div>
+      </center>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8">
         {/* Upcoming Events */}

@@ -13,7 +13,6 @@ function page() {
 
   return (
     <>
-      
       <Register />
     </>
   );

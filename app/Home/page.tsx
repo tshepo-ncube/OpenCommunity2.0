@@ -9,6 +9,7 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import DiscoverCommunity from "../_Components/DiscoverCommunity";
 import MyCommunities from "../_Components/MyCommunities";
 import Tabs from "@mui/material/Tabs";
+import UserDB from "../../database/community/users";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/system";
@@ -123,6 +124,16 @@ function Home() {
         return color;
     }
   };
+
+  useEffect(() => {
+    //Adding points
+    console.log("Adding Points...");
+    console.log(
+      "------------------------------------------------------------------------------------"
+    );
+
+    ManageUser.addUserToGlobalIfNotThere("m.be@outlook.com");
+  }, []);
 
   return (
     <>
