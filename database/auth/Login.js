@@ -1,4 +1,5 @@
 import DB from "../DB";
+import ManageUser from "./ManageUser";
 import {
   getAuth,
   signInWithPopup,
@@ -22,7 +23,7 @@ import {
 } from "firebase/firestore";
 
 export default class LoginUser {
-  static loginUser = (userData, setUser, setError) => {
+  static loginUser = (userData, setUser, setError, router, setLoggedIn) => {
     const { email, password } = userData;
     const auth = getAuth();
 
@@ -33,6 +34,9 @@ export default class LoginUser {
         setUser(user);
 
         localStorage.setItem("Email", user.email);
+        ManageUser.storeUserID(user.email);
+        setLoggedIn(true);
+        router.push("/Home");
       })
       .catch((error) => {
         const errorCode = error.code;

@@ -66,6 +66,40 @@ export default class ManageUser {
       });
   };
 
+  static storeUserID = async (userEmail) => {
+    const candidatesCollectionRef = collection(DB, "users");
+    console.log(`Email : ${email}`);
+    const q = query(candidatesCollectionRef, where("Email", "==", userEmail));
+
+    try {
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
+        console.log("No matching user from Email : ", userEmail);
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        console.log(doc.id, "=>", doc.data());
+
+        localStorage.setItem("UserID", doc.id);
+
+        const object2 = { id: doc.id };
+        console.log(
+          "doc.data().CommunitiesJoined,",
+          doc.data().CommunitiesJoined
+        );
+        //const combinedObject = { ...object1, ...object2 };
+        CommunityDB.getAllUserCommunities(
+          doc.data().CommunitiesJoined,
+          setUserCommunities
+        );
+        setProfile({ ...doc.data(), ...object2 });
+      });
+    } catch (error) {
+      console.error("Error getting Profile Data: ", error);
+      alert(error);
+    }
+  };
   static editPassword = (newPassword, setError) => {
     const auth = getAuth();
 
@@ -96,12 +130,12 @@ export default class ManageUser {
 
         // User is signed in.
         setUser({
-          email: user.email,
+          email: "nontshangela@gmail.com",
           name: user.displayName,
           profilePicture: user.photoURL,
         });
 
-        this.getProfileData(user.email, setProfile);
+        this.getProfileData("nontshangela@gmail.com", setProfile);
       } else {
       }
     });
@@ -257,4 +291,54 @@ export default class ManageUser {
   //      alert(error);
   //    }
   // }
+
+  //here i am adding the polls to the engaged user field in /users collection
+  static addPollToCommunity = async (docID, communityID, newPoll) => {
+    const docRef = doc(DB, "users", docID); // Replace with your actual collection name and document ID
+    console.log("starting...");
+    try {
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        // Get the data
+        const data = docSnap.data();
+        const myCommunities = data.MyCommunities || [];
+
+        // Find the index of the community
+        const communityIndex = myCommunities.findIndex(
+          (community) => community.community_id === communityID
+        );
+
+        if (communityIndex !== -1) {
+          // Community exists, update the polls_engaged array
+          myCommunities[communityIndex].polls_engaged.push(newPoll);
+
+          // Update the document in Firestore
+          await updateDoc(docRef, {
+            MyCommunities: myCommunities,
+          });
+
+          console.log(`Poll added to community ${communityID}`);
+        } else {
+          // Community does not exist, create a new one
+          myCommunities.push({
+            community_id: communityID,
+            polls_engaged: [newPoll],
+          });
+          console.log(`New community ${communityID} created and poll added`);
+        }
+
+        // Update the document in Firestore
+        await updateDoc(docRef, {
+          MyCommunities: myCommunities,
+        });
+
+        console.log(`Document ${docID} updated successfully`);
+      } else {
+        console.log(`Document ${docID} does not exist`);
+      }
+    } catch (error) {
+      console.error("Error adding poll to community:", error);
+    }
+  };
 }

@@ -1,4 +1,5 @@
 import DB from "../DB";
+import ManageUser from "./ManageUser";
 import {
   getAuth,
   signInWithPopup,
@@ -28,8 +29,8 @@ export default class RegisterUser {
       .then((userCredential) => {
         const user = userCredential.user;
         localStorage.setItem("Email", user.email);
-        setUser(user);
-        RegisterUser.storeUserData(userData);
+
+        RegisterUser.storeUserData(userData, setUser, user);
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -40,7 +41,7 @@ export default class RegisterUser {
       });
   };
 
-  static storeUserData = async (userData) => {
+  static storeUserData = async (userData, setUser, user) => {
     try {
       const data = {
         Name: userData.name,
@@ -49,9 +50,13 @@ export default class RegisterUser {
         Diet: userData.diet,
         DateUserCreated: new Date(),
         CommunitiesJoined: [],
+        MyCommunities: [],
+        Telephone: "0728496291",
       };
       const docRef = await addDoc(collection(DB, "users"), data);
-      console.log("Document written with ID: ", docRef.id);
+      console.log("User Data Stored with ID: ", docRef.id);
+      ManageUser.storeUserID(user.email);
+      setUser(user);
     } catch (e) {
       console.error("Error adding document: ", e);
       alert(e);

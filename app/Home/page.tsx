@@ -5,12 +5,11 @@ import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
 import Image from "next/image";
 import Logo from "@/lib/images/Logo.jpeg";
-
 import ButtonGroup from "@mui/material/ButtonGroup";
 import DiscoverCommunity from "../_Components/DiscoverCommunity";
+import MyCommunities from "../_Components/MyCommunities";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-
 import Box from "@mui/material/Box";
 import { styled } from "@mui/system";
 import ManageUser from "@/database/auth/ManageUser";
@@ -79,18 +78,26 @@ function Home() {
   const [profileData, setProfileData] = React.useState({
     CommunitiesJoined: [],
   });
+
+  const [activeTab, setActiveTab] = useState("My Communities");
+
+  const handleTabClick = (tab: any) => {
+    setActiveTab(tab);
+    console.log(tab);
+  };
   const [UserCommunities, setUserCommunities] = React.useState([]);
+  const [email, setEmail] = React.useState("");
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
   useEffect(() => {
-    ManageUser.getProfileData(
-      localStorage.getItem("Email"),
-      setProfileData,
-      setUserCommunities
-    );
+    const userEmail = localStorage.getItem("Email");
+    if (userEmail) {
+      setEmail(userEmail);
+      ManageUser.getProfileData(userEmail, setProfileData, setUserCommunities);
+    }
   }, []);
 
   // Function to generate consistent color based on category
@@ -119,12 +126,44 @@ function Home() {
 
   return (
     <>
-      <div className="App text-center">
+      <div className="App text-center ">
         <Header />
+        <center className="mt-8">
+          <Box sx={{ width: "100%", marginTop: 4 }}>
+            <div className="flex justify-center mt-6">
+              <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+                <ul className="flex flex-wrap -mb-px">
+                  <li className="me-2">
+                    <a
+                      href="#"
+                      onClick={() => handleTabClick("My Communities")}
+                      className={`inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+                        activeTab === "My Communities"
+                          ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                          : "border-transparent"
+                      }`}
+                    >
+                      My Communities
+                    </a>
+                  </li>
+                  <li className="me-2">
+                    <a
+                      href="#"
+                      onClick={() => handleTabClick("Discover Communities")}
+                      className={`inline-block p-4 border-b-2 rounded-t-lg ${
+                        activeTab === "Discover Communities"
+                          ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                          : "hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 border-transparent"
+                      }`}
+                    >
+                      Discover Communities
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
 
-        <center>
-          <Box sx={{ width: "100%" }}>
-            <Box
+            {/* <Box
               sx={{
                 borderBottom: "5px solid white", // Set the border color to green
                 borderColor: "white",
@@ -144,94 +183,25 @@ function Home() {
                 <CustomTab label="My Communities" {...a11yProps(0)} />
                 <CustomTab label="Discover Communities" {...a11yProps(1)} />
               </Tabs>
-            </Box>
+            </Box> */}
 
-            <CustomTabPanel value={value} index={0}>
-              {profileData.CommunitiesJoined.length == 0 ? (
-                <>
-                  <div>
-                    <div className="mt-9">
-                      {/* Add margin-top to create space above the image */}
-                      <Image
-                        src={Logo} // Replace "/path/to/logo.png" with the path to your logo image
-                        alt="Logo"
-                        width={500} // Adjust width as needed
-                        height={500} // Adjust height as needed
-                        className="mx-auto"
-                        style={{ marginBottom: "20px" }}
-                      />
-                    </div>
-                    <p className="text-gray-900 text-lg">
-                      You are not a member of any communities yet.
-                    </p>
-                    <p className="text-gray-900 text-lg">
-                      Click on{" "}
-                      <span className="font-bold">Discover communities</span> to
-                      become a member of your very first community
-                    </p>
-                  </div>
-                </>
-              ) : (
-                <>
-                  {/* <h1>Tshepo</h1> */}
-
-                  <Grid container spacing={2} style={{ padding: 14 }}>
-                    {UserCommunities.map((data: any, index: any) => (
-                      <Grid item xs={6} md={3} key={index}>
-                        <Card
-                          sx={{
-                            position: "relative",
-                            maxWidth: 345,
-                            marginBottom: 10,
-                            padding: "6px",
-                            "&::before": {
-                              content: `"${data.category}"`,
-                              position: "absolute",
-                              top: 0,
-                              left: 0,
-                              backgroundColor: stringToColor(data.category),
-                              color: "#fff",
-                              padding: "2px 6px",
-                              fontSize: "0.75rem",
-                              fontWeight: "bold",
-                            },
-                          }}
-                        >
-                          <CardContent>
-                            <Typography
-                              gutterBottom
-                              variant="h6"
-                              component="div"
-                            >
-                              {data.name}
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              {data.description}
-                            </Typography>
-                          </CardContent>
-                          <CardActions>
-                            {/* <Button
-                              size="small"
-                              onClick={() => {
-                                // handleEdit(index);
-                                // handleJoinCommunity(data);
-                                //console.log(data);
-                              }}
-                            >
-                              Join
-                            </Button> */}
-                            {/* Add more actions as needed */}
-                          </CardActions>
-                        </Card>
-                      </Grid>
-                    ))}
-                  </Grid>
-                </>
-              )}
+            {/* <CustomTabPanel value={value} index={0}>
+              <MyCommunities email={email} />
             </CustomTabPanel>
+
             <CustomTabPanel value={value} index={1}>
-              <DiscoverCommunity />
-            </CustomTabPanel>
+              <DiscoverCommunity email={email} />
+            </CustomTabPanel> */}
+
+            {activeTab === "My Communities" ? (
+              <>
+                <MyCommunities email={email} />
+              </>
+            ) : (
+              <>
+                <DiscoverCommunity email={email} />
+              </>
+            )}
           </Box>
         </center>
       </div>

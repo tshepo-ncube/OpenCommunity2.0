@@ -1,10 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Autocomplete from "react-google-autocomplete";
+import CommunityDB from "@/database/community/community";
 
 import Header from "../_Components/header";
 import EventsHolder from "../_Components/EventsHolder";
 import PollsHolder from "../_Components/PollsHolder";
+import MapComponent from "../_Components/MapComponent";
 import EventDB from "@/database/community/event";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -29,10 +31,10 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     eventName: eventData.Name,
     startDateTime: `${eventData.startDate}T${eventData.startTime}`,
     endDateTime: `${eventData.endDate}T${eventData.endTime}`,
-    rsvpEndDateTime: eventData.rsvpEndDateTime, // Initialize RSVP End Date & Time
+    rsvpEndDateTime: eventData.rsvpEndDateTime,
     location: eventData.Location,
     description: eventData.EventDescription,
-    status: "active", // Default status is "active"
+    status: "active",
   });
 
   const handleChangeEvent = (e) => {
@@ -45,18 +47,14 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
 
   const handleSubmitEvent = (e) => {
     e.preventDefault();
-    onSubmit(eventDetails); // Pass the eventDetails to the onSubmit function
-    onClose(); // Close the event form after submission
+    onSubmit(eventDetails);
+    onClose();
   };
 
   const handleSaveDraft = (e) => {
     e.preventDefault();
-    setEventDetails((prevDetails) => ({
-      ...prevDetails,
-      status: "draft", // Set status to draft
-    }));
-    onSubmit({ ...eventDetails, status: "draft" }); // Pass the eventDetails with draft status to the onSubmit function
-    onClose(); // Close the event form after submission
+    onSubmit({ ...eventDetails, status: "draft" });
+    onClose();
   };
 
   useEffect(() => {
@@ -168,14 +166,10 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               name="location"
               id="location"
               onPlaceSelected={(place) => {
-                console.log(place.formatted_address);
-
                 setEventDetails((prevDetails) => ({
                   ...prevDetails,
                   location: place.formatted_address,
                 }));
-                console.log(place);
-                console.log(eventDetails.location);
               }}
               required
             />
@@ -229,15 +223,16 @@ const AdminDash = () => {
     EndTime: "",
     Location: "",
     EventDescription: "",
-    RsvpEndTime: "", // Initialize RSVP End Time
+    RsvpEndTime: "",
   });
+  const [currentView, setCurrentView] = useState("infoManagement");
+  const [users, setUsers] = useState([]);
 
   const handleCreateNewEvent = () => {
     setShowEventForm(!showEventForm);
-    // You can set default values or leave them empty as per your design
     setEventForm({
       ...eventFormData,
-      RsvpEndTime: "", // Set default value for RSVP End Time
+      RsvpEndTime: "",
     });
   };
 
@@ -245,27 +240,94 @@ const AdminDash = () => {
     createEvent(eventDetails, localStorage.getItem("CurrentCommunity"));
   };
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      if (currentView === "usersManagement") {
+        const communityId = localStorage.getItem("CurrentCommunity");
+        const result = await CommunityDB.getCommunityUsers(communityId);
+        if (result.success) {
+          setUsers(result.users);
+        } else {
+          console.error(result.message);
+        }
+      }
+    };
+
+    fetchUsers();
+  }, [currentView]);
+
   return (
     <div className="bg-background_gray h-full">
       <Header />
-      <div className="flex flex-col fixed bottom-7 right-4">
+      {/* <div className="flex flex-col fixed bottom-7 right-4">
         <button
           onClick={handleCreateNewEvent}
           className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
         >
           + EVENT
         </button>
-      </div>
+      </div> */}
       <div className="bg-background_gray p-4 h-full">
-        <PollsHolder communityID={localStorage.getItem("CurrentCommunity")} />
-        <EventsHolder communityID={localStorage.getItem("CurrentCommunity")} />
-        {showEventForm && (
-          <EventForm
-            isOpen={showEventForm}
-            onClose={handleCreateNewEvent}
-            onSubmit={handleEventSubmit}
-            eventData={eventFormData}
-          />
+        <div className="flex justify-center mb-4">
+          <button
+            onClick={() => setCurrentView("infoManagement")}
+            className={`px-4 py-2 rounded-l-lg ${
+              currentView === "infoManagement"
+                ? "bg-openbox-green text-white"
+                : "bg-gray-200"
+            }`}
+          >
+            Community Management
+          </button>
+          <button
+            onClick={() => setCurrentView("usersManagement")}
+            className={`px-4 py-2 rounded-r-lg ${
+              currentView === "usersManagement"
+                ? "bg-openbox-green text-white"
+                : "bg-gray-200"
+            }`}
+          >
+            Users Management
+          </button>
+        </div>
+        {currentView === "infoManagement" && (
+          <div>
+            <PollsHolder
+              communityID={localStorage.getItem("CurrentCommunity")}
+            />
+            <EventsHolder
+              communityID={localStorage.getItem("CurrentCommunity")}
+              handleCreateNewEvent={handleCreateNewEvent}
+            />
+            {showEventForm && (
+              <EventForm
+                isOpen={showEventForm}
+                onClose={handleCreateNewEvent}
+                onSubmit={handleEventSubmit}
+                eventData={eventFormData}
+              />
+            )}
+          </div>
+        )}
+        {currentView === "usersManagement" && (
+          <div>
+            <Typography variant="h6" className="mb-4">
+              Community Members
+            </Typography>
+            <Box>
+              {users.length > 0 ? (
+                <ul className="space-y-2">
+                  {users.map((user, index) => (
+                    <li key={index} className="bg-white p-3 rounded shadow">
+                      {user}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No users found in this community.</p>
+              )}
+            </Box>
+          </div>
         )}
       </div>
     </div>
