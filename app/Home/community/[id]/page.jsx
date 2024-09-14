@@ -18,6 +18,7 @@ import { doc, getDoc } from "firebase/firestore";
 import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
+import TabsNavigation from "../../../_Components/TabNavigation"
 
 const CountdownTimer = ({ date }) => {
   const targetDate = new Date("August 30, 2024 08:00:00 UTC").getTime();
@@ -74,6 +75,7 @@ const CountdownTimer = ({ date }) => {
   );
 };
 
+
 export default function CommunityPage({ params }) {
   const { id } = params;
   const [userData, setUserData] = useState(null);
@@ -91,6 +93,7 @@ export default function CommunityPage({ params }) {
   const [alertOpen, setAlertOpen] = useState(false);
   const [rsvpState, setRsvpState] = useState({}); // Track RSVP state for each event
   const [currentEventObject, setCurrentEventObject] = useState(null);
+  const [activeTab, setActiveTab] = useState(null); 
   useEffect(() => {
     if (id) {
       const fetchCommunity = async () => {
@@ -306,7 +309,6 @@ export default function CommunityPage({ params }) {
   };
   const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString();
 
-  // Filter events based on status
   const upcomingEvents = allEvents.filter(
     (event) => event.status === "active" || event.status === "rsvp"
   );
@@ -331,24 +333,27 @@ export default function CommunityPage({ params }) {
   // useEffect(() => {
   //   console.log(currentEventObject);
   // }, [currentEventObject]);
+  //Modjadji
+
   return (
     <div className="">
-      <div
-        className="relative text-white py-4 h-80"
+      {/* Cover image: needs to be the community profile picture */}
+      <div className="relative text-white py-4 h-50 "
         style={{
           backgroundImage:
             "url('https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
           backgroundSize: "cover",
         }}
       >
-        <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="relative z-10 text-center py-20">
-          <Typography variant="h2" className="font-bold" gutterBottom>
+        {/* What is the point of this empty DIV? */}
+        <div className="absolute inset-0 bg-black opacity-50"></div> 
+        <div className="relative z-10 text-center py-5">
+          <Typography variant="h2" gutterBottom className="font-bold">
             {community.name}
           </Typography>
           <p className="text-md text-white">{community.description}</p>
           <center className="mt-6">
-            <button
+            <button className="bg-[#a8bf22] hover:bg-[#bcd727] text-white rounded text-center px-3 p-2"
               onClick={() => {
                 window.open(
                   `${community.WebUrl}`,
@@ -356,11 +361,9 @@ export default function CommunityPage({ params }) {
                   "_blank"
                 );
               }}
-              className="bg-white rounded text-black px-6 py-1 mx-2 border border-gray-300"
             >
-              Visit Teams Channel
+              Teams
             </button>
-
             <RWebShare
               data={{
                 text: `Community Name - ${community.name}`,
@@ -369,47 +372,79 @@ export default function CommunityPage({ params }) {
               }}
               onClick={() => console.log("shared successfully!")}
             >
-              <button className="bg-white rounded text-black px-6 py-1 mx-2  border border-gray-300">
-                Invite
+              <button className=" bg-[#bcd727] hover:bg-[#a8bf22] text-white rounded px-3 py-2 mx-2">
+                Share
               </button>
             </RWebShare>
           </center>
         </div>
       </div>
+    
+      <div className="flex justify-center mb-6 space-x-10 mt-4">
+        {/* Tab Buttons */}
+        <button
+          className={`px-6 py-2 text-lg ${
+            activeTab === "events"
+              ? "border-b-4 border-[#bcd727] text-gray-900 font-semibold"
+              : "text-gray-600"
+          }`}
+          onClick={() => setActiveTab("events")}
+        >
+          EVENTS
+        </button>
+        <button
+          className={`px-6 py-2 text-lg ${
+            activeTab === "polls"
+              ? "border-b-4 border-[#bcd727] text-gray-900 font-semibold"
+              : "text-gray-600"
+          }`}
+          onClick={() => setActiveTab("polls")}
+        >
+          POLLS
+        </button>
+      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8">
-        {/* Upcoming Events */}
-        <div className="rounded   bg-gray-50 p-4">
-          <h2 className="text-2xl font-semibold mb-4">Upcoming Events</h2>
-          <ul className="space-y-4">
-            {upcomingEvents.length > 0 ? (
-              upcomingEvents.map((event) => (
-                <li key={event.id} className="p-4 bg-white shadow rounded-md">
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    style={{ whiteSpace: "pre-wrap" }}
-                  >
-                    <center>
-                      <CountdownTimer date={event.StartDate} />
-                    </center>
-                    <div className="border-b-2 border-gray-300 mb-2">
-                      <h3 className="text-xl font-semibold">{event.Name}</h3>
+      
+      {/* TAB CONTENT FOR EVENTS */}
+      <div>
+        {activeTab === "events" && (
+        
+        <div className="rounded bg-gray-50 p-4 pb-4">
+          <h2 className="text-2xl font-semibold mb-4">Upcoming</h2>
+          {upcomingEvents.length > 0 ? (
+          <div className="overflow-x-auto">
+            <ul className="flex space-x-6">
+              {upcomingEvents.map((event) => (
+                <li key={event.id} className="min-w-[300px] w-[300px] bg-white shadow rounded-md p-4">
+                  {/* Event Image */}
+                  <div className="mb-4">
+                    <img
+                      src="https://images.unsplash.com/photo-1534327737286-52d27a912124?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                      alt={event.Name}
+                      className="w-full h-40 object-cover rounded"
+                    />
+                  </div>
+                  <div className="border-b-2 border-gray-300 mb-2">
+                    <h3 className="text-xl font-semibold text-center">{event.Name}</h3>
+                  </div>
+                  <Typography variant="body2" color="text.secondary" style={{ whiteSpace: "pre-wrap" }}>
+                    <div className="mb-2">
+                      <strong>Description:</strong> {event.EventDescription}
                     </div>
-                    <strong>Description:</strong> {event.EventDescription}
-                    <br />
-                    <strong>Location:</strong> {event.Location}
-                    <br />
-                    <strong>Start Date:</strong> {formatDate(event.StartDate)}
-                    <br />
-                    {/* <strong>Start Time:</strong> {formatTime(event.StartDate)}
-                    <br /> */}
-                    <strong>End Date:</strong> {formatDate(event.EndDate)}
-                    <br />
-                    {/* <strong>End Time:</strong> {formatTime(event.EndDate)}
-                    <br /> */}
-                    <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
+                    <div>
+                      <strong>Location:</strong> {event.Location}
+                    </div>
+                    <div>
+                      <strong>Start Date:</strong> {formatDate(event.StartDate)}
+                    </div>
+                    <div>
+                      <strong>End Date:</strong> {formatDate(event.EndDate)}
+                    </div>
+                    <div>
+                      <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
+                    </div>
                   </Typography>
+
                   <div className="mt-4">
                     {event.status === "active" ? (
                       <Button
@@ -420,7 +455,7 @@ export default function CommunityPage({ params }) {
                       >
                         Closed
                       </Button>
-                    ) : (
+                      ) : (
                       event.status === "rsvp" &&
                       (isRSVPed(event.id) ? (
                         <Button
@@ -431,7 +466,7 @@ export default function CommunityPage({ params }) {
                         >
                           UN RSVP
                         </Button>
-                      ) : (
+                       ) : (
                         <Button
                           variant="contained"
                           color="primary"
@@ -440,16 +475,24 @@ export default function CommunityPage({ params }) {
                         >
                           RSVP
                         </Button>
-                      ))
-                    )}
+                        )
+                      )
+                        )}
                   </div>
                 </li>
-              ))
-            ) : (
-              <Typography>No upcoming events</Typography>
-            )}
-          </ul>
-        </div>
+                ))
+              }
+              
+            </ul>
+          </div>
+          ) : (
+            <Typography>No upcoming events to display</Typography>)}
+          </div>)} 
+        {/* Past Events */}
+
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8">
 
         {/* Polls */}
         <div className="rounded   bg-gray-50 p-4">

@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import LoginUser from "../database/auth/Login";
-import ManageUser from "../database/auth/ManageUser";
 import Image from "next/image";
 import Logo from "@/lib/images/Logo.jpeg";
 
@@ -22,15 +21,6 @@ const page = () => {
     setPassword(e.target.value);
   };
 
-  // useEffect(() => {
-  //   if (user) {
-  //     router.push("/Home");
-  //   }
-  // }, [user]);
-
-  // useEffect(() => {
-  //   ManageUser.manageUserState(setUser, setLoggedIn);
-  // }, []);
 
   const handleLogin = () => {
     if (email.trim() === "" || password.trim() === "") {
@@ -127,7 +117,7 @@ const page = () => {
                   className="text-hover-obgreen cursor-pointer"
                   onClick={() => router.push("/Login")}
                 >
-                  Sign up now
+                  Sign up now!
                 </span>
               </p>
             </div>
