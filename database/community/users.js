@@ -60,29 +60,20 @@ export default class UserDB {
       alert("Error getting user data.");
     }
   };
-
-  static getAllUsers = async (setUsers) => {
+  static getAllUsers = async () => {
     try {
-      const usersRef = collection(DB, "Users");
-      const snapshot = await getDocs(usersRef);
+      const usersCollection = collection(DB, "users");
+      const usersSnapshot = await getDocs(usersCollection);
+      const usersList = usersSnapshot.docs.map((doc) => doc.data());
 
-      if (snapshot.empty) {
-        console.log("No users found.");
-        setUsers([]);
-        return;
-      }
-
-      let usersArray = [];
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        console.log("Document data: ", data); // Debugging statement
-        usersArray.push({ id: doc.id, ...data });
-      });
-
-      console.log("Fetched users: ", usersArray); // Debugging statement
-      setUsers(usersArray);
-    } catch (error) {
-      console.error("Error getting users: ", error);
+      // Extract only Name, Surname, and Points
+      return usersList.map((user) => ({
+        Name: user.Name,
+        Surname: user.Surname,
+        Points: user.Points,
+      }));
+    } catch (e) {
+      console.error("Error getting users: ", e);
       alert("Error getting users.");
     }
   };
