@@ -110,8 +110,6 @@ export default function CommunityPage({ params }) {
   const [rsvpState, setRsvpState] = useState({}); // Track RSVP state for each event
   const [currentEventObject, setCurrentEventObject] = useState(null);
 
-<<<<<<< HEAD
-=======
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const events = [
@@ -122,7 +120,6 @@ export default function CommunityPage({ params }) {
       color: "#bcd727",
     },
   ];
->>>>>>> 4b7ff80c280005b210b592a046d8b3e4668b53d9
   useEffect(() => {
     if (id) {
       const fetchCommunity = async () => {
