@@ -19,6 +19,8 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import StorageDB from "../StorageDB";
 
 export default class EventDB {
+  // Existing methods...
+
   static deleteEvent = async (id) => {
     try {
       await deleteDoc(doc(DB, "events", id));
@@ -222,6 +224,22 @@ export default class EventDB {
       console.log("Comment added successfully.");
     } catch (e) {
       console.error("Error adding comment:", e);
+      throw e;
+    }
+  };
+
+  // Function to fetch all comments and ratings for an event
+  static getCommentsAndRatings = async (eventID) => {
+    const eventRef = doc(DB, "events", eventID);
+    try {
+      const eventDoc = await getDoc(eventRef);
+      if (eventDoc.exists()) {
+        const eventData = eventDoc.data();
+        return eventData.Comments || [];
+      }
+      return [];
+    } catch (e) {
+      console.error("Error getting comments and ratings:", e);
       throw e;
     }
   };

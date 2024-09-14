@@ -91,6 +91,7 @@ export default function CommunityPage({ params }) {
   const [alertOpen, setAlertOpen] = useState(false);
   const [rsvpState, setRsvpState] = useState({}); // Track RSVP state for each event
   const [currentEventObject, setCurrentEventObject] = useState(null);
+
   useEffect(() => {
     if (id) {
       const fetchCommunity = async () => {
@@ -190,6 +191,7 @@ export default function CommunityPage({ params }) {
   };
 
   const handleCommentReview = (event) => {
+    console.log("This is the event :", event);
     setCurrentEvent(event.eventName);
     setCurrentEventObject(event);
     setOpenDialog(true);
@@ -566,73 +568,72 @@ export default function CommunityPage({ params }) {
           </ul>
         </div>
       </div>
-
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>
-          Leave a Review and Comment about {currentEvent}
-        </DialogTitle>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>{`Leave a Review and Comment about ${currentEvent}`}</DialogTitle>
         <DialogContent>
-          <TextField
-            label="Comment"
-            fullWidth
-            multiline
-            rows={4}
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-          />
-          <Typography component="legend">Rating</Typography>
-          <Rating
-            name="simple-controlled"
-            value={rating}
-            onChange={(event, newValue) => {
-              setRating(newValue);
-            }}
-          />
-          <Typography component="legend">Upload Images</Typography>
-          <input
-            accept="image/*"
-            id="contained-button-file"
-            multiple
-            type="file"
-            onChange={handleImageUpload}
-            style={{ display: "none" }}
-          />
-          <label htmlFor="contained-button-file">
-            <Button
-              variant="contained"
-              color="primary"
-              component="span"
-              style={{ marginTop: "10px" }}
-            >
-              Upload
-            </Button>
-          </label>
-          {selectedImages.length > 0 && (
-            <div className="mt-2">
-              <Typography component="legend">Selected Images</Typography>
-              <div className="flex flex-wrap">
-                {selectedImages.map((image, index) => (
-                  <img
-                    key={index}
-                    src={URL.createObjectURL(image)}
-                    alt={`Selected ${index}`}
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      marginRight: "10px",
-                    }}
-                  />
-                ))}
-              </div>
+          <div className="flex">
+            {/* Left Column - Current Content */}
+            <div className="flex-1 pr-4">
+              <Typography variant="h6" gutterBottom>
+                All Comments and Reviews
+              </Typography>
+
+              {/* {pastEvents.Reviews.map((review, index) => (
+                <li key={index}>{review.comment}</li>
+              ))} */}
+
+              {currentEventObject && currentEventObject.Reviews.length > 0 ? (
+                <ul>
+                  {currentEventObject.Reviews.map((review, index) => (
+                    <li className="bg-gray-200 p-2 mb-2 rounded" key={index}>
+                      {review.Comment}
+                      {review.Rating}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No reviews available.</p>
+              )}
+
+              <div></div>
             </div>
-          )}
+            {/* Right Column - User Review */}
+            <div className="flex-1 pl-4">
+              <Typography variant="h6" gutterBottom>
+                Your Review
+              </Typography>
+              <TextField
+                fullWidth
+                label="Comment"
+                multiline
+                rows={4}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              />
+              <Rating
+                name="rating"
+                value={rating}
+                onChange={(e, newValue) => setRating(newValue)}
+              />
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmitReview}
+                style={{ marginTop: "16px" }}
+              >
+                Submit Review
+              </Button>
+            </div>
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
+          <Button onClick={handleCloseDialog} color="primary">
             Cancel
-          </Button>
-          <Button onClick={handleSubmitReview} color="primary">
-            Submit
           </Button>
         </DialogActions>
       </Dialog>
