@@ -27,6 +27,8 @@ const AdminCommunity = () => {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [status, setStatus] = useState("");
   const [submittedData, setSubmittedData] = useState<
     {
       id: string;
@@ -36,6 +38,7 @@ const AdminCommunity = () => {
       status: string;
     }[]
   >([]);
+  const [editID, setEditID] = useState(null);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>("All");
 
@@ -62,14 +65,17 @@ const AdminCommunity = () => {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log("About to run CommunityDB.editCommunity()");
     try {
-      await CommunityDB.createCommunity(
-        { name, description, category: "general", status: "draft" },
-        setSubmittedData,
-        setLoading
-      );
+      await CommunityDB.editCommunity(editID, {
+        id: editID,
+        name,
+        description,
+        category,
+        status,
+      });
     } catch (error) {
-      console.error("Error creating community:", error);
+      console.error("Error editing community:", error);
     }
 
     setName("");
@@ -125,9 +131,25 @@ const AdminCommunity = () => {
     }
   };
 
+  useEffect(() => {
+    console.log("EditID : ", editID);
+  }, [editID]);
+
   const handleEdit = (index: number) => {
-    setName(submittedData[index].name);
-    setDescription(submittedData[index].description);
+    console.log("About to make an edit");
+    //console.log(index);
+    console.log(submittedData[index]);
+
+    console.log(submittedData.find((item) => item.id === index));
+    setName(submittedData.find((item) => item.id === index).name);
+    setDescription(submittedData.find((item) => item.id === index).description);
+    setStatus(submittedData.find((item) => item.id === index).status);
+    setCategory(submittedData.find((item) => item.id === index).category);
+
+    console.log(name, description, status, category);
+    console.log(editIndex);
+    setEditID(submittedData.find((item) => item.id === index).id);
+    console.log(editID);
     setEditIndex(index);
     setPopupOpen(true);
   };
@@ -382,7 +404,7 @@ const AdminCommunity = () => {
                               <>
                                 <Button
                                   size="small"
-                                  onClick={() => handleEdit(index)}
+                                  onClick={() => handleEdit(data.id)}
                                 >
                                   Edit
                                 </Button>
@@ -406,7 +428,7 @@ const AdminCommunity = () => {
                               <>
                                 <Button
                                   size="small"
-                                  onClick={() => handleEdit(index)}
+                                  onClick={() => handleEdit(data.id)}
                                 >
                                   Edit
                                 </Button>
@@ -444,7 +466,7 @@ const AdminCommunity = () => {
                               <>
                                 <Button
                                   size="small"
-                                  onClick={() => handleEdit(index)}
+                                  onClick={() => handleEdit(data.id)}
                                 >
                                   Edit
                                 </Button>
@@ -559,7 +581,7 @@ const AdminCommunity = () => {
                         <>
                           <Button
                             size="small"
-                            onClick={() => handleEdit(index)}
+                            onClick={() => handleEdit(data.id)}
                           >
                             Edit
                           </Button>
@@ -581,7 +603,7 @@ const AdminCommunity = () => {
                         <>
                           <Button
                             size="small"
-                            onClick={() => handleEdit(index)}
+                            onClick={() => handleEdit(data.id)}
                           >
                             Edit
                           </Button>
@@ -613,7 +635,7 @@ const AdminCommunity = () => {
                         <>
                           <Button
                             size="small"
-                            onClick={() => handleEdit(index)}
+                            onClick={() => handleEdit(data.id)}
                           >
                             Edit
                           </Button>
