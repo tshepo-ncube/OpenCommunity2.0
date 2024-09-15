@@ -10,7 +10,7 @@ import {
   Modal,
   Box,
 } from "@mui/material";
-import EventDB from "../../database/community/event";
+import EventDB from "../database/community/event";
 
 const EventsHolder = ({
   communityID,

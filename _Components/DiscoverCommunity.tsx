@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { IconButton, Menu } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import CommunityDB from "../../database/community/community";
+import CommunityDB from "../database/community/community";
 import { useRouter } from "next/navigation";
 import UserDB from "@/database/community/users";
 
@@ -79,8 +79,6 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
 
   const handleJoinCommunity = async (data: any) => {
     console.log("JOininc a community");
-
-    UserDB.addPoints(5);
 
     const result = await CommunityDB.joinCommunity(data.id, email);
     if (result.success) {

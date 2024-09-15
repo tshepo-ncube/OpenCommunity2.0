@@ -16,7 +16,7 @@ import {
 } from "@mui/material";
 import { IconButton, Menu } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import CommunityDB from "../../database/community/community";
+import CommunityDB from "../database/community/community";
 import { useRouter } from "next/navigation";
 
 interface DiscoverCommunityProps {

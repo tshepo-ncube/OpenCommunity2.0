@@ -1,13 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Header from "../_Components/header";
+// import Header from "../_Components/header";
+import Header from "../../_Components/header";
 import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
 import Image from "next/image";
 import Logo from "@/lib/images/Logo.jpeg";
 import ButtonGroup from "@mui/material/ButtonGroup";
-import DiscoverCommunity from "../_Components/DiscoverCommunity";
-import MyCommunities from "../_Components/MyCommunities";
+import DiscoverCommunity from "../../_Components/DiscoverCommunity";
+import MyCommunities from "../../_Components/MyCommunities";
 import Tabs from "@mui/material/Tabs";
 import UserDB from "../../database/community/users";
 import Tab from "@mui/material/Tab";

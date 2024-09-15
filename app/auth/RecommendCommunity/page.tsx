@@ -1,8 +1,11 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Header from "../_Components/header";
+
+import Header from "../../../_Components/header";
 import { toast, Toaster } from "react-hot-toast";
-import RecommendationDB from "@/database/community/recommendation";
+
+import RecommendationDB from "../../../database/community/recommendation";
+
 import { motion } from "framer-motion"; // For smooth animations
 import Confetti from "react-confetti"; // Import react-confetti
 

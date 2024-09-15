@@ -16,7 +16,7 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
-import CommunityDB from "../../database/community/community";
+import CommunityDB from "../database/community/community";
 import { useRouter } from "next/navigation";
 
 const AdminCommunity = () => {
@@ -435,11 +435,13 @@ const AdminCommunity = () => {
                                 <Button
                                   size="small"
                                   onClick={() => {
-                                    localStorage.setItem(
-                                      "CurrentCommunity",
-                                      data.id
-                                    );
-                                    router.push("/adminDash");
+                                    // localStorage.setItem(
+                                    //   "CurrentCommunity",
+                                    //   data.id
+                                    // );
+                                    console.log("The view");
+                                    console.log(data.id);
+                                    router.push(`/admin/Dashboard/${data.id}`);
                                   }}
                                 >
                                   View

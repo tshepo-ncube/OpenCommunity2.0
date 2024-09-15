@@ -21,9 +21,9 @@ import {
 
 import * as XLSX from "xlsx";
 
-import AnalyticsDB from "../../database/community/analytics";
+import AnalyticsDB from "../database/community/analytics";
 
-import EventDB from "../../database/community/event";
+import EventDB from "../database/community/event";
 
 import { green, red, blue, yellow } from "@mui/material/colors";
 

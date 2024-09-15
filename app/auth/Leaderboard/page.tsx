@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import UserDB from "@/database/community/users"; // Adjust the import path accordingly
-import Header from "../_Components/header"; // Adjust the import path accordingly
+
+import Header from "../../../_Components/header";
 
 const Page = () => {
   const [users, setUsers] = useState<

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import PollDB from "../../database/community/poll";
+import PollDB from "../database/community/poll";
+
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
