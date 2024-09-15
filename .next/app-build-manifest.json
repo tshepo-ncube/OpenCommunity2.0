@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/Register/page": [
+    "/Home/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/Register/page.js"
+      "static/chunks/app/Home/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
@@ -11,10 +11,15 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/test/page": [
+    "/recom/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/test/page.js"
+      "static/chunks/app/recom/page.js"
+    ],
+    "/DiscoverCommunities/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/DiscoverCommunities/page.js"
     ]
   }
 }
