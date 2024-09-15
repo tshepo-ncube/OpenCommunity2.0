@@ -35,8 +35,10 @@ export default class CommunityDB {
   static editCommunity = async (id, object) => {
     const communityRef = doc(DB, "communities", id);
 
+    console.log("about to update");
     // Update the community document
     await updateDoc(communityRef, object);
+    console.log("Done editing a community.");
   };
 
   static deleteCommunity = async (id) => {

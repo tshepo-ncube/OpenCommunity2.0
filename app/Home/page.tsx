@@ -124,6 +124,10 @@ function Home() {
     }
   };
 
+  useEffect(() => {
+    ManageUser.addUserToGlobalIfNotThere("m.be@outlook.com");
+  }, []);
+
   return (
     <>
       <div className="App text-center ">
