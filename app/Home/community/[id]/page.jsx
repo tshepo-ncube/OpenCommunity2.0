@@ -615,7 +615,7 @@ export default function CommunityPage({ params }) {
                     onClick={() => handleCommentReview(event)}
                     style={{ color: "blue" }} // Styling as blue text
                   >
-                    Leave a Comment & Review
+                    Leave a Comment & Rating
                   </Button>
                 </li>
               ))
@@ -631,38 +631,46 @@ export default function CommunityPage({ params }) {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>{`Leave a Review and Comment about ${currentEvent}`}</DialogTitle>
         <DialogContent>
           <div className="flex">
             {/* Left Column - Current Content */}
             <div className="flex-1 pr-4">
               <Typography variant="h6" gutterBottom>
-                All Comments and Reviews
+                All Comments and Ratings
               </Typography>
 
-              {/* {pastEvents.Reviews.map((review, index) => (
-                <li key={index}>{review.comment}</li>
-              ))} */}
-
               {currentEventObject && currentEventObject.Reviews.length > 0 ? (
-                <ul>
+                <ul className="list-none p-0">
                   {currentEventObject.Reviews.map((review, index) => (
-                    <li className="bg-gray-200 p-2 mb-2 rounded" key={index}>
-                      {review.Comment}
-                      {review.Rating}
+                    <li
+                      className="bg-gray-200 p-4 mb-4 rounded flex items-center"
+                      key={index}
+                    >
+                      <div className="flex-1">
+                        <Typography variant="body1">
+                          {review.Comment}
+                        </Typography>
+                      </div>
+                      <div className="flex items-center ml-4">
+                        <Rating
+                          name={`rating-${index}`}
+                          value={review.Rating}
+                          readOnly
+                          precision={0.5}
+                        />
+                      </div>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p>No reviews available.</p>
+                <Typography variant="body1">No reviews available.</Typography>
               )}
-
-              <div></div>
             </div>
+
             {/* Right Column - User Review */}
             <div className="flex-1 pl-4">
               <Typography variant="h6" gutterBottom>
-                Your Review
+                Leave a Comment & Rating
               </Typography>
               <TextField
                 fullWidth
@@ -672,11 +680,14 @@ export default function CommunityPage({ params }) {
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
               />
-              <Rating
-                name="rating"
-                value={rating}
-                onChange={(e, newValue) => setRating(newValue)}
-              />
+              <div className="mt-2">
+                <Typography variant="body1">Rating</Typography>
+                <Rating
+                  name="rating"
+                  value={rating}
+                  onChange={(e, newValue) => setRating(newValue)}
+                />
+              </div>
               <Button
                 variant="contained"
                 color="primary"
