@@ -39,8 +39,8 @@ const RecommendationsTable: React.FC = () => {
     );
     const body = encodeURIComponent(
       `Hello,\n\nI am contacting you regarding your community recommendation.\n\n` +
-        `Name: ${name}\n` +
-        `Description: ${description}\n` +
+        ` Community Name: ${name}\n` +
+        `Community Description: ${description}\n` +
         `Category: ${category}\n\n` +
         `Best regards,`
     );
@@ -69,11 +69,11 @@ const RecommendationsTable: React.FC = () => {
       title: "Create Community",
       html: `
         <div>
-          <label>Name</label>
+          <label>Community Name</label>
           <input id="name" class="swal2-input" value="${rec.name}" />
         </div>
         <div>
-          <label>Description</label>
+          <label>Community Description</label>
           <textarea id="description" class="swal2-textarea">${
             rec.description
           }</textarea>
@@ -161,8 +161,8 @@ const RecommendationsTable: React.FC = () => {
           <thead>
             <tr className="bg-gray-200 text-gray-700">
               <th className="p-4 text-left w-12"></th>
-              <th className="p-4 text-left">Name</th>
-              <th className="p-4 text-left">Description</th>
+              <th className="p-4 text-left">Community Name</th>
+              <th className="p-4 text-left">Community Description</th>
               <th className="p-4 text-left">Category</th>
               <th className="p-4 text-left">Email</th>
               <th className="p-4 text-left w-12"></th>

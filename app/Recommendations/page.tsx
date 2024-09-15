@@ -83,15 +83,17 @@ const CommunityRecommendationPage: React.FC = () => {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="max-w-4xl mx-auto p-8 bg-white rounded-xl shadow-xl mt-4"
+        className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-xl mt-4"
       >
-        <h1 className="text-4xl font-bold text-center text-gray-800 mb-6">
-          Recommend a Community
-        </h1>
-        <p className="text-center text-gray-600 text-lg mb-8">
+        <div className="banner-header">
+          <h1 className="text-3xl font-bold text-center text-gray-800">
+            Recommend a Community
+          </h1>
+        </div>
+        <p className="text-center text-gray-600 text-md mb-4">
           Suggest a new community group by filling out the form below:
         </p>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileFocus={{ scale: 1.02 }}
@@ -99,7 +101,7 @@ const CommunityRecommendationPage: React.FC = () => {
           >
             <label
               htmlFor="communityName"
-              className="block text-lg font-semibold text-gray-700 mb-2"
+              className="block text-md font-semibold text-gray-700 mb-1"
             >
               Community Name:
             </label>
@@ -110,7 +112,7 @@ const CommunityRecommendationPage: React.FC = () => {
               onChange={(e) => setCommunityName(e.target.value)}
               placeholder="Enter community name"
               required
-              className="w-full p-4 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300"
+              className="w-full p-3 text-md border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300"
             />
           </motion.div>
           <motion.div
@@ -120,7 +122,7 @@ const CommunityRecommendationPage: React.FC = () => {
           >
             <label
               htmlFor="description"
-              className="block text-lg font-semibold text-gray-700 mb-2"
+              className="block text-md font-semibold text-gray-700 mb-1"
             >
               Community Description:
             </label>
@@ -130,7 +132,7 @@ const CommunityRecommendationPage: React.FC = () => {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Enter community description"
               required
-              className="w-full p-4 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[120px] transition-all duration-300"
+              className="w-full p-3 text-md border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 min-h-[120px] transition-all duration-300"
             />
           </motion.div>
           <motion.div
@@ -140,7 +142,7 @@ const CommunityRecommendationPage: React.FC = () => {
           >
             <label
               htmlFor="category"
-              className="block text-lg font-semibold text-gray-700 mb-2"
+              className="block text-md font-semibold text-gray-700 mb-1"
             >
               Category:
             </label>
@@ -148,7 +150,7 @@ const CommunityRecommendationPage: React.FC = () => {
               id="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full p-4 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300"
+              className="w-full p-3 text-md border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-300"
             >
               <option value="general">General</option>
               <option value="Sports">Sports</option>
@@ -158,13 +160,22 @@ const CommunityRecommendationPage: React.FC = () => {
           </motion.div>
           <motion.button
             whileHover={{ scale: 1.05 }}
-            className="bg-[#bcd727] text-white py-3 px-6 text-lg rounded-lg shadow-lg transition-shadow hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-[#a0b920]"
+            className="bg-[#bcd727] text-white py-2 px-4 text-md rounded-lg shadow-lg transition-shadow hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-[#a0b920]"
             type="submit"
           >
             Submit Recommendation
           </motion.button>
         </form>
       </motion.div>
+
+      <style jsx>{`
+        .banner-header {
+          background-color: #f0f0f0; /* Light grey background */
+          padding: 15px;
+          border-radius: 8px;
+          margin-bottom: 15px;
+        }
+      `}</style>
     </>
   );
 };
