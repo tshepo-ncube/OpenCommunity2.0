@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import RegisterUser from "../database/auth/Register";
+import RegisterUser from "../../database/auth/Register";
 import ManageUser from "@/database/auth/ManageUser";
 import { useRouter } from "next/navigation";
 
