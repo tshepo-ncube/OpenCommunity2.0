@@ -13,6 +13,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
+import axios from "axios";
 
 const createEvent = (eventDetails: any, communityID: any) => {
   EventDB.createEvent({
@@ -62,6 +63,37 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     console.log("Updated location:", eventDetails.location);
     console.log(eventDetails);
   }, [eventDetails.location]);
+
+  const generateDescription = async () => {
+    console.log("generate Description");
+    if (eventDetails.eventName.length !== 0) {
+      const name = eventDetails.eventName;
+      try {
+        const res = await axios.post(
+          "http://localhost:8080/generateEventDescription",
+          { name },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        console.log("Returned Desctiption: ", res.data.eventDescription);
+        console.log(res.data.eventDescription);
+        //setMessages(res.data.messages);
+        //setDescription(res.data.communityDescription);
+        setEventDetails((prevDetails) => ({
+          ...prevDetails, // Spread the previous state to retain all properties
+          description: res.data.eventDescription, // Update only the description
+        }));
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      alert("Please enter a name.");
+    }
+  };
 
   return (
     <>
@@ -188,11 +220,18 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               value={eventDetails.description}
               onChange={handleChangeEvent}
               placeholder="Enter event description"
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+              className="mt-1 h-40 p-2 border border-gray-300 rounded-md w-full"
               required
             ></textarea>
           </div>
           <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={generateDescription}
+              className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+            >
+              generate description
+            </button>
             <button
               type="button"
               onClick={handleSaveDraft}

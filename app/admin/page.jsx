@@ -137,6 +137,32 @@ const CreateCommunity = () => {
     };
   }, []);
 
+  const generateDescription = async () => {
+    console.log("generate Description");
+    if (name.length !== 0) {
+      try {
+        const res = await axios.post(
+          "http://localhost:8080/generateCommunityDescription",
+          { name },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        console.log("Returned Desctiption: ", res.communityDescription);
+        console.log(res.data.communityDescription);
+        //setMessages(res.data.messages);
+        setDescription(res.data.communityDescription);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      alert("Please enter a name.");
+    }
+  };
+
   return (
     <div className="flex-col items-center min-h-screen relative text-center">
       <Header />
@@ -234,12 +260,19 @@ const CreateCommunity = () => {
                     id="description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                    className="mt-1 p-2  h-40 border border-gray-300 rounded-md w-full"
                     required
                   />
                 </div>
 
                 <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={generateDescription}
+                    className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                  >
+                    generate description
+                  </button>
                   <button
                     type="button"
                     onClick={(e) => handleFormSubmit(e, "draft")}

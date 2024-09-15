@@ -46,6 +46,7 @@ const dietaryRequirements = [
   "Keto",
   "Halal",
   "Kosher",
+  "Other",
 ];
 
 const foodAllergies = [
@@ -58,12 +59,32 @@ const foodAllergies = [
   "Soy",
   "Fish",
   "Shellfish",
+  "Other",
+];
+
+//new Yan has added but its not showing yet
+const interests = [
+  "None",
+  "Peanuts",
+  "Tree nuts",
+  "Milk",
+  "Eggs",
+  "Wheat",
+  "Soy",
+  "Fish",
+  "Shellfish",
+  "Other",
 ];
 
 const Profile = () => {
+  const [isOtherDietSelected, setIsOtherDietSelected] = useState(false);
+  const [isOtherAllergySelected, setIsOtherAllergySelected] = useState(false);
   const [activeTab, setActiveTab] = useState("personalDetails");
   const [loggedIn, setLoggedIn] = useState(false);
   const router = useRouter();
+
+  const [otherDiet, setOtherDiet] = useState("");
+  const [otherAllergy, setOtherAllergy] = useState("");
 
   const [userEmail, setUserEmail] = useState(null);
 
@@ -140,6 +161,24 @@ const Profile = () => {
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
+
+    //new Yan added in this code
+    if (name === "Diet") {
+      setIsOtherDietSelected(value === "Other");
+      if (value !== "Other") {
+        setOtherDiet(""); // Clear if not "Other"
+      }
+    }
+
+    if (name === "Allergies") {
+      setIsOtherAllergySelected(value === "Other");
+      if (value !== "Other") {
+        setOtherAllergy(""); // Clear if not "Other"
+      }
+    }
+    //end
+
+    console.log(name, value);
     setProfile((prevProfile) => ({
       ...prevProfile,
       [name]: value,
@@ -174,7 +213,7 @@ const Profile = () => {
   const handleEditProfileSubmit = async (e) => {
     e.preventDefault();
     const success = await ManageUser.editProfileData(profile.id, profile);
-    if (success) {
+    if (success:void) {
       // If the profile update was successful, fetch the updated profile data
       ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
     } else {
@@ -481,6 +520,25 @@ const Profile = () => {
                   ))}
                 </select>
               </div>
+
+              {isOtherDietSelected && (
+                <div className="mt-2">
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor="otherDiet"
+                  >
+                    Please specify other dietary requirements:
+                  </label>
+                  <input
+                    type="text"
+                    id="otherDiet"
+                    name="otherDiet"
+                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value={otherDiet}
+                    onChange={(e) => setOtherDiet(e.target.value)}
+                  />
+                </div>
+              )}
               <div className="mb-4">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
@@ -502,6 +560,25 @@ const Profile = () => {
                   ))}
                 </select>
               </div>
+
+              {isOtherAllergySelected && (
+                <div className="mt-2">
+                  <label
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                    htmlFor="otherAllergy"
+                  >
+                    Please specify other food allergies:
+                  </label>
+                  <input
+                    type="text"
+                    id="otherAllergy"
+                    name="otherAllergy"
+                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value={otherAllergy}
+                    onChange={(e) => setOtherAllergy(e.target.value)}
+                  />
+                </div>
+              )}
               {/* <div className="mb-4">
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
