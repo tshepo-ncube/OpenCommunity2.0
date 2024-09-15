@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Autocomplete from "react-google-autocomplete";
 import CommunityDB from "@/database/community/community";
-
+import Chatbot from "../_Components/Chatbot";
 import Header from "../_Components/header";
 import EventsHolder from "../_Components/EventsHolder";
 import PollsHolder from "../_Components/PollsHolder";
@@ -13,7 +13,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 
-const createEvent = (eventDetails, communityID) => {
+const createEvent = (eventDetails: any, communityID: any) => {
   EventDB.createEvent({
     Name: eventDetails.eventName,
     StartDate: new Date(eventDetails.startDateTime),
@@ -236,7 +236,7 @@ const AdminDash = () => {
     });
   };
 
-  const handleEventSubmit = (eventDetails) => {
+  const handleEventSubmit = (eventDetails: any) => {
     createEvent(eventDetails, localStorage.getItem("CurrentCommunity"));
   };
 
@@ -330,6 +330,11 @@ const AdminDash = () => {
           </div>
         )}
       </div>
+
+      <Chatbot
+        setEventForm={setEventForm}
+        setShowEventForm={setShowEventForm}
+      />
     </div>
   );
 };
