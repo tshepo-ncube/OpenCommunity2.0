@@ -25,7 +25,7 @@ const Sidebar = () => {
 
   // Function to handle click event and navigate to Login page
   const goToProfilePage = () => {
-    router.push("/Profile"); // Replace "/login" with the actual path of your Login page
+    router.push("/auth/Profile"); // Replace "/login" with the actual path of your Login page
   };
 
   return (

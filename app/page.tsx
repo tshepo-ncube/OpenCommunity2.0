@@ -104,7 +104,7 @@ const page = () => {
                 <p className="text-left mt-1">
                   <span
                     className="text-hover-obgreen cursor-pointer"
-                    onClick={() => router.push("/ForgotPassword")}
+                    onClick={() => router.push("/auth/ForgotPassword")}
                   >
                     Forgot Password?
                   </span>
@@ -125,7 +125,7 @@ const page = () => {
                 Don't have an account?{" "}
                 <span
                   className="text-hover-obgreen cursor-pointer"
-                  onClick={() => router.push("/Login")}
+                  onClick={() => router.push("/auth/Register")}
                 >
                   Sign up now
                 </span>

@@ -612,8 +612,9 @@ const AdminCommunity = () => {
                           <Button
                             size="small"
                             onClick={() => {
-                              localStorage.setItem("CurrentCommunity", data.id);
-                              router.push("/adminDash");
+                              // localStorage.setItem("CurrentCommunity", data.id);
+
+                              router.push(`/admin/Dashboard/${data.id}`);
                             }}
                           >
                             View

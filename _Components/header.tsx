@@ -55,7 +55,7 @@ function Header() {
 
   const handleListItemClick = (item) => {
     if (item === "Profile") {
-      router.push("/Profile");
+      router.push("/auth/Profile");
     } else if (item === "Logout") {
       ManageUser.logoutUser(setLoggedIn, router);
     } else if (item === "Outlook") {
@@ -63,15 +63,15 @@ function Header() {
     } else if (item === "Teams") {
       window.location.href = "msteams://";
     } else if (item === "Admin View") {
-      router.push("/DiscoverCommunities");
+      router.push("/admin");
     } else if (item === "Leaderboard") {
-      router.push("/leader");
+      router.push("/auth/Leaderboard");
     } else if (item === "Home") {
       router.push("/Home");
     } else if (item === "Recommend a community") {
-      router.push("/Recommendations");
+      router.push("/auth/RecommendCommunity");
     } else if (item === "View Recommendations") {
-      router.push("/recom");
+      router.push("/admin/RecommendedCommunities");
     }
   };
 
