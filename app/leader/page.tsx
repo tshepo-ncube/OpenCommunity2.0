@@ -17,7 +17,6 @@ const Page = () => {
     const fetchUsers = async () => {
       try {
         const usersData = await UserDB.getAllUsers();
-
         const processedUsers = usersData
           .map((user) => {
             const points = Number(user.Points);
@@ -40,7 +39,12 @@ const Page = () => {
     return <div>Loading...</div>;
   }
 
-  const topUsers = users.slice(0, 3);
+  const topUsers = [...users.slice(0, 3)];
+  // Swap positions of the top 1 and 2
+  const temp = topUsers[0];
+  topUsers[0] = topUsers[1];
+  topUsers[1] = temp;
+
   const otherUsers = users.slice(3);
 
   const getInitials = (name: string, surname: string) => {
@@ -49,19 +53,29 @@ const Page = () => {
     return `${firstInitial}${lastInitial}`;
   };
 
+  const getIcon = (points: number) => {
+    if (points >= 1000) return "👑"; // Crown for 1000 points or more
+    if (points >= 500) return "🏆"; // Trophy for 500 points or more
+    if (points >= 150) return "💎"; // Diamond for 150 points or more
+    return null;
+  };
+
   return (
     <div className="page">
       <Header />
-      <div className="title-container">
-        <h1 className="title">User Leaderboard</h1>
-      </div>
+      <div className="title-container"></div>
       <div className="podium">
         {topUsers.map((user, index) => (
-          <div key={index} className={`podium-item podium-item-${index + 1}`}>
+          <div
+            key={index}
+            className={`podium-item podium-item-${index + 1} ${
+              index === 1 ? "podium-item-middle" : ""
+            }`}
+          >
             <div className="podium-medal">
               <div className="medal-container">
                 <span className={`medal medal-${index + 1}`}>
-                  {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
+                  {index === 0 ? "🥈" : index === 1 ? "🥇" : "🥉"}
                 </span>
                 <div className={`sparkle sparkle-${index + 1}`}></div>
               </div>
@@ -69,6 +83,11 @@ const Page = () => {
             <div className="podium-info">
               <div className="profile-picture">
                 {getInitials(user.Name || "", user.Surname || "")}
+                {getIcon(user.Points) && (
+                  <span className={`icon icon-${index + 1}`}>
+                    {getIcon(user.Points)}
+                  </span>
+                )}
               </div>
               <div className={`podium-name podium-name-${index + 1}`}>
                 {user.Name || "N/A"}
@@ -86,9 +105,12 @@ const Page = () => {
         {otherUsers.map((user, index) => (
           <div className="user-item" key={index}>
             <div className="user-position">
-              {index + 4}
+              <div className="position-number">{index + 4}</div>
               <div className="profile-picture-right">
                 {getInitials(user.Name || "", user.Surname || "")}
+                {getIcon(user.Points) && (
+                  <span className="icon-right">{getIcon(user.Points)}</span>
+                )}
               </div>
             </div>
             <div className="user-name-surname">
@@ -103,16 +125,18 @@ const Page = () => {
         .page {
           font-family: Arial, sans-serif;
           text-align: center;
-          padding: 20px;
-          background-color: #f4f4f9;
+          padding: 0; /* Reset padding */
+          margin: 0; /* Reset margin */
+          background-color: white;
         }
         .title-container {
-          margin-bottom: 30px;
+          margin: 20px 0;
         }
         .title {
           font-size: 3rem;
           font-weight: bold;
           color: #bcd727; /* Ensure color is applied here */
+          margin: 0; /* Reset margin */
         }
         .podium {
           display: flex;
@@ -147,8 +171,12 @@ const Page = () => {
           background-color: #fff5f0; /* Light bronze */
           border: 3px solid #cd7f32; /* Bronze */
         }
+        .podium-item-middle {
+          width: 300px; /* Make the middle block a bit bigger */
+          padding: 30px; /* Increase padding */
+        }
         .podium-medal {
-          font-size: 120px; /* Increase size */
+          font-size: 100px; /* Decrease size */
           margin-bottom: 10px;
           position: relative;
         }
@@ -172,8 +200,8 @@ const Page = () => {
         .sparkle::after {
           content: "";
           position: absolute;
-          width: 25px; /* Increase size */
-          height: 25px; /* Increase size */
+          width: 20px; /* Decrease size */
+          height: 20px; /* Decrease size */
           background-color: #fff;
           clip-path: polygon(
             50% 0%,
@@ -239,86 +267,102 @@ const Page = () => {
           text-align: center;
         }
         .profile-picture {
-          width: 50px;
-          height: 50px;
           display: flex;
-          align-items: center;
           justify-content: center;
+          align-items: center;
+          background-color: #e0e0e0;
           border-radius: 50%;
-          background-color: #bcd727;
-          color: white;
-          font-size: 20px;
-          font-weight: bold;
+          width: 80px;
+          height: 80px;
+          font-size: 24px;
+          position: relative;
           margin: 0 auto;
-          margin-bottom: 10px;
         }
-        .profile-picture-right {
-          width: 40px;
-          height: 40px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 50%;
-          background-color: #bcd727;
-          color: white;
-          font-size: 16px;
+        .icon {
+          position: absolute;
+          font-size: 24px;
+          top: -10px;
+          right: -10px;
+        }
+        .podium-name {
+          font-size: 1.5rem;
           font-weight: bold;
+          color: black; /* Changed to black */
         }
-        .podium-name,
+        .podium-name-1 {
+          color: gold;
+        }
+        .podium-name-2 {
+          color: silver;
+        }
+        .podium-name-3 {
+          color: #cd7f32;
+        }
         .podium-surname {
-          margin: 5px 0;
-          font-size: 1.5rem; /* Increase size */
-        }
-        .podium-name-1,
-        .podium-surname-1 {
-          font-weight: bold;
-          font-size: 1.2rem; /* Increase size for the first place */
-        }
-        .podium-name-2,
-        .podium-surname-2 {
-          font-weight: bold;
-          font-size: 1.2rem; /* Increase size for the second place */
-        }
-        .podium-name-3,
-        .podium-surname-3 {
-          font-weight: bold;
-          font-size: 1.2rem; /* Increase size for the third place */
+          font-size: 1rem;
+          color: black; /* Changed to black */
         }
         .podium-points {
           font-size: 1.2rem;
+          font-weight: bold;
+          margin-top: 10px;
         }
         .user-list {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          margin-top: 30px;
+          width: 100%; /* Full width of the screen */
+          max-width: 100vw; /* Ensure it doesn't exceed viewport width */
+          margin: 0 auto; /* Center horizontally */
+          padding: 0; /* Optional: remove padding if needed */
+          box-sizing: border-box; /* Include padding and border in width calculation */
         }
+
         .user-item {
           display: flex;
+          justify-content: space-between;
           align-items: center;
           padding: 10px;
-          border: 1px solid #ddd;
-          border-radius: 8px;
-          width: 80%;
-          background-color: #fff;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-          margin-bottom: 10px;
+          border-bottom: 1px solid #ddd;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow added */
+          border-radius: 8px; /* Rounded corners for better visual effect */
+          transition: transform 0.3s ease;
+        }
+        .user-item:hover {
+          transform: scale(1.02); /* Slightly scale up on hover */
         }
         .user-position {
           display: flex;
           align-items: center;
-          font-size: 1rem;
-          margin-right: 10px; /* Space between position number and profile picture */
-          width: 50%; /* Adjust the width to accommodate both elements */
+        }
+        .position-number {
+          font-size: 1.2rem;
+          font-weight: bold;
+          margin-right: 10px;
+        }
+        .profile-picture-right {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background-color: #e0e0e0;
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          font-size: 18px;
+          margin-right: 10px;
+          position: relative; /* Added to place the icon */
         }
         .user-name-surname {
-          flex-grow: 1;
-          font-size: 1rem;
-          margin-right: 10px;
+          flex: 1;
+          font-size: 1.2rem;
+          color: black; /* Changed to black */
         }
         .user-points {
           font-size: 1rem;
           font-weight: bold;
+        }
+        .icon-right {
+          position: absolute;
+          top: -10px;
+          right: -10px;
+          font-size: 18px;
         }
       `}</style>
     </div>
