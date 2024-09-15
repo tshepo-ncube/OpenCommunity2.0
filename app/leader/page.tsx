@@ -1,16 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import UserDB from "@/database/community/users"; // Adjust the import path accordingly
-import Header from "../_Components/header"; // Adjust the import path accordingly
+import { motion } from "framer-motion";
+import UserDB from "@/database/community/users";
+import Header from "../_Components/header";
 
 const Page = () => {
-  const [users, setUsers] = useState<
-    {
-      Name: string;
-      Surname: string;
-      Points: number;
-    }[]
-  >([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,12 +13,11 @@ const Page = () => {
       try {
         const usersData = await UserDB.getAllUsers();
         const processedUsers = usersData
-          .map((user) => {
-            const points = Number(user.Points);
-            return { ...user, Points: isNaN(points) ? 0 : points };
-          })
+          .map((user) => ({
+            ...user,
+            Points: isNaN(Number(user.Points)) ? 0 : Number(user.Points),
+          }))
           .sort((a, b) => b.Points - a.Points);
-
         setUsers(processedUsers);
       } catch (error) {
         console.error("Error fetching users: ", error);
@@ -36,156 +30,163 @@ const Page = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-white via-[#f0f0f0] to-[#bcd727]">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
+      </div>
+    );
   }
 
+  // Reorder users so the top user is in the middle
   const topUsers = [...users.slice(0, 3)];
-  // Swap positions of the top 1 and 2
-  const temp = topUsers[0];
-  topUsers[0] = topUsers[1];
-  topUsers[1] = temp;
+  // Switch first and second place
+  topUsers[0] = users[1];
+  topUsers[1] = users[0];
+  topUsers[2] = users[2];
 
   const otherUsers = users.slice(3);
 
-  const getInitials = (name: string, surname: string) => {
-    const firstInitial = name.charAt(0).toUpperCase();
-    const lastInitial = surname.charAt(0).toUpperCase();
-    return `${firstInitial}${lastInitial}`;
+  const getInitials = (name, surname) => {
+    return `${name.charAt(0)}${surname.charAt(0)}`.toUpperCase();
   };
 
-  const getIcon = (points: number) => {
-    if (points >= 1000) return "👑"; // Crown for 1000 points or more
-    if (points >= 500) return "🏆"; // Trophy for 500 points or more
-    if (points >= 150) return "💎"; // Diamond for 150 points or more
+  const getIcon = (points) => {
+    if (points >= 1000) return "👑";
+    if (points >= 500) return "🏆";
+    if (points >= 150) return "💎";
     return null;
   };
 
   return (
-    <div className="page">
+    <div className="min-h-screen bg-gradient-to-br from-white via-[#f0f0f0] to-[#bcd727]">
       <Header />
-      <div className="title-container"></div>
-      <div className="podium">
-        {topUsers.map((user, index) => (
-          <div
-            key={index}
-            className={`podium-item podium-item-${index + 1} ${
-              index === 1 ? "podium-item-middle" : ""
-            }`}
-          >
-            <div className="podium-medal">
-              <div className="medal-container">
-                <span className={`medal medal-${index + 1}`}>
-                  {index === 0 ? "🥈" : index === 1 ? "🥇" : "🥉"}
-                </span>
-                <div className={`sparkle sparkle-${index + 1}`}></div>
+      <main className="container mx-auto px-4 py-12">
+        {/* Top Users */}
+        <div className="flex justify-center items-end space-x-8 mb-20">
+          {topUsers.map((user, index) => (
+            <motion.div
+              key={index}
+              className={`bg-white rounded-2xl shadow-2xl overflow-hidden ${
+                index === 1 ? "h-96 w-80" : "h-88 w-72"
+              } ${
+                index === 0 ? "order-1" : index === 1 ? "order-2" : "order-3"
+              }`}
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.2, duration: 0.5 }}
+            >
+              <div
+                className={`h-3 ${
+                  index === 1
+                    ? "bg-[#FFD700]"
+                    : index === 0
+                    ? "bg-[#C0C0C0]"
+                    : "bg-[#CD7F32]"
+                }`}
+              ></div>
+              <div className="p-8">
+                <div className="podium-medal text-7xl mb-6 text-center">
+                  <div className="medal-container">
+                    <span className="medal">
+                      {index === 1 ? "🥇" : index === 0 ? "🥈" : "🥉"}
+                    </span>
+                    <div className={`sparkle sparkle-${index + 1}`}></div>
+                  </div>
+                </div>
+                <div className="profile-picture mx-auto mb-6">
+                  {getInitials(user.Name, user.Surname)}
+                  {getIcon(user.Points) && (
+                    <span className="icon absolute -top-2 -right-2 text-3xl">
+                      {getIcon(user.Points)}
+                    </span>
+                  )}
+                </div>
+                <h2
+                  className={`text-2xl font-semibold mb-2 text-center podium-name-${
+                    index + 1
+                  }`}
+                >
+                  {user.Name || "N/A"}
+                </h2>
+                <p className="text-xl mb-3 text-center text-gray-600">
+                  {user.Surname || "N/A"}
+                </p>
+                <p className="text-2xl font-bold text-center">
+                  {user.Points} Points
+                </p>
               </div>
-            </div>
-            <div className="podium-info">
-              <div className="profile-picture">
-                {getInitials(user.Name || "", user.Surname || "")}
-                {getIcon(user.Points) && (
-                  <span className={`icon icon-${index + 1}`}>
-                    {getIcon(user.Points)}
-                  </span>
-                )}
-              </div>
-              <div className={`podium-name podium-name-${index + 1}`}>
-                {user.Name || "N/A"}
-              </div>
-              <div className={`podium-surname podium-surname-${index + 1}`}>
-                {user.Surname || "N/A"}
-              </div>
-              <div className="podium-points">{user.Points} Points</div>
-            </div>
-          </div>
-        ))}
-      </div>
+            </motion.div>
+          ))}
+        </div>
 
-      <div className="user-list">
-        {otherUsers.map((user, index) => (
-          <div className="user-item" key={index}>
-            <div className="user-position">
-              <div className="position-number">{index + 4}</div>
-              <div className="profile-picture-right">
-                {getInitials(user.Name || "", user.Surname || "")}
-                {getIcon(user.Points) && (
-                  <span className="icon-right">{getIcon(user.Points)}</span>
-                )}
+        {/* Other Users */}
+        <div className="space-y-4">
+          {otherUsers.map((user, index) => (
+            <motion.div
+              key={index}
+              className="bg-white rounded-lg shadow-md overflow-hidden p-6 flex items-center justify-between border border-gray-200"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
+            >
+              <div className="flex items-center">
+                <div className="position-number mr-6 text-2xl font-bold text-gray-400">
+                  {index + 4}
+                </div>
+                <div className="profile-picture-right mr-6">
+                  {getInitials(user.Name, user.Surname)}
+                  {getIcon(user.Points) && (
+                    <span className="icon-right absolute -top-1 -right-1 text-xl">
+                      {getIcon(user.Points)}
+                    </span>
+                  )}
+                </div>
+                <div className="user-name-surname">
+                  <p className="text-xl font-medium">
+                    {user.Name || "N/A"} {user.Surname || "N/A"}
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="user-name-surname">
-              {user.Name || "N/A"} {user.Surname || "N/A"}
-            </div>
-            <div className="user-points">{user.Points} Points</div>
-          </div>
-        ))}
-      </div>
+              <div className="user-points text-xl font-bold text-blue-600">
+                {user.Points} Points
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </main>
 
       <style jsx>{`
-        .page {
-          font-family: Arial, sans-serif;
-          text-align: center;
-          padding: 0; /* Reset padding */
-          margin: 0; /* Reset margin */
-          background-color: white;
-        }
-        .title-container {
-          margin: 20px 0;
-        }
-        .title {
-          font-size: 3rem;
-          font-weight: bold;
-          color: #bcd727; /* Ensure color is applied here */
-          margin: 0; /* Reset margin */
-        }
-        .podium {
+        .profile-picture,
+        .profile-picture-right {
           display: flex;
           justify-content: center;
           align-items: center;
-          flex-direction: row;
-          margin-bottom: 30px;
-        }
-        .podium-item {
+          background-color: #f0f0f0;
+          border-radius: 50%;
           position: relative;
-          margin: 0 10px;
-          padding: 20px;
-          border-radius: 15px;
-          width: 250px;
-          background-color: #fff;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-          text-align: center;
-          transition: transform 0.3s ease;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .podium-item:hover {
-          transform: scale(1.05);
+        .profile-picture {
+          width: 100px;
+          height: 100px;
+          font-size: 32px;
         }
-        .podium-item-1 {
-          background-color: #fff8e1; /* Light gold */
-          border: 3px solid gold;
+        .profile-picture-right {
+          width: 50px;
+          height: 50px;
+          font-size: 20px;
         }
-        .podium-item-2 {
-          background-color: #f0f0f0; /* Light silver */
-          border: 3px solid silver;
+        .podium-name-1 {
+          color: #ffd700;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        .podium-item-3 {
-          background-color: #fff5f0; /* Light bronze */
-          border: 3px solid #cd7f32; /* Bronze */
+        .podium-name-2 {
+          color: #c0c0c0;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-        .podium-item-middle {
-          width: 300px; /* Make the middle block a bit bigger */
-          padding: 30px; /* Increase padding */
-        }
-        .podium-medal {
-          font-size: 100px; /* Decrease size */
-          margin-bottom: 10px;
-          position: relative;
-        }
-        .medal-container {
-          position: relative;
-          display: inline-block;
-        }
-        .medal {
-          position: relative;
+        .podium-name-3 {
+          color: #cd7f32;
+          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         .sparkle {
           position: absolute;
@@ -200,8 +201,8 @@ const Page = () => {
         .sparkle::after {
           content: "";
           position: absolute;
-          width: 20px; /* Decrease size */
-          height: 20px; /* Decrease size */
+          width: 25px;
+          height: 25px;
           background-color: #fff;
           clip-path: polygon(
             50% 0%,
@@ -215,13 +216,13 @@ const Page = () => {
             2% 35%,
             39% 35%
           );
-          opacity: 0.9; /* Increase brightness */
+          opacity: 0.9;
           transform: scale(0);
-          animation: sparkle-animation 1.5s infinite;
+          animation: sparkle-animation 2s infinite;
         }
         .sparkle-1::before {
-          top: 5%;
-          left: 5%;
+          top: 0%;
+          left: 0%;
           animation-delay: 0s;
         }
         .sparkle-1::after {
@@ -230,7 +231,7 @@ const Page = () => {
           animation-delay: 0.5s;
         }
         .sparkle-2::before {
-          top: 10%;
+          top: 20%;
           left: 20%;
           animation-delay: 0.2s;
         }
@@ -262,107 +263,6 @@ const Page = () => {
             opacity: 0;
             transform: scale(0.8);
           }
-        }
-        .podium-info {
-          text-align: center;
-        }
-        .profile-picture {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background-color: #e0e0e0;
-          border-radius: 50%;
-          width: 80px;
-          height: 80px;
-          font-size: 24px;
-          position: relative;
-          margin: 0 auto;
-        }
-        .icon {
-          position: absolute;
-          font-size: 24px;
-          top: -10px;
-          right: -10px;
-        }
-        .podium-name {
-          font-size: 1.5rem;
-          font-weight: bold;
-          color: black; /* Changed to black */
-        }
-        .podium-name-1 {
-          color: gold;
-        }
-        .podium-name-2 {
-          color: silver;
-        }
-        .podium-name-3 {
-          color: #cd7f32;
-        }
-        .podium-surname {
-          font-size: 1rem;
-          color: black; /* Changed to black */
-        }
-        .podium-points {
-          font-size: 1.2rem;
-          font-weight: bold;
-          margin-top: 10px;
-        }
-        .user-list {
-          width: 100%; /* Full width of the screen */
-          max-width: 100vw; /* Ensure it doesn't exceed viewport width */
-          margin: 0 auto; /* Center horizontally */
-          padding: 0; /* Optional: remove padding if needed */
-          box-sizing: border-box; /* Include padding and border in width calculation */
-        }
-
-        .user-item {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 10px;
-          border-bottom: 1px solid #ddd;
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow added */
-          border-radius: 8px; /* Rounded corners for better visual effect */
-          transition: transform 0.3s ease;
-        }
-        .user-item:hover {
-          transform: scale(1.02); /* Slightly scale up on hover */
-        }
-        .user-position {
-          display: flex;
-          align-items: center;
-        }
-        .position-number {
-          font-size: 1.2rem;
-          font-weight: bold;
-          margin-right: 10px;
-        }
-        .profile-picture-right {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background-color: #e0e0e0;
-          border-radius: 50%;
-          width: 40px;
-          height: 40px;
-          font-size: 18px;
-          margin-right: 10px;
-          position: relative; /* Added to place the icon */
-        }
-        .user-name-surname {
-          flex: 1;
-          font-size: 1.2rem;
-          color: black; /* Changed to black */
-        }
-        .user-points {
-          font-size: 1rem;
-          font-weight: bold;
-        }
-        .icon-right {
-          position: absolute;
-          top: -10px;
-          right: -10px;
-          font-size: 18px;
         }
       `}</style>
     </div>

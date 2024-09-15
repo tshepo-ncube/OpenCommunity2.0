@@ -21,25 +21,20 @@
       "static/chunks/main-app.js",
       "static/chunks/app/Recommendations/page.js"
     ],
+    "/recom/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/recom/page.js"
+    ],
     "/leader/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/leader/page.js"
     ],
-    "/DiscoverCommunities/page": [
+    "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/DiscoverCommunities/page.js"
-    ],
-    "/adminDash/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/adminDash/page.js"
-    ],
-    "/recom/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/recom/page.js"
+      "static/chunks/app/_not-found/page.js"
     ]
   }
 }
