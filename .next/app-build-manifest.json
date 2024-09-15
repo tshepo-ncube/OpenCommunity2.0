@@ -16,21 +16,6 @@
       "static/chunks/main-app.js",
       "static/chunks/app/Home/page.js"
     ],
-    "/Home/community/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/Home/community/[id]/page.js"
-    ],
-    "/recom/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/recom/page.js"
-    ],
-    "/Recommendations/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/Recommendations/page.js"
-    ],
     "/DiscoverCommunities/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
