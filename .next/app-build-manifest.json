@@ -16,20 +16,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/Home/page.js"
     ],
+    "/Profile/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/Profile/page.js"
+    ],
     "/Recommendations/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/Recommendations/page.js"
-    ],
-    "/recom/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/recom/page.js"
-    ],
-    "/leader/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/leader/page.js"
     ]
   }
 }

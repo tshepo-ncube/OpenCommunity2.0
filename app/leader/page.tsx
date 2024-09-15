@@ -9,6 +9,7 @@ const Page = () => {
   const [loading, setLoading] = useState(true);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [typewriterText, setTypewriterText] = useState("");
+  const [skipTypewriter, setSkipTypewriter] = useState(false);
   const fullMessage =
     "Congratulations to everyone who made the leaderboard! The results are as follows .....";
 
@@ -35,19 +36,28 @@ const Page = () => {
 
   useEffect(() => {
     if (!loading) {
-      let i = 0;
-      const intervalId = setInterval(() => {
-        setTypewriterText(fullMessage.substring(0, i + 1));
-        i++;
-        if (i === fullMessage.length) {
-          clearInterval(intervalId);
-          setTimeout(() => {
-            setShowLeaderboard(true);
-          }, 3000); // Show leaderboard after an additional 3 seconds
-        }
-      }, 50); // Speed of typing effect
+      if (skipTypewriter) {
+        // If skipping, show the leaderboard immediately
+        setShowLeaderboard(true);
+      } else {
+        let i = 0;
+        const intervalId = setInterval(() => {
+          setTypewriterText(fullMessage.substring(0, i + 1));
+          i++;
+          if (i === fullMessage.length) {
+            clearInterval(intervalId);
+            setTimeout(() => {
+              setShowLeaderboard(true);
+            }, 3000); // Show leaderboard after an additional 3 seconds
+          }
+        }, 50); // Speed of typing effect
+      }
     }
-  }, [loading]);
+  }, [loading, skipTypewriter]);
+
+  const handleSkip = () => {
+    setSkipTypewriter(true);
+  };
 
   if (loading) {
     return (
@@ -82,10 +92,18 @@ const Page = () => {
       <Header />
       <main className="container mx-auto px-4 py-12">
         {!showLeaderboard ? (
-          <div className="flex items-start justify-center min-h-screen pt-20">
-            {" " /* Adjust padding-top here */}
+          <div className="relative flex items-start justify-center min-h-screen pt-20">
+            {/* Skip button */}
+            <button
+              onClick={handleSkip}
+              className="absolute top-3 right-3 px-6 py-2 bg-white text-black border border-gray-300 rounded shadow"
+            >
+              Skip
+            </button>
             <div className="text-center flex flex-col">
-              <div className="typewriter-text">{typewriterText}</div>
+              <div className="typewriter-container">
+                <span className="typewriter-text">{typewriterText}</span>
+              </div>
             </div>
           </div>
         ) : (
@@ -193,12 +211,28 @@ const Page = () => {
       <style jsx global>{`
         @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap"); /* Replace with your fancy font */
 
+        .typewriter-container {
+          display: inline-block;
+          position: relative;
+        }
+
         .typewriter-text {
           font-size: 4rem; /* Adjust as needed */
           font-family: "Roboto", sans-serif; /* Apply your fancy font here */
           font-weight: 400; /* Normal weight, not bold */
           color: #333; /* Adjust text color if needed */
           white-space: pre-wrap; /* Ensure spacing is preserved */
+          border-right: 4px solid #333; /* Cursor style */
+          animation: cursor-blink 0.7s step-start infinite; /* Blinking cursor effect */
+        }
+
+        @keyframes cursor-blink {
+          0% {
+            border-right-color: transparent;
+          }
+          100% {
+            border-right-color: #333;
+          }
         }
 
         .profile-picture,
