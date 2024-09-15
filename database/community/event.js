@@ -17,8 +17,11 @@ import {
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import StorageDB from "../StorageDB";
+import UserDB from "./users";
 
 export default class EventDB {
+  // Existing methods...
+
   static deleteEvent = async (id) => {
     try {
       await deleteDoc(doc(DB, "events", id));
@@ -96,6 +99,8 @@ export default class EventDB {
       await updateDoc(eventRef, {
         rsvp: arrayUnion(email),
       });
+      UserDB.addPoints(10);
+
       console.log("RSVP added successfully.");
     } catch (e) {
       console.error("Error adding RSVP:", e);
@@ -110,6 +115,7 @@ export default class EventDB {
         rsvp: arrayRemove(email),
       });
       console.log("RSVP removed successfully.");
+      UserDB.removePoints(10);
     } catch (e) {
       console.error("Error removing RSVP:", e);
       throw e;
@@ -173,6 +179,7 @@ export default class EventDB {
         Reviews: arrayUnion(newReview), // Use arrayUnion to avoid duplicates
       });
       console.log("Review added successfully");
+      UserDB.addPoints(15);
     } catch (error) {
       console.error("Error adding review: ", error);
     }
@@ -222,6 +229,22 @@ export default class EventDB {
       console.log("Comment added successfully.");
     } catch (e) {
       console.error("Error adding comment:", e);
+      throw e;
+    }
+  };
+
+  // Function to fetch all comments and ratings for an event
+  static getCommentsAndRatings = async (eventID) => {
+    const eventRef = doc(DB, "events", eventID);
+    try {
+      const eventDoc = await getDoc(eventRef);
+      if (eventDoc.exists()) {
+        const eventData = eventDoc.data();
+        return eventData.Comments || [];
+      }
+      return [];
+    } catch (e) {
+      console.error("Error getting comments and ratings:", e);
       throw e;
     }
   };

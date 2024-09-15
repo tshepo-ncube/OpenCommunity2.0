@@ -33,6 +33,7 @@ const navItems = [
   "Admin View",
   "View Recommendations",
   "Recommend a community",
+  "Leaderboard",
   "Outlook",
   "Teams",
   "Logout",
@@ -63,6 +64,8 @@ function Header() {
       window.location.href = "msteams://";
     } else if (item === "Admin View") {
       router.push("/DiscoverCommunities");
+    } else if (item === "Leaderboard") {
+      router.push("/leader");
     } else if (item === "Home") {
       router.push("/Home");
     } else if (item === "Recommend a community") {

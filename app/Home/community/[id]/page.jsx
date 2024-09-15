@@ -14,6 +14,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import UserDB from "@/database/community/users";
 import { doc, getDoc } from "firebase/firestore";
 import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
@@ -218,6 +219,7 @@ export default function CommunityPage({ params }) {
   };
 
   const handleCommentReview = (event) => {
+    console.log("This is the event :", event);
     setCurrentEvent(event.eventName);
     setCurrentEventObject(event);
     setOpenDialog(true);
@@ -357,8 +359,9 @@ export default function CommunityPage({ params }) {
   };
 
   // useEffect(() => {
-  //   console.log(currentEventObject);
-  // }, [currentEventObject]);
+  //   console.log("Adding points...");
+  //   UserDB.addPoints();
+  // }, []);
   return (
     <div className="">
       <div
@@ -612,7 +615,7 @@ export default function CommunityPage({ params }) {
                     onClick={() => handleCommentReview(event)}
                     style={{ color: "blue" }} // Styling as blue text
                   >
-                    Leave a Comment & Review
+                    Leave a Comment & Rating
                   </Button>
                 </li>
               ))
@@ -622,73 +625,83 @@ export default function CommunityPage({ params }) {
           </ul>
         </div>
       </div>
-
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>
-          Leave a Review and Comment about {currentEvent}
-        </DialogTitle>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="md"
+        fullWidth
+      >
         <DialogContent>
-          <TextField
-            label="Comment"
-            fullWidth
-            multiline
-            rows={4}
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-          />
-          <Typography component="legend">Rating</Typography>
-          <Rating
-            name="simple-controlled"
-            value={rating}
-            onChange={(event, newValue) => {
-              setRating(newValue);
-            }}
-          />
-          <Typography component="legend">Upload Images</Typography>
-          <input
-            accept="image/*"
-            id="contained-button-file"
-            multiple
-            type="file"
-            onChange={handleImageUpload}
-            style={{ display: "none" }}
-          />
-          <label htmlFor="contained-button-file">
-            <Button
-              variant="contained"
-              color="primary"
-              component="span"
-              style={{ marginTop: "10px" }}
-            >
-              Upload
-            </Button>
-          </label>
-          {selectedImages.length > 0 && (
-            <div className="mt-2">
-              <Typography component="legend">Selected Images</Typography>
-              <div className="flex flex-wrap">
-                {selectedImages.map((image, index) => (
-                  <img
-                    key={index}
-                    src={URL.createObjectURL(image)}
-                    alt={`Selected ${index}`}
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      marginRight: "10px",
-                    }}
-                  />
-                ))}
-              </div>
+          <div className="flex">
+            {/* Left Column - Current Content */}
+            <div className="flex-1 pr-4">
+              <Typography variant="h6" gutterBottom>
+                All Comments and Ratings
+              </Typography>
+
+              {currentEventObject && currentEventObject.Reviews.length > 0 ? (
+                <ul className="list-none p-0">
+                  {currentEventObject.Reviews.map((review, index) => (
+                    <li
+                      className="bg-gray-200 p-4 mb-4 rounded flex items-center"
+                      key={index}
+                    >
+                      <div className="flex-1">
+                        <Typography variant="body1">
+                          {review.Comment}
+                        </Typography>
+                      </div>
+                      <div className="flex items-center ml-4">
+                        <Rating
+                          name={`rating-${index}`}
+                          value={review.Rating}
+                          readOnly
+                          precision={0.5}
+                        />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <Typography variant="body1">No reviews available.</Typography>
+              )}
             </div>
-          )}
+
+            {/* Right Column - User Review */}
+            <div className="flex-1 pl-4">
+              <Typography variant="h6" gutterBottom>
+                Leave a Comment & Rating
+              </Typography>
+              <TextField
+                fullWidth
+                label="Comment"
+                multiline
+                rows={4}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              />
+              <div className="mt-2">
+                <Typography variant="body1">Rating</Typography>
+                <Rating
+                  name="rating"
+                  value={rating}
+                  onChange={(e, newValue) => setRating(newValue)}
+                />
+              </div>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmitReview}
+                style={{ marginTop: "16px" }}
+              >
+                Submit Review
+              </Button>
+            </div>
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
+          <Button onClick={handleCloseDialog} color="primary">
             Cancel
-          </Button>
-          <Button onClick={handleSubmitReview} color="primary">
-            Submit
           </Button>
         </DialogActions>
       </Dialog>

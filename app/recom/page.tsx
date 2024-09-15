@@ -62,7 +62,7 @@ const RecommendationsTable: React.FC = () => {
 
   const handleAddClick = async (rec: any) => {
     // Define the available categories
-    const categories = ["General", "Sport", "Social", "Development"];
+    const categories = ["general", "Sports", "Social", "Development"];
 
     // Show SweetAlert2 popup with pre-filled data
     const { value: formValues } = await Swal.fire({
