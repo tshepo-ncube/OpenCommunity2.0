@@ -2,22 +2,17 @@ import React, { useEffect, useState } from "react";
 import {
   CircularProgress,
   Grid,
-  Card,
-  CardContent,
   Typography,
-  CardActions,
   Button,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
   Snackbar,
   Alert,
+  IconButton,
+  Tooltip, // Import Tooltip
 } from "@mui/material";
-import { IconButton, Menu } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew"; // Import the new icon
 import CommunityDB from "../../database/community/community";
 import { useRouter } from "next/navigation";
+import CardActions from "@mui/material/CardActions";
 
 interface DiscoverCommunityProps {
   email: string;
@@ -36,7 +31,6 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
     }[]
   >([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
-
   const [selectedCategory, setSelectedCategory] =
     useState<string>("All Communities");
   const [selectedStatus, setSelectedStatus] = useState<string>("active");
@@ -44,15 +38,6 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const router = useRouter();
-
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   useEffect(() => {
     const fetchCommunities = async () => {
@@ -105,30 +90,6 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
       });
   };
 
-  // const filterDataByCategoryAndStatus = (
-  //   data: {
-  //     id: string;
-  //     name: string;
-  //     description: string;
-  //     category: string;
-  //     status: string;
-  //     users: string[];
-  //   }[]
-  // ) => {
-  //   return data
-  //     .filter((item) => item.users.includes(email)) // Only include communities joined by the user
-  //     .filter(
-  //       (item) =>
-  //         item.category
-  //           .toLowerCase()
-  //           .includes(selectedCategory.toLowerCase()) &&
-  //         item.status === selectedStatus &&
-  //         `${item.name.toLowerCase()} ${item.description.toLowerCase()} ${item.category.toLowerCase()}`.includes(
-  //           searchQuery.toLowerCase()
-  //         )
-  //     );
-  // };
-
   const filteredData = filterDataByCategoryAndStatus(submittedData);
 
   const uniqueCategories = Array.from(
@@ -140,15 +101,15 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
   const stringToColor = (category: string): string => {
     switch (category.toLowerCase()) {
       case "general":
-        return "#2196f3"; // Blue
+        return "#a3c2e7"; // Pastel Blue
       case "social":
-        return "#ff9800"; // Orange
+        return "#f7b7a3"; // Pastel Orange
       case "retreat":
-        return "#f44336"; // Red
+        return "#f7a4a4"; // Pastel Red
       case "sports":
-        return "#4caf50"; // Green
+        return "#a3d9a5"; // Pastel Green
       case "development":
-        return "#9c27b0"; // Purple
+        return "#d4a1d1"; // Pastel Purple
       default:
         // Generate a color based on hash if category not specified
         let hash = 0;
@@ -161,7 +122,6 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
   };
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  //const [selectedCategory, setSelectedCategory] = useState("All categories");
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -174,14 +134,14 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
 
   return (
     <>
-      <div className="flex justify-center mt-4 mb-2 ">
+      <div className="flex justify-center mt-4 mb-2">
         <form className="max-w-lg mx-auto w-full z-90">
           <div className="flex relative">
             <label
               htmlFor="search-dropdown"
               className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
             >
-              Your Email
+              Search
             </label>
 
             <div className="relative w-full">
@@ -221,7 +181,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
               htmlFor="search-dropdown"
               className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
             >
-              Your Email
+              Category
             </label>
 
             <button
@@ -253,7 +213,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
                 className="absolute right-0 mt-12 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
               >
                 <ul
-                  className="py-2 text-sm  text-gray-700 dark:text-gray-200 z-99"
+                  className="py-2 text-sm text-gray-700 dark:text-gray-200 z-99"
                   aria-labelledby="dropdown-button"
                 >
                   {uniqueCategories.map((category) => (
@@ -261,10 +221,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
                       <button
                         type="button"
                         className="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                        onClick={() => {
-                          selectCategory(category);
-                          setSelectedCategory(category);
-                        }}
+                        onClick={() => selectCategory(category)}
                       >
                         {category}
                       </button>
@@ -288,144 +245,58 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
               <Grid container spacing={2} style={{ padding: 14 }}>
                 {filteredData.map((data, index) => (
                   <Grid item xs={6} md={4} lg={4} key={index}>
-                    {/* <Card
-                      sx={{
-                        position: "relative",
-                        maxWidth: 345,
-                        marginBottom: 10,
-                        padding: "6px",
-                        "&::before": {
-                          content: `"${data.category}"`,
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
-                          backgroundColor: stringToColor(data.category),
-                          color: "#fff",
-                          padding: "2px 6px",
-                          fontSize: "0.75rem",
-                          fontWeight: "bold",
-                        },
-                      }}
-                    >
-                      <CardContent>
-                        <Typography gutterBottom variant="h6" component="div">
-                          {data.name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {data.description}
-                        </Typography>
-                      </CardContent>
-                      <CardActions>
-                        <Button
-                          size="small"
-                          onClick={() => handleViewCommunity(data)}
-                        >
-                          View
-                        </Button>
-                      </CardActions>
-                    </Card> */}
-
-                    <div className="w-full max-w-sm bg-white border border-gray_og rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 relative">
-                      <a href="#">
-                        <img
-                          className="h-40 w-full rounded-t-lg object-cover"
-                          src="https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGRyaW5rc3xlbnwwfHwwfHx8MA%3D%3D"
-                          alt="product image"
-                        />
-                      </a>
-                      {/* <IconButton
-                        aria-label="more"
-                        aria-controls="long-menu"
-                        aria-haspopup="true"
-                        onClick={handleClick}
-                        style={{ position: "absolute", top: 10, right: 10 }}
-                      >
-                        <MoreVertIcon className="text-white font-bold" />
-                      </IconButton>
-                      <Menu
-                        id="long-menu"
-                        anchorEl={anchorEl}
-                        keepMounted
-                        open={open}
-                        onClose={handleClose}
-                        PaperProps={{
-                          style: {
-                            maxHeight: 48 * 4.5,
-                            width: "20ch",
-                          },
-                        }}
-                      >
-                        <MenuItem onClick={handleClose}>Edit</MenuItem>
-                        <MenuItem onClick={handleClose}>View</MenuItem>
-                        <MenuItem onClick={handleClose}>Archive</MenuItem>
-                        <MenuItem onClick={handleClose} color="error">
-                          Delete
-                        </MenuItem>
-                      </Menu> */}
-
+                    <div className="relative w-full max-w-sm bg-white border border-gray_og rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex-grow flex flex-col h-full">
+                      <img
+                        className="h-40 w-full rounded-t-lg object-cover"
+                        src="https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGRyaW5rc3xlbnwwfHwwfHx8MA%3D%3D"
+                        alt="product image"
+                      />
                       <div
                         style={{
                           position: "absolute",
                           top: 0,
-                          right: 0,
+                          left: 0,
                           backgroundColor: stringToColor(data.category),
-                          width: "80px", // Set a specific width
-                          height: "30px", // Set a specific height
+                          width: "83px",
+                          height: "36px",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                         }}
-                        className="absolute text-white text-sm font-bold rounded-md z-10"
+                        className="text-white text-sm font-bold rounded-md z-10"
                       >
                         {data.category}
                       </div>
 
-                      <div className="mt-4 px-5 pb-5">
-                        <a href="#">
-                          <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
-                            {data.name}
-                          </h5>
-                        </a>
-                        <div className="flex items-center mt-2.5 mb-5">
-                          <div className="flex items-center space-x-1 rtl:space-x-reverse"></div>
-                          <div className="text-sm text-black py-1  font-semibold">
-                            {data.description}
-                          </div>
+                      <div className="flex flex-col flex-grow mt-4 px-5 pb-5">
+                        <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                          {data.name}
+                        </h5>
+                        <div className="text-sm text-black py-1 font-semibold">
+                          {data.description}
                         </div>
-                        <div className="flex items-center justify-between">
-                          {/* <>
-              <Button size="small" onClick={() => {}}>
-                Edit
-              </Button>
-              <Button
-                size="small"
-                onClick={() => {
-                  // localStorage.setItem(
-                  //   "CurrentCommunity",
-                  //   data.id
-                  // );
-                }}
-              >
-                View
-              </Button>
-              <Button size="small" color="error" onClick={() => {}}>
-                Archive
-              </Button>
-              <Button size="small" color="error" onClick={() => {}}>
-                Delete
-              </Button>
-            </> */}
-
-                          <CardActions>
-                            <Button
-                              size="small"
-                              onClick={() => handleViewCommunity(data)}
-                            >
-                              View
-                            </Button>
-                          </CardActions>
+                        <div className="flex-grow" />
+                        <div className="flex justify-center mb-0">
+                          {/* Button for viewing community */}
                         </div>
                       </div>
+
+                      {/* Open icon for view button with Tooltip */}
+                      <Tooltip title="View community" arrow>
+                        <IconButton
+                          style={{
+                            position: "absolute",
+                            top: 8,
+                            right: 8,
+                            color: "white",
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                          }}
+                          onClick={() => handleViewCommunity(data)}
+                          size="small" // or "medium" or "large" depending on your needs
+                        >
+                          <OpenInNewIcon fontSize="small" /> {/* or "medium" */}
+                        </IconButton>
+                      </Tooltip>
                     </div>
                   </Grid>
                 ))}
@@ -437,7 +308,6 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
         )}
       </div>
 
-      {/* Snackbar for notifications */}
       <Snackbar
         open={openSnackbar}
         autoHideDuration={6000}

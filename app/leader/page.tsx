@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import UserDB from "@/database/community/users";
 import Header from "../_Components/header";
+import { AiOutlineInfoCircle } from "react-icons/ai";
 
 const Page = () => {
   const [users, setUsers] = useState([]);
@@ -10,6 +11,7 @@ const Page = () => {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [typewriterText, setTypewriterText] = useState("");
   const [skipTypewriter, setSkipTypewriter] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
   const fullMessage =
     "Congratulations to everyone who made the leaderboard! The results are as follows .....";
 
@@ -37,7 +39,6 @@ const Page = () => {
   useEffect(() => {
     if (!loading) {
       if (skipTypewriter) {
-        // If skipping, show the leaderboard immediately
         setShowLeaderboard(true);
       } else {
         let i = 0;
@@ -48,15 +49,19 @@ const Page = () => {
             clearInterval(intervalId);
             setTimeout(() => {
               setShowLeaderboard(true);
-            }, 3000); // Show leaderboard after an additional 3 seconds
+            }, 3000);
           }
-        }, 50); // Speed of typing effect
+        }, 50);
       }
     }
   }, [loading, skipTypewriter]);
 
   const handleSkip = () => {
     setSkipTypewriter(true);
+  };
+
+  const handleInfoClick = () => {
+    setShowInfo(!showInfo);
   };
 
   if (loading) {
@@ -67,9 +72,7 @@ const Page = () => {
     );
   }
 
-  // Reorder users so the top user is in the middle
   const topUsers = [...users.slice(0, 3)];
-  // Switch first and second place
   topUsers[0] = users[1];
   topUsers[1] = users[0];
   topUsers[2] = users[2];
@@ -91,16 +94,36 @@ const Page = () => {
     <div className="min-h-screen bg-gradient-to-br from-white via-[#f0f0f0] to-[#bcd727]">
       <Header />
       <main className="container mx-auto px-4 py-12">
+        {/* Information Icon */}
+        <div className="relative">
+          <AiOutlineInfoCircle
+            onClick={handleInfoClick}
+            className="absolute top-0 right-4 text-2xl cursor-pointer"
+          />
+          {showInfo && (
+            <div className="absolute top-12 right-4 bg-white text-black p-4 rounded shadow-lg w-64 z-50">
+              <h3 className="text-lg font-bold">Leaderboard Point Rules</h3>
+              <p className="mt-2">First Class 👑: 1000 points +</p>
+              <p>Second Class🏆: 500 points +</p>
+              <p>Third Class 💎: 150 points +</p>
+              <p></p>
+              <p>
+                Earn points by Joining a community (+5), RSVP & attend an event
+                (+15),
+              </p>
+              <p>vote on a poll (+10), comment & rate a past event (+10)</p>
+            </div>
+          )}
+        </div>
+
         {!showLeaderboard ? (
           <div className="relative flex items-start justify-center min-h-screen pt-20">
-            {/* Skip button */}
             <button
               onClick={handleSkip}
               className="absolute top-3 left-3 px-8 py-3 bg-white text-black border border-gray-300 rounded-lg shadow-lg"
             >
               Skip
             </button>
-
             <div className="text-center flex flex-col">
               <div className="typewriter-container">
                 <span className="typewriter-text">{typewriterText}</span>
@@ -109,7 +132,6 @@ const Page = () => {
           </div>
         ) : (
           <>
-            {/* Top Users */}
             <div className="flex justify-center items-end space-x-8 mb-16">
               {topUsers.map((user, index) => (
                 <motion.div
@@ -171,7 +193,6 @@ const Page = () => {
               ))}
             </div>
 
-            {/* Other Users */}
             <div className="space-y-3">
               {otherUsers.map((user, index) => (
                 <motion.div
@@ -193,14 +214,14 @@ const Page = () => {
                         </span>
                       )}
                     </div>
-                    <div className="user-name-surname">
-                      <p className="text-lg font-medium">
+                    <div>
+                      <div className="text-lg font-semibold text-gray-800">
                         {user.Name || "N/A"} {user.Surname || "N/A"}
-                      </p>
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        {user.Points} Points
+                      </div>
                     </div>
-                  </div>
-                  <div className="user-points text-lg font-bold text-blue-600">
-                    {user.Points} Points
                   </div>
                 </motion.div>
               ))}
@@ -210,7 +231,7 @@ const Page = () => {
       </main>
 
       <style jsx global>{`
-        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"); /* Import Poppins font */
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap");
 
         .typewriter-container {
           display: inline-block;
@@ -218,15 +239,15 @@ const Page = () => {
         }
 
         .typewriter-text {
-          font-size: 4rem; /* Adjust as needed */
-          font-family: "Great Vibes", cursive; /* Apply Great Vibes font here */
-          font-weight: 400; /* Regular weight, adjust if needed */
-          color: #333; /* Adjust text color if needed */
-          white-space: pre-wrap; /* Ensure spacing is preserved */
-          border-right: 4px solid #333; /* Cursor style */
-          animation: cursor-blink 0.7s step-start infinite; /* Blinking cursor effect */
-          letter-spacing: -0.5px; /* Adjust letter spacing if needed */
-          transform: scaleX(0.95); /* Scale horizontally to make it thinner */
+          font-size: 4rem;
+          font-family: "Great Vibes", cursive;
+          font-weight: 400;
+          color: #333;
+          white-space: pre-wrap;
+          border-right: 4px solid #333;
+          animation: cursor-blink 0.7s step-start infinite;
+          letter-spacing: -0.5px;
+          transform: scaleX(0.95);
         }
 
         @keyframes cursor-blink {
@@ -254,9 +275,9 @@ const Page = () => {
           font-size: 24px;
         }
         .profile-picture-right {
-          width: 45px; /* Increased size for other users */
-          height: 45px; /* Increased size for other users */
-          font-size: 18px; /* Increased font size for other users */
+          width: 45px;
+          height: 45px;
+          font-size: 18px;
         }
         .podium-name-1 {
           color: #ffd700;
@@ -278,9 +299,9 @@ const Page = () => {
           display: inline-block;
         }
         .medal {
-          font-size: 6rem; /* Adjusted size for larger medals */
+          font-size: 6rem;
           position: relative;
-          z-index: 10; /* Ensure medal is above other elements */
+          z-index: 10;
         }
         .sparkle {
           position: absolute;
@@ -291,14 +312,14 @@ const Page = () => {
           pointer-events: none;
           overflow: hidden;
           transform: translate(-50%, -50%);
-          z-index: 20; /* Ensure sparkle is above the medal */
+          z-index: 20;
         }
         .sparkle::before,
         .sparkle::after {
           content: "";
           position: absolute;
-          width: 30px; /* Increased size for larger sparkles */
-          height: 30px; /* Increased size for larger sparkles */
+          width: 30px;
+          height: 30px;
           background: radial-gradient(
             circle,
             rgba(255, 255, 255, 0.8) 0%,
