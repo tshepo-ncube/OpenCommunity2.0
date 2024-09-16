@@ -332,4 +332,20 @@ export default class CommunityDB {
       };
     }
   };
+
+  static getCommunity = async (communityID, setCommunities) => {
+    const communityRef = doc(DB, "communities", communityID);
+    const docSnap = await getDoc(communityRef);
+
+    try {
+      if (docSnap.exists()) {
+        console.log(docSnap.data());
+        setCommunities(docSnap.data());
+      } else {
+        console.log("Community does not exists");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 }

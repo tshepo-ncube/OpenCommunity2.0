@@ -213,7 +213,7 @@ const Profile = () => {
   const handleEditProfileSubmit = async (e) => {
     e.preventDefault();
     const success = await ManageUser.editProfileData(profile.id, profile);
-    if (success:void) {
+    if (success) {
       // If the profile update was successful, fetch the updated profile data
       ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
     } else {

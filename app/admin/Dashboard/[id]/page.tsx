@@ -371,6 +371,7 @@ export default function CommunityPage({ params }) {
       </div>
 
       <Chatbot
+        communityID={params.id}
         setEventForm={setEventForm}
         setShowEventForm={setShowEventForm}
       />
