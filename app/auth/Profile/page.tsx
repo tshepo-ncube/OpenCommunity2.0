@@ -161,11 +161,12 @@ const Profile = () => {
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
-
+    console.log(name, value);
     //new Yan added in this code
     if (name === "Diet") {
       setIsOtherDietSelected(value === "Other");
       if (value !== "Other") {
+        console.log(otherDiet);
         setOtherDiet(""); // Clear if not "Other"
       }
     }
@@ -173,17 +174,38 @@ const Profile = () => {
     if (name === "Allergies") {
       setIsOtherAllergySelected(value === "Other");
       if (value !== "Other") {
+        console.log(otherAllergy);
         setOtherAllergy(""); // Clear if not "Other"
       }
     }
     //end
 
     console.log(name, value);
+    // setProfile((prevProfile) => ({
+    //   ...prevProfile,
+    //   [name]: value,
+    // }));
+
     setProfile((prevProfile) => ({
       ...prevProfile,
       [name]: value,
+      ...(otherAllergy !== "" && { otherAllergy }),
+      ...(otherDiet !== "" && { otherDiet }),
     }));
+
+    // if (otherAllergy !== "") {
+    //   setProfile((prevProfile) => ({
+    //     ...prevProfile,
+    //     [name]: value,
+    //     otherAllergy: otherAllergy if otherAllergy !== ""
+    //     otherDiet: otherDiet if otherDiet !== ""
+    //   }));
+    // }
   };
+
+  useEffect(() => {
+    console.log(profile);
+  }, [profile]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -213,7 +235,7 @@ const Profile = () => {
   const handleEditProfileSubmit = async (e) => {
     e.preventDefault();
     const success = await ManageUser.editProfileData(profile.id, profile);
-    if (success:void) {
+    if (success) {
       // If the profile update was successful, fetch the updated profile data
       ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
     } else {
@@ -234,198 +256,6 @@ const Profile = () => {
             <CloseIcon />
           </IconButton>
         </div>
-        {/* <div className="flex">
-          <ul className="w-1/4 pr-4">
-            <li
-              className={`cursor-pointer mb-2 ${
-                activeTab === "personalDetails" ? "font-bold" : ""
-              }`}
-              onClick={() => handleTabChange("personalDetails")}
-            >
-              Personal Details
-            </li>
-            <li
-              className={`cursor-pointer mb-2 ${
-                activeTab === "passwordReset" ? "font-bold" : ""
-              }`}
-              onClick={() => handleTabChange("passwordReset")}
-            >
-              Password Reset
-            </li>
-            <li
-              className={`cursor-pointer mb-2 ${
-                activeTab === "logout" ? "font-bold" : ""
-              }`}
-              onClick={() => handleTabChange("logout")}
-            >
-              Log Out
-            </li>
-          </ul>
-          <div className="w-3/4">
-            {activeTab === "personalDetails" && (
-              <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="firstName"
-                  >
-                    First Name:
-                  </label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    id="firstName"
-                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="lastName"
-                  >
-                    Last Name:
-                  </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    id="lastName"
-                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="email"
-                  >
-                    Email:
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    id="email"
-                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value={formData.email}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="allergies"
-                  >
-                    Food Allergies:
-                  </label>
-                  <input
-                    type="text"
-                    name="allergies"
-                    id="allergies"
-                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value={formData.allergies}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="injuries"
-                  >
-                    Injuries:
-                  </label>
-                  <textarea
-                    name="injuries"
-                    id="injuries"
-                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value={formData.injuries}
-                    onChange={handleChange}
-                  ></textarea>
-                </div>
-                <div className="mb-4">
-                  <button
-                    type="submit"
-                    className="bg-openbox-green hover:bg-hover-obgreen text-white font-bold py-2 px-4 rounded focus:shadow-outline focus:shadow-outline hover:shadow-md"
-                  >
-                    Save Personal Details
-                  </button>
-                </div>
-              </form>
-            )}
-            {activeTab === "passwordReset" && (
-              <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="currentPassword"
-                  >
-                    Current Password:
-                  </label>
-                  <input
-                    type="password"
-                    name="currentPassword"
-                    id="currentPassword"
-                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value={formData.currentPassword}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="newPassword"
-                  >
-                    New Password:
-                  </label>
-                  <input
-                    type="password"
-                    name="newPassword"
-                    id="newPassword"
-                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value={formData.newPassword}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="confirmNewPassword"
-                  >
-                    Confirm New Password:
-                  </label>
-                  <input
-                    type="password"
-                    name="confirmNewPassword"
-                    id="confirmNewPassword"
-                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value={formData.confirmNewPassword}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="mb-4">
-                  <button
-                    type="submit"
-                    className="bg-openbox-green hover:bg-hover-obgreen text-white font-bold py-2 px-4 rounded focus:shadow-outline hover:shadow-md"
-                  >
-                    Save New Password
-                  </button>
-                </div>
-              </form>
-            )}
-            {activeTab === "logout" && (
-              <div>
-                <p>Are you sure you want to log out?</p>
-                <button
-                  onClick={handleLogout}
-                  className="bg-openbox-green hover:bg-hover-obgreen text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:shadow-md"
-                >
-                  Log out
-                </button>
-              </div>
-            )}
-          </div>
-        </div> */}
 
         <Box
           sx={{
@@ -535,7 +365,12 @@ const Profile = () => {
                     name="otherDiet"
                     className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     value={otherDiet}
-                    onChange={(e) => setOtherDiet(e.target.value)}
+                    // onChange={(e) => {
+                    //   setOtherDiet(e.target.value);
+                    //   // console.log(otherDiet);
+                    // }}
+
+                    onChange={handleProfileChange}
                   />
                 </div>
               )}
@@ -575,57 +410,12 @@ const Profile = () => {
                     name="otherAllergy"
                     className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     value={otherAllergy}
+                    // onChange={handleProfileChange}
                     onChange={(e) => setOtherAllergy(e.target.value)}
                   />
                 </div>
               )}
-              {/* <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="allergies"
-                >
-                  Dietary Requirements:
-                </label>
-                <input
-                  type="text"
-                  name="Diet"
-                  id="diet"
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={profile.Diet}
-                  onChange={handleProfileChange}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="allergies"
-                >
-                  Food Allergies:
-                </label>
-                <input
-                  type="text"
-                  name="Allergies"
-                  id="allergies"
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={profile.Allergies}
-                  onChange={handleProfileChange}
-                />
-              </div> */}
-              {/* <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="injuries"
-                >
-                  Injuries:
-                </label>
-                <textarea
-                  name="Injuries"
-                  id="injuries"
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={profile.Injuries}
-                  onChange={handleProfileChange}
-                ></textarea>
-              </div> */}
+
               <div className="mb-4">
                 <button
                   type="submit"
