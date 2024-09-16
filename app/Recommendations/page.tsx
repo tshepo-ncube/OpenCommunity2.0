@@ -273,7 +273,7 @@ const CommunityRecommendationPage = () => {
             </p>
             <button
               onClick={() => setShowTip(false)}
-              className="mt-4 text-[#bcd727] hover:text-[#a8c122] font-semibold"
+              className="mt-4 text-[#grey] hover:text-[#grey] font-semibold"
             >
               Got it, thanks!
             </button>

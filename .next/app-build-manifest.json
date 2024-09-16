@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/page": [
+    "/Recommendations/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+      "static/chunks/app/Recommendations/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
@@ -11,20 +11,30 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/Home/page": [
+    "/leader/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/Home/page.js"
+      "static/chunks/app/leader/page.js"
     ],
     "/Profile/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/Profile/page.js"
     ],
-    "/Recommendations/page": [
+    "/Home/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/Recommendations/page.js"
+      "static/chunks/app/Home/page.js"
+    ],
+    "/recom/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/recom/page.js"
+    ],
+    "/DiscoverCommunities/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/DiscoverCommunities/page.js"
     ]
   }
 }
