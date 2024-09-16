@@ -9,11 +9,11 @@ import RecommendationDB from "../../../database/community/recommendation";
 import { motion } from "framer-motion"; // For smooth animations
 import Confetti from "react-confetti"; // Import react-confetti
 
-const CommunityRecommendationPage: React.FC = () => {
-  const [communityName, setCommunityName] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [category, setCategory] = useState<string>("general");
-  const [showConfetti, setShowConfetti] = useState<boolean>(false);
+const CommunityRecommendationPage = () => {
+  const [communityName, setCommunityName] = useState < string > "";
+  const [description, setDescription] = useState < string > "";
+  const [category, setCategory] = useState < string > "general";
+  const [showConfetti, setShowConfetti] = useState < boolean > false;
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
   // Set window size on mount
@@ -35,7 +35,7 @@ const CommunityRecommendationPage: React.FC = () => {
     return () => window.removeEventListener("resize", updateWindowSize);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const userEmail = localStorage.getItem("Email");

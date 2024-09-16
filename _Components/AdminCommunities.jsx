@@ -22,25 +22,17 @@ import { useRouter } from "next/navigation";
 const AdminCommunity = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [isDeleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState(null);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [status, setStatus] = useState("");
-  const [submittedData, setSubmittedData] = useState<
-    {
-      id: string;
-      name: string;
-      description: string;
-      category: string;
-      status: string;
-    }[]
-  >([]);
+  const [submittedData, setSubmittedData] = useState([]);
   const [editID, setEditID] = useState(null);
-  const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [selectedStatus, setSelectedStatus] = useState<string>("All");
+  const [editIndex, setEditIndex] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState("All");
 
   useEffect(() => {
     const fetchCommunities = async () => {
@@ -62,7 +54,7 @@ const AdminCommunity = () => {
     setPopupOpen(false);
   };
 
-  const handleFormSubmit = async (e: React.FormEvent) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
 
     console.log("About to run CommunityDB.editCommunity()");
@@ -83,7 +75,7 @@ const AdminCommunity = () => {
     setPopupOpen(false);
   };
 
-  const handleOpenDeleteDialog = (id: string) => {
+  const handleOpenDeleteDialog = (id) => {
     setDeleteId(id);
     setDeleteDialogOpen(true);
   };
@@ -105,7 +97,7 @@ const AdminCommunity = () => {
     }
   };
 
-  const handleArchive = async (id: string) => {
+  const handleArchive = async (id) => {
     try {
       await CommunityDB.updateCommunityStatus(id, "archived");
       setSubmittedData(
@@ -118,7 +110,7 @@ const AdminCommunity = () => {
     }
   };
 
-  const handleUnarchive = async (id: string) => {
+  const handleUnarchive = async (id) => {
     try {
       await CommunityDB.updateCommunityStatus(id, "active");
       setSubmittedData(
@@ -135,7 +127,7 @@ const AdminCommunity = () => {
     console.log("EditID : ", editID);
   }, [editID]);
 
-  const handleEdit = (index: number) => {
+  const handleEdit = (index) => {
     console.log("About to make an edit");
     //console.log(index);
     console.log(submittedData[index]);
@@ -154,7 +146,7 @@ const AdminCommunity = () => {
     setPopupOpen(true);
   };
 
-  const handlePost = async (id: string) => {
+  const handlePost = async (id) => {
     try {
       await CommunityDB.updateCommunityStatus(id, "active");
       setSubmittedData(
@@ -167,28 +159,16 @@ const AdminCommunity = () => {
     }
   };
 
-  const handleStatusChange = (event: React.ChangeEvent<{ value: unknown }>) => {
-    setSelectedStatus(event.target.value as string);
+  const handleStatusChange = (event) => {
+    setSelectedStatus(event.target.value);
   };
 
-  const getUniqueStatuses = (
-    data: {
-      status: string;
-    }[]
-  ) => {
+  const getUniqueStatuses = (data) => {
     const statuses = data.map((item) => item.status);
     return Array.from(new Set(statuses));
   };
 
-  const filterDataByStatus = (
-    data: {
-      id: string;
-      name: string;
-      description: string;
-      category: string;
-      status: string;
-    }[]
-  ) => {
+  const filterDataByStatus = (data) => {
     if (selectedStatus === "All") return data;
     return data.filter((item) => item.status === selectedStatus);
   };
@@ -196,7 +176,7 @@ const AdminCommunity = () => {
   const filteredData = filterDataByStatus(submittedData);
   const uniqueStatuses = getUniqueStatuses(submittedData);
 
-  const renderEventsByStatus = (status: string) => {
+  const renderEventsByStatus = (status) => {
     const eventsByStatus = filteredData.filter(
       (event) => event.status === status
     );

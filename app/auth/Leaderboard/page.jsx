@@ -5,13 +5,7 @@ import UserDB from "@/database/community/users"; // Adjust the import path accor
 import Header from "../../../_Components/header";
 
 const Page = () => {
-  const [users, setUsers] = useState<
-    {
-      Name: string;
-      Surname: string;
-      Points: number;
-    }[]
-  >([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,7 +38,7 @@ const Page = () => {
   const topUsers = users.slice(0, 3);
   const otherUsers = users.slice(3);
 
-  const getInitials = (name: string, surname: string) => {
+  const getInitials = (name, surname) => {
     const firstInitial = name.charAt(0).toUpperCase();
     const lastInitial = surname.charAt(0).toUpperCase();
     return `${firstInitial}${lastInitial}`;

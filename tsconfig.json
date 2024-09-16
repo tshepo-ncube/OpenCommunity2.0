@@ -27,7 +27,11 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "app/_Components/drawer.jsx",
-    "app/DiscoverCommunities/page.jsx"
+    "app/DiscoverCommunities/page.jsx",
+    "_Components/header.jsx",
+    "_Components/DiscoverCommunity.jsx",
+    "_Components/AdvancedCalendar.jsx",
+    "_Components/AdminCommunities.jsx"
   ],
   "exclude": ["node_modules"]
 }

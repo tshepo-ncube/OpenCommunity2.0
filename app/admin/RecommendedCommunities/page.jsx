@@ -10,11 +10,10 @@ import Swal from "sweetalert2"; // Import SweetAlert2
 
 const mutedLimeGreen = "#d0e43f"; // Muted version of #bcd727
 
-const RecommendationsTable: React.FC = () => {
-  const [recommendations, setRecommendations] = useState<any[]>([]);
-  const [likedRecommendations, setLikedRecommendations] = useState<Set<string>>(
-    new Set()
-  );
+const RecommendationsTable = () => {
+  const [recommendations, setRecommendations] = useState([]);
+  const [likedRecommendations, setLikedRecommendations] =
+    useState < Set < string >> new Set();
 
   useEffect(() => {
     const fetchRecommendations = async () => {
@@ -30,12 +29,7 @@ const RecommendationsTable: React.FC = () => {
     fetchRecommendations();
   }, []);
 
-  const handleEmailClick = (
-    email: string,
-    name: string,
-    description: string,
-    category: string
-  ) => {
+  const handleEmailClick = (email, name, description, category) => {
     const subject = encodeURIComponent(
       "OpenCommunity Community Recommendation"
     );
@@ -50,7 +44,7 @@ const RecommendationsTable: React.FC = () => {
     window.location.href = mailtoLink;
   };
 
-  const handleLikeToggle = (id: string) => {
+  const handleLikeToggle = (id) => {
     setLikedRecommendations((prev) => {
       const updatedLikes = new Set(prev);
       if (updatedLikes.has(id)) {
@@ -62,7 +56,7 @@ const RecommendationsTable: React.FC = () => {
     });
   };
 
-  const handleAddClick = async (rec: any) => {
+  const handleAddClick = async (rec) => {
     // Define the available categories
     const categories = ["general", "Sports", "Social", "Development"];
 
@@ -101,12 +95,9 @@ const RecommendationsTable: React.FC = () => {
       focusConfirm: false,
       preConfirm: () => {
         return {
-          name: (document.getElementById("name") as HTMLInputElement).value,
-          description: (
-            document.getElementById("description") as HTMLTextAreaElement
-          ).value,
-          category: (document.getElementById("category") as HTMLSelectElement)
-            .value,
+          name: document.getElementById("name").value,
+          description: document.getElementById("description").value,
+          category: document.getElementById("category").value,
         };
       },
     });

@@ -15,7 +15,7 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import axios from "axios";
 
-const createEvent = (eventDetails: any, communityID: any) => {
+const createEvent = (eventDetails, communityID) => {
   EventDB.createEvent({
     Name: eventDetails.eventName,
     StartDate: new Date(eventDetails.startDateTime),
@@ -277,7 +277,7 @@ export default function CommunityPage({ params }) {
     });
   };
 
-  const handleEventSubmit = (eventDetails: any) => {
+  const handleEventSubmit = (eventDetails) => {
     createEvent(eventDetails, params.id);
   };
 

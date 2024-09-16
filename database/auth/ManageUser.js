@@ -45,9 +45,6 @@ export default class ManageUser {
         console.log("No user is logged in");
       }
     });
-
-    // To stop listening for changes (unsubscribe) - optional
-    //return () => unsubscribe();
   };
 
   static forgotPassword = (email, setError, setForgotPassword) => {
@@ -88,7 +85,7 @@ export default class ManageUser {
           "doc.data().CommunitiesJoined,",
           doc.data().CommunitiesJoined
         );
-        //const combinedObject = { ...object1, ...object2 };
+
         CommunityDB.getAllUserCommunities(
           doc.data().CommunitiesJoined,
           setUserCommunities
@@ -104,7 +101,6 @@ export default class ManageUser {
     const auth = getAuth();
 
     const user = auth.currentUser;
-    //const newPassword = getASecureRandomPassword();
 
     updatePassword(user, newPassword)
       .then(() => {
@@ -241,56 +237,6 @@ export default class ManageUser {
       alert(error);
     }
   };
-
-  // static getAllCommunities = async () => {
-  //    const currentUser = localStorage.getItem("Email");
-
-  //    const candidatesCollectionRef = collection(DB, "users");
-
-  //    const q = query(
-  //      candidatesCollectionRef,
-  //      where("Email", "==", currentUser)
-  //    );
-
-  //    try {
-  //      const snapshot = await getDocs(q);
-  //      if (snapshot.empty) {
-  //        console.log("No matching documents.");
-  //        return;
-  //      }
-
-  //      let userID;
-  //      snapshot.forEach((doc) => {
-  //        userID = doc.id;
-  //      });
-  //      const userRef = doc(DB, "users", userID);
-  //      const userDoc = await getDoc(userRef);
-
-  //      if (userDoc.exists()) {
-  //        const userData = userDoc.data();
-  //        let joinedCommunities = userData.CommunitiesJoined;
-
-  //        if (joinedCommunities.includes(communityID)) {
-  //          alert("You already joined the community");
-  //        } else {
-  //          joinedCommunities.push(communityID);
-  //          try {
-  //            // Update the status field
-  //            await updateDoc(userRef, {
-  //              CommunitiesJoined: joinedCommunities,
-  //            });
-  //            console.log("Community Joined Updated successfully.");
-  //          } catch (error) {
-  //            console.error("Error updating community joined:", error);
-  //            throw error;
-  //          }
-  //        }
-  //      }
-  //    } catch (error) {
-  //      console.error("Error getting user ID: ", error);
-  //      alert(error);
-  //    }
-  // }
 
   //here i am adding the polls to the engaged user field in /users collection
   static addPollToCommunity = async (docID, communityID, newPoll) => {

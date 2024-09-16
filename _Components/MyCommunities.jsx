@@ -19,27 +19,14 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CommunityDB from "../database/community/community";
 import { useRouter } from "next/navigation";
 
-interface DiscoverCommunityProps {
-  email: string;
-}
-
-const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
+const DiscoverCommunity = ({ email }) => {
   const [loading, setLoading] = useState(true);
-  const [submittedData, setSubmittedData] = useState<
-    {
-      id: string;
-      name: string;
-      description: string;
-      category: string;
-      status: string;
-      users: string[];
-    }[]
-  >([]);
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [submittedData, setSubmittedData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState < string > "";
 
   const [selectedCategory, setSelectedCategory] =
-    useState<string>("All Communities");
-  const [selectedStatus, setSelectedStatus] = useState<string>("active");
+    useState < string > "All Communities";
+  const [selectedStatus, setSelectedStatus] = useState < string > "active";
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
@@ -66,7 +53,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
     fetchCommunities();
   }, []);
 
-  const handleViewCommunity = (data: any) => {
+  const handleViewCommunity = (data) => {
     // Redirect to the specified path format with community ID
     router.push(`/Home/community/${data.id}`);
   };
@@ -75,16 +62,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
     setOpenSnackbar(false);
   };
 
-  const filterDataByCategoryAndStatus = (
-    data: {
-      id: string;
-      name: string;
-      description: string;
-      category: string;
-      status: string;
-      users: string[];
-    }[]
-  ) => {
+  const filterDataByCategoryAndStatus = (data) => {
     return data
       .filter((item) => item.users.includes(email))
       .filter((item) => {
@@ -105,30 +83,6 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
       });
   };
 
-  // const filterDataByCategoryAndStatus = (
-  //   data: {
-  //     id: string;
-  //     name: string;
-  //     description: string;
-  //     category: string;
-  //     status: string;
-  //     users: string[];
-  //   }[]
-  // ) => {
-  //   return data
-  //     .filter((item) => item.users.includes(email)) // Only include communities joined by the user
-  //     .filter(
-  //       (item) =>
-  //         item.category
-  //           .toLowerCase()
-  //           .includes(selectedCategory.toLowerCase()) &&
-  //         item.status === selectedStatus &&
-  //         `${item.name.toLowerCase()} ${item.description.toLowerCase()} ${item.category.toLowerCase()}`.includes(
-  //           searchQuery.toLowerCase()
-  //         )
-  //     );
-  // };
-
   const filteredData = filterDataByCategoryAndStatus(submittedData);
 
   const uniqueCategories = Array.from(
@@ -137,7 +91,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
   uniqueCategories.unshift("All Communities");
 
   // Function to generate consistent color based on category
-  const stringToColor = (category: string): string => {
+  const stringToColor = (category) => {
     switch (category.toLowerCase()) {
       case "general":
         return "#2196f3"; // Blue

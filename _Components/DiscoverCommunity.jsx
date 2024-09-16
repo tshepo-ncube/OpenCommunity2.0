@@ -20,29 +20,16 @@ import CommunityDB from "../database/community/community";
 import { useRouter } from "next/navigation";
 import UserDB from "@/database/community/users";
 
-interface DiscoverCommunityProps {
-  email: string;
-}
-
-const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
+const DiscoverCommunity = ({ email }) => {
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [submittedData, setSubmittedData] = useState<
-    {
-      id: string;
-      name: string;
-      description: string;
-      category: string;
-      status: string;
-      users: string[];
-    }[]
-  >([]);
-  const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [submittedData, setSubmittedData] = useState([]);
+  const [editIndex, setEditIndex] = (useState < number) | (null > null);
+  const [searchQuery, setSearchQuery] = useState < string > "";
   const [selectedCategory, setSelectedCategory] =
-    useState<string>("All Communities");
-  const [selectedStatus, setSelectedStatus] = useState<string>("active");
+    useState < string > "All Communities";
+  const [selectedStatus, setSelectedStatus] = useState < string > "active";
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
@@ -60,7 +47,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
     fetchCommunities();
   }, []);
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = (e) => {
     e.preventDefault();
     CommunityDB.createCommunity(
       { name, description, category: "general" }, // Assuming a default category
@@ -71,13 +58,13 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
     setDescription("");
   };
 
-  const handleEdit = (index: number) => {
+  const handleEdit = (index) => {
     setName(submittedData[index].name);
     setDescription(submittedData[index].description);
     setEditIndex(index);
   };
 
-  const handleJoinCommunity = async (data: any) => {
+  const handleJoinCommunity = async (data) => {
     console.log("JOininc a community");
 
     const result = await CommunityDB.joinCommunity(data.id, email);
@@ -104,7 +91,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
     }
   };
 
-  const handleLeaveCommunity = async (data: any) => {
+  const handleLeaveCommunity = async (data) => {
     const result = await CommunityDB.leaveCommunity(data.id, email);
     if (result.success) {
       // Update the state to reflect the left status
@@ -127,23 +114,14 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
     }
   };
 
-  const handleViewCommunity = (data: any) => {
+  const handleViewCommunity = (data) => {
     router.push(`/userview?id=${data.id}`);
   };
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
-  const filterDataByCategoryAndStatus = (
-    data: {
-      id: string;
-      name: string;
-      description: string;
-      category: string;
-      status: string;
-      users: string[];
-    }[]
-  ) => {
+  const filterDataByCategoryAndStatus = (data) => {
     return data.filter((item) => {
       const categoryMatch =
         selectedCategory.toLowerCase() === "all communities" ||
@@ -162,26 +140,6 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
     });
   };
 
-  // const filterDataByCategoryAndStatus = (
-  //   data: {
-  //     id: string;
-  //     name: string;
-  //     description: string;
-  //     category: string;
-  //     status: string;
-  //     users: string[];
-  //   }[]
-  // ) => {
-  //   return data.filter(
-  //     (item) =>
-  //       item.category.toLowerCase().includes(selectedCategory.toLowerCase()) &&
-  //       item.status === selectedStatus &&
-  //       `${item.name.toLowerCase()} ${item.description.toLowerCase()} ${item.category.toLowerCase()}`.includes(
-  //         searchQuery.toLowerCase()
-  //       )
-  //   );
-  // };
-
   const filteredData = filterDataByCategoryAndStatus(submittedData);
 
   const uniqueCategories = Array.from(
@@ -190,7 +148,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
   uniqueCategories.unshift("All Communities");
 
   // Function to generate consistent color based on category
-  const stringToColor = (category: string): string => {
+  const stringToColor = (category) => {
     switch (category.toLowerCase()) {
       case "general":
         return "#2196f3"; // Blue
