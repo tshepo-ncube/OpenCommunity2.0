@@ -159,6 +159,20 @@ const Profile = () => {
     // return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    console.log(profile);
+    if (profile.otherDiet) {
+      console.log("profile has other Diet");
+      setOtherDiet(profile.otherDiet);
+      setIsOtherDietSelected(true);
+    }
+    if (profile.otherAllergy) {
+      console.log("profile has other Allergy");
+      setIsOtherAllergySelected(true);
+      setOtherAllergy(profile.otherAllergy);
+    }
+  }, [profile]);
+
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
 
@@ -212,8 +226,24 @@ const Profile = () => {
 
   const handleEditProfileSubmit = async (e) => {
     e.preventDefault();
+
+    if (otherAllergy !== "") {
+      // Update the profile with the otherAllergy field
+      setProfile((prevProfile) => ({
+        ...prevProfile, // Keep the existing profile fields
+        otherAllergy: otherAllergy, // Add or update the otherAllergy field
+      }));
+    }
+
+    if (otherDiet !== "") {
+      // Update the profile with the otherAllergy field
+      setProfile((prevProfile) => ({
+        ...prevProfile, // Keep the existing profile fields
+        otherDiet: otherDiet, // Add or update the otherAllergy field
+      }));
+    }
     const success = await ManageUser.editProfileData(profile.id, profile);
-    if (success:void) {
+    if (success) {
       // If the profile update was successful, fetch the updated profile data
       ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
     } else {
@@ -536,6 +566,7 @@ const Profile = () => {
                     className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     value={otherDiet}
                     onChange={(e) => setOtherDiet(e.target.value)}
+                    required
                   />
                 </div>
               )}
@@ -576,56 +607,11 @@ const Profile = () => {
                     className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     value={otherAllergy}
                     onChange={(e) => setOtherAllergy(e.target.value)}
+                    required
                   />
                 </div>
               )}
-              {/* <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="allergies"
-                >
-                  Dietary Requirements:
-                </label>
-                <input
-                  type="text"
-                  name="Diet"
-                  id="diet"
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={profile.Diet}
-                  onChange={handleProfileChange}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="allergies"
-                >
-                  Food Allergies:
-                </label>
-                <input
-                  type="text"
-                  name="Allergies"
-                  id="allergies"
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={profile.Allergies}
-                  onChange={handleProfileChange}
-                />
-              </div> */}
-              {/* <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="injuries"
-                >
-                  Injuries:
-                </label>
-                <textarea
-                  name="Injuries"
-                  id="injuries"
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={profile.Injuries}
-                  onChange={handleProfileChange}
-                ></textarea>
-              </div> */}
+
               <div className="mb-4">
                 <button
                   type="submit"
