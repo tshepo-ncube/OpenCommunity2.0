@@ -29,7 +29,6 @@ import Switch from "@mui/material/Switch"; // Import Switch component
 const drawerWidth = 240;
 const navItems = [
   "Home",
-  "Profile",
   "Admin View",
   "View Recommendations",
   "Recommend a community",
@@ -56,11 +55,11 @@ const CustomMenuIcon = styled(MenuIcon)(({ theme }) => ({
 
 // Create a styled AccountCircle with the desired color and hover effect
 const CustomAccountCircle = styled(AccountCircle)(({ theme }) => ({
-  color: "#bcd727",
+  color: "grey",
   fontSize: 50, // Adjust this value to make the icon larger
   transition: "color 0.3s", // Smooth transition for color change
   "&:hover": {
-    color: "#a2b438", // Muted color of #bcd727
+    color: "grey", // Muted color of #bcd727
   },
 }));
 

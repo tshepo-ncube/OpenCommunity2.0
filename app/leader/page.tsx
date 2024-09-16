@@ -96,10 +96,11 @@ const Page = () => {
             {/* Skip button */}
             <button
               onClick={handleSkip}
-              className="absolute top-3 right-3 px-6 py-2 bg-white text-black border border-gray-300 rounded shadow"
+              className="absolute top-3 left-3 px-8 py-3 bg-white text-black border border-gray-300 rounded-lg shadow-lg"
             >
               Skip
             </button>
+
             <div className="text-center flex flex-col">
               <div className="typewriter-container">
                 <span className="typewriter-text">{typewriterText}</span>
@@ -209,7 +210,7 @@ const Page = () => {
       </main>
 
       <style jsx global>{`
-        @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap"); /* Replace with your fancy font */
+        @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"); /* Import Poppins font */
 
         .typewriter-container {
           display: inline-block;
@@ -218,12 +219,14 @@ const Page = () => {
 
         .typewriter-text {
           font-size: 4rem; /* Adjust as needed */
-          font-family: "Roboto", sans-serif; /* Apply your fancy font here */
-          font-weight: 400; /* Normal weight, not bold */
+          font-family: "Great Vibes", cursive; /* Apply Great Vibes font here */
+          font-weight: 400; /* Regular weight, adjust if needed */
           color: #333; /* Adjust text color if needed */
           white-space: pre-wrap; /* Ensure spacing is preserved */
           border-right: 4px solid #333; /* Cursor style */
           animation: cursor-blink 0.7s step-start infinite; /* Blinking cursor effect */
+          letter-spacing: -0.5px; /* Adjust letter spacing if needed */
+          transform: scaleX(0.95); /* Scale horizontally to make it thinner */
         }
 
         @keyframes cursor-blink {

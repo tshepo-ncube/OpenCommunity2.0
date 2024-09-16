@@ -366,14 +366,20 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
                       <div
                         style={{
                           position: "absolute",
-                          top: 12,
-                          left: 10,
+                          top: 0,
+                          right: 0,
                           backgroundColor: stringToColor(data.category),
+                          width: "80px", // Set a specific width
+                          height: "30px", // Set a specific height
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
                         }}
-                        className="absolute  text-white px-2 py-1 rounded-md text-xs font-bold z-10"
+                        className="absolute text-white text-sm font-bold rounded-md z-10"
                       >
                         {data.category}
                       </div>
+
                       <div className="mt-4 px-5 pb-5">
                         <a href="#">
                           <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">

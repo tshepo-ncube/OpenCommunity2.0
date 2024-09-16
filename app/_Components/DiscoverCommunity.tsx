@@ -7,17 +7,11 @@ import {
   Typography,
   CardActions,
   Button,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
   Snackbar,
   Alert,
 } from "@mui/material";
-import { IconButton, Menu } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import CommunityDB from "../../database/community/community";
 import { useRouter } from "next/navigation";
+import CommunityDB from "../../database/community/community";
 import UserDB from "@/database/community/users";
 
 interface DiscoverCommunityProps {
@@ -78,7 +72,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
   };
 
   const handleJoinCommunity = async (data: any) => {
-    console.log("JOininc a community");
+    console.log("Joining a community");
 
     UserDB.addPoints(5);
 
@@ -136,6 +130,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
+
   const filterDataByCategoryAndStatus = (
     data: {
       id: string;
@@ -163,26 +158,6 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
       return categoryMatch && statusMatch && searchQueryMatch;
     });
   };
-
-  // const filterDataByCategoryAndStatus = (
-  //   data: {
-  //     id: string;
-  //     name: string;
-  //     description: string;
-  //     category: string;
-  //     status: string;
-  //     users: string[];
-  //   }[]
-  // ) => {
-  //   return data.filter(
-  //     (item) =>
-  //       item.category.toLowerCase().includes(selectedCategory.toLowerCase()) &&
-  //       item.status === selectedStatus &&
-  //       `${item.name.toLowerCase()} ${item.description.toLowerCase()} ${item.category.toLowerCase()}`.includes(
-  //         searchQuery.toLowerCase()
-  //       )
-  //   );
-  // };
 
   const filteredData = filterDataByCategoryAndStatus(submittedData);
 
@@ -216,7 +191,6 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
   };
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  //const [selectedCategory, setSelectedCategory] = useState("All categories");
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -234,13 +208,17 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
           <div className="flex relative">
             <label
               htmlFor="search-dropdown"
+              style={{ fontFamily: "Poppins, sans-serif" }}
               className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
             >
               Your Email
             </label>
 
             <div className="relative w-full">
-              <button className="absolute top-0 start-0 mr-44 p-2.5 text-sm font-medium h-full text-white bg-openbox-green rounded-s-lg border border-openbox-green hover:bg-openbox-green focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+              <button
+                className="absolute top-0 start-0 mr-44 p-2.5 text-sm font-medium h-full text-white bg-openbox-green rounded-s-lg border border-openbox-green hover:bg-openbox-green focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                style={{ fontFamily: "Poppins, sans-serif" }}
+              >
                 <svg
                   className="w-4 h-4"
                   aria-hidden="true"
@@ -266,11 +244,13 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
                 id="search-dropdown"
                 className="ml-8 block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-s-lg border-s-gray-50 border-s-2 border border-gray-300"
                 required
+                style={{ fontFamily: "Poppins, sans-serif" }}
               />
             </div>
 
             <label
               htmlFor="search-dropdown"
+              style={{ fontFamily: "Poppins, sans-serif" }}
               className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
             >
               Your Email
@@ -281,6 +261,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
               onClick={toggleDropdown}
               type="button"
               className="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-e-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600"
+              style={{ fontFamily: "Poppins, sans-serif" }}
             >
               {selectedCategory}
               <svg
@@ -305,7 +286,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
                 className="absolute right-0 mt-12 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
               >
                 <ul
-                  className="py-2 text-sm  text-gray-700 dark:text-gray-200 z-99"
+                  className="py-2 text-sm text-gray-700 dark:text-gray-200 z-99"
                   aria-labelledby="dropdown-button"
                 >
                   {uniqueCategories.map((category) => (
@@ -317,6 +298,7 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
                           selectCategory(category);
                           setSelectedCategory(category);
                         }}
+                        style={{ fontFamily: "Poppins, sans-serif" }}
                       >
                         {category}
                       </button>
@@ -333,7 +315,11 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
         {!loading ? (
           <>
             {filteredData.length === 0 ? (
-              <Typography variant="body1" className="mt-4">
+              <Typography
+                variant="body1"
+                className="mt-4"
+                style={{ fontFamily: "Poppins, sans-serif" }}
+              >
                 No communities found.
               </Typography>
             ) : (
@@ -352,58 +338,53 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
                       <div
                         style={{
                           position: "absolute",
-                          top: 12,
-                          left: 10,
+                          top: 0,
+                          right: 0,
                           backgroundColor: stringToColor(data.category),
+                          width: "80px", // Set a specific width
+                          height: "30px", // Set a specific height
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontFamily: "Poppins, sans-serif", // Apply Poppins font
                         }}
-                        className="absolute text-white px-2 py-1 rounded-md text-xs font-bold z-10"
+                        className="absolute text-white text-sm font-bold rounded-md z-10"
                       >
                         {data.category}
                       </div>
                       <div className="mt-4 px-5 pb-5">
                         <a href="#">
-                          <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                          <h5
+                            className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white"
+                            style={{ fontFamily: "Poppins, sans-serif" }}
+                          >
                             {data.name}
                           </h5>
                         </a>
                         <div className="flex items-center mt-2.5 mb-5">
                           <div className="flex items-center space-x-1 rtl:space-x-reverse"></div>
-                          <div className="text-sm text-black py-1  font-semibold">
+                          <div
+                            className="text-sm text-black py-1 "
+                            style={{ fontFamily: "Poppins, sans-serif" }}
+                          >
                             {data.description}
                           </div>
                         </div>
                         <div className="flex items-center justify-between">
-                          {/* <>
-              <Button size="small" onClick={() => {}}>
-                Edit
-              </Button>
-              <Button
-                size="small"
-                onClick={() => {
-                  // localStorage.setItem(
-                  //   "CurrentCommunity",
-                  //   data.id
-                  // );
-                }}
-              >
-                View
-              </Button>
-              <Button size="small" color="error" onClick={() => {}}>
-                Archive
-              </Button>
-              <Button size="small" color="error" onClick={() => {}}>
-                Delete
-              </Button>
-            </> */}
                           <CardActions>
                             {data.users.includes(email) ? (
                               <>
-                                <Button size="small" disabled>
+                                <Button
+                                  size="small"
+                                  disabled
+                                  style={{ fontFamily: "Poppins, sans-serif" }}
+                                >
                                   Joined
                                 </Button>
                                 <Button
                                   size="small"
                                   onClick={() => handleLeaveCommunity(data)}
+                                  style={{ fontFamily: "Poppins, sans-serif" }}
                                 >
                                   Leave Community
                                 </Button>
@@ -413,12 +394,14 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
                                 <Button
                                   size="small"
                                   onClick={() => handleJoinCommunity(data)}
+                                  style={{ fontFamily: "Poppins, sans-serif" }}
                                 >
                                   Join
                                 </Button>
                                 <Button
                                   size="small"
                                   onClick={() => handleViewCommunity(data)}
+                                  style={{ fontFamily: "Poppins, sans-serif" }}
                                 >
                                   View
                                 </Button>

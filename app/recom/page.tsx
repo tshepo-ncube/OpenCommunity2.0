@@ -1,32 +1,22 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import RecommendationDB from "@/database/community/recommendation";
 import CommunityDB from "@/database/community/community";
 import Header from "../_Components/header";
-import {
-  FaHeart,
-  FaRegHeart,
-  FaPlus,
-  FaEnvelope,
-  FaFilter,
-  FaSort,
-} from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaPlus, FaEnvelope } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { useTable, useSortBy, useFilters } from "react-table";
+import { useTable } from "react-table";
 import Swal from "sweetalert2";
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip as RechartsTooltip,
-  Legend,
   ResponsiveContainer,
+  Cell,
 } from "recharts";
-
-const mutedLimeGreen = "#d0e43f";
 
 // Tooltip component
 const Tooltip = ({ content, children }) => {
@@ -163,6 +153,15 @@ const RecommendationsTable = () => {
         cancelButton: "custom-swal-cancel",
         footer: "custom-swal-footer",
       },
+      didOpen: () => {
+        // Apply custom styling after the popup is open
+        const confirmButton = document.querySelector(".swal2-confirm");
+        if (confirmButton) {
+          confirmButton.style.backgroundColor = "#bcd727";
+          confirmButton.style.borderColor = "#bcd727";
+          confirmButton.style.color = "#ffffff"; // Ensuring text is readable
+        }
+      },
       preConfirm: () => ({
         name: document.getElementById("name").value,
         description: document.getElementById("description").value,
@@ -216,11 +215,12 @@ const RecommendationsTable = () => {
               whileTap={{ scale: 0.9 }}
               onClick={() => handleLikeToggle(row.original.id)}
               className="text-xl focus:outline-none"
+              style={{ color: "red" }}
             >
               {likedRecommendations.has(row.original.id) ? (
-                <FaHeart className="text-red-500" />
+                <FaHeart />
               ) : (
-                <FaRegHeart className="text-gray-400" />
+                <FaRegHeart />
               )}
             </motion.button>
           </Tooltip>
@@ -230,57 +230,52 @@ const RecommendationsTable = () => {
       {
         Header: "Community Name",
         accessor: "name",
-        Filter: ColumnFilter,
       },
       {
         Header: "Community Description",
         accessor: "description",
-        Filter: ColumnFilter,
       },
       {
         Header: "Category",
         accessor: "category",
-        Filter: ColumnFilter,
       },
       {
         Header: "Email",
         accessor: "userEmail",
         Cell: ({ value, row }) => (
-          <Tooltip content="Send Email">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() =>
-                handleEmailClick(
-                  value,
-                  row.original.name,
-                  row.original.description,
-                  row.original.category
-                )
-              }
-              className="text-blue-600 hover:text-blue-800 focus:outline-none"
-            >
-              <FaEnvelope className="inline-block mr-2" />
-              {value}
-            </motion.button>
-          </Tooltip>
+          <div className="flex items-center space-x-2">
+            <Tooltip content="Send Email">
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() =>
+                  handleEmailClick(
+                    value,
+                    row.original.name,
+                    row.original.description,
+                    row.original.category
+                  )
+                }
+                className="text-blue-500"
+              >
+                <FaEnvelope style={{ color: "#bcd727" }} />
+              </motion.button>
+            </Tooltip>
+            <span className="text-gray-700">{value}</span>
+          </div>
         ),
-        Filter: ColumnFilter,
       },
       {
-        Header: "",
-        accessor: "add",
+        accessor: "action",
         Cell: ({ row }) => (
-          <Tooltip content="Create Community">
-            <motion.button
-              whileHover={{ scale: 1.2 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => handleAddClick(row.original)}
-              className="text-xl text-green-500 hover:text-green-700 focus:outline-none"
-            >
-              <FaPlus />
-            </motion.button>
-          </Tooltip>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => handleAddClick(row.original)}
+            className="text-green-500"
+          >
+            <FaPlus style={{ color: "#bcd727" }} />
+          </motion.button>
         ),
         disableFilters: true,
       },
@@ -289,40 +284,52 @@ const RecommendationsTable = () => {
   );
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable(
-      {
-        columns,
-        data: recommendations,
-        initialState: { pageIndex: 0, pageSize: 10 },
-      },
-      useFilters,
-      useSortBy
-    );
+    useTable({
+      columns,
+      data: recommendations,
+    });
 
-  // Column filter component
-  function ColumnFilter({ column }) {
-    const { filterValue, setFilter } = column;
-    return (
-      <input
-        value={filterValue || ""}
-        onChange={(e) => setFilter(e.target.value)}
-        placeholder={`Filter ${column.Header}`}
-        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-      />
-    );
-  }
-
-  // Chart data preparation
   const chartData = React.useMemo(() => {
     const categoryCount = recommendations.reduce((acc, rec) => {
       acc[rec.category] = (acc[rec.category] || 0) + 1;
       return acc;
     }, {});
-    return Object.entries(categoryCount).map(([category, count]) => ({
+
+    // Define an array of colors for the bars
+    const colors = [
+      "#8884d8",
+      "#82ca9d",
+      "#ffc658",
+      "#ff7300",
+      "#0088FE",
+      "#00C49F",
+      "#FFBB28",
+      "#FF8042",
+    ];
+
+    return Object.entries(categoryCount).map(([category, count], index) => ({
       category,
       count,
+      color: colors[index % colors.length],
     }));
   }, [recommendations]);
+
+  const CustomTooltip = ({ payload, label }) => {
+    if (payload && payload.length) {
+      const { category, color } = payload[0].payload;
+      return (
+        <div className="bg-white border border-gray-300 rounded-lg p-2">
+          <p className="text-gray-900 font-semibold">{category}</p>
+          <p className="text-gray-600">{`Count: ${payload[0].value}`}</p>
+          <div
+            className="w-4 h-4 rounded-full"
+            style={{ backgroundColor: color }}
+          ></div>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <>
@@ -331,44 +338,41 @@ const RecommendationsTable = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto p-8 bg-white rounded-lg shadow-xl"
+        className="max-w-7xl mx-auto p-8 bg-gray-50 rounded-lg shadow-xl shadow-gray-700"
       >
-        <h1 className="text-4xl font-extrabold mb-6 text-center text-gray-800 bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent">
+        <h1 className="text-4xl font-extrabold mb-6 text-center text-gray-500">
           Community Recommendations
         </h1>
 
-        <div className="mb-4 flex justify-between items-center">
-          <div className="flex space-x-2">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+        {/* Tabs for view selection */}
+        <div className="flex justify-center mb-4">
+          <div className="flex border-b border-gray-200">
+            <div
               onClick={() => setViewMode("table")}
-              className={`px-4 py-2 rounded-lg ${
+              className={`cursor-pointer px-4 py-2 text-center ${
                 viewMode === "table"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-700"
+                  ? "border-b-2 border-[#bcd727] text-[#bcd727] font-semibold"
+                  : "text-gray-600"
               }`}
             >
               Table View
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            </div>
+            <div
               onClick={() => setViewMode("chart")}
-              className={`px-4 py-2 rounded-lg ${
+              className={`cursor-pointer px-4 py-2 text-center ${
                 viewMode === "chart"
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-700"
+                  ? "border-b-2 border-[#bcd727] text-[#bcd727] font-semibold"
+                  : "text-gray-600"
               }`}
             >
               Chart View
-            </motion.button>
+            </div>
           </div>
         </div>
 
         {isLoading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-[#bcd727]"></div>
           </div>
         ) : viewMode === "table" ? (
           <div className="overflow-x-auto">
@@ -380,37 +384,20 @@ const RecommendationsTable = () => {
                 {headerGroups.map((headerGroup) => (
                   <tr
                     {...headerGroup.getHeaderGroupProps()}
-                    className="bg-gray-100 text-gray-700"
+                    className="bg-gray-300 text-gray-700"
                   >
                     {headerGroup.headers.map((column) => (
                       <th
-                        {...column.getHeaderProps(
-                          column.getSortByToggleProps()
-                        )}
+                        {...column.getHeaderProps()}
                         className="p-4 text-left font-semibold"
                       >
-                        <div className="flex items-center justify-between">
-                          {column.render("Header")}
-                          <span>
-                            {column.isSorted ? (
-                              column.isSortedDesc ? (
-                                <FaSort className="ml-1 text-gray-400" />
-                              ) : (
-                                <FaSort className="ml-1 text-gray-400" />
-                              )
-                            ) : (
-                              <FaSort className="ml-1 text-gray-400" />
-                            )}
-                          </span>
-                        </div>
-                        <div>
-                          {column.canFilter ? column.render("Filter") : null}
-                        </div>
+                        {column.render("Header")}
                       </th>
                     ))}
                   </tr>
                 ))}
               </thead>
+
               <tbody {...getTableBodyProps()}>
                 <AnimatePresence>
                   {rows.map((row) => {
@@ -439,19 +426,20 @@ const RecommendationsTable = () => {
         ) : (
           <div className="h-96 w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="category" />
-                <YAxis />
-                <RechartsTooltip />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="count"
-                  stroke="#8884d8"
-                  activeDot={{ r: 8 }}
-                />
-              </LineChart>
+              <ResponsiveContainer width="100%" height={400}>
+                <BarChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="category" />
+                  <YAxis />
+                  <RechartsTooltip content={<CustomTooltip />} />
+                  {/* Legend component removed */}
+                  <Bar dataKey="count" name="Count">
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </ResponsiveContainer>
           </div>
         )}

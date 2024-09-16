@@ -102,7 +102,7 @@ const Profile = () => {
           >
             <ArrowLeftIcon className="h-6 w-6" />
           </button>
-          <h2 className="text-2xl font-bold text-gray-900">User Profile</h2>
+          <h2 className="text-2xl font-bold text-gray-900">User Settings</h2>
         </div>
         <Tab.Group>
           <div className="border-b border-gray-200">
