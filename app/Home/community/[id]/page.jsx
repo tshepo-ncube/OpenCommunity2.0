@@ -403,8 +403,6 @@ export default function CommunityPage({ params }) {
           POLLS
         </button>
       </div>
-
-      
         {/* TAB CONTENT FOR EVENTS */}
         <div>
           {activeTab === "events" && (
@@ -483,20 +481,6 @@ export default function CommunityPage({ params }) {
                                   RSVP
                                 </button>
                               )}
-
-                              {/* Share Button: Logic needs to share event details? */}
-                              <RWebShare
-                                data={{
-                                  text: `Community Name - ${community.name}`,
-                                  url: `http://localhost:3000/${id}`,
-                                  title: `Community Name - ${community.name}`,
-                                }}
-                                onClick={() => console.log("shared successfully!")}
-                                >
-                                <button className="flex-1 bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400 transition-all">
-                                  Share
-                                </button>
-                              </RWebShare>
                             </div>
                           )
                         )}
@@ -633,55 +617,6 @@ export default function CommunityPage({ params }) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8">
-
-        {/* Polls */}
-         {/* <div className="rounded   bg-gray-50 p-4">
-          <h2 className="text-2xl font-semibold mb-4">Polls</h2>
-          {allPolls.length > 0 ? (
-            allPolls.map((poll, index) => (
-              <div key={index} className="p-4 bg-white shadow rounded-md mb-4">
-                <Typography variant="body2" color="text.secondary">
-                  <h3 className="text-xl font-semibold border-b-2 border-gray-300 mb-2">
-                    {poll.Question}
-                  </h3>
-                  <ul>
-                    {poll.Opt.map((poll_option, poll_option_index) => (
-                      <div className="mt-2">
-                        <input
-                          type="radio"
-                          name={`poll-${poll.id}`}
-                          id={`poll-${poll.id}-opt-${poll_option_index}`}
-                          className="mr-2"
-                          onChange={() =>
-                            handlePollOptionSelection(
-                              poll.id,
-                              poll_option.title
-                            )
-                          }
-                          disabled={poll.selected ? true : false}
-                          // checked={
-                          //   poll.selected &&
-                          //   poll.selected_option === poll_option.title
-                          // }
-                          checked={
-                            poll.selected &&
-                            poll.selected_option === poll_option.title
-                          }
-                          //checked
-                        />
-                        <label htmlFor={`poll-${poll.id}-option-2`}>
-                          {poll_option.title}
-                        </label>
-                      </div>
-                    ))}
-                  </ul>
-                </Typography>
-              </div>
-            ))
-          ) : (
-            <Typography>No polls available</Typography>
-          )}
-        </div>  */}
       </div>
 
       <Dialog open={openDialog} onClose={handleCloseDialog}>
