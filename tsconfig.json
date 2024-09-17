@@ -41,7 +41,8 @@
     "app/admin/RecommendedCommunities/page.jsx",
     "_Components/sidebar.jsx",
     "_Components/MyCommunities.jsx",
-    "_Components/MapComponent.jsx"
+    "_Components/MapComponent.jsx",
+    "app/Profile/page.jsx"
   ],
   "exclude": ["node_modules"]
 }

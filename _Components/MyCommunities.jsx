@@ -230,13 +230,25 @@ const DiscoverCommunity = ({ email }) => {
                   <Grid item xs={6} md={4} lg={4} key={index}>
                     <div
                       className="relative w-full max-w-sm bg-white border border-gray_og rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex-grow flex flex-col h-full cursor-pointer"
-                      onClick={() => handleViewCommunity(data)}
+                      onClick={() => {
+                        handleViewCommunity(data);
+                        console.log(data);
+                      }}
                       style={{ position: "relative" }}
                     >
                       <img
                         className="h-56 w-full rounded-t-lg object-cover"
-                        src="https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGRyaW5rc3xlbnwwfHwwfHx8MA%3D%3D"
+                        // src={
+                        //   data.communityImage
+                        //     ? `url(${data.communityImage})`
+                        //     : "https://images.unsplash.com/photo-1720048169707-a32d6dfca0b3?q=80&w=1770&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        // }
                         alt="community image"
+                        src={
+                          data.communityImage
+                            ? data.communityImage // Directly use the URL without `url()`
+                            : "https://plus.unsplash.com/premium_photo-1666824468749-3ce4c85dc2e3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwyfHx8ZW58MHx8fHx8"
+                        }
                       />
                       <div
                         style={{

@@ -407,8 +407,9 @@ export default function CommunityPage({ params }) {
       <div
         className="relative text-white py-4 h-80"
         style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+          backgroundImage: community.communityImage
+            ? `url(${community.communityImage})` // Use the image if it exists
+            : `url('https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`, // Fallback URL,
           backgroundSize: "cover",
         }}
       >

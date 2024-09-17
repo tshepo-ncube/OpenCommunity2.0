@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/admin/RecommendedCommunities/page": [
+    "/Home/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/RecommendedCommunities/page.js"
+      "static/chunks/app/Home/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
@@ -11,41 +11,31 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/Home/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/Home/page.js"
-    ],
-    "/Profile/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/Profile/page.js"
-    ],
-<<<<<<< HEAD
-    "/auth/Profile/page": [
-=======
-    "/adminDash/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/adminDash/page.js"
-    ],
     "/Home/community/[id]/page": [
->>>>>>> origin/holly-may
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/auth/Profile/page.js"
+      "static/css/app/Home/community/[id]/page.css",
+      "static/chunks/app/Home/community/[id]/page.js"
     ],
-<<<<<<< HEAD
+    "/admin/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/page.js"
+    ],
+    "/admin/RecommendedCommunities/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/RecommendedCommunities/page.js"
+    ],
     "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
-=======
-    "/_not-found/page": [
+    ],
+    "/admin/Dashboard/[id]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
->>>>>>> origin/holly-may
+      "static/chunks/app/admin/Dashboard/[id]/page.js"
     ]
   }
 }
