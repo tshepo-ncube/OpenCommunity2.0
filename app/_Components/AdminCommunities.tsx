@@ -6,7 +6,7 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import CloseIcon from "@mui/icons-material/Close";
+
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -18,6 +18,14 @@ import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import CommunityDB from "../../database/community/community";
 import { useRouter } from "next/navigation";
+import {
+  Edit as EditIcon,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
+  Delete as DeleteIcon,
+  PostAdd as PostAddIcon,
+  OpenInNew as OpenInNewIcon, // Add this line for the open icon
+} from "@mui/icons-material";
 
 const AdminCommunity = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -347,12 +355,33 @@ const AdminCommunity = () => {
                         </div>
                       )}
                       {data.status === "active" && (
-                        <div
-                          style={{ position: "absolute", top: 12, left: 10 }}
-                          className="absolute bg-green-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10"
-                        >
-                          Active
-                        </div>
+                        <>
+                          <div
+                            style={{ position: "absolute", top: 8, right: 10 }}
+                            className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
+                            onClick={() => handleArchive(data.id)}
+                          >
+                            <VisibilityIcon />
+                          </div>
+                          <div
+                            style={{ position: "absolute", top: 12, left: 10 }}
+                            className="absolute bg-green-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10"
+                          >
+                            Active
+                          </div>
+
+                          <Button
+                            style={{ position: "absolute", top: 8, right: 115 }}
+                            className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
+                            size="small"
+                            onClick={() => {
+                              localStorage.setItem("CurrentCommunity", data.id);
+                              router.push("/adminDash");
+                            }}
+                          >
+                            <OpenInNewIcon />
+                          </Button>
+                        </>
                       )}
                       {data.status === "draft" && (
                         <div
@@ -403,87 +432,108 @@ const AdminCommunity = () => {
                             {data.status === "archived" ? (
                               <>
                                 <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 46,
+                                  }}
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
                                   onClick={() => handleEdit(data.id)}
                                 >
-                                  Edit
+                                  <EditIcon />
                                 </Button>
                                 <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 84,
+                                  }}
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
                                   color="error"
+                                  // className="absolute top-2 right-2 text-white hover:text-white"
                                   onClick={() =>
                                     handleOpenDeleteDialog(data.id)
                                   }
                                 >
-                                  Delete
+                                  <DeleteIcon />
                                 </Button>
                                 <Button
                                   size="small"
                                   onClick={() => handleUnarchive(data.id)}
+                                  className="absolute top-2 right-2 text-white hover:text-white"
                                 >
-                                  Unarchive
+                                  <VisibilityOffIcon />
                                 </Button>
                               </>
                             ) : data.status === "active" ? (
                               <>
                                 <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 38,
+                                  }}
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
                                   onClick={() => handleEdit(data.id)}
                                 >
-                                  Edit
+                                  <EditIcon />
                                 </Button>
+
                                 <Button
-                                  size="small"
-                                  onClick={() => {
-                                    localStorage.setItem(
-                                      "CurrentCommunity",
-                                      data.id
-                                    );
-                                    router.push("/adminDash");
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 78,
                                   }}
-                                >
-                                  View
-                                </Button>
-                                <Button
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleArchive(data.id)}
-                                >
-                                  Archive
-                                </Button>
-                                <Button
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
                                   color="error"
                                   onClick={() =>
                                     handleOpenDeleteDialog(data.id)
                                   }
                                 >
-                                  Delete
+                                  <DeleteIcon />
                                 </Button>
                               </>
                             ) : (
                               // Draft status actions
                               <>
                                 <Button
+                                  className="absolute top-2 right-2 text-white hover:text-white"
                                   size="small"
                                   onClick={() => handleEdit(data.id)}
                                 >
-                                  Edit
+                                  <EditIcon />
                                 </Button>
                                 <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 44,
+                                  }}
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
                                   onClick={() => handlePost(data.id)}
                                 >
-                                  Post
+                                  <PostAddIcon />
                                 </Button>
                                 <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 78,
+                                  }}
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
                                   color="error"
                                   onClick={() =>
                                     handleOpenDeleteDialog(data.id)
                                   }
                                 >
-                                  Delete
+                                  <DeleteIcon />
                                 </Button>
                               </>
                             )}
@@ -517,7 +567,7 @@ const AdminCommunity = () => {
 
                 {data.status === "archived" && (
                   <div
-                    style={{ position: "absolute", top: 12, left: 10 }}
+                    style={{ position: "absolutehall", top: 5, left: 5 }}
                     className="absolute bg-orange-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10"
                   >
                     Archived
@@ -774,7 +824,7 @@ const AdminCommunity = () => {
               className="absolute top-2 right-2 text-gray-600 hover:text-black"
               onClick={handleClosePopup}
             >
-              <CloseIcon />
+              X
             </button>
             <form onSubmit={handleFormSubmit}>
               <h2 className="text-2xl font-bold mb-4">

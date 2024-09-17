@@ -3,16 +3,14 @@ import {
   CircularProgress,
   Grid,
   Typography,
-  Button,
   Snackbar,
   Alert,
   IconButton,
-  Tooltip, // Import Tooltip
+  Tooltip,
 } from "@mui/material";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew"; // Import the new icon
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import CommunityDB from "../../database/community/community";
 import { useRouter } from "next/navigation";
-import CardActions from "@mui/material/CardActions";
 
 interface DiscoverCommunityProps {
   email: string;
@@ -245,11 +243,15 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
               <Grid container spacing={2} style={{ padding: 14 }}>
                 {filteredData.map((data, index) => (
                   <Grid item xs={6} md={4} lg={4} key={index}>
-                    <div className="relative w-full max-w-sm bg-white border border-gray_og rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex-grow flex flex-col h-full">
+                    <div
+                      className="relative w-full max-w-sm bg-white border border-gray_og rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex-grow flex flex-col h-full cursor-pointer"
+                      onClick={() => handleViewCommunity(data)}
+                      style={{ position: "relative" }}
+                    >
                       <img
-                        className="h-40 w-full rounded-t-lg object-cover"
+                        className="h-56 w-full rounded-t-lg object-cover"
                         src="https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGRyaW5rc3xlbnwwfHwwfHx8MA%3D%3D"
-                        alt="product image"
+                        alt="community image"
                       />
                       <div
                         style={{
@@ -291,10 +293,13 @@ const DiscoverCommunity: React.FC<DiscoverCommunityProps> = ({ email }) => {
                             color: "white",
                             backgroundColor: "rgba(0, 0, 0, 0.5)",
                           }}
-                          onClick={() => handleViewCommunity(data)}
-                          size="small" // or "medium" or "large" depending on your needs
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent triggering the card's onClick
+                            handleViewCommunity(data);
+                          }}
+                          size="small"
                         >
-                          <OpenInNewIcon fontSize="small" /> {/* or "medium" */}
+                          <OpenInNewIcon fontSize="small" />
                         </IconButton>
                       </Tooltip>
                     </div>
