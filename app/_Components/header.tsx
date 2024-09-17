@@ -24,7 +24,6 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import ManageUser from "@/database/auth/ManageUser";
 import { useRouter } from "next/navigation";
 import { styled } from "@mui/system";
-import Switch from "@mui/material/Switch"; // Import Switch component
 
 const drawerWidth = 240;
 const navItems = [
@@ -64,7 +63,6 @@ const CustomAccountCircle = styled(AccountCircle)(({ theme }) => ({
 }));
 
 function Header() {
-  const [isHovered, setIsHovered] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const router = useRouter();
   const [loggedIn, setLoggedIn] = useState(false);
@@ -132,8 +130,6 @@ function Header() {
           <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
             <Image src={Logo} alt="Logo" width={250} height={80} />
           </Box>
-          {/* Add Switch before the AccountCircle icon */}
-          <Switch color="default" />
           <IconButton
             size="large"
             aria-label="account of current user"
