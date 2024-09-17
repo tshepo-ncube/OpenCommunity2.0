@@ -75,7 +75,7 @@ const db = getFirestore(app);
 
 const openai = new OpenAI({
   apiKey:
-    "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",
+    "sk-MOIB1y6ncCA3Rtgq5E72eRWLMrDNiPwnNJuMhD2tb5T3BlbkFJ3DLk-OipaqJRNDln96Z_3kXrnV1Hbwr-vx3_AUcYAA",
   dangerouslyAllowBrowser: true,
 });
 

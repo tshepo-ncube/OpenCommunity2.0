@@ -130,17 +130,53 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
   };
 
   const sendMoreReccMsg = async () => {
-    console.log("sendMessageHandler");
-    setLoading(true);
-    console.log("Sending message");
-    setSentMessageProcessed(false);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      {
+        sender: "You",
+        content: [{ text: { value: "Recomment another event please" } }],
+      },
+      { sender: "AI", content: [] },
+    ]);
 
-    checkStatusAndPrintMessages(currentGoal.threadID, currentGoal.runID);
+    // let threadID = "thread_Fs2VYok9YAiXZ1qHv5TpDeIZ";
+    // let runID = "run_GuV63F5sRM7OOAFTnZqhOtU3";
+    // let assistantID = "asst_EiHgeiLbxcs1r1855lryoIe8";
+    let instructions = `You are an assistant designed to help 
+      recommend new events for the ${communityData.name}. Your primary task is to 
+      recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
+       to ensure the event's success: Predicted Attendance, Optimal Timing,
+       location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event 
+        please respond in a json format ONLY (no other text, only JSON)
+         with fields name, description, predicted_attendance, optimal_timing, 
+         start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
+          an event or just answering a question you can respond normally (NO JSON, JUST TEXT)`;
 
-    setNewMessage("");
-    setSentMessageProcessed(true);
+    try {
+      const res = await axios.post(
+        "http://localhost:8080/sendMessage",
+        {
+          newMessage: "another one please",
+          threadID,
+          runID,
+          assistantID,
+          instructions,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    scrollToBottom();
+      console.log("Returned Messages: ", res.data.messages);
+      //setMessages(res.data.messages);
+      setMessages([...res.data.messages]); // Ensure this is a new array
+      setNewMessage("");
+      console.log("New Messages Refreshed");
+    } catch (error) {
+      console.log(error);
+    }
   };
   const sendMsgOpenAi = async () => {
     console.log("Sending message");
