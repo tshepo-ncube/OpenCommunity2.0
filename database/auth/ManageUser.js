@@ -177,7 +177,7 @@ export default class ManageUser {
       });
     } catch (error) {
       console.error("Error getting Profile Data: ", error);
-      alert(error);
+      //alert(error);
     }
   };
 
@@ -240,7 +240,7 @@ export default class ManageUser {
       }
     } catch (error) {
       console.error("Error getting user ID: ", error);
-      alert(error);
+      //alert(error);
     }
   };
 

@@ -250,12 +250,19 @@ const Profile = () => {
     }
     const success = await ManageUser.editProfileData(profile.id, profile);
     if (success) {
+<<<<<<<< HEAD:app/auth/Profile/page.jsx
       if (success) {
         // If the profile update was successful, fetch the updated profile data
         ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
       } else {
         // Handle failure
       }
+========
+      // If the profile update was successful, fetch the updated profile data
+      ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
+    } else {
+      // Handle failure
+>>>>>>>> complete_ai_bot:app/auth/Profile/page.tsx
     }
   };
 

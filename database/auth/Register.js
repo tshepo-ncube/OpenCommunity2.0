@@ -61,7 +61,7 @@ export default class RegisterUser {
       setUser(user);
     } catch (e) {
       console.error("Error adding document: ", e);
-      alert(e);
+      //alert(e);
     }
   };
 }

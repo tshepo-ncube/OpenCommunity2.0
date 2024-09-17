@@ -341,7 +341,7 @@ export default class CommunityDB {
 
     try {
       if (docSnap.exists()) {
-        //console.log(docSnap.data());
+        console.log(docSnap.data());
         setCommunities(docSnap.data());
       } else {
         console.log("Community does not exists");

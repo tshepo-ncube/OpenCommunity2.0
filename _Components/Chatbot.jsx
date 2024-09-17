@@ -3,13 +3,13 @@ import OpenAI from "openai";
 import ChatCard from "../_Components/ChatCard";
 import { ThreeDots } from "react-loader-spinner";
 import axios from "axios";
-const openai = new OpenAI({
-  apiKey:
-    "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",
-  dangerouslyAllowBrowser: true,
-});
-import strings from "../Utils/strings.json";
-const Chatbot = ({ setEventForm, setShowEventForm }) => {
+import CommunityDB from "@/database/community/community";
+// const openai = new OpenAI({
+//   apiKey:
+//     "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",
+//   dangerouslyAllowBrowser: true,
+// });
+const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [threadID, setThreadID] = useState("");
@@ -22,7 +22,7 @@ const Chatbot = ({ setEventForm, setShowEventForm }) => {
   const [newMessage, setNewMessage] = useState("");
   const [msgsLoading, setMsgsLoading] = useState(true);
   const [sentMessageProcessed, setSentMessageProcessed] = useState(true);
-
+  const [communityData, setCommunityData] = useState(null);
   const divRef = useRef(null);
   const [currentGoal, setCurrentGoal] = useState({
     Descr: "I want to win",
@@ -41,16 +41,15 @@ const Chatbot = ({ setEventForm, setShowEventForm }) => {
   const intervalRef = useRef(null); // To store the interval ID
 
   useEffect(() => {
-    console.log("Interval codde....");
-    // Start the interval if not paused
-    if (!pause) {
-    }
+    setCommunityData();
+    CommunityDB.getCommunity(communityID, setCommunityData);
+  }, []);
 
-    // Cleanup: clear interval on component unmount or when isPaused changes
-    return () => clearInterval(intervalRef.current);
-  }, [pause]); // Only run this effect when `isPaused` changes
+  useEffect(() => {
+    console.log(communityData);
+    createNewAssistant();
+  }, [communityData]);
 
-  // Function to toggle pause/resume
   const togglePause = () => {
     setPause((prevState) => !prevState); // Toggle paused state
   };
@@ -71,11 +70,11 @@ const Chatbot = ({ setEventForm, setShowEventForm }) => {
       { sender: "AI", content: [] },
     ]);
 
-    let threadID = "thread_Fs2VYok9YAiXZ1qHv5TpDeIZ";
-    let runID = "run_GuV63F5sRM7OOAFTnZqhOtU3";
-    let assistantID = "asst_EiHgeiLbxcs1r1855lryoIe8";
+    // let threadID = "thread_Fs2VYok9YAiXZ1qHv5TpDeIZ";
+    // let runID = "run_GuV63F5sRM7OOAFTnZqhOtU3";
+    // let assistantID = "asst_EiHgeiLbxcs1r1855lryoIe8";
     let instructions = `You are an assistant designed to help 
-      recommend new events for the Soccer Community. Your primary task is to 
+      recommend new events for the ${communityData.name}. Your primary task is to 
       recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
        to ensure the event's success: Predicted Attendance, Optimal Timing,
        location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event 
@@ -106,92 +105,71 @@ const Chatbot = ({ setEventForm, setShowEventForm }) => {
   };
 
   const sendMoreReccMsg = async () => {
-    console.log("sendMessageHandler");
-    setLoading(true);
-    console.log("Sending message");
-    setSentMessageProcessed(false);
-
-    const message = await openai.beta.threads.messages.create(
-      currentGoal.threadID,
+    setMessages((prevMessages) => [
+      ...prevMessages,
       {
-        role: "user",
-        content: "Another one",
-      }
-    );
+        sender: "You",
+        content: [{ text: { value: "Recomment another event please" } }],
+      },
+      { sender: "AI", content: [] },
+    ]);
 
-    console.log(message);
-
-    const run = await openai.beta.threads.runs.create(currentGoal.threadID, {
-      // assistant_id: "asst_TuuWO4MxdsPJPgmdgLkXyeUN",asst_L1rmvjtYlVbgGWk89a53CmP3
-      assistant_id: currentGoal.assistantID,
-      instructions: `You are an assistant designed to help 
-      recommend new events for the Soccer Community. Your primary task is to 
+    // let threadID = "thread_Fs2VYok9YAiXZ1qHv5TpDeIZ";
+    // let runID = "run_GuV63F5sRM7OOAFTnZqhOtU3";
+    // let assistantID = "asst_EiHgeiLbxcs1r1855lryoIe8";
+    let instructions = `You are an assistant designed to help 
+      recommend new events for the ${communityData.name}. Your primary task is to 
       recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
        to ensure the event's success: Predicted Attendance, Optimal Timing,
        location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event 
         please respond in a json format ONLY (no other text, only JSON)
          with fields name, description, predicted_attendance, optimal_timing, 
          start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
-          an event or just answering a question you can respond normally (NO JSON, JUST TEXT)`,
-    });
-    //console.log(`run id : ${run.id}`);
-    //console.log(run);
+          an event or just answering a question you can respond normally (NO JSON, JUST TEXT)`;
 
-    checkStatusAndPrintMessages(currentGoal.threadID, currentGoal.runID);
+    try {
+      const res = await axios.post(
+        "http://localhost:8080/sendMessage",
+        {
+          newMessage: "another one please",
+          threadID,
+          runID,
+          assistantID,
+          instructions,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    setNewMessage("");
-    setSentMessageProcessed(true);
-
-    scrollToBottom();
+      console.log("Returned Messages: ", res.data.messages);
+      //setMessages(res.data.messages);
+      setMessages([...res.data.messages]); // Ensure this is a new array
+      setNewMessage("");
+      console.log("New Messages Refreshed");
+    } catch (error) {
+      console.log(error);
+    }
   };
   const sendMsgOpenAi = async () => {
     console.log("Sending message");
     setSentMessageProcessed(false);
 
-    const message = await openai.beta.threads.messages.create(
-      currentGoal.threadID,
-      {
-        role: "user",
-        content: newMessage,
-      }
-    );
-
-    console.log(message);
-
-    const run = await openai.beta.threads.runs.create(currentGoal.threadID, {
-      // assistant_id: "asst_TuuWO4MxdsPJPgmdgLkXyeUN",asst_L1rmvjtYlVbgGWk89a53CmP3
-      assistant_id: currentGoal.assistantID,
-      instructions: `You are an assistant designed to help 
-      recommend new events for the Soccer Community. Your primary task is to 
-      recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
-       to ensure the event's success: Predicted Attendance, Optimal Timing,
-       location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event 
-        please respond in a json format ONLY (no other text, only JSON)
-         with fields name, description, predicted_attendance, optimal_timing, 
-         start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
-          an event or just answering a question you can respond normally (NO JSON, JUST TEXT)`,
-    });
-    //console.log(`run id : ${run.id}`);
-    //console.log(run);
-
-    checkStatusAndPrintMessages(currentGoal.threadID, currentGoal.runID);
-
     setNewMessage("");
     setSentMessageProcessed(true);
   };
 
-  const waitForCompletion = async (threadId, runId) => {
-    let runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
-
-    console.log(`current run status - ${runStatus.status}`);
-    while (runStatus.status !== "completed") {
-      console.log("The status is :", runStatus.status);
-      await delay(4000); // Wait for 1.5 seconds before checking again
-      runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
+  useEffect(() => {
+    if (threadID && assistantID && runID) {
+      fetchMessages();
+    } else {
+      console.log("threadid assistantid and runid not there...");
     }
-    console.log("run status - completed");
-    return runStatus;
-  };
+  }, [threadID, assistantID, runID]);
+
+  const waitForCompletion = async (threadId, runId) => {};
 
   const scrollToBottom = () => {
     if (messagesEndRef.current) {
@@ -282,10 +260,49 @@ const Chatbot = ({ setEventForm, setShowEventForm }) => {
 
   useEffect(() => {
     console.log("Chatbot just rendered");
+    //fetchMessages();
+    //createNewAssistant();
+
+    // console.log(communityData);
     //localStorageChecker();
-    checkStatusAndPrintMessages(currentGoal.threadID, currentGoal.runID);
+    //checkStatusAndPrintMessages(currentGoal.threadID, currentGoal.runID);
     scrollToBottom();
   }, []);
+
+  const fetchMessages = async () => {
+    // let threadID = "thread_Fs2VYok9YAiXZ1qHv5TpDeIZ";
+    // let runID = "run_GuV63F5sRM7OOAFTnZqhOtU3";
+    // let assistantID = "asst_EiHgeiLbxcs1r1855lryoIe8";
+    // let instructions = `You are an assistant designed to help
+    //   recommend new events for the ${communityData.name}. Your primary task is to
+    //   recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
+    //    to ensure the event's success: Predicted Attendance, Optimal Timing,
+    //    location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event
+    //     please respond in a json format ONLY (no other text, only JSON)
+    //      with fields name, description, predicted_attendance, optimal_timing,
+    //      start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
+    //       an event or just answering a question you can respond normally (NO JSON, JUST TEXT)`;
+
+    try {
+      const res = await axios.post(
+        "http://localhost:8080/fetchMessages",
+        { threadID, runID, assistantID },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Returned Messages: ", res.data.messages);
+      //setMessages(res.data.messages);
+      setMessages([...res.data.messages]); // Ensure this is a new array
+      setNewMessage("");
+      console.log("New Messages Refreshed");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const handleToggle = () => {
     setIsOpen(!isOpen);
 
@@ -303,31 +320,30 @@ const Chatbot = ({ setEventForm, setShowEventForm }) => {
     }
   };
 
-  // const localStorageChecker = async () => {
-  //   if (
-  //     localStorage.getItem("ThreadID") &&
-  //     localStorage.getItem("AssistantID") &&
-  //     localStorage.getItem("RunID")
-  //   ) {
-  //     //check if run status is expired or not
-  //     let runStatus = await openai.beta.threads.runs.retrieve(
-  //       currentGoal.threadID,
-  //       currentGoal.runID
-  //     );
+  const chatbotMetaDataPresent = () => {
+    var chatbotMetaData = localStorage.getItem("ChatbotMetaData");
 
-  //     if (runStatus.status == "expired") {
-  //       createNewAssistant();
-  //     } else {
-  //       setThreadID(localStorage.getItem("ThreadID"));
-  //       setAssistantID(localStorage.getItem("AssistantID"));
-  //       setRunID(localStorage.getItem("RunID"));
-  //       console.log("local storage checker passed");
-  //       checkStatusAndPrintMessages(currentGoal.threadID, currentGoal.runID);
-  //     }
-  //   } else {
-  //     createNewAssistant();
-  //   }
-  // };
+    if (chatbotMetaData) {
+      return true;
+    }
+    return false;
+  };
+
+  const communityChatbotMetaDataPresent = () => {
+    var chatbotMetaData = localStorage.getItem("ChatbotMetaData");
+    const chatbotMetaDataArrayObject = JSON.parse(chatbotMetaData);
+
+    let foundObject = chatbotMetaDataArrayObject.find(
+      (obj) => obj.communityID === communityID
+    );
+
+    // if (foundObject) {
+    //   console.log("Object with communityID: 'xyz' is present.");
+    //   if(runIsNotExpired(foundObject))
+    // } else {
+    //   console.log("Object with communityID: 'xyz' is not present.");
+    // }
+  };
 
   const localStorageChecker = async () => {
     // Ensure this runs only in the client (browser)
@@ -373,8 +389,32 @@ const Chatbot = ({ setEventForm, setShowEventForm }) => {
     }
   };
 
-  const createNewAssistant = () => {
+  const createNewAssistant = async () => {
     console.log("Creating New Assistant");
+
+    if (communityData) {
+      console.log(communityData.name);
+      const communityName = communityData.name;
+      try {
+        const res = await axios.post(
+          "http://localhost:8080/createAssistant",
+          { communityName },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        console.log("Returned Object: ", res.data.NewAssistant);
+        setThreadID(res.data.NewAssistant.thread_id);
+        setAssistantID(res.data.NewAssistant.assistant_id);
+        setRunID(res.data.NewAssistant.id);
+        console.log("New Messages Refreshed");
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   const handleMore = () => {
@@ -428,7 +468,9 @@ const Chatbot = ({ setEventForm, setShowEventForm }) => {
             className="bg-white fixed z-100 border-b-2 w-[240px] border-black p-2 flex flex-col space-y-1.5 pb-6"
           >
             <h2 className="font-semibold text-lg tracking-tight">Chatbot</h2>
-            <p className="text-sm text-[#6b7280] leading-3">Soccer Community</p>
+            <p className="text-sm text-[#6b7280] leading-3">
+              {communityData.name}
+            </p>
           </div>
 
           {/* Chat Container */}
