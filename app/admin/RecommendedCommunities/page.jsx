@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import RecommendationDB from "@/database/community/recommendation"; // Import your DB module
 import CommunityDB from "@/database/community/community"; // Import CommunityDB
-
+import { motion } from "framer-motion";
 import Header from "../../../_Components/header";
 import { useTable } from "react-table";
 import { FaHeart, FaRegHeart, FaPlus } from "react-icons/fa"; // Import heart and plus icons
