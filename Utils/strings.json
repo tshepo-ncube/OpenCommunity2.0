@@ -1,0 +1,18 @@
+{
+  "server_endpoints": {
+    "sendMessage": "http://localhost:8080/sendMessage",
+    "fetchMessages": "A place to explore",
+    "createAssistant": "A place to explore",
+    "createChannel": "http://localhost:8080/createChannel",
+    "generateCommunityDescription": "http://localhost:8080/generateCommunityDescription",
+    "generateEventDescription": "http://localhost:8080/generateEventDescription",
+    "sendEventInvite": "http://localhost:8080/sendEventInvite"
+  },
+  "button": {
+    "submit": "Submit",
+    "cancel": "Cancel"
+  },
+  "footer": {
+    "copyright": "© 2024 Your Company"
+  }
+}

@@ -10,10 +10,14 @@ import { motion } from "framer-motion"; // For smooth animations
 import Confetti from "react-confetti"; // Import react-confetti
 
 const CommunityRecommendationPage = () => {
-  const [communityName, setCommunityName] = useState < string > "";
-  const [description, setDescription] = useState < string > "";
-  const [category, setCategory] = useState < string > "general";
-  const [showConfetti, setShowConfetti] = useState < boolean > false;
+  // const [communityName, setCommunityName] = useState < string > "";
+  // const [description, setDescription] = useState < string > "";
+  // const [category, setCategory] = useState < string > "general";
+  // const [showConfetti, setShowConfetti] = useState < boolean > false;
+  const [communityName, setCommunityName] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("general");
+  const [showConfetti, setShowConfetti] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
 
   // Set window size on mount
@@ -38,6 +42,8 @@ const CommunityRecommendationPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      if (typeof window === "undefined") return;
+
       const userEmail = localStorage.getItem("Email");
       if (!userEmail) {
         throw new Error("User email not found. Please log in.");

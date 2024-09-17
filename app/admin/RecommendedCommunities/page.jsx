@@ -12,9 +12,9 @@ const mutedLimeGreen = "#d0e43f"; // Muted version of #bcd727
 
 const RecommendationsTable = () => {
   const [recommendations, setRecommendations] = useState([]);
-  const [likedRecommendations, setLikedRecommendations] =
-    useState < Set < string >> new Set();
-
+  // const [likedRecommendations, setLikedRecommendations] =
+  //   useState < Set < string >> new Set();
+  const [likedRecommendations, setLikedRecommendations] = useState(new Set());
   useEffect(() => {
     const fetchRecommendations = async () => {
       try {

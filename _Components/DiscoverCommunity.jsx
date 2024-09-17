@@ -25,11 +25,19 @@ const DiscoverCommunity = ({ email }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [submittedData, setSubmittedData] = useState([]);
-  const [editIndex, setEditIndex] = (useState < number) | (null > null);
-  const [searchQuery, setSearchQuery] = useState < string > "";
-  const [selectedCategory, setSelectedCategory] =
-    useState < string > "All Communities";
-  const [selectedStatus, setSelectedStatus] = useState < string > "active";
+  const [editIndex, setEditIndex] = useState(null); // For number or null
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All Communities");
+  const [selectedStatus, setSelectedStatus] = useState("active");
+  // const [loading, setLoading] = useState(true);
+  // const [name, setName] = useState("");
+  // const [description, setDescription] = useState("");
+  // const [submittedData, setSubmittedData] = useState([]);
+  // const [editIndex, setEditIndex] = (useState < number) | (null > null);
+  // const [searchQuery, setSearchQuery] = useState < string > "";
+  // const [selectedCategory, setSelectedCategory] =
+  //   useState < string > "All Communities";
+  // const [selectedStatus, setSelectedStatus] = useState < string > "active";
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 

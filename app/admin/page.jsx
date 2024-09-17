@@ -1,11 +1,11 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-
 import Header from "../../_Components/header";
 import CommunityDB from "../../database/community/community";
 import AdminCommunity from "../../_Components/AdminCommunities";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
+import strings from "../../Utils/strings.json";
 
 const CreateCommunity = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -69,7 +69,7 @@ const CreateCommunity = () => {
 
       try {
         const res = await axios.post(
-          "http://localhost:8080/createChannel",
+          strings.server_endpoints.createChannel,
           { name, description, category, status },
           {
             headers: {
@@ -142,7 +142,7 @@ const CreateCommunity = () => {
     if (name.length !== 0) {
       try {
         const res = await axios.post(
-          "http://localhost:8080/generateCommunityDescription",
+          strings.server_endpoints.generateCommunityDescription,
           { name },
           {
             headers: {

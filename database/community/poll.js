@@ -130,6 +130,7 @@ export default class PollDB {
 
   static voteFromPollId = async (community_id, pollId, selectedOption) => {
     console.log("starting transaction soon...");
+    if (typeof window === "undefined") return;
 
     const poll_ref = doc(DB, "polls", pollId);
 

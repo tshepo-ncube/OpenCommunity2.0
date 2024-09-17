@@ -19,7 +19,7 @@ import { doc, getDoc } from "firebase/firestore";
 import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
-
+import strings from "../../../../Utils/strings.json";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
@@ -99,7 +99,10 @@ export default function CommunityPage({ params }) {
   const [allPolls, setAllPolls] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [pollsUpdated, setPollsUpdated] = useState(false);
-  const [USER_ID, setUSER_ID] = useState(localStorage.getItem("UserID"));
+  if (typeof window !== "undefined") {
+    const [USER_ID, setUSER_ID] = useState(localStorage.getItem("UserID"));
+  }
+
   const [community, setCommunity] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
   const [currentEvent, setCurrentEvent] = useState(null);
@@ -164,6 +167,8 @@ export default function CommunityPage({ params }) {
     // Fetch RSVP status for each event when the component loads
     const fetchRSVPStatus = async () => {
       const updatedRSVPState = {};
+      if (typeof window === "undefined") return;
+
       for (const event of allEvents) {
         const isRSVPed =
           event.rsvp && event.rsvp.includes(localStorage.getItem("Email"));
@@ -243,6 +248,8 @@ export default function CommunityPage({ params }) {
 
   const handleRSVP = async (event) => {
     console.log(event);
+    if (typeof window === "undefined") return;
+
     try {
       await EventDB.addRSVP(event.id, localStorage.getItem("Email"));
       setRsvpState((prev) => ({ ...prev, [event.id]: true }));
@@ -259,7 +266,7 @@ export default function CommunityPage({ params }) {
       console.log("sending....");
       try {
         const res = await axios.post(
-          "http://localhost:8080/sendEventInvite",
+          strings.server_endpoints.sendEventInvite,
           { subject, body, start, end, location, email },
           {
             headers: {
@@ -279,6 +286,8 @@ export default function CommunityPage({ params }) {
   };
 
   const handleLeave = async (eventID) => {
+    if (typeof window === "undefined") return;
+
     try {
       await EventDB.removeRSVP(eventID, localStorage.getItem("Email"));
       setRsvpState((prev) => ({ ...prev, [eventID]: false }));

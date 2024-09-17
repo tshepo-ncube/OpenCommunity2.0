@@ -23,6 +23,8 @@ import {
 
 export default class RegisterUser {
   static registerUser = (userData, setUser, setError) => {
+    if (typeof window === "undefined") return;
+
     const { name, surname, email, password, diet } = userData;
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password)

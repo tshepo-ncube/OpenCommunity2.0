@@ -24,9 +24,11 @@ import {
   deleteDoc,
   runTransaction,
 } from "firebase/firestore";
+import { useRouter } from "next/navigation";
 
 export default class ManageUser {
   static manageUserState = (setUser, setSignedIn) => {
+    const router = useRouter();
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -37,7 +39,8 @@ export default class ManageUser {
         // User is signed in.
         setUser(user);
 
-        window.location.href = "http://localhost:3000/Home";
+        //window.location.href = "http://localhost:3000/Home";
+        router.push(`/Home`);
       } else {
         setSignedIn(false);
         setUser(null);
@@ -67,6 +70,7 @@ export default class ManageUser {
     const candidatesCollectionRef = collection(DB, "users");
     console.log(`Email : ${email}`);
     const q = query(candidatesCollectionRef, where("Email", "==", userEmail));
+    if (typeof window === "undefined") return;
 
     try {
       const snapshot = await getDocs(q);
@@ -192,6 +196,8 @@ export default class ManageUser {
   };
 
   static joinCommunity = async (communityID) => {
+    if (typeof window === "undefined") return;
+
     const currentUser = localStorage.getItem("Email");
 
     const candidatesCollectionRef = collection(DB, "users");
@@ -290,6 +296,7 @@ export default class ManageUser {
 
   static addUserToGlobalIfNotThere = async (email) => {
     const glocalCommunity = doc(DB, "communities", "jf9rDPUP2v5CJ2S9aoKt");
+    if (typeof window === "undefined") return;
 
     try {
       const globalCommunityDoc = await getDoc(glocalCommunity);

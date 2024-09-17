@@ -8,6 +8,7 @@ const openai = new OpenAI({
     "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",
   dangerouslyAllowBrowser: true,
 });
+import strings from "../Utils/strings.json";
 const Chatbot = ({ setEventForm, setShowEventForm }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -15,32 +16,7 @@ const Chatbot = ({ setEventForm, setShowEventForm }) => {
   const [assistantID, setAssistantID] = useState("");
   const [runID, setRunID] = useState("");
 
-  const [messages, setMessages] = useState([
-    // { id: 1, sender: "AI", content: "Hi, how can I help you today?" },
-    // { id: 2, sender: "You", content: "fewafef" },
-    // {
-    //   id: 3,
-    //   sender: "AI",
-    //   content:
-    //     "Sorry, I couldn’t find any information in the documentation about that.",
-    // },
-    // { id: 1, sender: "AI", content: "Hi, how can I help you today?" },
-    // { id: 2, sender: "You", content: "fewafef" },
-    // {
-    //   id: 3,
-    //   sender: "AI",
-    //   content:
-    //     "Sorry, I couldn’t find any information in the documentation about that.",
-    // },
-    // { id: 1, sender: "AI", content: "Hi, how can I help you today?" },
-    // { id: 2, sender: "You", content: "fewafef" },
-    // {
-    //   id: 3,
-    //   sender: "AI",
-    //   content:
-    //     "Sorry, I couldn’t find any information in the documentation about that.",
-    // },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef(null);
   const [newMessage, setNewMessage] = useState("");
@@ -68,10 +44,6 @@ const Chatbot = ({ setEventForm, setShowEventForm }) => {
     console.log("Interval codde....");
     // Start the interval if not paused
     if (!pause) {
-      //   intervalRef.current = setInterval(() => {
-      //     checkStatusAndPrintMessages(currentGoal.threadID, currentGoal.runID);
-      //     //setCount((prevCount) => prevCount + 1); // Example: increment the count
-      //   }, 1000);
     }
 
     // Cleanup: clear interval on component unmount or when isPaused changes
@@ -114,7 +86,7 @@ const Chatbot = ({ setEventForm, setShowEventForm }) => {
 
     try {
       const res = await axios.post(
-        "http://localhost:8080/sendMessage",
+        strings.server_endpoints.sendMessage,
         { newMessage, threadID, runID, assistantID, instructions },
         {
           headers: {
@@ -331,29 +303,73 @@ const Chatbot = ({ setEventForm, setShowEventForm }) => {
     }
   };
 
-  const localStorageChecker = async () => {
-    if (
-      localStorage.getItem("ThreadID") &&
-      localStorage.getItem("AssistantID") &&
-      localStorage.getItem("RunID")
-    ) {
-      //check if run status is expired or not
-      let runStatus = await openai.beta.threads.runs.retrieve(
-        currentGoal.threadID,
-        currentGoal.runID
-      );
+  // const localStorageChecker = async () => {
+  //   if (
+  //     localStorage.getItem("ThreadID") &&
+  //     localStorage.getItem("AssistantID") &&
+  //     localStorage.getItem("RunID")
+  //   ) {
+  //     //check if run status is expired or not
+  //     let runStatus = await openai.beta.threads.runs.retrieve(
+  //       currentGoal.threadID,
+  //       currentGoal.runID
+  //     );
 
-      if (runStatus.status == "expired") {
-        createNewAssistant();
+  //     if (runStatus.status == "expired") {
+  //       createNewAssistant();
+  //     } else {
+  //       setThreadID(localStorage.getItem("ThreadID"));
+  //       setAssistantID(localStorage.getItem("AssistantID"));
+  //       setRunID(localStorage.getItem("RunID"));
+  //       console.log("local storage checker passed");
+  //       checkStatusAndPrintMessages(currentGoal.threadID, currentGoal.runID);
+  //     }
+  //   } else {
+  //     createNewAssistant();
+  //   }
+  // };
+
+  const localStorageChecker = async () => {
+    // Ensure this runs only in the client (browser)
+    if (typeof window === "undefined") return;
+
+    try {
+      if (
+        localStorage.getItem("ThreadID") &&
+        localStorage.getItem("AssistantID") &&
+        localStorage.getItem("RunID")
+      ) {
+        // Retrieve IDs from localStorage
+        const threadID = localStorage.getItem("ThreadID");
+        const assistantID = localStorage.getItem("AssistantID");
+        const runID = localStorage.getItem("RunID");
+
+        // Check if run status is expired or not
+        let runStatus = await openai.beta.threads.runs.retrieve(
+          threadID,
+          runID
+        );
+
+        if (runStatus.status === "expired") {
+          createNewAssistant();
+        } else {
+          // Set thread, assistant, and run IDs
+          setThreadID(threadID);
+          setAssistantID(assistantID);
+          setRunID(runID);
+
+          console.log("local storage checker passed");
+
+          // Perform further actions
+          checkStatusAndPrintMessages(threadID, runID);
+        }
       } else {
-        setThreadID(localStorage.getItem("ThreadID"));
-        setAssistantID(localStorage.getItem("AssistantID"));
-        setRunID(localStorage.getItem("RunID"));
-        console.log("local storage checker passed");
-        checkStatusAndPrintMessages(currentGoal.threadID, currentGoal.runID);
+        // If any item is missing, create a new assistant
+        createNewAssistant();
       }
-    } else {
-      createNewAssistant();
+    } catch (error) {
+      console.error("Error in localStorageChecker:", error);
+      // Handle errors like API failures, etc.
     }
   };
 

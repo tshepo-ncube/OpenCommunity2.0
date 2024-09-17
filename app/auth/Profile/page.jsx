@@ -128,12 +128,16 @@ const Profile = () => {
   });
 
   const getEmailFromLocalStorage = () => {
+    if (typeof window === "undefined") return;
+
     const savedEmail = localStorage.getItem("Email");
     return savedEmail || ""; // Return empty string if no email is found
   };
 
   useEffect(() => {
-    ManageUser.getProfileData(localStorage.getItem("Email"), setProfile);
+    if (typeof window !== "undefined") {
+      ManageUser.getProfileData(localStorage.getItem("Email"), setProfile);
+    }
 
     // To stop listening for changes (unsubscribe) - optional
     // return () => unsubscribe();

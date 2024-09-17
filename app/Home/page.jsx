@@ -89,10 +89,16 @@ function Home() {
   };
 
   useEffect(() => {
-    const userEmail = localStorage.getItem("Email");
-    if (userEmail) {
-      setEmail(userEmail);
-      ManageUser.getProfileData(userEmail, setProfileData, setUserCommunities);
+    if (typeof window !== "undefined") {
+      const userEmail = localStorage.getItem("Email");
+      if (userEmail) {
+        setEmail(userEmail);
+        ManageUser.getProfileData(
+          userEmail,
+          setProfileData,
+          setUserCommunities
+        );
+      }
     }
   }, []);
 

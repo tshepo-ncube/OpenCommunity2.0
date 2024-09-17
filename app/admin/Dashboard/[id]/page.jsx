@@ -4,7 +4,7 @@ import Autocomplete from "react-google-autocomplete";
 import CommunityDB from "@/database/community/community";
 
 import Chatbot from "../../../../_Components/Chatbot";
-
+import strings from "../../../../Utils/strings.json";
 import Header from "../../../../_Components/header";
 import EventsHolder from "../../../../_Components/EventsHolder";
 import PollsHolder from "../../../../_Components/PollsHolder";
@@ -70,7 +70,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
       const name = eventDetails.eventName;
       try {
         const res = await axios.post(
-          "http://localhost:8080/generateEventDescription",
+          strings.server_endpoints.generateEventDescription,
           { name },
           {
             headers: {

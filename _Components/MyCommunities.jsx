@@ -22,11 +22,16 @@ import { useRouter } from "next/navigation";
 const DiscoverCommunity = ({ email }) => {
   const [loading, setLoading] = useState(true);
   const [submittedData, setSubmittedData] = useState([]);
-  const [searchQuery, setSearchQuery] = useState < string > "";
+  // const [searchQuery, setSearchQuery] = useState < string > "";
 
-  const [selectedCategory, setSelectedCategory] =
-    useState < string > "All Communities";
-  const [selectedStatus, setSelectedStatus] = useState < string > "active";
+  // const [selectedCategory, setSelectedCategory] =
+  //   useState < string > "All Communities";
+  // const [selectedStatus, setSelectedStatus] = useState < string > "active";
+  // const [openSnackbar, setOpenSnackbar] = useState(false);
+  // const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All Communities");
+  const [selectedStatus, setSelectedStatus] = useState("active");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 

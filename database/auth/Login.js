@@ -5,6 +5,7 @@ export default class LoginUser {
   static loginUser = (userData, setUser, setError, router, setLoggedIn) => {
     const { email, password } = userData;
     const auth = getAuth();
+    if (typeof window === "undefined") return;
 
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {

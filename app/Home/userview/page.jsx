@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Autocomplete from "react-google-autocomplete";
 import Header from "../../../_Components/header";
 import EventsHolder1 from "../../../_Components/EventsHolder1";
@@ -180,6 +180,16 @@ const AdminDash = () => {
     RsvpEndTime: "",
   });
 
+  const [communityID, setCommunityID] = useState(null);
+
+  useEffect(() => {
+    // Only run on the client
+    if (typeof window !== "undefined") {
+      const currentCommunity = localStorage.getItem("CurrentCommunity");
+      setCommunityID(currentCommunity);
+    }
+  }, []); // Empty dependency array means this runs only once when the component mounts
+
   const handleCreateNewEvent = () => {
     setShowEventForm(!showEventForm);
     setEventForm({
@@ -189,6 +199,8 @@ const AdminDash = () => {
   };
 
   const handleEventSubmit = (eventDetails) => {
+    if (typeof window === "undefined") return;
+
     createEvent(eventDetails, localStorage.getItem("CurrentCommunity"));
   };
 
@@ -196,8 +208,8 @@ const AdminDash = () => {
     <div className="bg-background_gray h-full">
       <Header />
       <div className="bg-background_gray p-4 h-full">
-        <PollsHolder1 communityID={localStorage.getItem("CurrentCommunity")} />
-        <EventsHolder1 communityID={localStorage.getItem("CurrentCommunity")} />
+        <PollsHolder1 communityID={communityID} />
+        <EventsHolder1 communityID={communityID} />
         {showEventForm && (
           <EventForm
             isOpen={showEventForm}
