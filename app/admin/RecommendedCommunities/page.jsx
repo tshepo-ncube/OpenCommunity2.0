@@ -4,7 +4,7 @@ import RecommendationDB from "@/database/community/recommendation"; // Import yo
 import CommunityDB from "@/database/community/community"; // Import CommunityDB
 
 import Header from "../../../_Components/header";
-
+import { useTable } from "react-table";
 import { FaHeart, FaRegHeart, FaPlus } from "react-icons/fa"; // Import heart and plus icons
 import Swal from "sweetalert2"; // Import SweetAlert2
 

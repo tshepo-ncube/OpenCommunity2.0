@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Confetti from "react-confetti";
 
-import Header from "../../../_Components/header";
 import { toast, Toaster } from "react-hot-toast";
 import {
   ChevronDown,
@@ -15,15 +14,9 @@ import {
   X,
 } from "lucide-react";
 import RecommendationDB from "@/database/community/recommendation";
-import Header from "../_Components/header";
 
-const CommunityRecommendationPage = () => {
-  const [formData, setFormData] = useState({
-    communityName: "",
-    description: "",
-    category: "general",
-  });
-  const [showConfetti, setShowConfetti] = useState(false);
+import Header from "../../../_Components/header";
+
 const CommunityRecommendationPage = () => {
   // const [communityName, setCommunityName] = useState < string > "";
   // const [description, setDescription] = useState < string > "";
@@ -36,6 +29,12 @@ const CommunityRecommendationPage = () => {
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showTip, setShowTip] = useState(false);
+
+  const [formData, setFormData] = useState({
+    communityName: "",
+    description: "",
+    category: "general",
+  });
 
   useEffect(() => {
     const updateWindowSize = () => {
@@ -52,7 +51,6 @@ const CommunityRecommendationPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
