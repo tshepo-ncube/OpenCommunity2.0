@@ -590,7 +590,7 @@ export default function CommunityPage({ params }) {
               <div>No past events</div>
             )}
             </div>
-            </div>)} 
+            </div> 
         </div>
 
         {/* TAB CONTENT FOR POLLS */}
@@ -651,6 +651,8 @@ export default function CommunityPage({ params }) {
                 }
             </div>
             )}
+
+  </div>
         {/* Polls */}
         <div className="rounded   bg-gray-50 p-4">
           <h2 className="text-2xl font-semibold mb-4">Polls</h2>
@@ -849,5 +851,4 @@ export default function CommunityPage({ params }) {
         </DialogActions>
       </Dialog>
     </div>
-  );
-}
+  );}
