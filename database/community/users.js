@@ -6,6 +6,7 @@ import {
   getDoc,
   setDoc,
   deleteDoc,
+  runTransaction,
   updateDoc,
   getDocs,
 } from "firebase/firestore";
@@ -59,30 +60,97 @@ export default class UserDB {
       alert("Error getting user data.");
     }
   };
-
-  static getAllUsers = async (setUsers) => {
+  static getAllUsers = async () => {
     try {
-      const usersRef = collection(DB, "Users");
-      const snapshot = await getDocs(usersRef);
+      const usersCollection = collection(DB, "users");
+      const usersSnapshot = await getDocs(usersCollection);
+      const usersList = usersSnapshot.docs.map((doc) => doc.data());
 
-      if (snapshot.empty) {
-        console.log("No users found.");
-        setUsers([]);
-        return;
-      }
-
-      let usersArray = [];
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        console.log("Document data: ", data); // Debugging statement
-        usersArray.push({ id: doc.id, ...data });
-      });
-
-      console.log("Fetched users: ", usersArray); // Debugging statement
-      setUsers(usersArray);
-    } catch (error) {
-      console.error("Error getting users: ", error);
+      // Extract only Name, Surname, and Points
+      return usersList.map((user) => ({
+        Name: user.Name,
+        Surname: user.Surname,
+        Points: user.Points,
+      }));
+    } catch (e) {
+      console.error("Error getting users: ", e);
       alert("Error getting users.");
+    }
+  };
+
+  static addPoints = async (point) => {
+    const userRef = doc(DB, "users", localStorage.getItem("UserID"));
+
+    const docSnap = await getDoc(userRef);
+
+    if (docSnap.exists()) {
+      await runTransaction(DB, async (transaction) => {
+        // Get the current data of the document
+        const docSnapshot = await transaction.get(userRef);
+
+        // Check if the document exists
+        if (!docSnapshot.exists()) {
+          throw new Error("Poll document does not exist!");
+        }
+
+        const userData = docSnap.data();
+
+        // Creating a copy of pollData instead of a reference.
+        const newUserData = JSON.parse(JSON.stringify(userData));
+
+        // Check if the 'Points' field exists and is a number, if not set it to 0
+        if (typeof newUserData.Points === "undefined") {
+          newUserData.Points = 0;
+        }
+
+        // Increment 'Points' by 5
+        newUserData.Points += point;
+
+        console.log(newUserData);
+
+        // Update the document with the new poll data
+        transaction.update(userRef, newUserData);
+      });
+    } else {
+      console.log(`${localStorage.getItem("UserID")} does not exist!`);
+    }
+  };
+
+  static removePoints = async (point) => {
+    const userRef = doc(DB, "users", localStorage.getItem("UserID"));
+
+    const docSnap = await getDoc(userRef);
+
+    if (docSnap.exists()) {
+      await runTransaction(DB, async (transaction) => {
+        // Get the current data of the document
+        const docSnapshot = await transaction.get(userRef);
+
+        // Check if the document exists
+        if (!docSnapshot.exists()) {
+          throw new Error("Poll document does not exist!");
+        }
+
+        const userData = docSnap.data();
+
+        // Creating a copy of pollData instead of a reference.
+        const newUserData = JSON.parse(JSON.stringify(userData));
+
+        // Check if the 'Points' field exists and is a number, if not set it to 0
+        if (typeof newUserData.Points === "undefined") {
+          newUserData.Points = 0;
+        }
+
+        // Increment 'Points' by 5
+        newUserData.Points -= point;
+
+        console.log(newUserData);
+
+        // Update the document with the new poll data
+        transaction.update(userRef, newUserData);
+      });
+    } else {
+      console.log(`${localStorage.getItem("UserID")} does not exist!`);
     }
   };
 }

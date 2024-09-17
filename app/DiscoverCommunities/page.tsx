@@ -7,6 +7,7 @@ import AdminCommunity from "../_Components/AdminCommunities";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import ChannelMicrosoftApi from "../../api/MicrosoftGraph/createTeamsChannel";
+
 const CreateCommunity = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [isUserPopupOpen, setUserPopupOpen] = useState(false);
@@ -59,14 +60,6 @@ const CreateCommunity = () => {
       );
     } else {
       console.log("creating a channel now...");
-      // CommunityDB.createCommunity(
-      //   communityData,
-      //   (newCommunity) =>
-      //     setSubmittedData((prevData) => [...prevData, newCommunity]),
-      //   setLoading
-      // );
-      //name, description, category, status
-
       try {
         const res = await axios.post(
           "http://localhost:8080/createChannel",
@@ -140,37 +133,16 @@ const CreateCommunity = () => {
   return (
     <div className="flex-col items-center min-h-screen relative text-center">
       <Header />
-      <div className="flex justify-center mt-8 mb-4">
-        <span
-          onClick={() => setView("Communities")}
-          className={`cursor-pointer mx-4 text-lg ${
-            view === "Communities" ? "font-bold text-black" : "text-gray-500"
-          }`}
-        >
-          Community Management
-        </span>
-        <span
-          onClick={() => setView("User Management")}
-          className={`cursor-pointer mx-4 text-lg ${
-            view === "User Management"
-              ? "font-bold text-black"
-              : "text-gray-500"
-          }`}
-        >
-          User Management
-        </span>
-      </div>
-
-      <div className="border-t border-openbox-green w-full my-4"></div>
 
       {view === "Communities" ? (
         <>
-          <div className="flex justify-center mt-4 mb-8">
+          {/* Floating Action Button */}
+          <div className="fixed bottom-4 right-4 z-20">
             <button
               onClick={handleOpenPopup}
-              className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
+              className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-full p-3 shadow-lg focus:outline-none focus:ring-2 focus:ring-primary-300"
             >
-              + CREATE COMMUNITY
+              + Create Community
             </button>
           </div>
 

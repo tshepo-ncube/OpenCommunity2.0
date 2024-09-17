@@ -14,11 +14,29 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import UserDB from "@/database/community/users";
 import { doc, getDoc } from "firebase/firestore";
 import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
 import TabTitle from "../../../_Components/TabNavigation"
+
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import { format, parse, startOfWeek, getDay } from "date-fns";
+import enUS from "date-fns/locale/en-US";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+
+const locales = {
+  "en-US": enUS,
+};
+
+const localizer = dateFnsLocalizer({
+  format,
+  parse,
+  startOfWeek,
+  getDay,
+  locales,
+});
 
 const CountdownTimer = ({ date }) => {
   const targetDate = new Date("August 30, 2024 08:00:00 UTC").getTime();
@@ -94,6 +112,17 @@ export default function CommunityPage({ params }) {
   const [rsvpState, setRsvpState] = useState({}); // Track RSVP state for each event
   const [currentEventObject, setCurrentEventObject] = useState(null);
   const [activeTab, setActiveTab] = useState("events"); 
+
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  const events = [
+    {
+      title: "Soccer Fun Day",
+      start: new Date(),
+      end: new Date(),
+      color: "#bcd727",
+    },
+  ];
   useEffect(() => {
     if (id) {
       const fetchCommunity = async () => {
@@ -193,6 +222,7 @@ export default function CommunityPage({ params }) {
   };
 
   const handleCommentReview = (event) => {
+    console.log("This is the event :", event);
     setCurrentEvent(event.eventName);
     setCurrentEventObject(event);
     setOpenDialog(true);
@@ -331,6 +361,9 @@ export default function CommunityPage({ params }) {
   };
 
   // useEffect(() => {
+  //   console.log("Adding points...");
+  //   UserDB.addPoints();
+  // }, []);
   //   console.log(currentEventObject);
   // }, [currentEventObject]);
   //Modjadji
@@ -379,36 +412,40 @@ export default function CommunityPage({ params }) {
           </center>
         </div>
       </div>
-    
-      <div className="flex justify-center mb-6 space-x-10 mt-4">
-        {/* Tab Buttons */}
-        <button
-          className={`px-6 py-2 text-lg ${
-            activeTab === "events"
-              ? "border-b-4 border-[#bcd727] text-gray-900 font-semibold"
-              : "text-gray-600"
-          }`}
-          onClick={() => setActiveTab("events")}
-        >
-          EVENTS
-        </button>
-        <button
-          className={`px-6 py-2 text-lg ${
-            activeTab === "polls"
-              ? "border-b-4 border-[#bcd727] text-gray-900 font-semibold"
-              : "text-gray-600"
-          }`}
-          onClick={() => setActiveTab("polls")}
-        >
-          POLLS
-        </button>
-      </div>
-        {/* TAB CONTENT FOR EVENTS */}
-        <div>
-          {activeTab === "events" && (
-          
-          <div className="rounded bg-gray-50 p-4 pb-4">
-            <h2 className="text-2xl font-semibold mb-4">Upcoming Events</h2>
+
+      <center>
+        <div className="p-12">
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            date={currentDate}
+            style={{ height: 300 }}
+            onNavigate={(date) => setCurrentDate(date)}
+            onView={(view) => console.log(view)}
+            defaultView="month"
+            // Customizing event appearance
+            eventPropGetter={(event) => {
+              const backgroundColor = event.color || "#3174ad"; // Default color if none provided
+              return {
+                style: {
+                  backgroundColor,
+                  color: "white", // Text color for better contrast
+                  borderRadius: "5px", // Optional: round the corners of the event box
+                  border: "none", // Optional: remove the default border
+                },
+              };
+            }}
+          />
+        </div>
+      </center>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8">
+        {/* Upcoming Events */}
+        <div className="rounded   bg-gray-50 p-4">
+          <h2 className="text-2xl font-semibold mb-4">Upcoming Events</h2>
+          <ul className="space-y-4">
             {upcomingEvents.length > 0 ? (
             <div className="overflow-x-auto">
               <ul className="flex space-x-6">
@@ -614,77 +651,200 @@ export default function CommunityPage({ params }) {
                 }
             </div>
             )}
+        {/* Polls */}
+        <div className="rounded   bg-gray-50 p-4">
+          <h2 className="text-2xl font-semibold mb-4">Polls</h2>
+          {allPolls.length > 0 ? (
+            allPolls.map((poll, index) => (
+              <div key={index} className="p-4 bg-white shadow rounded-md mb-4">
+                <Typography variant="body2" color="text.secondary">
+                  <h3 className="text-xl font-semibold border-b-2 border-gray-300 mb-2">
+                    {poll.Question}
+                  </h3>
+                  <ul>
+                    {/* {Array.isArray(poll.Options) && poll.Options.length > 0 ? (
+                      poll.Options.map((option, idx) => (
+                        <li key={idx} className="mt-2">
+                          <button
+                            className={`w-full text-left px-4 py-2 rounded ${
+                              poll.selected && poll.selected_option === option
+                                ? "bg-openbox-blue text-white"
+                                : "bg-gray-100"
+                            }`}
+                            onClick={() =>
+                              handlePollOptionSelection(poll.id, option)
+                            }
+                            disabled={poll.selected}
+                          >
+                            {option}
+                          </button>
+                        </li>
+                      ))
+                    ) : (
+                      <li>No options available</li>
+                    )} */}
+
+                    {poll.Opt.map((poll_option, poll_option_index) => (
+                      <div className="mt-2">
+                        <input
+                          type="radio"
+                          name={`poll-${poll.id}`}
+                          id={`poll-${poll.id}-opt-${poll_option_index}`}
+                          className="mr-2"
+                          onChange={() =>
+                            handlePollOptionSelection(
+                              poll.id,
+                              poll_option.title
+                            )
+                          }
+                          disabled={poll.selected ? true : false}
+                          // checked={
+                          //   poll.selected &&
+                          //   poll.selected_option === poll_option.title
+                          // }
+                          checked={
+                            poll.selected &&
+                            poll.selected_option === poll_option.title
+                          }
+                          //checked
+                        />
+                        <label htmlFor={`poll-${poll.id}-option-2`}>
+                          {poll_option.title}
+                        </label>
+                      </div>
+                    ))}
+                  </ul>
+                </Typography>
+              </div>
+            ))
+          ) : (
+            <Typography>No polls available</Typography>
+          )}
+        </div>
+
+        {/* Past Events */}
+        <div className="rounded  bg-gray-50 p-4">
+          <h2 className="text-2xl font-semibold mb-4">Past Events</h2>
+          <ul className="space-y-4">
+            {pastEvents.length > 0 ? (
+              pastEvents.map((event) => (
+                <li key={event.id} className="p-4 bg-white shadow rounded-md">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    style={{ whiteSpace: "pre-wrap" }}
+                  >
+                    <div className="border-b-2 border-gray-300 mb-2">
+                      <h3 className="text-xl font-semibold">{event.Name}</h3>
+                    </div>
+                    <strong>Description:</strong> {event.EventDescription}
+                    <br />
+                    <strong>Location:</strong> {event.Location}
+                    <br />
+                    <strong>Start Date:</strong> {formatDate(event.StartDate)}
+                    <br />
+                    {/* <strong>Start Time:</strong> {formatTime(event.StartDate)}
+                    <br /> */}
+                    <strong>End Date:</strong> {formatDate(event.EndDate)}
+                    {/* <br />
+                    <strong>End Time:</strong> {formatTime(event.EndDate)} */}
+                  </Typography>
+                  <Button
+                    variant="text"
+                    color="primary"
+                    className="w-full mt-2"
+                    onClick={() => handleCommentReview(event)}
+                    style={{ color: "blue" }} // Styling as blue text
+                  >
+                    Leave a Comment & Rating
+                  </Button>
+                </li>
+              ))
+            ) : (
+              <Typography>No past events</Typography>
+            )}
+          </ul>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8">
       </div>
-
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>
-          Leave a Review and Comment about {currentEvent}
-        </DialogTitle>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="md"
+        fullWidth
+      >
         <DialogContent>
-          <TextField
-            label="Comment"
-            fullWidth
-            multiline
-            rows={4}
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-          />
-          <Typography component="legend">Rating</Typography>
-          <Rating
-            name="simple-controlled"
-            value={rating}
-            onChange={(event, newValue) => {
-              setRating(newValue);
-            }}
-          />
-          <Typography component="legend">Upload Images</Typography>
-          <input
-            accept="image/*"
-            id="contained-button-file"
-            multiple
-            type="file"
-            onChange={handleImageUpload}
-            style={{ display: "none" }}
-          />
-          <label htmlFor="contained-button-file">
-            <Button
-              variant="contained"
-              color="primary"
-              component="span"
-              style={{ marginTop: "10px" }}
-            >
-              Upload
-            </Button>
-          </label>
-          {selectedImages.length > 0 && (
-            <div className="mt-2">
-              <Typography component="legend">Selected Images</Typography>
-              <div className="flex flex-wrap">
-                {selectedImages.map((image, index) => (
-                  <img
-                    key={index}
-                    src={URL.createObjectURL(image)}
-                    alt={`Selected ${index}`}
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      marginRight: "10px",
-                    }}
-                  />
-                ))}
-              </div>
+          <div className="flex">
+            {/* Left Column - Current Content */}
+            <div className="flex-1 pr-4">
+              <Typography variant="h6" gutterBottom>
+                All Comments and Ratings
+              </Typography>
+
+              {currentEventObject && currentEventObject.Reviews.length > 0 ? (
+                <ul className="list-none p-0">
+                  {currentEventObject.Reviews.map((review, index) => (
+                    <li
+                      className="bg-gray-200 p-4 mb-4 rounded flex items-center"
+                      key={index}
+                    >
+                      <div className="flex-1">
+                        <Typography variant="body1">
+                          {review.Comment}
+                        </Typography>
+                      </div>
+                      <div className="flex items-center ml-4">
+                        <Rating
+                          name={`rating-${index}`}
+                          value={review.Rating}
+                          readOnly
+                          precision={0.5}
+                        />
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <Typography variant="body1">No reviews available.</Typography>
+              )}
             </div>
-          )}
+
+            {/* Right Column - User Review */}
+            <div className="flex-1 pl-4">
+              <Typography variant="h6" gutterBottom>
+                Leave a Comment & Rating
+              </Typography>
+              <TextField
+                fullWidth
+                label="Comment"
+                multiline
+                rows={4}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              />
+              <div className="mt-2">
+                <Typography variant="body1">Rating</Typography>
+                <Rating
+                  name="rating"
+                  value={rating}
+                  onChange={(e, newValue) => setRating(newValue)}
+                />
+              </div>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmitReview}
+                style={{ marginTop: "16px" }}
+              >
+                Submit Review
+              </Button>
+            </div>
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="secondary">
+          <Button onClick={handleCloseDialog} color="primary">
             Cancel
-          </Button>
-          <Button onClick={handleSubmitReview} color="primary">
-            Submit
           </Button>
         </DialogActions>
       </Dialog>

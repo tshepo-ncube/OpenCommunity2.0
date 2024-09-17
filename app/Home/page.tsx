@@ -9,6 +9,7 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import DiscoverCommunity from "../_Components/DiscoverCommunity";
 import MyCommunities from "../_Components/MyCommunities";
 import Tabs from "@mui/material/Tabs";
+import UserDB from "../../database/community/users";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/system";
@@ -124,20 +125,30 @@ function Home() {
     }
   };
 
+  useEffect(() => {
+    //Adding points
+    console.log("Adding Points...");
+    console.log(
+      "------------------------------------------------------------------------------------"
+    );
+
+    ManageUser.addUserToGlobalIfNotThere("m.be@outlook.com");
+  }, []);
+
   return (
     <>
-      <div className="App text-center ">
+      <div className="App text-center" style={{ backgroundColor: "#f5f5f5" }}>
         <Header />
         <center className="mt-8">
           <Box sx={{ width: "100%", marginTop: 4 }}>
             <div className="flex justify-center mt-6">
-              <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+              <div className="text-base font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
                 <ul className="flex flex-wrap -mb-px">
                   <li className="me-2">
                     <a
                       href="#"
                       onClick={() => handleTabClick("My Communities")}
-                      className={`inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+                      className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
                         activeTab === "My Communities"
                           ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
                           : "border-transparent"
@@ -150,7 +161,7 @@ function Home() {
                     <a
                       href="#"
                       onClick={() => handleTabClick("Discover Communities")}
-                      className={`inline-block p-4 border-b-2 rounded-t-lg ${
+                      className={`inline-block p-5 border-b-2 rounded-t-lg ${
                         activeTab === "Discover Communities"
                           ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
                           : "hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 border-transparent"

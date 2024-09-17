@@ -130,12 +130,12 @@ export default class ManageUser {
 
         // User is signed in.
         setUser({
-          email: "nontshangela@gmail.com",
+          email: user.email,
           name: user.displayName,
           profilePicture: user.photoURL,
         });
 
-        this.getProfileData("nontshangela@gmail.com", setProfile);
+        this.getProfileData(user.email, setProfile);
       } else {
       }
     });
@@ -339,6 +339,32 @@ export default class ManageUser {
       }
     } catch (error) {
       console.error("Error adding poll to community:", error);
+    }
+  };
+
+  static addUserToGlobalIfNotThere = async (email) => {
+    const glocalCommunity = doc(DB, "communities", "jf9rDPUP2v5CJ2S9aoKt");
+
+    try {
+      const globalCommunityDoc = await getDoc(glocalCommunity);
+      console.log("GLOBAL COMMUNITY>.........");
+      console.log(globalCommunityDoc.data());
+
+      if (
+        !globalCommunityDoc.data().users.includes(localStorage.getItem("Email"))
+      ) {
+        console.log("User is not in the global community");
+        console.log(
+          CommunityDB.joinCommunity(
+            "jf9rDPUP2v5CJ2S9aoKt",
+            localStorage.getItem("Email")
+          )
+        );
+      } else {
+        console.log("user is a member of global community");
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 }

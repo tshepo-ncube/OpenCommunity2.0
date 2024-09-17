@@ -1,52 +1,15 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import ManageUser from "@/database/auth/ManageUser";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-
+import ManageUser from "@/database/auth/ManageUser";
+import { Tab } from "@headlessui/react";
 import {
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signOut,
-  createUserWithEmailAndPassword,
-  sendPasswordResetEmail,
-  updatePassword,
-} from "firebase/auth";
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`vertical-tabpanel-${index}`}
-      aria-labelledby={`vertical-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `vertical-tab-${index}`,
-    "aria-controls": `vertical-tabpanel-${index}`,
-  };
-}
+  UserCircleIcon,
+  KeyIcon,
+  LogOutIcon,
+  ArrowLeftIcon,
+} from "lucide-react";
 
 const dietaryRequirements = [
   "None",
@@ -55,7 +18,7 @@ const dietaryRequirements = [
   "Gluten-Free",
   "Keto",
   "Halal",
-  "Kosher"
+  "Kosher",
 ];
 
 const foodAllergies = [
@@ -67,85 +30,20 @@ const foodAllergies = [
   "Wheat",
   "Soy",
   "Fish",
-  "Shellfish"
+  "Shellfish",
 ];
 
 const Profile = () => {
-  const [activeTab, setActiveTab] = useState("personalDetails");
-  const [loggedIn, setLoggedIn] = useState(false);
-  const router = useRouter();
-
-  const [userEmail, setUserEmail] = useState(null);
-
-  const [value, setValue] = React.useState(0);
-
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
-
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-  };
-
-  const handleLogout = () => {
-    ManageUser.logoutUser(setLoggedIn, router);
-  };
-
   const [profile, setProfile] = useState({});
-  const [user, setUser] = useState({
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    password: "password",
-    allergies: ["Nuts"],
-    //injuries: "None",
-    diet: "None",
-  });
-
-  const [error, setError] = useState(null);
-
   const [formData, setFormData] = useState({
-    firstName: user.firstName,
-    lastName: user.lastName,
-    email: user.email,
-    allergies: user.allergies.join(", "),
-    //injuries: user.injuries,
-    diet: user.diet,
-    currentPassword: "",
     newPassword: "",
     confirmNewPassword: "",
   });
-
-  const getEmailFromLocalStorage = () => {
-    const savedEmail = localStorage.getItem("Email");
-    return savedEmail || ""; // Return empty string if no email is found
-  };
+  const [error, setError] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
-    // const auth = getAuth();
-    // const unsubscribe = onAuthStateChanged(auth, (user_h) => {
-    //   if (user_h) {
-    //     // User is signed in.
-    //     console.log("User is logged in:", user_h);
-    //     setUserEmail(user_h.email);
-    //     //setSignedIn(true);
-
-    //     // User is signed in.
-    //     //setUser(user);
-
-    //     //window.location.href = "http://localhost:3000/Home";
-    //   } else {
-    //     // setSignedIn(false);
-    //     // setUser(null);
-    //     // No user is signed in.
-    //     console.log("No user is logged in");
-    //   }
-    // });
-
     ManageUser.getProfileData(localStorage.getItem("Email"), setProfile);
-
-    // To stop listening for changes (unsubscribe) - optional
-    // return () => unsubscribe();
   }, []);
 
   const handleProfileChange = (e) => {
@@ -156,477 +54,324 @@ const Profile = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (activeTab === "personalDetails") {
-      const updatedUser = {
-        ...user,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        email: formData.email,
-        allergies: formData.allergies.split(",").map((item) => item.trim()),
-        //injuries: formData.injuries,
-      };
-      setUser(updatedUser);
-    } else if (activeTab === "passwordReset") {
-      // Handle password reset logic
-    }
-  };
-
-  const handleNewPasswordSubmit = () => {
-    if (formData.newPassword == formData.confirmNewPassword) {
-      ManageUser.editPassword(formData.newPassword, setError);
-    } else {
-      alert("Confirm Password does not equal to password!");
-    }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleEditProfileSubmit = async (e) => {
     e.preventDefault();
     const success = await ManageUser.editProfileData(profile.id, profile);
     if (success) {
-      // If the profile update was successful, fetch the updated profile data
-      ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
-    } else {
-      // Handle failure
+      ManageUser.getProfileData(profile.Email, setProfile);
     }
   };
 
-  const handleClose = () => {
+  const handleNewPasswordSubmit = (e) => {
+    e.preventDefault();
+    if (formData.newPassword === formData.confirmNewPassword) {
+      ManageUser.editPassword(formData.newPassword, setError);
+    } else {
+      setError("Passwords do not match");
+    }
+  };
+
+  const handleLogout = () => {
+    ManageUser.logoutUser(setProfile, router);
+  };
+
+  const handleBack = () => {
     router.back();
   };
 
   return (
-    <div className="flex justify-center mt-10">
-      <div className="w-full sm:w-2/3 lg:w-1/2 px-6 py-4 bg-white shadow-md rounded-lg">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-xl font-semibold mb-4">User Settings</h1>
-          <IconButton onClick={handleClose}>
-            <CloseIcon />
-          </IconButton>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      className="min-h-screen bg-gradient-to-br from-[#f0f4e1] via-gray-100 to-[#e6edc3] py-12 px-4 sm:px-6 lg:px-8"
+    >
+      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-[0px_15px_30px_rgba(0,0,0,0.2)] overflow-hidden">
+        <div className="px-4 py-5 sm:px-6 flex items-center bg-gray-50">
+          <button
+            onClick={handleBack}
+            className="text-gray-400 hover:text-gray-500 mr-4"
+          >
+            <ArrowLeftIcon className="h-6 w-6" />
+          </button>
+          <h2 className="text-2xl font-bold text-gray-900">User Settings</h2>
         </div>
-        {/* <div className="flex">
-          <ul className="w-1/4 pr-4">
-            <li
-              className={`cursor-pointer mb-2 ${
-                activeTab === "personalDetails" ? "font-bold" : ""
-              }`}
-              onClick={() => handleTabChange("personalDetails")}
-            >
-              Personal Details
-            </li>
-            <li
-              className={`cursor-pointer mb-2 ${
-                activeTab === "passwordReset" ? "font-bold" : ""
-              }`}
-              onClick={() => handleTabChange("passwordReset")}
-            >
-              Password Reset
-            </li>
-            <li
-              className={`cursor-pointer mb-2 ${
-                activeTab === "logout" ? "font-bold" : ""
-              }`}
-              onClick={() => handleTabChange("logout")}
-            >
-              Log Out
-            </li>
-          </ul>
-          <div className="w-3/4">
-            {activeTab === "personalDetails" && (
-              <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="firstName"
+        <Tab.Group>
+          <div className="border-b border-gray-200">
+            <Tab.List className="flex">
+              <Tab
+                className={({ selected }) =>
+                  `${
+                    selected
+                      ? "border-[#bcd727] text-[#bcd727]"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }
+                 flex-1 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`
+                }
+              >
+                {({ selected }) => (
+                  <motion.div
+                    initial={false}
+                    animate={{ scale: selected ? 1.05 : 1 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    className="flex items-center justify-center"
                   >
-                    First Name:
+                    <UserCircleIcon className="w-5 h-5 mr-2" />
+                    Personal Details
+                  </motion.div>
+                )}
+              </Tab>
+              <Tab
+                className={({ selected }) =>
+                  `${
+                    selected
+                      ? "border-[#bcd727] text-[#bcd727]"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }
+                 flex-1 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`
+                }
+              >
+                {({ selected }) => (
+                  <motion.div
+                    initial={false}
+                    animate={{ scale: selected ? 1.05 : 1 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    className="flex items-center justify-center"
+                  >
+                    <KeyIcon className="w-5 h-5 mr-2" />
+                    Password Reset
+                  </motion.div>
+                )}
+              </Tab>
+              <Tab
+                className={({ selected }) =>
+                  `${
+                    selected
+                      ? "border-[#bcd727] text-[#bcd727]"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  }
+                 flex-1 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`
+                }
+              >
+                {({ selected }) => (
+                  <motion.div
+                    initial={false}
+                    animate={{ scale: selected ? 1.05 : 1 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    className="flex items-center justify-center"
+                  >
+                    <LogOutIcon className="w-5 h-5 mr-2" />
+                    Log Out
+                  </motion.div>
+                )}
+              </Tab>
+            </Tab.List>
+          </div>
+          <Tab.Panels>
+            <Tab.Panel>
+              <motion.form
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                onSubmit={handleEditProfileSubmit}
+                className="space-y-6 p-8" // Increased padding for a wider look
+              >
+                <div>
+                  <label
+                    htmlFor="Name"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    First Name
                   </label>
                   <input
                     type="text"
-                    name="firstName"
-                    id="firstName"
-                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value={formData.firstName}
-                    onChange={handleChange}
+                    name="Name"
+                    id="Name"
+                    value={profile.Name || ""}
+                    onChange={handleProfileChange}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#bcd727] focus:border-[#bcd727] sm:text-sm"
                   />
                 </div>
-                <div className="mb-4">
+                <div>
                   <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="lastName"
+                    htmlFor="Surname"
+                    className="block text-sm font-medium text-gray-700"
                   >
-                    Last Name:
+                    Last Name
                   </label>
                   <input
                     type="text"
-                    name="lastName"
-                    id="lastName"
-                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value={formData.lastName}
-                    onChange={handleChange}
+                    name="Surname"
+                    id="Surname"
+                    value={profile.Surname || ""}
+                    onChange={handleProfileChange}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#bcd727] focus:border-[#bcd727] sm:text-sm"
                   />
                 </div>
-                <div className="mb-4">
+                <div>
                   <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="email"
+                    htmlFor="Email"
+                    className="block text-sm font-medium text-gray-700"
                   >
-                    Email:
+                    Email
                   </label>
                   <input
                     type="email"
-                    name="email"
-                    id="email"
-                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value={formData.email}
-                    onChange={handleChange}
+                    name="Email"
+                    id="Email"
+                    value={profile.Email || ""}
+                    onChange={handleProfileChange}
+                    disabled
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-50 text-gray-500 sm:text-sm"
                   />
                 </div>
-                <div className="mb-4">
+                <div>
                   <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="allergies"
+                    htmlFor="Diet"
+                    className="block text-sm font-medium text-gray-700"
                   >
-                    Food Allergies:
+                    Dietary Requirements
                   </label>
-                  <input
-                    type="text"
-                    name="allergies"
-                    id="allergies"
-                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value={formData.allergies}
-                    onChange={handleChange}
-                  />
+                  <select
+                    name="Diet"
+                    id="Diet"
+                    value={profile.Diet || ""}
+                    onChange={handleProfileChange}
+                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[#bcd727] focus:border-[#bcd727] sm:text-sm rounded-md"
+                  >
+                    {dietaryRequirements.map((diet) => (
+                      <option key={diet} value={diet}>
+                        {diet}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <div className="mb-4">
+                <div>
                   <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="injuries"
+                    htmlFor="Allergies"
+                    className="block text-sm font-medium text-gray-700"
                   >
-                    Injuries:
+                    Food Allergies
                   </label>
-                  <textarea
-                    name="injuries"
-                    id="injuries"
-                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value={formData.injuries}
-                    onChange={handleChange}
-                  ></textarea>
+                  <select
+                    name="Allergies"
+                    id="Allergies"
+                    value={profile.Allergies || ""}
+                    onChange={handleProfileChange}
+                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[#bcd727] focus:border-[#bcd727] sm:text-sm rounded-md"
+                  >
+                    {foodAllergies.map((allergy) => (
+                      <option key={allergy} value={allergy}>
+                        {allergy}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-                <div className="mb-4">
-                  <button
+                <div>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     type="submit"
-                    className="bg-openbox-green hover:bg-hover-obgreen text-white font-bold py-2 px-4 rounded focus:shadow-outline focus:shadow-outline hover:shadow-md"
+                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#bcd727] hover:bg-[#a0b826] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#bcd727]"
                   >
                     Save Personal Details
-                  </button>
+                  </motion.button>
                 </div>
-              </form>
-            )}
-            {activeTab === "passwordReset" && (
-              <form onSubmit={handleSubmit}>
-                <div className="mb-4">
+              </motion.form>
+            </Tab.Panel>
+            <Tab.Panel>
+              <motion.form
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                onSubmit={handleNewPasswordSubmit}
+                className="space-y-6 p-8" // Increased padding for a wider look
+              >
+                <div>
                   <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
-                    htmlFor="currentPassword"
-                  >
-                    Current Password:
-                  </label>
-                  <input
-                    type="password"
-                    name="currentPassword"
-                    id="currentPassword"
-                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    value={formData.currentPassword}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="mb-4">
-                  <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
                     htmlFor="newPassword"
+                    className="block text-sm font-medium text-gray-700"
                   >
-                    New Password:
+                    New Password
                   </label>
                   <input
                     type="password"
                     name="newPassword"
                     id="newPassword"
-                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     value={formData.newPassword}
                     onChange={handleChange}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#bcd727] focus:border-[#bcd727] sm:text-sm"
                   />
                 </div>
-                <div className="mb-4">
+                <div>
                   <label
-                    className="block text-gray-700 text-sm font-bold mb-2"
                     htmlFor="confirmNewPassword"
+                    className="block text-sm font-medium text-gray-700"
                   >
-                    Confirm New Password:
+                    Confirm New Password
                   </label>
                   <input
                     type="password"
                     name="confirmNewPassword"
                     id="confirmNewPassword"
-                    className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     value={formData.confirmNewPassword}
                     onChange={handleChange}
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#bcd727] focus:border-[#bcd727] sm:text-sm"
                   />
                 </div>
-                <div className="mb-4">
-                  <button
+                {error && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-red-600 text-sm"
+                  >
+                    {error}
+                  </motion.div>
+                )}
+                <div>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     type="submit"
-                    className="bg-openbox-green hover:bg-hover-obgreen text-white font-bold py-2 px-4 rounded focus:shadow-outline hover:shadow-md"
+                    className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#bcd727] hover:bg-[#a0b826] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#bcd727]"
                   >
                     Save New Password
-                  </button>
+                  </motion.button>
                 </div>
-              </form>
-            )}
-            {activeTab === "logout" && (
-              <div>
-                <p>Are you sure you want to log out?</p>
-                <button
+              </motion.form>
+            </Tab.Panel>
+            <Tab.Panel>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="p-6 space-y-6"
+              >
+                <p className="text-sm text-gray-500">
+                  Are you sure you want to log out?
+                </p>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={handleLogout}
-                  className="bg-openbox-green hover:bg-hover-obgreen text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:shadow-md"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                 >
                   Log out
-                </button>
-              </div>
-            )}
-          </div>
-        </div> */}
-
-        <Box
-          sx={{
-            flexGrow: 1,
-            bgcolor: "background.paper", //green
-            display: "flex",
-            padding: 2,
-            height: "100%",
-          }}
-        >
-          <Tabs
-            orientation="vertical"
-            variant="scrollable"
-            value={profile.Name}
-            onChange={handleChange}
-            aria-label="Vertical tabs example"
-            sx={{ borderRight: 1, borderColor: "divider", minWidth: '200px' }}
-          >
-            <Tab label="Personal Details" {...a11yProps(0)} />
-            <Tab label="Password Reset" {...a11yProps(1)} />
-            <Tab label="Log Out" {...a11yProps(2)} />
-          </Tabs>
-          <TabPanel value={value} index={0}>
-            <form onSubmit={handleEditProfileSubmit}>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="firstName"
-                >
-                  First Name:
-                </label>
-                <input
-                  type="text"
-                  name="Name"
-                  id="firstName"
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={profile.Name}
-                  onChange={handleProfileChange}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="lastName"
-                >
-                  Last Name:
-                </label>
-                <input
-                  type="text"
-                  name="Surname"
-                  id="lastName"
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={profile.Surname}
-                  onChange={handleProfileChange}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="email"
-                >
-                  Email:
-                </label>
-                <input
-                  type="email"
-                  name="Email"
-                  id="email"
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={profile.Email}
-                  onChange={handleProfileChange}
-                  disabled
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="diet"
-                >
-                  Dietary Requirements:
-                </label>
-                <select
-                  name="Diet"
-                  id="diet"
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={profile.Diet}
-                  onChange={handleProfileChange}
-                >
-                  {dietaryRequirements.map((diet) => (
-                    <option key={diet} value={diet}>
-                      {diet}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="allergies"
-                >
-                  Food Allergies:
-                </label>
-                <select
-                  name="Allergies"
-                  id="allergies"
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={profile.Allergies}
-                  onChange={handleProfileChange}
-                >
-                  {foodAllergies.map((allergy) => (
-                    <option key={allergy} value={allergy}>
-                      {allergy}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              {/* <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="allergies"
-                >
-                  Dietary Requirements:
-                </label>
-                <input
-                  type="text"
-                  name="Diet"
-                  id="diet"
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={profile.Diet}
-                  onChange={handleProfileChange}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="allergies"
-                >
-                  Food Allergies:
-                </label>
-                <input
-                  type="text"
-                  name="Allergies"
-                  id="allergies"
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={profile.Allergies}
-                  onChange={handleProfileChange}
-                />
-              </div> */}
-              {/* <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="injuries"
-                >
-                  Injuries:
-                </label>
-                <textarea
-                  name="Injuries"
-                  id="injuries"
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={profile.Injuries}
-                  onChange={handleProfileChange}
-                ></textarea>
-              </div> */}
-              <div className="mb-4">
-                <button
-                  type="submit"
-                  className="bg-openbox-green hover:bg-hover-obgreen text-white font-bold py-2 px-4 rounded focus:shadow-outline focus:shadow-outline hover:shadow-md"
-                >
-                  Save Personal Details
-                </button>
-              </div>
-            </form>
-          </TabPanel>
-          <TabPanel value={value} index={1}>
-            <form onSubmit={handleNewPasswordSubmit}>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="newPassword"
-                >
-                  New Password:
-                </label>
-                <input
-                  type="password"
-                  name="newPassword"
-                  id="newPassword"
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={formData.newPassword}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="confirmNewPassword"
-                >
-                  Confirm New Password:
-                </label>
-                <input
-                  type="password"
-                  name="confirmNewPassword"
-                  id="confirmNewPassword"
-                  className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                  value={formData.confirmNewPassword}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className="mb-4">
-                <button
-                  type="submit"
-                  className="bg-openbox-green hover:bg-hover-obgreen text-white font-bold py-2 px-4 rounded focus:shadow-outline hover:shadow-md"
-                >
-                  Save New Password
-                </button>
-              </div>
-            </form>
-          </TabPanel>
-          <TabPanel value={value} index={2}>
-            <div>
-              <p>Are you sure you want to log out?</p>
-              <button
-                onClick={handleLogout}
-                className="bg-openbox-green hover:bg-hover-obgreen text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:shadow-md"
-              >
-                Log out
-              </button>
-            </div>
-          </TabPanel>
-        </Box>
+                </motion.button>
+              </motion.div>
+            </Tab.Panel>
+          </Tab.Panels>
+        </Tab.Group>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
