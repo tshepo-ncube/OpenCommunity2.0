@@ -621,10 +621,12 @@ export default function CommunityPage({ params }) {
         )}
       </div>
       {/* TAB CONTENT FOR POLLS */}
-      <div className="text-center">
+      <div>
         {activeTab === "polls" && (
           <div>
-            <div className="flex flex-wrap justify-center gap-4">
+            <div className="flex flex-wrap gap-4 justify-start">
+              {" "}
+              {/* Adjust alignment here */}
               {allPolls.length > 0 ? (
                 allPolls.map((poll, index) => (
                   <div
@@ -637,7 +639,12 @@ export default function CommunityPage({ params }) {
                     </h3>
                     <ul>
                       {poll.Opt.map((poll_option, poll_option_index) => (
-                        <div key={poll_option_index} className="mt-2">
+                        <div
+                          key={poll_option_index}
+                          className="mt-2 flex items-center"
+                        >
+                          {" "}
+                          {/* Align items here */}
                           <input
                             type="radio"
                             name={`poll-${poll.id}`}
