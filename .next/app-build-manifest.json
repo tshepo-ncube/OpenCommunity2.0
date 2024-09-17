@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/admin/Dashboard/[id]/page": [
+    "/img/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/admin/Dashboard/[id]/page.js"
+      "static/chunks/app/img/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
