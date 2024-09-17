@@ -7,6 +7,7 @@ import AdminCommunity from "../_Components/AdminCommunities";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import ChannelMicrosoftApi from "../../api/MicrosoftGraph/createTeamsChannel";
+
 const CreateCommunity = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [isUserPopupOpen, setUserPopupOpen] = useState(false);
@@ -22,6 +23,7 @@ const CreateCommunity = () => {
   const [userEmail, setUserEmail] = useState("");
   const [userPhone, setUserPhone] = useState("");
   const [roles, setRoles] = useState({ user: false, admin: false });
+  const [image, setImage] = useState(null); // New state for the image
 
   const popupRef = useRef(null);
   const userPopupRef = useRef(null);
@@ -37,8 +39,17 @@ const CreateCommunity = () => {
     setRoles((prevRoles) => ({ ...prevRoles, [name]: checked }));
   };
 
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
   const handleFormSubmit = async (e, status) => {
     e.preventDefault();
+
+    if (!image) {
+      alert("Please upload an image.");
+      return;
+    }
 
     const communityData = {
       name,
@@ -47,60 +58,73 @@ const CreateCommunity = () => {
       status,
     };
 
-    if (editIndex !== null) {
-      CommunityDB.updateCommunity(
-        { id: submittedData[editIndex].id, ...communityData },
-        (updatedData) => {
-          const updatedSubmittedData = [...submittedData];
-          updatedSubmittedData[editIndex] = updatedData;
-          setSubmittedData(updatedSubmittedData);
-        },
-        setLoading
+    try {
+      // First, upload the image
+      const formData = new FormData();
+      formData.append("image", image);
+      const imageRes = await axios.post(
+        "http://localhost:8080/uploadImage",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
-    } else {
-      console.log("creating a channel now...");
-      // CommunityDB.createCommunity(
-      //   communityData,
-      //   (newCommunity) =>
-      //     setSubmittedData((prevData) => [...prevData, newCommunity]),
-      //   setLoading
-      // );
-      //name, description, category, status
 
-      try {
-        const res = await axios.post(
-          "http://localhost:8080/createChannel",
-          { name, description, category, status },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+      console.log(imageRes.data);
+      communityData.imageUrl = imageRes.data.imageUrl;
+
+      if (editIndex !== null) {
+        CommunityDB.updateCommunity(
+          { id: submittedData[editIndex].id, ...communityData },
+          (updatedData) => {
+            const updatedSubmittedData = [...submittedData];
+            updatedSubmittedData[editIndex] = updatedData;
+            setSubmittedData(updatedSubmittedData);
+          },
+          setLoading
         );
+      } else {
+        console.log("creating a channel now...");
+        try {
+          const res = await axios.post(
+            "http://localhost:8080/createChannel",
+            { name, description, category, status },
+            {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
 
-        console.log(res.data);
-        let data = res.data;
+          console.log(res.data);
+          let data = res.data;
 
-        CommunityDB.createCommunity(
-          communityData,
-          (newCommunity) =>
-            setSubmittedData((prevData) => [...prevData, newCommunity]),
-          setLoading,
-          {
-            WebUrl: data.webUrl,
-            ChannelID: data.id,
-          }
-        );
-      } catch (err) {
-        console.log("error");
+          CommunityDB.createCommunity(
+            communityData,
+            (newCommunity) =>
+              setSubmittedData((prevData) => [...prevData, newCommunity]),
+            setLoading,
+            {
+              WebUrl: data.webUrl,
+              ChannelID: data.id,
+            }
+          );
+        } catch (err) {
+          console.log("error");
+        }
       }
-    }
 
-    setName("");
-    setDescription("");
-    setCategory("general");
-    setEditIndex(null);
-    setPopupOpen(false);
+      setName("");
+      setDescription("");
+      setCategory("general");
+      setImage(null); // Reset the image
+      setEditIndex(null);
+      setPopupOpen(false);
+    } catch (err) {
+      console.log("Image upload error", err);
+    }
   };
 
   const handleEdit = (index) => {
@@ -140,37 +164,16 @@ const CreateCommunity = () => {
   return (
     <div className="flex-col items-center min-h-screen relative text-center">
       <Header />
-      <div className="flex justify-center mt-8 mb-4">
-        <span
-          onClick={() => setView("Communities")}
-          className={`cursor-pointer mx-4 text-lg ${
-            view === "Communities" ? "font-bold text-black" : "text-gray-500"
-          }`}
-        >
-          Community Management
-        </span>
-        <span
-          onClick={() => setView("User Management")}
-          className={`cursor-pointer mx-4 text-lg ${
-            view === "User Management"
-              ? "font-bold text-black"
-              : "text-gray-500"
-          }`}
-        >
-          User Management
-        </span>
-      </div>
-
-      <div className="border-t border-openbox-green w-full my-4"></div>
 
       {view === "Communities" ? (
         <>
-          <div className="flex justify-center mt-4 mb-8">
+          {/* Floating Action Button */}
+          <div className="fixed bottom-4 right-4 z-20">
             <button
               onClick={handleOpenPopup}
-              className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
+              className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-full p-3 shadow-lg focus:outline-none focus:ring-2 focus:ring-primary-300"
             >
-              + CREATE COMMUNITY
+              + Create Community
             </button>
           </div>
 
@@ -235,6 +238,22 @@ const CreateCommunity = () => {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="image"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Community Image
+                  </label>
+                  <input
+                    type="file"
+                    id="image"
+                    onChange={handleImageChange}
+                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                    accept="image/*"
                     required
                   />
                 </div>

@@ -224,119 +224,6 @@ const AdminCommunity = () => {
               <Grid container spacing={2} className="p-4">
                 {events.map((data, index) => (
                   <Grid item xs={6} md={4} lg={4} key={index}>
-                    {/* <Grid item xs={6} md={3} key={index}> */}
-                    {/* <Card className="relative">
-                      {data.status === "archived" && (
-                        <div className="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
-                          Archived
-                        </div>
-                      )}
-                      {data.status === "active" && (
-                        <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
-                          Active
-                        </div>
-                      )}
-                      {data.status === "draft" && (
-                        <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
-                          Draft
-                        </div>
-                      )}
-                      <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
-                          {data.name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Category: {data.category}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {data.description}
-                        </Typography>
-                      </CardContent>
-                      <CardActions>
-                        {data.status === "archived" ? (
-                          <>
-                            <Button
-                              size="small"
-                              onClick={() => handleEdit(index)}
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              size="small"
-                              color="error"
-                              onClick={() => handleOpenDeleteDialog(data.id)}
-                            >
-                              Delete
-                            </Button>
-                            <Button
-                              size="small"
-                              onClick={() => handleUnarchive(data.id)}
-                            >
-                              Unarchive
-                            </Button>
-                          </>
-                        ) : data.status === "active" ? (
-                          <>
-                            <Button
-                              size="small"
-                              onClick={() => handleEdit(index)}
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              size="small"
-                              onClick={() => {
-                                localStorage.setItem(
-                                  "CurrentCommunity",
-                                  data.id
-                                );
-                                router.push("/adminDash");
-                              }}
-                            >
-                              View
-                            </Button>
-                            <Button
-                              size="small"
-                              color="error"
-                              onClick={() => handleArchive(data.id)}
-                            >
-                              Archive
-                            </Button>
-                            <Button
-                              size="small"
-                              color="error"
-                              onClick={() => handleOpenDeleteDialog(data.id)}
-                            >
-                              Delete
-                            </Button>
-                          </>
-                        ) : (
-                          // Draft status actions
-                          <>
-                            <Button
-                              size="small"
-                              onClick={() => handleEdit(index)}
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              size="small"
-                              onClick={() => handlePost(data.id)}
-                            >
-                              Post
-                            </Button>
-                            <Button
-                              size="small"
-                              color="error"
-                              onClick={() => handleOpenDeleteDialog(data.id)}
-                            >
-                              Delete
-                            </Button>
-                          </>
-                        )}
-                      </CardActions>
-                    </Card> */}
-
                     <div className="w-full max-w-sm bg-white border border-gray_og rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 relative">
                       <a href="#">
                         <img
@@ -360,6 +247,7 @@ const AdminCommunity = () => {
                             style={{ position: "absolute", top: 8, right: 10 }}
                             className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                             onClick={() => handleArchive(data.id)}
+                            title="Archive" // Tooltip text
                           >
                             <VisibilityIcon />
                           </div>
@@ -378,6 +266,7 @@ const AdminCommunity = () => {
                               localStorage.setItem("CurrentCommunity", data.id);
                               router.push("/adminDash");
                             }}
+                            title="View" // Tooltip text
                           >
                             <OpenInNewIcon />
                           </Button>
@@ -392,7 +281,7 @@ const AdminCommunity = () => {
                         </div>
                       )}
 
-                      <div className="mt-4 px-5 pb-5">
+                      <div className="mt-4 px-5 pb-5 text-left">
                         <a href="#">
                           <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
                             {data.name}
@@ -440,9 +329,11 @@ const AdminCommunity = () => {
                                   className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
                                   onClick={() => handleEdit(data.id)}
+                                  title="Edit" // Tooltip text
                                 >
                                   <EditIcon />
                                 </Button>
+
                                 <Button
                                   style={{
                                     position: "absolute",
@@ -456,12 +347,14 @@ const AdminCommunity = () => {
                                   onClick={() =>
                                     handleOpenDeleteDialog(data.id)
                                   }
+                                  title="Delete" // Tooltip text
                                 >
                                   <DeleteIcon />
                                 </Button>
                                 <Button
                                   size="small"
                                   onClick={() => handleUnarchive(data.id)}
+                                  title="Unarchive" // Tooltip text
                                   className="absolute top-2 right-2 text-white hover:text-white"
                                 >
                                   <VisibilityOffIcon />
@@ -478,6 +371,7 @@ const AdminCommunity = () => {
                                   className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
                                   onClick={() => handleEdit(data.id)}
+                                  title="Edit" // Tooltip text
                                 >
                                   <EditIcon />
                                 </Button>
@@ -494,6 +388,7 @@ const AdminCommunity = () => {
                                   onClick={() =>
                                     handleOpenDeleteDialog(data.id)
                                   }
+                                  title="Delete" // Tooltip text
                                 >
                                   <DeleteIcon />
                                 </Button>
@@ -505,6 +400,7 @@ const AdminCommunity = () => {
                                   className="absolute top-2 right-2 text-white hover:text-white"
                                   size="small"
                                   onClick={() => handleEdit(data.id)}
+                                  title="Edit" // Tooltip text
                                 >
                                   <EditIcon />
                                 </Button>
@@ -517,6 +413,7 @@ const AdminCommunity = () => {
                                   className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
                                   onClick={() => handlePost(data.id)}
+                                  title="Post" // Tooltip text
                                 >
                                   <PostAddIcon />
                                 </Button>
@@ -532,6 +429,7 @@ const AdminCommunity = () => {
                                   onClick={() =>
                                     handleOpenDeleteDialog(data.id)
                                   }
+                                  title="Delete" // Tooltip text
                                 >
                                   <DeleteIcon />
                                 </Button>
@@ -708,106 +606,6 @@ const AdminCommunity = () => {
                   </div>
                 </div>
               </div>
-              {/* <Card className="relative">
-                {data.status === "archived" && (
-                  <div className="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
-                    Archived
-                  </div>
-                )}
-                {data.status === "active" && (
-                  <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
-                    Active
-                  </div>
-                )}
-                {data.status === "draft" && (
-                  <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
-                    Draft
-                  </div>
-                )}
-                <CardContent>
-                  <Typography
-                    gutterBottom
-                    variant="h5"
-                    component="div"
-                    align="left"
-                  >
-                    {data.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Category: {data.category}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {data.description}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  {data.status === "archived" ? (
-                    <>
-                      <Button size="small" onClick={() => handleEdit(index)}>
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        color="error"
-                        onClick={() => handleOpenDeleteDialog(data.id)}
-                      >
-                        Delete
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={() => handleUnarchive(data.id)}
-                      >
-                        Unarchive
-                      </Button>
-                    </>
-                  ) : data.status === "active" ? (
-                    <>
-                      <Button size="small" onClick={() => handleEdit(index)}>
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={() => {
-                          localStorage.setItem("CurrentCommunity", data.id);
-                          router.push("/adminDash");
-                        }}
-                      >
-                        View
-                      </Button>
-                      <Button
-                        size="small"
-                        color="error"
-                        onClick={() => handleArchive(data.id)}
-                      >
-                        Archive.
-                      </Button>
-                      <Button
-                        size="small"
-                        color="error"
-                        onClick={() => handleOpenDeleteDialog(data.id)}
-                      >
-                        Delete
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button size="small" onClick={() => handleEdit(index)}>
-                        Edit
-                      </Button>
-                      <Button size="small" onClick={() => handlePost(data.id)}>
-                        Post
-                      </Button>
-                      <Button
-                        size="small"
-                        color="error"
-                        onClick={() => handleOpenDeleteDialog(data.id)}
-                      >
-                        Delete
-                      </Button>
-                    </>
-                  )}
-                </CardActions>
-              </Card> */}
             </Grid>
           ))}
         </Grid>
@@ -874,7 +672,7 @@ const AdminCommunity = () => {
 
       <div className="w-full px-6 py-4">
         <FormControl variant="outlined" className="mb-4 w-full md:w-1/4">
-          <InputLabel>Status</InputLabel>
+          <InputLabel>Filter By Status</InputLabel>
           <Select
             value={selectedStatus}
             onChange={handleStatusChange}
