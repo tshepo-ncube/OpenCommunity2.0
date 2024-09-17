@@ -1,18 +1,24 @@
 {
   "server_endpoints": {
     "sendMessage": "http://localhost:8080/sendMessage",
-    "fetchMessages": "A place to explore",
-    "createAssistant": "A place to explore",
+    "fetchMessages": "http://localhost:8080/fetchMessages",
+    "createAssistant": "http://localhost:8080/createAssistant",
     "createChannel": "http://localhost:8080/createChannel",
     "generateCommunityDescription": "http://localhost:8080/generateCommunityDescription",
     "generateEventDescription": "http://localhost:8080/generateEventDescription",
-    "sendEventInvite": "http://localhost:8080/sendEventInvite"
+    "sendEventInvite": "http://localhost:8080/sendEventInvite",
+    "scheduleRsvpReminder": "http://localhost:8080/scheduleRsvpReminder",
+    "scheduleEventStartReminder": "http://localhost:8080/scheduleEventStartReminder",
+    "scheduleEventEndReminder": "http://localhost:8080/scheduleEventEndReminder",
+    "remindUsersOfNewPoll": "http://localhost:8080/remindUsersOfNewPoll",
+    "schedulePollEndReminder": "http://localhost:8080/schedulePollEndReminder"
   },
+
   "button": {
     "submit": "Submit",
     "cancel": "Cancel"
   },
   "footer": {
-    "copyright": "© 2024 Your Company"
+    "copyright": "© 2024 OpenBox"
   }
 }
