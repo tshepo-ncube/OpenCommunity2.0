@@ -22,6 +22,7 @@ const CreateCommunity = () => {
   const [userEmail, setUserEmail] = useState("");
   const [userPhone, setUserPhone] = useState("");
   const [roles, setRoles] = useState({ user: false, admin: false });
+  const [url, setUrl] = useState("");
 
   // Image fields
   const [image, setImage] = useState(null);
@@ -190,7 +191,7 @@ const CreateCommunity = () => {
             <div className="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-md z-10"></div>
           )}
 
-          {true && (
+          {isPopupOpen && (
             <div
               ref={popupRef}
               className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-auto max-h-full overflow-auto"
@@ -254,6 +255,17 @@ const CreateCommunity = () => {
                     required
                   />
                 </div>
+
+                {image && (
+                  <div>
+                    <p>Image uploaded successfully!</p>
+                    <img
+                      src={image}
+                      alt="Uploaded"
+                      style={{ width: "300px" }}
+                    />
+                  </div>
+                )}
 
                 {/* Add Image here */}
 
