@@ -475,7 +475,7 @@ export default function CommunityPage({ params }) {
                       {/* Event Image */}
                       <div className="mb-4">
                         <img
-                          src="https://images.unsplash.com/photo-1534327737286-52d27a912124?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                          src="https://www.pngkey.com/png/detail/233-2332677_ega-png.png"
                           alt={event.Name}
                           className="w-full h-40 object-cover rounded"
                         />
@@ -572,7 +572,7 @@ export default function CommunityPage({ params }) {
                         {/* Event Image */}
                         <div className="mb-4">
                           <img
-                            src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                            src="https://th.bing.com/th/id/OIP.F00dCf4bXxX0J-qEEf4qIQHaD6?rs=1&pid=ImgDetMain"
                             alt={event.Name}
                             className="w-full h-40 object-cover rounded"
                           />
