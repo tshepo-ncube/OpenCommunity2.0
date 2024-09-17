@@ -109,7 +109,7 @@ export default function CommunityPage({ params }) {
   const [alertOpen, setAlertOpen] = useState(false);
   const [rsvpState, setRsvpState] = useState({}); // Track RSVP state for each event
   const [currentEventObject, setCurrentEventObject] = useState(null);
-
+  const [activeTab, setActiveTab] = useState("events");
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const events = [
@@ -436,195 +436,245 @@ export default function CommunityPage({ params }) {
         </div>
       </center>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8">
-        {/* Upcoming Events */}
-        <div className="rounded   bg-gray-50 p-4">
-          <h2 className="text-2xl font-semibold mb-4">Upcoming Events</h2>
-          <ul className="space-y-4">
+      <div className="flex justify-center mb-6 space-x-10 mt-4">
+        {/* Tab Buttons */}
+        <button
+          className={`px-6 py-2 text-lg ${
+            activeTab === "events"
+              ? "border-b-4 border-[#bcd727] text-gray-900 font-semibold"
+              : "text-gray-600"
+          }`}
+          onClick={() => setActiveTab("events")}
+        >
+          EVENTS
+        </button>
+        <button
+          className={`px-6 py-2 text-lg ${
+            activeTab === "polls"
+              ? "border-b-4 border-[#bcd727] text-gray-900 font-semibold"
+              : "text-gray-600"
+          }`}
+          onClick={() => setActiveTab("polls")}
+        >
+          POLLS
+        </button>
+      </div>
+      {/* TAB CONTENT FOR EVENTS */}
+      <div>
+        {activeTab === "events" && (
+          <div className="rounded bg-gray-50 p-4 pb-4">
+            <h2 className="text-2xl font-semibold mb-4">Upcoming Events</h2>
             {upcomingEvents.length > 0 ? (
-              upcomingEvents.map((event) => (
-                <li key={event.id} className="p-4 bg-white shadow rounded-md">
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    style={{ whiteSpace: "pre-wrap" }}
-                  >
-                    <center>
-                      <CountdownTimer date={event.StartDate} />
-                    </center>
-                    <div className="border-b-2 border-gray-300 mb-2">
-                      <h3 className="text-xl font-semibold">{event.Name}</h3>
-                    </div>
-                    <strong>Description:</strong> {event.EventDescription}
-                    <br />
-                    <strong>Location:</strong> {event.Location}
-                    <br />
-                    <strong>Start Date:</strong> {formatDate(event.StartDate)}
-                    <br />
-                    {/* <strong>Start Time:</strong> {formatTime(event.StartDate)}
-                    <br /> */}
-                    <strong>End Date:</strong> {formatDate(event.EndDate)}
-                    <br />
-                    {/* <strong>End Time:</strong> {formatTime(event.EndDate)}
-                    <br /> */}
-                    <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
-                  </Typography>
-                  <div className="mt-4">
-                    {event.status === "active" ? (
-                      <Button
-                        variant="text"
-                        color="secondary"
-                        className="w-full"
-                        onClick={handleClosedEventClick}
-                      >
-                        Closed
-                      </Button>
-                    ) : (
-                      event.status === "rsvp" &&
-                      (isRSVPed(event.id) ? (
-                        <Button
-                          variant="contained"
-                          style={{ backgroundColor: "grey" }}
-                          className="w-full"
-                          onClick={() => handleLeave(event.id)}
-                        >
-                          UN RSVP
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="contained"
-                          style={{ backgroundColor: "#bcd727" }}
-                          className="w-full"
-                          onClick={() => handleRSVP(event)}
-                        >
-                          RSVP
-                        </Button>
-                      ))
-                    )}
-                  </div>
-                </li>
-              ))
-            ) : (
-              <Typography>No upcoming events</Typography>
-            )}
-          </ul>
-        </div>
-
-        {/* Polls */}
-        <div className="rounded   bg-gray-50 p-4">
-          <h2 className="text-2xl font-semibold mb-4">Polls</h2>
-          {allPolls.length > 0 ? (
-            allPolls.map((poll, index) => (
-              <div key={index} className="p-4 bg-white shadow rounded-md mb-4">
-                <Typography variant="body2" color="text.secondary">
-                  <h3 className="text-xl font-semibold border-b-2 border-gray-300 mb-2">
-                    {poll.Question}
-                  </h3>
-                  <ul>
-                    {/* {Array.isArray(poll.Options) && poll.Options.length > 0 ? (
-                      poll.Options.map((option, idx) => (
-                        <li key={idx} className="mt-2">
-                          <button
-                            className={`w-full text-left px-4 py-2 rounded ${
-                              poll.selected && poll.selected_option === option
-                                ? "bg-openbox-blue text-white"
-                                : "bg-gray-100"
-                            }`}
-                            onClick={() =>
-                              handlePollOptionSelection(poll.id, option)
-                            }
-                            disabled={poll.selected}
-                          >
-                            {option}
-                          </button>
-                        </li>
-                      ))
-                    ) : (
-                      <li>No options available</li>
-                    )} */}
-
-                    {poll.Opt.map((poll_option, poll_option_index) => (
-                      <div className="mt-2">
-                        <input
-                          type="radio"
-                          name={`poll-${poll.id}`}
-                          id={`poll-${poll.id}-opt-${poll_option_index}`}
-                          className="mr-2"
-                          onChange={() =>
-                            handlePollOptionSelection(
-                              poll.id,
-                              poll_option.title
-                            )
-                          }
-                          disabled={poll.selected ? true : false}
-                          // checked={
-                          //   poll.selected &&
-                          //   poll.selected_option === poll_option.title
-                          // }
-                          checked={
-                            poll.selected &&
-                            poll.selected_option === poll_option.title
-                          }
-                          //checked
+              <div className="overflow-x-auto">
+                <ul className="flex space-x-6">
+                  {upcomingEvents.map((event) => (
+                    <li
+                      key={event.id}
+                      className="min-w-[300px] w-[300px] bg-white shadow rounded-md p-4"
+                    >
+                      {/* Event Image */}
+                      <div className="mb-4">
+                        <img
+                          src="https://images.unsplash.com/photo-1534327737286-52d27a912124?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                          alt={event.Name}
+                          className="w-full h-40 object-cover rounded"
                         />
-                        <label htmlFor={`poll-${poll.id}-option-2`}>
-                          {poll_option.title}
-                        </label>
                       </div>
+                      <div className="border-b-2 border-gray-300 mb-2">
+                        <h3 className="text-xl font-semibold text-center">
+                          {event.Name}
+                        </h3>
+                      </div>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        style={{ whiteSpace: "pre-wrap" }}
+                      >
+                        <div className="mb-2">{event.EventDescription}</div>
+                        <div>
+                          <strong>Location:</strong> {event.Location}
+                        </div>
+                        <div>
+                          <strong>Start Date:</strong>{" "}
+                          {formatDate(event.StartDate)}
+                        </div>
+                        <div>
+                          <strong>End Date:</strong> {formatDate(event.EndDate)}
+                        </div>
+                        <div>
+                          <strong>RSVP by:</strong>{" "}
+                          {formatDate(event.RsvpEndTime)}
+                        </div>
+                      </Typography>
+
+                      <div className="mt-4">
+                        {event.status === "active" ? (
+                          <div className="flex space-x-4">
+                            {/* Closed Button */}
+                            <button
+                              className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
+                              onClick={handleClosedEventClick}
+                            >
+                              Closed
+                            </button>
+
+                            {/* Share Button */}
+                            <button
+                              className="flex-1 bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400 transition-all"
+                              onClick={() => handleShare(event)}
+                            >
+                              Share
+                            </button>
+                          </div>
+                        ) : (
+                          event.status === "rsvp" && (
+                            <div className="flex space-x-4">
+                              {/* RSVP/Un-RSVP Button */}
+                              {isRSVPed(event.id) ? (
+                                <button
+                                  className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
+                                  onClick={() => handleLeave(event.id)}
+                                >
+                                  UN RSVP
+                                </button>
+                              ) : (
+                                <button
+                                  className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
+                                  onClick={() => handleRSVP(event)}
+                                >
+                                  RSVP
+                                </button>
+                              )}
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <Typography>No upcoming events to display</Typography>
+            )}
+            {/* Past Events */}
+
+            <div className="rounded bg-gray-50 p-4 relative">
+              <h2 className="text-2xl font-semibold mb-4">Past Events</h2>
+
+              {pastEvents.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <ul className="flex space-x-6">
+                    {pastEvents.map((event) => (
+                      <li
+                        key={event.id}
+                        className="min-w-[300px] w-[300px] bg-white shadow-2xl rounded-md flex flex-col p-4"
+                      >
+                        {/* Event Image */}
+                        <div className="mb-4">
+                          <img
+                            src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                            alt={event.Name}
+                            className="w-full h-40 object-cover rounded"
+                          />
+                        </div>
+                        <div className="border-b-2 border-gray-300 mb-2">
+                          <h3 className="text-xl font-semibold text-center">
+                            {event.Name}
+                          </h3>
+                        </div>
+
+                        <div className="text-gray-600 flex-grow">
+                          <div className="mb-2">
+                            <strong>Description:</strong>{" "}
+                            {event.EventDescription}
+                          </div>
+                          <div>
+                            <strong>Location:</strong> {event.Location}
+                          </div>
+                          <div>
+                            <strong>Start Date:</strong>{" "}
+                            {formatDate(event.StartDate)}
+                          </div>
+                          <div>
+                            <strong>End Date:</strong>{" "}
+                            {formatDate(event.EndDate)}
+                          </div>
+                        </div>
+
+                        <div className="mt-auto">
+                          <button
+                            className="fixed-button bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
+                            onClick={() => handleCommentReview(event)}
+                          >
+                            Leave a Comment & Review
+                          </button>
+                        </div>
+                      </li>
                     ))}
                   </ul>
-                </Typography>
-              </div>
-            ))
-          ) : (
-            <Typography>No polls available</Typography>
-          )}
-        </div>
-
-        {/* Past Events */}
-        <div className="rounded  bg-gray-50 p-4">
-          <h2 className="text-2xl font-semibold mb-4">Past Events</h2>
-          <ul className="space-y-4">
-            {pastEvents.length > 0 ? (
-              pastEvents.map((event) => (
-                <li key={event.id} className="p-4 bg-white shadow rounded-md">
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    style={{ whiteSpace: "pre-wrap" }}
-                  >
-                    <div className="border-b-2 border-gray-300 mb-2">
-                      <h3 className="text-xl font-semibold">{event.Name}</h3>
-                    </div>
-                    <strong>Description:</strong> {event.EventDescription}
-                    <br />
-                    <strong>Location:</strong> {event.Location}
-                    <br />
-                    <strong>Start Date:</strong> {formatDate(event.StartDate)}
-                    <br />
-                    {/* <strong>Start Time:</strong> {formatTime(event.StartDate)}
-                    <br /> */}
-                    <strong>End Date:</strong> {formatDate(event.EndDate)}
-                    {/* <br />
-                    <strong>End Time:</strong> {formatTime(event.EndDate)} */}
-                  </Typography>
-                  <Button
-                    variant="text"
-                    color="primary"
-                    className="w-full mt-2"
-                    onClick={() => handleCommentReview(event)}
-                    style={{ color: "blue" }} // Styling as blue text
-                  >
-                    Leave a Comment & Rating
-                  </Button>
-                </li>
-              ))
-            ) : (
-              <Typography>No past events</Typography>
-            )}
-          </ul>
-        </div>
+                </div>
+              ) : (
+                <div>No past events</div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
+      {/* TAB CONTENT FOR POLLS */}
+      <div className="text-center">
+        {activeTab === "polls" && (
+          <div>
+            <div className="flex flex-wrap justify-center gap-4">
+              {allPolls.length > 0 ? (
+                allPolls.map((poll, index) => (
+                  <div
+                    key={index}
+                    className="p-4 bg-white shadow-lg rounded-md max-w-xs w-full"
+                    style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)" }} // Custom shadow style
+                  >
+                    <h3 className="text-xl font-semibold border-b-2 border-gray-300 mb-2">
+                      {poll.Question}
+                    </h3>
+                    <ul>
+                      {poll.Opt.map((poll_option, poll_option_index) => (
+                        <div key={poll_option_index} className="mt-2">
+                          <input
+                            type="radio"
+                            name={`poll-${poll.id}`}
+                            id={`poll-${poll.id}-opt-${poll_option_index}`}
+                            className="mr-2"
+                            onChange={() =>
+                              handlePollOptionSelection(
+                                poll.id,
+                                poll_option.title
+                              )
+                            }
+                            disabled={poll.selected}
+                            checked={
+                              poll.selected &&
+                              poll.selected_option === poll_option.title
+                            }
+                          />
+                          <label
+                            htmlFor={`poll-${poll.id}-opt-${poll_option_index}`}
+                          >
+                            {poll_option.title}
+                          </label>
+                        </div>
+                      ))}
+                    </ul>
+                  </div>
+                ))
+              ) : (
+                <Typography>No polls available</Typography>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8"></div>
+
       <Dialog
         open={openDialog}
         onClose={handleCloseDialog}
