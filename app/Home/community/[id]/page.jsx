@@ -484,7 +484,7 @@ export default function CommunityPage({ params }) {
                       (isRSVPed(event.id) ? (
                         <Button
                           variant="contained"
-                          color="secondary"
+                          style={{ backgroundColor: "grey" }}
                           className="w-full"
                           onClick={() => handleLeave(event.id)}
                         >
@@ -493,7 +493,7 @@ export default function CommunityPage({ params }) {
                       ) : (
                         <Button
                           variant="contained"
-                          color="primary"
+                          style={{ backgroundColor: "#bcd727" }}
                           className="w-full"
                           onClick={() => handleRSVP(event)}
                         >
