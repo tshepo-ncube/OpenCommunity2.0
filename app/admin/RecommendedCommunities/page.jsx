@@ -12,6 +12,8 @@ const mutedLimeGreen = "#d0e43f"; // Muted version of #bcd727
 
 export default function RecommendationsTable() {
   const [recommendations, setRecommendations] = useState([]);
+  const [viewMode, setViewMode] = useState("table"); // 'table' or 'chart'
+  const [isLoading, setIsLoading] = useState(false);
   // const [likedRecommendations, setLikedRecommendations] =
   //   useState < Set < string >> new Set();
   const [likedRecommendations, setLikedRecommendations] = useState(new Set());
