@@ -1,15 +1,36 @@
 {
   "pages": {
+<<<<<<< HEAD
     "/img/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/img/page.js"
+=======
+    "/adminDash/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/adminDash/page.js"
+>>>>>>> ui_before_community_ui
     ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
+<<<<<<< HEAD
+=======
+    ],
+    "/Home/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/Home/page.js"
+    ],
+    "/Home/community/[id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/Home/community/[id]/page.css",
+      "static/chunks/app/Home/community/[id]/page.js"
+>>>>>>> ui_before_community_ui
     ]
   }
 }

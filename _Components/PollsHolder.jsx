@@ -11,7 +11,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import IconButton from "@mui/material/IconButton";
@@ -21,6 +20,14 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { CardActions } from "@mui/material";
+import {
+  Edit as EditIcon,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
+  Delete as DeleteIcon,
+  PostAdd as PostAddIcon,
+  Assessment as AssessmentIcon,
+} from "@mui/icons-material";
 
 function PollsHolder({ communityID }) {
   const [allPolls, setAllPolls] = useState([]);
@@ -34,34 +41,22 @@ function PollsHolder({ communityID }) {
   const [activePolls, setActivePolls] = useState([]);
 
   const [analyticsPollPointer, setAnalyticsPollPointer] = useState(null);
+
   useEffect(() => {
     PollDB.getPollFromCommunityID(communityID, setAllPolls);
   }, [communityID]);
 
   useEffect(() => {
-    console.log("All Polls : ", allPolls);
-
     const currentDate = new Date();
-
     const active = allPolls.filter(
       (poll) => new Date(poll.PollCloseDate) > currentDate
     );
     const inActive = allPolls.filter(
       (poll) => currentDate > new Date(poll.PollCloseDate)
     );
-    console.log("InActive Polls: ", inActivePolls);
-    console.log("ActivePolls : ", activePolls);
     setInActivePolls(inActive);
     setActivePolls(active);
   }, [allPolls]);
-
-  useEffect(() => {
-    console.log("InActive Polls: ", inActivePolls);
-  }, [inActivePolls]);
-
-  useEffect(() => {
-    console.log("Active Polls: ", activePolls);
-  }, [activePolls]);
 
   const handleCreatePoll = () => {
     setShowCreateForm(true);
@@ -74,7 +69,6 @@ function PollsHolder({ communityID }) {
 
   const handleAnalyticsCloseForm = () => {
     setShowAnalyticsForm(false);
-    //resetForm();
   };
 
   const resetForm = () => {
@@ -96,20 +90,10 @@ function PollsHolder({ communityID }) {
       Opt: newArray,
     };
 
-    console.log(pollObject);
-
-    console.log(typeof dateValue.$d);
-
-    console.log(dateValue.$d);
-
-    console.log(dateValue);
-
-    console.log("Date To String : ", dateValue.$d.toString());
-
     PollDB.createPoll(pollObject).then(() => {
       setShowCreateForm(false);
       resetForm();
-      PollDB.getPollFromCommunityID(communityID, setAllPolls); // Refresh polls after creation
+      PollDB.getPollFromCommunityID(communityID, setAllPolls);
     });
   };
 
@@ -129,9 +113,23 @@ function PollsHolder({ communityID }) {
     setNewPollOptions(options);
   };
 
+  const cardStyle = {
+    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+    borderRadius: "8px",
+    marginTop: "15px", // Add top margin
+    marginBottom: "15px", // Add bottom margin
+    position: "relative", // Ensure the card is a positioned container
+  };
+
+  const iconStyle = {
+    position: "absolute",
+    top: 8,
+    right: 8,
+  };
+
   return (
     <div className="mt-4 h-480">
-      <h1 className="text-xxl relative">
+      <h1 className="text-xxl relative my-4 bg-[#a0a0a0] text-white p-2">
         Active Polls
         <IconButton
           className="bg-openbox-green text-openbox-green"
@@ -160,27 +158,37 @@ function PollsHolder({ communityID }) {
           <Grid container justifyContent="flex-start" spacing={2}>
             {activePolls.map((value) => (
               <Grid key={value.id} item xs={12} sm={6} md={4} lg={3}>
-                <Card>
+                <Card style={cardStyle}>
+                  <IconButton
+                    aria-label="delete poll"
+                    style={{ ...iconStyle, backgroundColor: "tranparent" }}
+                    onClick={() => console.log("Delete Poll")}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
                   <CardContent>
-                    <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">
+                    <h3 className="mb-4 font-semibold text-gray-900 dark:text-white">
                       {value.Question}
                     </h3>
 
-                    <ul class="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <ul className="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                       {value.Opt.map((option, index) => (
-                        <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                          <div class="flex items-center ps-3">
+                        <li
+                          key={index}
+                          className="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600"
+                        >
+                          <div className="flex items-center ps-3">
                             <input
                               disabled
                               id="list-radio-license"
                               type="radio"
                               value=""
                               name="list-radio"
-                              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                             />
                             <label
-                              for="list-radio-license"
-                              class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                              htmlFor="list-radio-license"
+                              className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
                             >
                               {option.title}
                             </label>
@@ -189,10 +197,6 @@ function PollsHolder({ communityID }) {
                       ))}
                     </ul>
                   </CardContent>
-                  <CardActions style={{ marginTop: -12 }}>
-                    {/* <Button>Analytics</Button> */}
-                    <Button color="error">Delete Poll</Button>
-                  </CardActions>
                 </Card>
               </Grid>
             ))}
@@ -200,23 +204,8 @@ function PollsHolder({ communityID }) {
         )}
       </div>
 
-      <h1 className="text-xxl relative">
+      <h1 className="text-xxl relative my-4 bg-[#c0c0c0] text-white p-2">
         Closed Polls
-        {/* <IconButton
-          sx={{
-            borderRadius: "50%",
-            backgroundColor: green[500],
-            color: "white",
-            marginLeft: 2,
-            "&:hover": {
-              backgroundColor: green[700],
-            },
-          }}
-          onClick={handleCreatePoll}
-          aria-label="create poll"
-        >
-          <AddIcon />
-        </IconButton> */}
       </h1>
 
       <div style={{ overflowX: "auto", whiteSpace: "nowrap", marginTop: 15 }}>
@@ -228,27 +217,56 @@ function PollsHolder({ communityID }) {
           <Grid container justifyContent="flex-start" spacing={2}>
             {inActivePolls.map((value) => (
               <Grid key={value.id} item xs={12} sm={6} md={4} lg={3}>
-                <Card>
+                <Card style={cardStyle}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      gap: "8px",
+                      padding: "8px",
+                    }}
+                  >
+                    <IconButton
+                      aria-label="analytics"
+                      style={{ backgroundColor: "transparent" }}
+                      onClick={() => {
+                        setAnalyticsPollPointer(value);
+                        setShowAnalyticsForm(true);
+                      }}
+                    >
+                      <AssessmentIcon />
+                    </IconButton>
+                    <IconButton
+                      aria-label="delete poll"
+                      style={{ backgroundColor: "transparent" }}
+                      onClick={() => console.log("Delete Poll")}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </div>
                   <CardContent>
-                    <h3 class="mb-4 font-semibold text-gray-900 dark:text-white">
+                    <h3 className="mb-4 font-semibold text-gray-900 dark:text-white">
                       {value.Question}
                     </h3>
 
-                    <ul class="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    <ul className="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                       {value.Opt.map((option, index) => (
-                        <li class="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600">
-                          <div class="flex items-center ps-3">
+                        <li
+                          key={index}
+                          className="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600"
+                        >
+                          <div className="flex items-center ps-3">
                             <input
                               disabled
                               id="list-radio-license"
                               type="radio"
                               value=""
                               name="list-radio"
-                              class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                             />
                             <label
-                              for="list-radio-license"
-                              class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                              htmlFor="list-radio-license"
+                              className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
                             >
                               {option.title}
                             </label>
@@ -257,18 +275,6 @@ function PollsHolder({ communityID }) {
                       ))}
                     </ul>
                   </CardContent>
-                  <CardActions style={{ marginTop: -12 }}>
-                    <Button
-                      onClick={() => {
-                        setAnalyticsPollPointer(value);
-                        setShowAnalyticsForm(true);
-                        // showAnalyticsForm
-                      }}
-                    >
-                      View Results
-                    </Button>
-                    <Button color="error">Delete Poll</Button>
-                  </CardActions>
                 </Card>
               </Grid>
             ))}
@@ -353,16 +359,15 @@ function PollsHolder({ communityID }) {
       <Dialog
         open={showAnalyticsForm}
         onClose={handleAnalyticsCloseForm}
-        maxWidth="lg" // You can set this to 'sm', 'md', 'lg', 'xl' as per your requirement
+        maxWidth="lg"
         fullWidth={true}
         sx={{
           "& .MuiDialog-paper": {
-            width: "80%", // Adjust the width as per your requirement
+            width: "80%",
             maxWidth: "none",
           },
         }}
       >
-        {/* <DialogTitle>{analyticsPollPointer.Question}</DialogTitle> */}
         <DialogContent>
           <center>
             <PollAnalytics poll={analyticsPollPointer} />

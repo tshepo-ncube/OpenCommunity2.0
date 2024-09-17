@@ -6,7 +6,7 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import CloseIcon from "@mui/icons-material/Close";
+
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -18,6 +18,14 @@ import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import CommunityDB from "../database/community/community";
 import { useRouter } from "next/navigation";
+import {
+  Edit as EditIcon,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
+  Delete as DeleteIcon,
+  PostAdd as PostAddIcon,
+  OpenInNew as OpenInNewIcon, // Add this line for the open icon
+} from "@mui/icons-material";
 
 const AdminCommunity = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -196,119 +204,6 @@ const AdminCommunity = () => {
               <Grid container spacing={2} className="p-4">
                 {events.map((data, index) => (
                   <Grid item xs={6} md={4} lg={4} key={index}>
-                    {/* <Grid item xs={6} md={3} key={index}> */}
-                    {/* <Card className="relative">
-                      {data.status === "archived" && (
-                        <div className="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
-                          Archived
-                        </div>
-                      )}
-                      {data.status === "active" && (
-                        <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
-                          Active
-                        </div>
-                      )}
-                      {data.status === "draft" && (
-                        <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
-                          Draft
-                        </div>
-                      )}
-                      <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
-                          {data.name}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Category: {data.category}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          {data.description}
-                        </Typography>
-                      </CardContent>
-                      <CardActions>
-                        {data.status === "archived" ? (
-                          <>
-                            <Button
-                              size="small"
-                              onClick={() => handleEdit(index)}
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              size="small"
-                              color="error"
-                              onClick={() => handleOpenDeleteDialog(data.id)}
-                            >
-                              Delete
-                            </Button>
-                            <Button
-                              size="small"
-                              onClick={() => handleUnarchive(data.id)}
-                            >
-                              Unarchive
-                            </Button>
-                          </>
-                        ) : data.status === "active" ? (
-                          <>
-                            <Button
-                              size="small"
-                              onClick={() => handleEdit(index)}
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              size="small"
-                              onClick={() => {
-                                localStorage.setItem(
-                                  "CurrentCommunity",
-                                  data.id
-                                );
-                                router.push("/adminDash");
-                              }}
-                            >
-                              View
-                            </Button>
-                            <Button
-                              size="small"
-                              color="error"
-                              onClick={() => handleArchive(data.id)}
-                            >
-                              Archive
-                            </Button>
-                            <Button
-                              size="small"
-                              color="error"
-                              onClick={() => handleOpenDeleteDialog(data.id)}
-                            >
-                              Delete
-                            </Button>
-                          </>
-                        ) : (
-                          // Draft status actions
-                          <>
-                            <Button
-                              size="small"
-                              onClick={() => handleEdit(index)}
-                            >
-                              Edit
-                            </Button>
-                            <Button
-                              size="small"
-                              onClick={() => handlePost(data.id)}
-                            >
-                              Post
-                            </Button>
-                            <Button
-                              size="small"
-                              color="error"
-                              onClick={() => handleOpenDeleteDialog(data.id)}
-                            >
-                              Delete
-                            </Button>
-                          </>
-                        )}
-                      </CardActions>
-                    </Card> */}
-
                     <div className="w-full max-w-sm bg-white border border-gray_og rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 relative">
                       <a href="#">
                         <img
@@ -327,12 +222,62 @@ const AdminCommunity = () => {
                         </div>
                       )}
                       {data.status === "active" && (
-                        <div
-                          style={{ position: "absolute", top: 12, left: 10 }}
-                          className="absolute bg-green-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10"
-                        >
-                          Active
-                        </div>
+                        <>
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: 8,
+                              right: 4,
+                              color: "white",
+                              backgroundColor: "rgba(0, 0, 0, 0.5)",
+                              borderRadius: "50%", // Makes the button circular
+                              width: 30, // Adjust width as needed
+                              height: 30, // Adjust height as needed
+                              padding: 0, // Remove default padding
+                              minWidth: 0, // Remove default min-width
+                              display: "flex", // Center the icon
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                            className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
+                            onClick={() => handleArchive(data.id)}
+                            title="Archive" // Tooltip text
+                          >
+                            <VisibilityIcon />
+                          </div>
+                          <div
+                            style={{ position: "absolute", top: 12, left: 10 }}
+                            className="absolute bg-green-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10"
+                          >
+                            Active
+                          </div>
+
+                          <Button
+                            style={{
+                              position: "absolute",
+                              top: 8,
+                              right: 115,
+                              color: "white",
+                              backgroundColor: "rgba(0, 0, 0, 0.5)",
+                              borderRadius: "50%", // Makes the button circular
+                              width: 30, // Adjust width as needed
+                              height: 30, // Adjust height as needed
+                              padding: 0, // Remove default padding
+                              minWidth: 0, // Remove default min-width
+                              display: "flex", // Center the icon
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                            size="small"
+                            onClick={() => {
+                              localStorage.setItem("CurrentCommunity", data.id);
+                              router.push("/adminDash");
+                            }}
+                            title="View" // Tooltip text
+                          >
+                            <OpenInNewIcon />
+                          </Button>
+                        </>
                       )}
                       {data.status === "draft" && (
                         <div
@@ -343,7 +288,7 @@ const AdminCommunity = () => {
                         </div>
                       )}
 
-                      <div className="mt-4 px-5 pb-5">
+                      <div className="mt-4 px-5 pb-5 text-left">
                         <a href="#">
                           <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
                             {data.name}
@@ -383,89 +328,207 @@ const AdminCommunity = () => {
                             {data.status === "archived" ? (
                               <>
                                 <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 46,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
                                   onClick={() => handleEdit(data.id)}
+                                  title="Edit" // Tooltip text
                                 >
-                                  Edit
+                                  <EditIcon />
                                 </Button>
+
                                 <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 84,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
                                   color="error"
+                                  // className="absolute top-2 right-2 text-white hover:text-white"
                                   onClick={() =>
                                     handleOpenDeleteDialog(data.id)
                                   }
+                                  title="Delete" // Tooltip text
                                 >
-                                  Delete
+                                  <DeleteIcon />
                                 </Button>
                                 <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 7,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
                                   size="small"
                                   onClick={() => handleUnarchive(data.id)}
+                                  title="Unarchive" // Tooltip text
+                                  className="absolute top-2 right-2 text-white hover:text-white"
                                 >
-                                  Unarchive
+                                  <VisibilityOffIcon />
                                 </Button>
                               </>
                             ) : data.status === "active" ? (
                               <>
                                 <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 38,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
                                   onClick={() => handleEdit(data.id)}
+                                  title="Edit" // Tooltip text
                                 >
-                                  Edit
+                                  <EditIcon />
                                 </Button>
+
                                 <Button
-                                  size="small"
-                                  onClick={() => {
-                                    // localStorage.setItem(
-                                    //   "CurrentCommunity",
-                                    //   data.id
-                                    // );
-                                    console.log("The view");
-                                    console.log(data.id);
-                                    router.push(`/admin/Dashboard/${data.id}`);
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 78,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
                                   }}
-                                >
-                                  View
-                                </Button>
-                                <Button
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleArchive(data.id)}
-                                >
-                                  Archive
-                                </Button>
-                                <Button
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
                                   color="error"
                                   onClick={() =>
                                     handleOpenDeleteDialog(data.id)
                                   }
+                                  title="Delete" // Tooltip text
                                 >
-                                  Delete
+                                  <DeleteIcon />
                                 </Button>
                               </>
                             ) : (
                               // Draft status actions
                               <>
                                 <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 4,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                  className="absolute top-2 right-2 text-white hover:text-white"
                                   size="small"
                                   onClick={() => handleEdit(data.id)}
+                                  title="Edit" // Tooltip text
                                 >
-                                  Edit
+                                  <EditIcon />
                                 </Button>
                                 <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 40,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
                                   onClick={() => handlePost(data.id)}
+                                  title="Post" // Tooltip text
                                 >
-                                  Post
+                                  <PostAddIcon />
                                 </Button>
                                 <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 78,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
                                   color="error"
                                   onClick={() =>
                                     handleOpenDeleteDialog(data.id)
                                   }
+                                  title="Delete" // Tooltip text
                                 >
-                                  Delete
+                                  <DeleteIcon />
                                 </Button>
                               </>
                             )}
@@ -499,7 +562,7 @@ const AdminCommunity = () => {
 
                 {data.status === "archived" && (
                   <div
-                    style={{ position: "absolute", top: 12, left: 10 }}
+                    style={{ position: "absolutehall", top: 5, left: 5 }}
                     className="absolute bg-orange-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10"
                   >
                     Archived
@@ -641,106 +704,6 @@ const AdminCommunity = () => {
                   </div>
                 </div>
               </div>
-              {/* <Card className="relative">
-                {data.status === "archived" && (
-                  <div className="absolute top-2 left-2 bg-orange-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
-                    Archived
-                  </div>
-                )}
-                {data.status === "active" && (
-                  <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
-                    Active
-                  </div>
-                )}
-                {data.status === "draft" && (
-                  <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10">
-                    Draft
-                  </div>
-                )}
-                <CardContent>
-                  <Typography
-                    gutterBottom
-                    variant="h5"
-                    component="div"
-                    align="left"
-                  >
-                    {data.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Category: {data.category}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {data.description}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  {data.status === "archived" ? (
-                    <>
-                      <Button size="small" onClick={() => handleEdit(index)}>
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        color="error"
-                        onClick={() => handleOpenDeleteDialog(data.id)}
-                      >
-                        Delete
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={() => handleUnarchive(data.id)}
-                      >
-                        Unarchive
-                      </Button>
-                    </>
-                  ) : data.status === "active" ? (
-                    <>
-                      <Button size="small" onClick={() => handleEdit(index)}>
-                        Edit
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={() => {
-                          localStorage.setItem("CurrentCommunity", data.id);
-                          router.push("/adminDash");
-                        }}
-                      >
-                        View
-                      </Button>
-                      <Button
-                        size="small"
-                        color="error"
-                        onClick={() => handleArchive(data.id)}
-                      >
-                        Archive.
-                      </Button>
-                      <Button
-                        size="small"
-                        color="error"
-                        onClick={() => handleOpenDeleteDialog(data.id)}
-                      >
-                        Delete
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button size="small" onClick={() => handleEdit(index)}>
-                        Edit
-                      </Button>
-                      <Button size="small" onClick={() => handlePost(data.id)}>
-                        Post
-                      </Button>
-                      <Button
-                        size="small"
-                        color="error"
-                        onClick={() => handleOpenDeleteDialog(data.id)}
-                      >
-                        Delete
-                      </Button>
-                    </>
-                  )}
-                </CardActions>
-              </Card> */}
             </Grid>
           ))}
         </Grid>
@@ -757,7 +720,7 @@ const AdminCommunity = () => {
               className="absolute top-2 right-2 text-gray-600 hover:text-black"
               onClick={handleClosePopup}
             >
-              <CloseIcon />
+              X
             </button>
             <form onSubmit={handleFormSubmit}>
               <h2 className="text-2xl font-bold mb-4">
@@ -807,7 +770,7 @@ const AdminCommunity = () => {
 
       <div className="w-full px-6 py-4">
         <FormControl variant="outlined" className="mb-4 w-full md:w-1/4">
-          <InputLabel>Status</InputLabel>
+          <InputLabel>Filter By Status</InputLabel>
           <Select
             value={selectedStatus}
             onChange={handleStatusChange}

@@ -24,12 +24,10 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import ManageUser from "@/database/auth/ManageUser";
 import { useRouter } from "next/navigation";
 import { styled } from "@mui/system";
-import Switch from "@mui/material/Switch"; // Import Switch component
 
 const drawerWidth = 240;
 const navItems = [
   "Home",
-  "Profile",
   "Admin View",
   "View Recommendations",
   "Recommend a community",
@@ -41,11 +39,30 @@ const navItems = [
 
 // Override AppBar styles to set background color to green
 const CustomAppBar = styled(AppBar)({
-  backgroundColor: "#bcd727", // Your desired green color
+  backgroundColor: "white", // Your desired green color
 });
 
+// Create a styled MenuIcon with the desired color, hover effect, and larger size
+const CustomMenuIcon = styled(MenuIcon)(({ theme }) => ({
+  color: "#bcd727",
+  fontSize: 40, // Adjust this value to make the icon larger
+  transition: "color 0.3s", // Smooth transition for color change
+  "&:hover": {
+    color: "#a2b438", // Muted color of #bcd727
+  },
+}));
+
+// Create a styled AccountCircle with the desired color and hover effect
+const CustomAccountCircle = styled(AccountCircle)(({ theme }) => ({
+  color: "grey",
+  fontSize: 50, // Adjust this value to make the icon larger
+  transition: "color 0.3s", // Smooth transition for color change
+  "&:hover": {
+    color: "grey", // Muted color of #bcd727
+  },
+}));
+
 function Header() {
-  const [isHovered, setIsHovered] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const router = useRouter();
   const [loggedIn, setLoggedIn] = useState(false);
@@ -108,13 +125,11 @@ function Header() {
             onClick={handleDrawerToggle}
             sx={{ mr: 2 }}
           >
-            <MenuIcon />
+            <CustomMenuIcon />
           </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            OPEN COMMUNITY
-          </Typography>
-          {/* Add Switch before the AccountCircle icon */}
-          <Switch color="default" />
+          <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
+            <Image src={Logo} alt="Logo" width={250} height={80} />
+          </Box>
           <IconButton
             size="large"
             aria-label="account of current user"
@@ -123,7 +138,7 @@ function Header() {
             color="inherit"
             onClick={() => router.push("/Profile")}
           >
-            <AccountCircle sx={{ fontSize: 32 }} />
+            <CustomAccountCircle />
           </IconButton>
         </Toolbar>
       </CustomAppBar>

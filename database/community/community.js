@@ -13,6 +13,8 @@ import ManageUser from "../auth/ManageUser";
 import UserDB from "./users";
 import StorageDB from "../StorageDB";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import StorageDB from "../StorageDB";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default class CommunityDB {
   static uploadCommunityImage = async (image) => {
@@ -27,7 +29,7 @@ export default class CommunityDB {
       console.log("File available at", downloadURL);
       return downloadURL;
     } catch (err) {
-      setError(`Failed to upload image: ${err.message}`);
+      // setError(Failed to upload image: ${err.message});
       return "no image was saved to firebase";
     }
   };

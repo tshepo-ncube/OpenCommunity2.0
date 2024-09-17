@@ -103,7 +103,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
       <div
         className={`${
           isOpen ? "block" : "hidden"
-        } fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 max-h-120 overflow-y-auto`}
+        } fixed top-1/4 left-1/4 transform -translate-x-1/4 -translate-y-1/4 bg-white p-10 rounded-md shadow-xl z-50 w-3/4 max-w-3xl max-h-120 overflow-y-auto`}
       >
         <button
           onClick={onClose}
@@ -126,11 +126,11 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               value={eventDetails.eventName}
               onChange={handleChangeEvent}
               placeholder="Enter event name"
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+              className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
               required
             />
           </div>
-          <div className="flex justify-between gap-3">
+          <div className="flex justify-between gap-4">
             <div className="flex-1">
               <label
                 htmlFor="startDateTime"
@@ -144,7 +144,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 id="startDateTime"
                 value={eventDetails.startDateTime}
                 onChange={handleChangeEvent}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
                 required
               />
             </div>
@@ -161,12 +161,12 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 id="endDateTime"
                 value={eventDetails.endDateTime}
                 onChange={handleChangeEvent}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
                 required
               />
             </div>
           </div>
-          <div className="flex justify-between gap-3">
+          <div className="flex justify-between gap-4">
             <div className="flex-1">
               <label
                 htmlFor="rsvpEndDateTime"
@@ -180,7 +180,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 id="rsvpEndDateTime"
                 value={eventDetails.rsvpEndDateTime}
                 onChange={handleChangeEvent}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
                 required
               />
             </div>
@@ -192,10 +192,9 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             >
               Location
             </label>
-
             <Autocomplete
               apiKey={"AIzaSyA_nwBxUgw4RTZLvfRpt__cS1DIcYprbQ0"}
-              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+              className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
               name="location"
               id="location"
               onPlaceSelected={(place) => {
@@ -220,7 +219,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               value={eventDetails.description}
               onChange={handleChangeEvent}
               placeholder="Enter event description"
-              className="mt-1 h-40 p-2 border border-gray-300 rounded-md w-full"
+              className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
               required
             ></textarea>
           </div>

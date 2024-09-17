@@ -22,13 +22,23 @@ const CreateCommunity = () => {
   const [userEmail, setUserEmail] = useState("");
   const [userPhone, setUserPhone] = useState("");
   const [roles, setRoles] = useState({ user: false, admin: false });
-
+  const fileInputRef = useRef(null);
   const popupRef = useRef(null);
   const userPopupRef = useRef(null);
-
+  const handleUploadButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
   const handleOpenPopup = () => setPopupOpen(true);
   const handleClosePopup = () => setPopupOpen(false);
+  const [image, setImage] = useState(null);
 
+  const handleImageUpload = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      setImage(event.target.files[0]);
+    }
+  };
   const handleOpenUserPopup = () => setUserPopupOpen(true);
   const handleCloseUserPopup = () => setUserPopupOpen(false);
 
@@ -59,14 +69,6 @@ const CreateCommunity = () => {
       );
     } else {
       console.log("creating a channel now...");
-      // CommunityDB.createCommunity(
-      //   communityData,
-      //   (newCommunity) =>
-      //     setSubmittedData((prevData) => [...prevData, newCommunity]),
-      //   setLoading
-      // );
-      //name, description, category, status
-
       try {
         const res = await axios.post(
           strings.server_endpoints.createChannel,
@@ -186,37 +188,16 @@ const CreateCommunity = () => {
   return (
     <div className="flex-col items-center min-h-screen relative text-center">
       <Header />
-      <div className="flex justify-center mt-8 mb-4">
-        <span
-          onClick={() => setView("Communities")}
-          className={`cursor-pointer mx-4 text-lg ${
-            view === "Communities" ? "font-bold text-black" : "text-gray-500"
-          }`}
-        >
-          Community Management
-        </span>
-        <span
-          onClick={() => setView("User Management")}
-          className={`cursor-pointer mx-4 text-lg ${
-            view === "User Management"
-              ? "font-bold text-black"
-              : "text-gray-500"
-          }`}
-        >
-          User Management
-        </span>
-      </div>
-
-      <div className="border-t border-openbox-green w-full my-4"></div>
 
       {view === "Communities" ? (
         <>
-          <div className="flex justify-center mt-4 mb-8">
+          {/* Floating Action Button */}
+          <div className="fixed bottom-4 right-4 z-20">
             <button
               onClick={handleOpenPopup}
-              className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
+              className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-full p-3 shadow-lg focus:outline-none focus:ring-2 focus:ring-primary-300"
             >
-              + CREATE COMMUNITY
+              + Create Community
             </button>
           </div>
 
@@ -227,13 +208,16 @@ const CreateCommunity = () => {
           {isPopupOpen && (
             <div
               ref={popupRef}
-              className="mt-16 fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-3/4 sm:h-auto lg:h-auto"
+              className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-auto max-h-full overflow-auto"
             >
+              <h1 className="text-xl font-bold  text-gray-700 tracking-wide mb-4">
+                Create a new community
+              </h1>
               <form className="space-y-4">
                 <div>
                   <label
                     htmlFor="name"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-m text-gray-700 text-left font-semibold"
                   >
                     Name
                   </label>
@@ -249,7 +233,7 @@ const CreateCommunity = () => {
                 <div>
                   <label
                     htmlFor="category"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-m text-gray-700 text-left font-semibold"
                   >
                     Category
                   </label>
@@ -272,9 +256,10 @@ const CreateCommunity = () => {
                 <div>
                   <label
                     htmlFor="description"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-m text-gray-700 text-left font-semibold"
                   >
                     Community Description
+                    {/* can we have a word limit for this */}
                   </label>
                   <textarea
                     id="description"
@@ -285,37 +270,33 @@ const CreateCommunity = () => {
                   />
                 </div>
 
-                <div>
-                  <label
-                    htmlFor="description"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Community Image
-                  </label>
+                {/* Add Image here */}
 
+                <div className="flex items-center space-x-4">
+                  <label
+                    htmlFor="image"
+                    className="block text-m text-gray-700 font-semibold"
+                  >
+                    Community Profile Image
+                  </label>
                   <input
                     type="file"
+                    id="image"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    className="hidden"
                     accept="image/*"
-                    onChange={handleImageChange}
                   />
-                  <button type="submit" onClick={handleSubmit}>
-                    Upload Image
+                  <button
+                    type="button"
+                    onClick={handleUploadButtonClick}
+                    className="p-2 bg-openbox-green hover:bg-hover-obgreen text-white rounded-md"
+                  >
+                    Choose Image
                   </button>
-
-                  {/* {previewUrl && (
-                    <div>
-                      <h3>Image Preview:</h3>
-                      <img
-                        src={previewUrl}
-                        alt="Uploaded Preview"
-                        style={{
-                          width: "300px",
-                          height: "auto",
-                          marginTop: "10px",
-                        }}
-                      />
-                    </div>
-                  )} */}
+                  {image && (
+                    <p className="mt-2 text-gray-600">Uploaded: {image.name}</p>
+                  )}
                 </div>
 
                 <div className="flex justify-end">
@@ -329,7 +310,7 @@ const CreateCommunity = () => {
                   <button
                     type="button"
                     onClick={(e) => handleFormSubmit(e, "draft")}
-                    className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                    className="btn bg-gray-500 hover:bg-gray-700 btn text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
                     Save as Draft
                   </button>
@@ -348,7 +329,6 @@ const CreateCommunity = () => {
               </form>
             </div>
           )}
-
           {submittedData.length === 0 ? (
             <div className="text-center">
               <p className="text-gray-900 text-lg">
