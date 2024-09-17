@@ -11,16 +11,37 @@ import {
 } from "firebase/firestore";
 import ManageUser from "../auth/ManageUser";
 import UserDB from "./users";
+import StorageDB from "../StorageDB";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default class CommunityDB {
-  static createCommunity = async (item, setCommunities, setLoading) => {
+  static uploadCommunityImage = async (image) => {
+    const storageRef = ref(StorageDB, `images/${image.name}`);
+    try {
+      // Upload the file
+      const snapshot = await uploadBytes(storageRef, image);
+
+      // Get the download URL
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      console.log("File available at", downloadURL);
+      return downloadURL;
+    } catch (err) {
+      // setError(Failed to upload image: ${err.message});
+      return "no image was saved to firebase";
+    }
+  };
+
+  static createCommunity = async (item, image, setCommunities, setLoading) => {
     setLoading(true);
+    const communityURL = await CommunityDB.uploadCommunityImage(image);
     const object = {
       users: [],
       name: item.name,
       description: item.description,
       category: item.category,
       status: item.status || "active", // Include status field with default value "active"
+      communityImage: communityURL,
     };
     try {
       const docRef = await addDoc(collection(DB, "communities"), object);
@@ -86,6 +107,8 @@ export default class CommunityDB {
   };
 
   static joinCommunity = async (CommunityData) => {
+    if (typeof window === "undefined") return;
+
     const communityRef = doc(DB, "communities", CommunityData.id);
 
     const communityDoc = await getDoc(communityRef);
@@ -330,6 +353,22 @@ export default class CommunityDB {
         users: [],
         message: "Error fetching community users.",
       };
+    }
+  };
+
+  static getCommunity = async (communityID, setCommunities) => {
+    const communityRef = doc(DB, "communities", communityID);
+    const docSnap = await getDoc(communityRef);
+
+    try {
+      if (docSnap.exists()) {
+        console.log(docSnap.data());
+        setCommunities(docSnap.data());
+      } else {
+        console.log("Community does not exists");
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 }
