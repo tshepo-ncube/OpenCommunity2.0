@@ -1,57 +1,26 @@
-import { useState } from "react";
-
-const Tabs: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"events" | "polls">("events");
-
-  return (
-    <div className="w-full mt-8">
-      <div className="flex justify-center mb-6 space-x-10">
-        {/* Tab Buttons */}
-        <button
-          className={`px-6 py-2 text-lg ${
-            activeTab === "events"
-              ? "border-b-4 border-[#bcd727] text-gray-900 font-semibold"
-              : "text-gray-600"
-          }`}
-          onClick={() => setActiveTab("events")}
-        >
-          EVENTS
-        </button>
-        <button
-          className={`px-6 py-2 text-lg ${
-            activeTab === "polls"
-              ? "border-b-4 border-[#bcd727] text-gray-900 font-semibold"
-              : "text-gray-600"
-          }`}
-          onClick={() => setActiveTab("polls")}
-        >
-          POLLS
-        </button>
-      </div>
-
-      {/* Tab Content */}
+const TabTitle: React.FC<{ title: string }> = ({ title }) => {
+    return (
+      <div className="flex items-center justify-center mt-8">
         <div className="text-center">
-            {activeTab === "events" && (
-            <div>
-                <h3 className="text-2xl font-semibold">Upcoming Events</h3>
-                {/* Your events content goes here */}
-
-            </div>
-            )} 
+          {/* Horizontal line above the title */}
+          <div className="w-16 h-1 mx-auto bg-gray-400 mb-4"></div>
+  
+          {/* Title with accent color */}
+          <h2 className="text-3xl font-bold text-gray-800">
+            {title}{" "}
+            <span className="text-[#bcd727]">
+              {title === "Upcoming" ? "Events" : "Polls"}
+            </span>
+          </h2>
+  
+          {/* Horizontal line below the title */}
+          <div className="w-16 h-1 mx-auto bg-gray-400 mt-4"></div>
         </div>
-        
-        <div className="text-center">
-        {activeTab === "polls" && (
-          <div>
-            <h3 className="text-2xl font-semibold">Polls</h3>
-            {/* Your polls content goes here */}
-          </div>
-        )}
       </div>
-    </div>
-  );
-};
-
-export default Tabs;
-
-
+    );
+  };
+export default TabTitle;
+  
+  
+  
+  

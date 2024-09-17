@@ -21,11 +21,6 @@
       "static/chunks/main-app.js",
       "static/chunks/app/Home/community/[id]/page.js"
     ],
-    "/commUI/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/commUI/page.js"
-    ],
     "/DiscoverCommunities/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -35,11 +30,6 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/adminDash/page.js"
-    ],
-    "/Profile/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/Profile/page.js"
     ]
   }
 }

@@ -18,7 +18,7 @@ import { doc, getDoc } from "firebase/firestore";
 import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
-import TabsNavigation from "../../../_Components/TabNavigation"
+import TabTitle from "../../../_Components/TabNavigation"
 
 const CountdownTimer = ({ date }) => {
   const targetDate = new Date("August 30, 2024 08:00:00 UTC").getTime();
@@ -93,7 +93,7 @@ export default function CommunityPage({ params }) {
   const [alertOpen, setAlertOpen] = useState(false);
   const [rsvpState, setRsvpState] = useState({}); // Track RSVP state for each event
   const [currentEventObject, setCurrentEventObject] = useState(null);
-  const [activeTab, setActiveTab] = useState(null); 
+  const [activeTab, setActiveTab] = useState("events"); 
   useEffect(() => {
     if (id) {
       const fetchCommunity = async () => {
@@ -405,97 +405,237 @@ export default function CommunityPage({ params }) {
       </div>
 
       
-      {/* TAB CONTENT FOR EVENTS */}
-      <div>
-        {activeTab === "events" && (
-        
-        <div className="rounded bg-gray-50 p-4 pb-4">
-          <h2 className="text-2xl font-semibold mb-4">Upcoming</h2>
-          {upcomingEvents.length > 0 ? (
-          <div className="overflow-x-auto">
-            <ul className="flex space-x-6">
-              {upcomingEvents.map((event) => (
-                <li key={event.id} className="min-w-[300px] w-[300px] bg-white shadow rounded-md p-4">
-                  {/* Event Image */}
-                  <div className="mb-4">
-                    <img
-                      src="https://images.unsplash.com/photo-1534327737286-52d27a912124?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                      alt={event.Name}
-                      className="w-full h-40 object-cover rounded"
-                    />
-                  </div>
-                  <div className="border-b-2 border-gray-300 mb-2">
-                    <h3 className="text-xl font-semibold text-center">{event.Name}</h3>
-                  </div>
-                  <Typography variant="body2" color="text.secondary" style={{ whiteSpace: "pre-wrap" }}>
-                    <div className="mb-2">
-                      <strong>Description:</strong> {event.EventDescription}
+        {/* TAB CONTENT FOR EVENTS */}
+        <div>
+          {activeTab === "events" && (
+          
+          <div className="rounded bg-gray-50 p-4 pb-4">
+            <h2 className="text-2xl font-semibold mb-4">Upcoming Events</h2>
+            {upcomingEvents.length > 0 ? (
+            <div className="overflow-x-auto">
+              <ul className="flex space-x-6">
+                {upcomingEvents.map((event) => (
+                  <li key={event.id} className="min-w-[300px] w-[300px] bg-white shadow rounded-md p-4">
+                    {/* Event Image */}
+                    <div className="mb-4">
+                      <img
+                        src="https://images.unsplash.com/photo-1534327737286-52d27a912124?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        alt={event.Name}
+                        className="w-full h-40 object-cover rounded"
+                      />
                     </div>
-                    <div>
-                      <strong>Location:</strong> {event.Location}
+                    <div className="border-b-2 border-gray-300 mb-2">
+                      <h3 className="text-xl font-semibold text-center">{event.Name}</h3>
                     </div>
-                    <div>
-                      <strong>Start Date:</strong> {formatDate(event.StartDate)}
-                    </div>
-                    <div>
-                      <strong>End Date:</strong> {formatDate(event.EndDate)}
-                    </div>
-                    <div>
-                      <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
-                    </div>
-                  </Typography>
+                    <Typography variant="body2" color="text.secondary" style={{ whiteSpace: "pre-wrap" }}>
+                      <div className="mb-2">
+                        {event.EventDescription}
+                      </div>
+                      <div>
+                        <strong>Location:</strong> {event.Location}
+                      </div>
+                      <div>
+                        <strong>Start Date:</strong> {formatDate(event.StartDate)}
+                      </div>
+                      <div>
+                        <strong>End Date:</strong> {formatDate(event.EndDate)}
+                      </div>
+                      <div>
+                        <strong>RSVP by:</strong> {formatDate(event.RsvpEndTime)}
+                      </div>
+                    </Typography>
 
-                  <div className="mt-4">
-                    {event.status === "active" ? (
-                      <Button
-                        variant="text"
-                        color="secondary"
-                        className="w-full"
-                        onClick={handleClosedEventClick}
-                      >
-                        Closed
-                      </Button>
-                      ) : (
-                      event.status === "rsvp" &&
-                      (isRSVPed(event.id) ? (
-                        <Button
-                          variant="contained"
-                          color="secondary"
-                          className="w-full"
-                          onClick={() => handleLeave(event.id)}
-                        >
-                          UN RSVP
-                        </Button>
-                       ) : (
-                        <Button
-                          variant="contained"
-                          color="primary"
-                          className="w-full"
-                          onClick={() => handleRSVP(event)}
-                        >
-                          RSVP
-                        </Button>
-                        )
-                      )
+                    <div className="mt-4">
+                      {event.status === "active" ? (
+                        <div className="flex space-x-4">
+                          {/* Closed Button */}
+                          <button
+                            className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
+                            onClick={handleClosedEventClick}
+                          >
+                            Closed
+                          </button>
+
+                            {/* Share Button */}
+                            <button
+                              className="flex-1 bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400 transition-all"
+                              onClick={() => handleShare(event)}
+                            >
+                              Share
+                            </button>
+                          </div>
+                        ) : (
+                          event.status === "rsvp" && (
+                            <div className="flex space-x-4">
+                              {/* RSVP/Un-RSVP Button */}
+                              {isRSVPed(event.id) ? (
+                                <button
+                                  className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
+                                  onClick={() => handleLeave(event.id)}
+                                >
+                                  UN RSVP
+                                </button>
+                              ) : (
+                                <button
+                                  className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
+                                  onClick={() => handleRSVP(event)}
+                                >
+                                  RSVP
+                                </button>
+                              )}
+
+                              {/* Share Button: Logic needs to share event details? */}
+                              <RWebShare
+                                data={{
+                                  text: `Community Name - ${community.name}`,
+                                  url: `http://localhost:3000/${id}`,
+                                  title: `Community Name - ${community.name}`,
+                                }}
+                                onClick={() => console.log("shared successfully!")}
+                                >
+                                <button className="flex-1 bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400 transition-all">
+                                  Share
+                                </button>
+                              </RWebShare>
+                            </div>
+                          )
                         )}
-                  </div>
-                </li>
-                ))
-              }
-              
-            </ul>
-          </div>
-          ) : (
-            <Typography>No upcoming events to display</Typography>)}
-          </div>)} 
-        {/* Past Events */}
+                      </div>
+                  </li>
+                  ))
+                }
+                
+              </ul>
+            </div>
+            ) : (
+              <Typography>No upcoming events to display</Typography>)}
 
-      </div>
+            {/* Past Events */}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8">
+            <div className="rounded bg-gray-50 p-4 relative">
+            <h2 className="text-2xl font-semibold mb-4">Past Events</h2>
+
+            {pastEvents.length > 0 ? (
+              <div className="overflow-x-auto">
+                <ul className="flex space-x-6">
+                  {pastEvents.map((event) => (
+                    <li
+                      key={event.id}
+                      className="min-w-[300px] w-[300px] bg-white shadow rounded-md p-4"
+                    >
+                      {/* Event Image */}
+                      <div className="mb-4">
+                        <img
+                          src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                          alt={event.Name}
+                          className="w-full h-40 object-cover rounded"
+                        />
+                      </div>
+                      <div className="border-b-2 border-gray-300 mb-2">
+                        <h3 className="text-xl font-semibold text-center">
+                          {event.Name}
+                        </h3>
+                      </div>
+
+                      <div className="text-gray-600">
+                        <div className="mb-2">
+                          <strong>Description:</strong> {event.EventDescription}
+                        </div>
+                        <div>
+                          <strong>Location:</strong> {event.Location}
+                        </div>
+                        <div>
+                          <strong>Start Date:</strong> {formatDate(event.StartDate)}
+                        </div>
+                        <div>
+                          <strong>End Date:</strong> {formatDate(event.EndDate)}
+                        </div>
+                      </div>
+
+                      <div className="mt-4">
+                        <button
+                          className="w-full text-white py-2 px-4 rounded-md"
+                          style={{ backgroundColor: "#a8bd22" }} // Custom color for default state
+                          onClick={() => handleCommentReview(event)}
+                        >
+                          Leave a Comment & Review
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <div>No past events</div>
+            )}
+            </div>
+            </div>)} 
+        </div>
+
+        {/* TAB CONTENT FOR POLLS */}
+        <div className="text-center">
+            {activeTab === "polls" && (
+            <div>
+                <h3 className="text-2xl font-semibold">Polls</h3>
+                {
+                
+                <div className="rounded   bg-gray-50 p-4">
+                {/* <h2 className="text-2xl font-semibold mb-4">Polls</h2> */}
+                {allPolls.length > 0 ? (
+                  allPolls.map((poll, index) => (
+                    <div key={index} className="p-4 bg-white shadow rounded-md mb-4">
+                      <Typography variant="body2" color="text.secondary">
+                        <h3 className="text-xl font-semibold border-b-2 border-gray-300 mb-2">
+                          {poll.Question}
+                        </h3>
+                        <ul>
+                          {poll.Opt.map((poll_option, poll_option_index) => (
+                            <div className="mt-2">
+                              <input
+                                type="radio"
+                                name={`poll-${poll.id}`}
+                                id={`poll-${poll.id}-opt-${poll_option_index}`}
+                                className="mr-2"
+                                onChange={() =>
+                                  handlePollOptionSelection(
+                                    poll.id,
+                                    poll_option.title
+                                  )
+                                }
+                                disabled={poll.selected ? true : false}
+                                // checked={
+                                //   poll.selected &&
+                                //   poll.selected_option === poll_option.title
+                                // }
+                                checked={
+                                  poll.selected &&
+                                  poll.selected_option === poll_option.title
+                                }
+                                //checked
+                              />
+                              <label htmlFor={`poll-${poll.id}-option-2`}>
+                                {poll_option.title}
+                              </label>
+                            </div>
+                          ))}
+                        </ul>
+                      </Typography>
+                    </div>
+                  ))
+                ) : (
+                  <Typography>No polls available</Typography>
+                )}
+              </div> 
+                
+                }
+            </div>
+            )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8">
 
         {/* Polls */}
-        <div className="rounded   bg-gray-50 p-4">
+         {/* <div className="rounded   bg-gray-50 p-4">
           <h2 className="text-2xl font-semibold mb-4">Polls</h2>
           {allPolls.length > 0 ? (
             allPolls.map((poll, index) => (
@@ -505,28 +645,6 @@ export default function CommunityPage({ params }) {
                     {poll.Question}
                   </h3>
                   <ul>
-                    {/* {Array.isArray(poll.Options) && poll.Options.length > 0 ? (
-                      poll.Options.map((option, idx) => (
-                        <li key={idx} className="mt-2">
-                          <button
-                            className={`w-full text-left px-4 py-2 rounded ${
-                              poll.selected && poll.selected_option === option
-                                ? "bg-openbox-blue text-white"
-                                : "bg-gray-100"
-                            }`}
-                            onClick={() =>
-                              handlePollOptionSelection(poll.id, option)
-                            }
-                            disabled={poll.selected}
-                          >
-                            {option}
-                          </button>
-                        </li>
-                      ))
-                    ) : (
-                      <li>No options available</li>
-                    )} */}
-
                     {poll.Opt.map((poll_option, poll_option_index) => (
                       <div className="mt-2">
                         <input
@@ -563,51 +681,7 @@ export default function CommunityPage({ params }) {
           ) : (
             <Typography>No polls available</Typography>
           )}
-        </div>
-
-        {/* Past Events */}
-        <div className="rounded  bg-gray-50 p-4">
-          <h2 className="text-2xl font-semibold mb-4">Past Events</h2>
-          <ul className="space-y-4">
-            {pastEvents.length > 0 ? (
-              pastEvents.map((event) => (
-                <li key={event.id} className="p-4 bg-white shadow rounded-md">
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    style={{ whiteSpace: "pre-wrap" }}
-                  >
-                    <div className="border-b-2 border-gray-300 mb-2">
-                      <h3 className="text-xl font-semibold">{event.Name}</h3>
-                    </div>
-                    <strong>Description:</strong> {event.EventDescription}
-                    <br />
-                    <strong>Location:</strong> {event.Location}
-                    <br />
-                    <strong>Start Date:</strong> {formatDate(event.StartDate)}
-                    <br />
-                    {/* <strong>Start Time:</strong> {formatTime(event.StartDate)}
-                    <br /> */}
-                    <strong>End Date:</strong> {formatDate(event.EndDate)}
-                    {/* <br />
-                    <strong>End Time:</strong> {formatTime(event.EndDate)} */}
-                  </Typography>
-                  <Button
-                    variant="text"
-                    color="primary"
-                    className="w-full mt-2"
-                    onClick={() => handleCommentReview(event)}
-                    style={{ color: "blue" }} // Styling as blue text
-                  >
-                    Leave a Comment & Review
-                  </Button>
-                </li>
-              ))
-            ) : (
-              <Typography>No past events</Typography>
-            )}
-          </ul>
-        </div>
+        </div>  */}
       </div>
 
       <Dialog open={openDialog} onClose={handleCloseDialog}>

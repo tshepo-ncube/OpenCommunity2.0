@@ -13,7 +13,7 @@ const openTeamsApp = () => {
 
 const openOutlookApp = () => {
   window.location.href = "mailto:";
-};
+};  
 
 const Sidebar = () => {
   const [loggedIn, setLoggedIn] = useState(false);
