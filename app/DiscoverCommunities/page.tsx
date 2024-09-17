@@ -23,7 +23,6 @@ const CreateCommunity = () => {
   const [userEmail, setUserEmail] = useState("");
   const [userPhone, setUserPhone] = useState("");
   const [roles, setRoles] = useState({ user: false, admin: false });
-  const [image, setImage] = useState(null); // New state for the image
 
   const popupRef = useRef(null);
   const userPopupRef = useRef(null);
@@ -39,17 +38,8 @@ const CreateCommunity = () => {
     setRoles((prevRoles) => ({ ...prevRoles, [name]: checked }));
   };
 
-  const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
-  };
-
   const handleFormSubmit = async (e, status) => {
     e.preventDefault();
-
-    if (!image) {
-      alert("Please upload an image.");
-      return;
-    }
 
     const communityData = {
       name,
@@ -58,73 +48,52 @@ const CreateCommunity = () => {
       status,
     };
 
-    try {
-      // First, upload the image
-      const formData = new FormData();
-      formData.append("image", image);
-      const imageRes = await axios.post(
-        "http://localhost:8080/uploadImage",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+    if (editIndex !== null) {
+      CommunityDB.updateCommunity(
+        { id: submittedData[editIndex].id, ...communityData },
+        (updatedData) => {
+          const updatedSubmittedData = [...submittedData];
+          updatedSubmittedData[editIndex] = updatedData;
+          setSubmittedData(updatedSubmittedData);
+        },
+        setLoading
       );
-
-      console.log(imageRes.data);
-      communityData.imageUrl = imageRes.data.imageUrl;
-
-      if (editIndex !== null) {
-        CommunityDB.updateCommunity(
-          { id: submittedData[editIndex].id, ...communityData },
-          (updatedData) => {
-            const updatedSubmittedData = [...submittedData];
-            updatedSubmittedData[editIndex] = updatedData;
-            setSubmittedData(updatedSubmittedData);
-          },
-          setLoading
+    } else {
+      console.log("creating a channel now...");
+      try {
+        const res = await axios.post(
+          "http://localhost:8080/createChannel",
+          { name, description, category, status },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
         );
-      } else {
-        console.log("creating a channel now...");
-        try {
-          const res = await axios.post(
-            "http://localhost:8080/createChannel",
-            { name, description, category, status },
-            {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
 
-          console.log(res.data);
-          let data = res.data;
+        console.log(res.data);
+        let data = res.data;
 
-          CommunityDB.createCommunity(
-            communityData,
-            (newCommunity) =>
-              setSubmittedData((prevData) => [...prevData, newCommunity]),
-            setLoading,
-            {
-              WebUrl: data.webUrl,
-              ChannelID: data.id,
-            }
-          );
-        } catch (err) {
-          console.log("error");
-        }
+        CommunityDB.createCommunity(
+          communityData,
+          (newCommunity) =>
+            setSubmittedData((prevData) => [...prevData, newCommunity]),
+          setLoading,
+          {
+            WebUrl: data.webUrl,
+            ChannelID: data.id,
+          }
+        );
+      } catch (err) {
+        console.log("error");
       }
-
-      setName("");
-      setDescription("");
-      setCategory("general");
-      setImage(null); // Reset the image
-      setEditIndex(null);
-      setPopupOpen(false);
-    } catch (err) {
-      console.log("Image upload error", err);
     }
+
+    setName("");
+    setDescription("");
+    setCategory("general");
+    setEditIndex(null);
+    setPopupOpen(false);
   };
 
   const handleEdit = (index) => {
@@ -238,22 +207,6 @@ const CreateCommunity = () => {
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                    required
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="image"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Community Image
-                  </label>
-                  <input
-                    type="file"
-                    id="image"
-                    onChange={handleImageChange}
-                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                    accept="image/*"
                     required
                   />
                 </div>

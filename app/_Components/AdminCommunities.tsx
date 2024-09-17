@@ -244,7 +244,21 @@ const AdminCommunity = () => {
                       {data.status === "active" && (
                         <>
                           <div
-                            style={{ position: "absolute", top: 8, right: 10 }}
+                            style={{
+                              position: "absolute",
+                              top: 8,
+                              right: 4,
+                              color: "white",
+                              backgroundColor: "rgba(0, 0, 0, 0.5)",
+                              borderRadius: "50%", // Makes the button circular
+                              width: 30, // Adjust width as needed
+                              height: 30, // Adjust height as needed
+                              padding: 0, // Remove default padding
+                              minWidth: 0, // Remove default min-width
+                              display: "flex", // Center the icon
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
                             className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                             onClick={() => handleArchive(data.id)}
                             title="Archive" // Tooltip text
@@ -259,8 +273,21 @@ const AdminCommunity = () => {
                           </div>
 
                           <Button
-                            style={{ position: "absolute", top: 8, right: 115 }}
-                            className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
+                            style={{
+                              position: "absolute",
+                              top: 8,
+                              right: 115,
+                              color: "white",
+                              backgroundColor: "rgba(0, 0, 0, 0.5)",
+                              borderRadius: "50%", // Makes the button circular
+                              width: 30, // Adjust width as needed
+                              height: 30, // Adjust height as needed
+                              padding: 0, // Remove default padding
+                              minWidth: 0, // Remove default min-width
+                              display: "flex", // Center the icon
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
                             size="small"
                             onClick={() => {
                               localStorage.setItem("CurrentCommunity", data.id);
@@ -325,6 +352,16 @@ const AdminCommunity = () => {
                                     position: "absolute",
                                     top: 8,
                                     right: 46,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
                                   }}
                                   className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
@@ -339,6 +376,16 @@ const AdminCommunity = () => {
                                     position: "absolute",
                                     top: 8,
                                     right: 84,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
                                   }}
                                   className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
@@ -352,6 +399,21 @@ const AdminCommunity = () => {
                                   <DeleteIcon />
                                 </Button>
                                 <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 7,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
                                   size="small"
                                   onClick={() => handleUnarchive(data.id)}
                                   title="Unarchive" // Tooltip text
@@ -367,6 +429,16 @@ const AdminCommunity = () => {
                                     position: "absolute",
                                     top: 8,
                                     right: 38,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
                                   }}
                                   className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
@@ -381,6 +453,16 @@ const AdminCommunity = () => {
                                     position: "absolute",
                                     top: 8,
                                     right: 78,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
                                   }}
                                   className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
@@ -397,6 +479,21 @@ const AdminCommunity = () => {
                               // Draft status actions
                               <>
                                 <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 4,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
                                   className="absolute top-2 right-2 text-white hover:text-white"
                                   size="small"
                                   onClick={() => handleEdit(data.id)}
@@ -408,7 +505,17 @@ const AdminCommunity = () => {
                                   style={{
                                     position: "absolute",
                                     top: 8,
-                                    right: 44,
+                                    right: 40,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
                                   }}
                                   className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
@@ -422,6 +529,16 @@ const AdminCommunity = () => {
                                     position: "absolute",
                                     top: 8,
                                     right: 78,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
                                   }}
                                   className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
                                   size="small"
