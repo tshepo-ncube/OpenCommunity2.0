@@ -16,6 +16,16 @@ import { useTable } from "react-table";
 import Swal from "sweetalert2"; // Import SweetAlert2
 import { motion, AnimatePresence } from "framer-motion";
 import { FaHeart, FaRegHeart, FaPlus, FaEnvelope } from "react-icons/fa";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
 const mutedLimeGreen = "#d0e43f"; // Muted version of #bcd727
 
 export default function RecommendationsTable() {
