@@ -250,11 +250,12 @@ const Profile = () => {
     }
     const success = await ManageUser.editProfileData(profile.id, profile);
     if (success) {
-    if (success) {
-      // If the profile update was successful, fetch the updated profile data
-      ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
-    } else {
-      // Handle failure
+      if (success) {
+        // If the profile update was successful, fetch the updated profile data
+        ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
+      } else {
+        // Handle failure
+      }
     }
   };
 
@@ -427,7 +428,6 @@ const Profile = () => {
                   />
                 </div>
               )}
-
 
               <div className="mb-4">
                 <button

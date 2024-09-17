@@ -168,15 +168,6 @@ export default function CommunityPage({ params }) {
       console.log("allEvents is undefined or null");
     }
 
-    const events = [
-      {
-        title: "Soccer Fun Day",
-        start: new Date(),
-        end: new Date(),
-        color: "#bcd727",
-      },
-    ];
-
     let transformedUsers = allEvents.map((event) => {
       // Remove the 'age' field and add a new field 'isAdult'
       return {

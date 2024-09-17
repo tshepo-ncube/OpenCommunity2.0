@@ -98,7 +98,7 @@ export default class ManageUser {
       });
     } catch (error) {
       console.error("Error getting Profile Data: ", error);
-      alert(error);
+      //alert(error);
     }
   };
   static editPassword = (newPassword, setError) => {

@@ -76,7 +76,7 @@ export default class PollDB {
       setPolls(pollsArray);
     } catch (error) {
       console.error("Error getting poll Data: ", error);
-      alert(error);
+      //alert(error);
     }
   };
 
@@ -124,7 +124,7 @@ export default class PollDB {
       setPolls(pollsArray);
     } catch (error) {
       console.error("Error getting poll Data: ", error);
-      alert(error);
+      //alert(error);
     }
   };
 
