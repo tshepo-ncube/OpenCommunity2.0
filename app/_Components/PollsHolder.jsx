@@ -217,27 +217,32 @@ function PollsHolder({ communityID }) {
             {inActivePolls.map((value) => (
               <Grid key={value.id} item xs={12} sm={6} md={4} lg={3}>
                 <Card style={cardStyle}>
-                  <IconButton
-                    aria-label="analytics"
-                    style={{ ...iconStyle, backgroundColor: "transparent" }}
-                    onClick={() => {
-                      setAnalyticsPollPointer(value);
-                      setShowAnalyticsForm(true);
-                    }}
-                  >
-                    <AssessmentIcon />
-                  </IconButton>
-                  <IconButton
-                    aria-label="delete poll"
+                  <div
                     style={{
-                      ...iconStyle,
-                      backgroundColor: "transparent",
-                      top: 40,
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      gap: "8px",
+                      padding: "8px",
                     }}
-                    onClick={() => console.log("Delete Poll")}
                   >
-                    <DeleteIcon />
-                  </IconButton>
+                    <IconButton
+                      aria-label="analytics"
+                      style={{ backgroundColor: "transparent" }}
+                      onClick={() => {
+                        setAnalyticsPollPointer(value);
+                        setShowAnalyticsForm(true);
+                      }}
+                    >
+                      <AssessmentIcon />
+                    </IconButton>
+                    <IconButton
+                      aria-label="delete poll"
+                      style={{ backgroundColor: "transparent" }}
+                      onClick={() => console.log("Delete Poll")}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </div>
                   <CardContent>
                     <h3 className="mb-4 font-semibold text-gray-900 dark:text-white">
                       {value.Question}
