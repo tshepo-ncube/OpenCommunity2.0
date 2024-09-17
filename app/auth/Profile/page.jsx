@@ -159,11 +159,12 @@ const Profile = () => {
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
-
+    console.log(name, value);
     //new Yan added in this code
     if (name === "Diet") {
       setIsOtherDietSelected(value === "Other");
       if (value !== "Other") {
+        console.log(otherDiet);
         setOtherDiet(""); // Clear if not "Other"
       }
     }
@@ -171,17 +172,38 @@ const Profile = () => {
     if (name === "Allergies") {
       setIsOtherAllergySelected(value === "Other");
       if (value !== "Other") {
+        console.log(otherAllergy);
         setOtherAllergy(""); // Clear if not "Other"
       }
     }
     //end
 
     console.log(name, value);
+    // setProfile((prevProfile) => ({
+    //   ...prevProfile,
+    //   [name]: value,
+    // }));
+
     setProfile((prevProfile) => ({
       ...prevProfile,
       [name]: value,
+      ...(otherAllergy !== "" && { otherAllergy }),
+      ...(otherDiet !== "" && { otherDiet }),
     }));
+
+    // if (otherAllergy !== "") {
+    //   setProfile((prevProfile) => ({
+    //     ...prevProfile,
+    //     [name]: value,
+    //     otherAllergy: otherAllergy if otherAllergy !== ""
+    //     otherDiet: otherDiet if otherDiet !== ""
+    //   }));
+    // }
   };
+
+  useEffect(() => {
+    console.log(profile);
+  }, [profile]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -227,6 +249,7 @@ const Profile = () => {
       }));
     }
     const success = await ManageUser.editProfileData(profile.id, profile);
+    if (success) {
     if (success) {
       // If the profile update was successful, fetch the updated profile data
       ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
@@ -398,11 +421,13 @@ const Profile = () => {
                     name="otherAllergy"
                     className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                     value={otherAllergy}
+                    // onChange={handleProfileChange}
                     onChange={(e) => setOtherAllergy(e.target.value)}
                     required
                   />
                 </div>
               )}
+
 
               <div className="mb-4">
                 <button

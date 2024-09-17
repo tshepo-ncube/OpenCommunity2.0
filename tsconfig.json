@@ -31,7 +31,17 @@
     "_Components/header.jsx",
     "_Components/DiscoverCommunity.jsx",
     "_Components/AdvancedCalendar.jsx",
-    "_Components/AdminCommunities.jsx"
+    "_Components/AdminCommunities.jsx",
+    "app/page.jsx",
+    "app/layout.jsx",
+    "app/Home/page.jsx",
+    "app/Home/userview/page.jsx",
+    "app/auth/RecommendCommunity/page.jsx",
+    "app/auth/Leaderboard/page.jsx",
+    "app/admin/RecommendedCommunities/page.jsx",
+    "_Components/sidebar.jsx",
+    "_Components/MyCommunities.jsx",
+    "_Components/MapComponent.jsx"
   ],
   "exclude": ["node_modules"]
 }

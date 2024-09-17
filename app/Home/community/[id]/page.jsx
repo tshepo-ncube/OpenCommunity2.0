@@ -114,15 +114,7 @@ export default function CommunityPage({ params }) {
   const [currentEventObject, setCurrentEventObject] = useState(null);
 
   const [currentDate, setCurrentDate] = useState(new Date());
-
-  const events = [
-    {
-      title: "Soccer Fun Day",
-      start: new Date(),
-      end: new Date(),
-      color: "#bcd727",
-    },
-  ];
+  const [events, setEvents] = useState([]);
   useEffect(() => {
     if (id) {
       const fetchCommunity = async () => {
@@ -150,6 +142,54 @@ export default function CommunityPage({ params }) {
   useEffect(() => {
     console.log(selectedImages);
   }, [selectedImages]);
+
+  useEffect(() => {
+    console.log("ALL Events :", allEvents);
+    console.log(allEvents[0]);
+    if (allEvents && allEvents[0]) {
+      console.log(allEvents[0].Name);
+      console.log();
+      setEvents(
+        allEvents.map((event) => {
+          console.log(event.StartDate);
+          // Remove the 'age' field and add a new field 'isAdult'
+
+          if (event.status == "past") {
+          }
+          return {
+            title: event.Name, // Keep the 'name' field
+            start: new Date(event.StartDate.seconds * 1000), // Keep the 'city' field
+            end: new Date(event.StartDate.seconds * 1000), // Keep the 'city' field
+            color: event.status === "past" ? "#FF0000" : "#bcd727",
+          };
+        })
+      );
+    } else {
+      console.log("allEvents is undefined or null");
+    }
+
+    const events = [
+      {
+        title: "Soccer Fun Day",
+        start: new Date(),
+        end: new Date(),
+        color: "#bcd727",
+      },
+    ];
+
+    let transformedUsers = allEvents.map((event) => {
+      // Remove the 'age' field and add a new field 'isAdult'
+      return {
+        title: event.Name, // Keep the 'name' field
+        start: new Date(event.StartDate), // Keep the 'city' field
+        end: new Date(event.EndDate), // Keep the 'city' field
+        color: "#bcd727",
+      };
+    });
+    // allEvents.forEach(function (element) {
+    //   console.log(element);
+    // });
+  }, [allEvents]);
 
   useEffect(() => {
     console.log("All Polls Changed: ", allPolls);

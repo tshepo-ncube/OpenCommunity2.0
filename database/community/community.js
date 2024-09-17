@@ -86,6 +86,8 @@ export default class CommunityDB {
   };
 
   static joinCommunity = async (CommunityData) => {
+    if (typeof window === "undefined") return;
+
     const communityRef = doc(DB, "communities", CommunityData.id);
 
     const communityDoc = await getDoc(communityRef);
@@ -330,6 +332,22 @@ export default class CommunityDB {
         users: [],
         message: "Error fetching community users.",
       };
+    }
+  };
+
+  static getCommunity = async (communityID, setCommunities) => {
+    const communityRef = doc(DB, "communities", communityID);
+    const docSnap = await getDoc(communityRef);
+
+    try {
+      if (docSnap.exists()) {
+        //console.log(docSnap.data());
+        setCommunities(docSnap.data());
+      } else {
+        console.log("Community does not exists");
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 }

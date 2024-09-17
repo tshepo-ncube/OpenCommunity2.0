@@ -163,6 +163,26 @@ const CreateCommunity = () => {
     }
   };
 
+  const [image, setImage] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file); // Store the uploaded image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result); // Set the preview URL
+      };
+      reader.readAsDataURL(file); // Read the image file as a data URL
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission or upload logic here
+    console.log("Image uploaded:", image);
+  };
   return (
     <div className="flex-col items-center min-h-screen relative text-center">
       <Header />
@@ -263,6 +283,39 @@ const CreateCommunity = () => {
                     className="mt-1 p-2  h-40 border border-gray-300 rounded-md w-full"
                     required
                   />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="description"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Community Image
+                  </label>
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                  />
+                  <button type="submit" onClick={handleSubmit}>
+                    Upload Image
+                  </button>
+
+                  {/* {previewUrl && (
+                    <div>
+                      <h3>Image Preview:</h3>
+                      <img
+                        src={previewUrl}
+                        alt="Uploaded Preview"
+                        style={{
+                          width: "300px",
+                          height: "auto",
+                          marginTop: "10px",
+                        }}
+                      />
+                    </div>
+                  )} */}
                 </div>
 
                 <div className="flex justify-end">
