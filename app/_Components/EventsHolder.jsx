@@ -18,7 +18,6 @@ import {
   Paper,
 } from "@mui/material";
 import * as XLSX from "xlsx";
-import AnalyticsDB from "../../database/community/analytics";
 import EventDB from "../../database/community/event";
 import { green, red, blue, yellow } from "@mui/material/colors";
 import AddIcon from "@mui/icons-material/Add";
@@ -29,15 +28,12 @@ import {
   VisibilityOff as VisibilityOffIcon,
   Delete as DeleteIcon,
   PostAdd as PostAddIcon,
-  OpenInNew as OpenInNewIcon, // Add this line for the open icon
-  Assessment as AssessmentIcon, // Add this line for the analytics icon
-  ShowChart as ShowChartIcon, // Add this line for the reporting icon
+  Assessment as AssessmentIcon,
 } from "@mui/icons-material";
 
 const EventsHolder = ({
   communityID,
   handleCreateNewEvent,
-  createEvent,
   setShowEventForm,
   setEventForm,
 }) => {
@@ -49,12 +45,6 @@ const EventsHolder = ({
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [rsvpEmails, setRsvpEmails] = useState([]);
   const [analyticsData, setAnalyticsData] = useState([]);
-
-  useEffect(() => {
-    AnalyticsDB.getUsersDetailsByEmails(rsvpEmails).then((userDetailsList) => {
-      setAnalyticsData(userDetailsList);
-    });
-  }, [rsvpEmails]);
 
   useEffect(() => {
     EventDB.getEventFromCommunityID(communityID, setAllEvents);
@@ -251,21 +241,21 @@ const EventsHolder = ({
 
   return (
     <div className="mt-4">
-      <h1 className="text-xxl relative my-4">
+      <h1 className="text-xxl relative mt-12 mb-9 bg-[#a0a0a0] text-white p-2">
         Upcoming Events
         <IconButton
-          className="bg-openbox-green text-openbox-green"
+          className="bg-grey"
           sx={{
             borderRadius: "50%",
-            backgroundColor: "#bcd727",
+            backgroundColor: "#bcd717",
             color: "white",
             marginLeft: 2,
             "&:hover": {
-              backgroundColor: "#819417",
+              backgroundColor: "#9aaf2e",
             },
           }}
           onClick={handleCreateNewEvent}
-          aria-label="create poll"
+          aria-label="create event"
         >
           <AddIcon />
         </IconButton>
@@ -277,114 +267,142 @@ const EventsHolder = ({
         ) : upcomingEvents.length === 0 ? (
           <center>No upcoming events</center>
         ) : (
-          <Grid container spacing={2}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gap: "15px",
+            }}
+          >
             {upcomingEvents.map((value) => (
-              <Grid key={value.id} item>
-                <Card sx={{ maxWidth: 345 }}>
-                  <CardHeader
-                    title={value.Name}
-                    subheader={`${formatDate(value.StartDate)} - ${formatDate(
-                      value.EndDate
-                    )}`}
-                    action={
-                      <Box
-                        sx={{ display: "flex", gap: "4px", marginTop: "70px" }}
-                      >
-                        <Box
-                          sx={{
-                            bgcolor: getStatusColor(value.status),
-                            color: "#fff",
-                            p: 0.5,
-                            borderRadius: "4px",
-                          }}
-                        >
-                          <Typography variant="caption">
-                            {value.status}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    }
-                  />
-
-                  <CardContent>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      style={{ whiteSpace: "pre-wrap" }}
+              <Card
+                key={value.id}
+                sx={{
+                  maxWidth: 345,
+                  position: "relative",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)", // Dark shadow added here
+                  margin: "16px 0",
+                }}
+              >
+                {/* Header section with icons */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    padding: 1,
+                    borderBottom: "1px solid #ccc",
+                    bgcolor: "#f5f5f5",
+                    width: "100%",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  {/* Color block for non-past events */}
+                  {value.status !== "past" && (
+                    <Box
+                      sx={{
+                        bgcolor: getStatusColor(value.status),
+                        color: "#fff",
+                        p: 1,
+                        width: 70,
+                        height: 40,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: "4px",
+                        typography: "caption",
+                        fontSize: "0.75rem",
+                      }}
                     >
-                      <strong>Date:</strong>{" "}
-                      {`${formatDate(value.StartDate)} - ${formatDate(
-                        value.EndDate
-                      )}`}
-                      <br />
-                      <strong>Time:</strong>{" "}
-                      {`${formatTime(value.StartDate)} - ${formatTime(
-                        value.EndDate
-                      )}`}
-                      <br />
-                      <strong>Location:</strong> {value.Location}
-                      <br />
-                      <strong>Description:</strong> {value.Description}
+                      <Typography variant="caption">{value.status}</Typography>
+                    </Box>
+                  )}
+
+                  {/* Centered event name */}
+                  <Box
+                    sx={{
+                      flex: 1,
+                      textAlign: "center",
+                    }}
+                  >
+                    <Typography variant="h6" component="div">
+                      {value.Name}
                     </Typography>
-                  </CardContent>
-
-                  <CardActions>
-                    {value.status === "draft" && (
-                      <>
-                        <Button
-                          size="small"
-                          onClick={() => handlePost(value.id)}
-                        >
-                          Post
-                        </Button>
-                        <Button
-                          size="small"
-                          onClick={() => handleDeleteConfirmation(value.id)}
-                          title="Delete"
-                        >
-                          <DeleteIcon />
-                        </Button>
-                      </>
-                    )}
-
-                    {(value.status === "rsvp" || value.status === "active") && (
-                      <>
-                        <Button
-                          size="small"
-                          onClick={() => handleViewAnalytics(value)}
-                          title="View Analytics"
-                        >
-                          <AssessmentIcon />
-                        </Button>
-                        <Button
-                          size="small"
-                          color="error"
-                          onClick={() => handleDeleteConfirmation(value.id)}
-                          title="Delete"
-                        >
-                          <DeleteIcon />
-                        </Button>
-                      </>
-                    )}
-
-                    {value.status === "past" && (
-                      <Button
+                  </Box>
+                  {/* Icons for actions */}
+                  <Box sx={{ display: "flex", gap: 1 }}>
+                    {value.status !== "past" && (
+                      <IconButton
                         size="small"
                         onClick={() => handleViewAnalytics(value)}
                         title="View Analytics"
                       >
                         <AssessmentIcon />
-                      </Button>
+                      </IconButton>
                     )}
-                  </CardActions>
-                </Card>
-              </Grid>
+                    {value.status !== "draft" && (
+                      <IconButton
+                        size="small"
+                        onClick={() => handleDeleteConfirmation(value.id)}
+                        title="Delete"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
+                  </Box>
+                </Box>
+
+                <CardContent sx={{ mt: 0 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    style={{ whiteSpace: "pre-wrap" }}
+                  >
+                    <strong>Date:</strong>{" "}
+                    {`${formatDate(value.StartDate)} - ${formatDate(
+                      value.EndDate
+                    )}`}
+                    <br />
+                    <strong>Time:</strong>{" "}
+                    {`${formatTime(value.StartDate)} - ${formatTime(
+                      value.EndDate
+                    )}`}
+                    <br />
+                    <strong>Location:</strong> {value.Location}
+                    <br />
+                    <strong>Description:</strong> {value.Description}
+                  </Typography>
+                </CardContent>
+
+                <CardActions>
+                  {value.status === "draft" && (
+                    <Button size="small" onClick={() => handlePost(value.id)}>
+                      Post
+                    </Button>
+                  )}
+
+                  {(value.status === "rsvp" || value.status === "active") && (
+                    <></>
+                  )}
+
+                  {value.status === "past" && (
+                    <Button
+                      size="small"
+                      onClick={() => handleViewAnalytics(value)}
+                      title="View Analytics"
+                    >
+                      <AssessmentIcon />
+                    </Button>
+                  )}
+                </CardActions>
+              </Card>
             ))}
-          </Grid>
+          </div>
         )}
       </div>
 
-      <h1 className="text-xxl relative my-4">Past Events</h1>
+      <h1 className="text-xxl relative mt-12 mb-9 bg-[#c0c0c0] text-white p-2">
+        Past Events
+      </h1>
 
       <div style={{ overflowX: "auto", whiteSpace: "nowrap" }}>
         {loading ? (
@@ -392,72 +410,86 @@ const EventsHolder = ({
         ) : pastEvents.length === 0 ? (
           <center>No past events</center>
         ) : (
-          <Grid container spacing={2}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gap: "15px",
+            }}
+          >
             {pastEvents.map((value) => (
-              <Grid key={value.id} item>
-                <Card sx={{ maxWidth: 345 }}>
-                  <CardHeader
-                    title={value.Name}
-                    subheader={`${formatDate(value.StartDate)} - ${formatDate(
-                      value.EndDate
-                    )}`}
-                    action={
-                      <Box
-                        sx={{ display: "flex", gap: "4px", marginTop: "16px" }}
-                      >
-                        <Box
-                          sx={{
-                            bgcolor: getStatusColor(value.status),
-                            color: "#fff",
-                            p: 0.5,
-                            borderRadius: "4px",
-                          }}
-                        >
-                          <Typography variant="caption">
-                            {value.status}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    }
-                  />
+              <Card
+                key={value.id}
+                sx={{
+                  maxWidth: 345,
+                  position: "relative",
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)", // Dark shadow added here
+                  margin: "16px 0",
+                }}
+              >
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    padding: 1,
+                    borderBottom: "1px solid #ccc",
+                    bgcolor: "#f5f5f5", // Different color for past events
+                    width: "100%",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  {/* No color block for past events */}
 
-                  <CardContent>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      style={{ whiteSpace: "pre-wrap" }}
-                    >
-                      <strong>Date:</strong>{" "}
-                      {`${formatDate(value.StartDate)} - ${formatDate(
-                        value.EndDate
-                      )}`}
-                      <br />
-                      <strong>Time:</strong>{" "}
-                      {`${formatTime(value.StartDate)} - ${formatTime(
-                        value.EndDate
-                      )}`}
-                      <br />
-                      <strong>Location:</strong> {value.Location}
-                      <br />
-                      <strong>Description:</strong> {value.Description}
+                  {/* Centered event name */}
+                  <Box
+                    sx={{
+                      flex: 1,
+                      textAlign: "center",
+                    }}
+                  >
+                    <Typography variant="h6" component="div">
+                      {value.Name}
                     </Typography>
-                  </CardContent>
+                  </Box>
 
-                  <CardActions>
+                  {/* Icons for actions */}
+                  <Box sx={{ display: "flex", gap: 1 }}>
                     {value.status === "past" && (
-                      <Button
+                      <IconButton
                         size="small"
                         onClick={() => handleViewAnalytics(value)}
                         title="View Analytics"
                       >
                         <AssessmentIcon />
-                      </Button>
+                      </IconButton>
                     )}
-                  </CardActions>
-                </Card>
-              </Grid>
+                  </Box>
+                </Box>
+
+                <CardContent sx={{ mt: 0 }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    style={{ whiteSpace: "pre-wrap" }}
+                  >
+                    <strong>Date:</strong>{" "}
+                    {`${formatDate(value.StartDate)} - ${formatDate(
+                      value.EndDate
+                    )}`}
+                    <br />
+                    <strong>Time:</strong>{" "}
+                    {`${formatTime(value.StartDate)} - ${formatTime(
+                      value.EndDate
+                    )}`}
+                    <br />
+                    <strong>Location:</strong> {value.Location}
+                    <br />
+                    <strong>Description:</strong> {value.Description}
+                  </Typography>
+                </CardContent>
+              </Card>
             ))}
-          </Grid>
+          </div>
         )}
       </div>
 
@@ -484,7 +516,9 @@ const EventsHolder = ({
             id="delete-confirmation-title"
             variant="h6"
             component="h2"
-          ></Typography>
+          >
+            <DeleteIcon />
+          </Typography>
           <Typography id="delete-confirmation-description" sx={{ mt: 2 }}>
             Are you sure you want to delete this event?
           </Typography>
