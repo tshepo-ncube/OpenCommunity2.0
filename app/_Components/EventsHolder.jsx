@@ -306,11 +306,12 @@ const EventsHolder = ({
                         width: 70,
                         height: 40,
                         display: "flex",
-                        alignItems: "center",
+                        alignItems: "right",
                         justifyContent: "center",
                         borderRadius: "4px",
                         typography: "caption",
                         fontSize: "0.75rem",
+                        marginTop: "0px", // Adjust this value as needed
                       }}
                     >
                       <Typography variant="caption">{value.status}</Typography>
