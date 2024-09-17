@@ -10,7 +10,7 @@ import Swal from "sweetalert2"; // Import SweetAlert2
 
 const mutedLimeGreen = "#d0e43f"; // Muted version of #bcd727
 
-const RecommendationsTable = () => {
+export default function RecommendationsTable() {
   const [recommendations, setRecommendations] = useState([]);
   // const [likedRecommendations, setLikedRecommendations] =
   //   useState < Set < string >> new Set();
@@ -38,7 +38,6 @@ const RecommendationsTable = () => {
   }, []);
 
   const handleEmailClick = (email, name, description, category) => {
-  const handleEmailClick = (email, name, description, category) => {
     const subject = encodeURIComponent(
       "OpenCommunity Community Recommendation"
     );
@@ -53,7 +52,6 @@ const RecommendationsTable = () => {
     window.open(mailtoLink, "_blank");
   };
 
-  const handleLikeToggle = (id) => {
   const handleLikeToggle = (id) => {
     setLikedRecommendations((prev) => {
       const updatedLikes = new Set(prev);
@@ -412,6 +410,6 @@ const RecommendationsTable = () => {
       </motion.div>
     </>
   );
-};
+}
 
-export default RecommendationsTable;
+// export default RecommendationsTable;

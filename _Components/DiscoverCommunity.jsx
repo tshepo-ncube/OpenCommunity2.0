@@ -16,7 +16,7 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { useRouter } from "next/navigation";
-import CommunityDB from "../../database/community/community";
+import CommunityDB from "@/database/community/community";
 import UserDB from "@/database/community/users";
 
 const DiscoverCommunity = ({ email }) => {

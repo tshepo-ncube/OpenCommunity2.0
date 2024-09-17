@@ -3,14 +3,13 @@ import React, { useEffect, useState } from "react";
 import UserDB from "@/database/community/users"; // Adjust the import path accordingly
 
 import Header from "../../../_Components/header";
+
 import { motion } from "framer-motion";
-import UserDB from "@/database/community/users";
-import Header from "../_Components/header";
 import { AiOutlineInfoCircle } from "react-icons/ai";
 
 const Page = () => {
   const [users, setUsers] = useState([]);
-  const [users, setUsers] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [typewriterText, setTypewriterText] = useState("");

@@ -13,8 +13,6 @@ import ManageUser from "../auth/ManageUser";
 import UserDB from "./users";
 import StorageDB from "../StorageDB";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import StorageDB from "../StorageDB";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default class CommunityDB {
   static uploadCommunityImage = async (image) => {

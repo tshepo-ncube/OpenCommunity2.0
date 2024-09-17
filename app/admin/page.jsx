@@ -165,7 +165,6 @@ const CreateCommunity = () => {
     }
   };
 
-  const [image, setImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
 
   const handleImageChange = (e) => {

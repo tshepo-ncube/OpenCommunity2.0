@@ -271,7 +271,7 @@ const AdminCommunity = () => {
                             size="small"
                             onClick={() => {
                               localStorage.setItem("CurrentCommunity", data.id);
-                              router.push("/adminDash");
+                              router.push(`/admin/Dashboard/${data.id}`);
                             }}
                             title="View" // Tooltip text
                           >

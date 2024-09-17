@@ -9,8 +9,6 @@ import {
   Tooltip,
 } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import CommunityDB from "../../database/community/community";
-import { IconButton, Menu } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CommunityDB from "../database/community/community";
 import { useRouter } from "next/navigation";

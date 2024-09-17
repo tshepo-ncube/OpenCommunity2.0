@@ -28,7 +28,6 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
-import CommunityDB from "@/database/community/community";
 
 // Custom styles
 const CustomTab = styled(Tab)({
