@@ -737,7 +737,7 @@ export default function CommunityPage({ params }) {
                 All Comments and Ratings
               </Typography>
 
-              {currentEventObject && currentEventObject.Reviews.length > 0 ? (
+              {currentEventObject && currentEventObject.Reviews ? (
                 <ul className="list-none p-0">
                   {currentEventObject.Reviews.map((review, index) => (
                     <li

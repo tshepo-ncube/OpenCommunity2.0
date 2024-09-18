@@ -245,7 +245,7 @@ const EventsHolder = ({
 
   return (
     <div className="mt-4">
-      <h1 className="text-xxl relative mt-12 mb-9 bg-[#a0a0a0] text-white p-2">
+      <h1 className="text-xxl relative mt-12 mb-9  text-black p-2">
         Upcoming Events
         <IconButton
           className="bg-grey"
@@ -405,7 +405,7 @@ const EventsHolder = ({
         )}
       </div>
 
-      <h1 className="text-xxl relative mt-12 mb-9 bg-[#c0c0c0] text-white p-2">
+      <h1 className="text-xxl relative mt-12 mb-9  text-black p-2">
         Past Events
       </h1>
 

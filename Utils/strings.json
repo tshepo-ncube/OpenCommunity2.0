@@ -1,17 +1,17 @@
 {
   "server_endpoints": {
-    "sendMessage": "https://opencom-3-server.onrender.com/sendMessage",
-    "fetchMessages": "https://opencom-3-server.onrender.com/fetchMessages",
-    "createAssistant": "https://opencom-3-server.onrender.com/createAssistant",
-    "createChannel": "https://opencom-3-server.onrender.com/createChannel",
-    "generateCommunityDescription": "https://opencom-3-server.onrender.com/generateCommunityDescription",
-    "generateEventDescription": "https://opencom-3-server.onrender.com/generateEventDescription",
-    "sendEventInvite": "https://opencom-3-server.onrender.com/sendEventInvite",
-    "scheduleRsvpReminder": "https://opencom-3-server.onrender.com/scheduleRsvpReminder",
-    "scheduleEventStartReminder": "https://opencom-3-server.onrender.com/scheduleEventStartReminder",
-    "scheduleEventEndReminder": "https://opencom-3-server.onrender.com/scheduleEventEndReminder",
-    "remindUsersOfNewPoll": "https://opencom-3-server.onrender.com/remindUsersOfNewPoll",
-    "schedulePollEndReminder": "https://opencom-3-server.onrender.com/schedulePollEndReminder"
+    "sendMessage": "/sendMessage",
+    "fetchMessages": "http://localhost:8080/fetchMessages",
+    "createAssistant": "http://localhost:8080/createAssistant",
+    "createChannel": "http://localhost:8080/createChannel",
+    "generateCommunityDescription": "http://localhost:8080/generateCommunityDescription",
+    "generateEventDescription": "http://localhost:8080/generateEventDescription",
+    "sendEventInvite": "http://localhost:8080/sendEventInvite",
+    "scheduleRsvpReminder": "http://localhost:8080/scheduleRsvpReminder",
+    "scheduleEventStartReminder": "http://localhost:8080/scheduleEventStartReminder",
+    "scheduleEventEndReminder": "http://localhost:8080/scheduleEventEndReminder",
+    "remindUsersOfNewPoll": "http://localhost:8080/remindUsersOfNewPoll",
+    "schedulePollEndReminder": "http://localhost:8080/schedulePollEndReminder"
   },
 
   "button": {

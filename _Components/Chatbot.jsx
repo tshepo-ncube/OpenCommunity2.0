@@ -4,11 +4,7 @@ import ChatCard from "../_Components/ChatCard";
 import { ThreeDots } from "react-loader-spinner";
 import axios from "axios";
 import CommunityDB from "@/database/community/community";
-// const openai = new OpenAI({
-//   apiKey:
-//     "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",
-//   dangerouslyAllowBrowser: true,
-// });
+
 const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);

@@ -129,7 +129,7 @@ function PollsHolder({ communityID }) {
 
   return (
     <div className="mt-4 h-480">
-      <h1 className="text-xxl relative my-4 bg-[#a0a0a0] text-white p-2">
+      <h1 className="text-xxl relative my-4  text-black p-2">
         Active Polls
         <IconButton
           className="bg-openbox-green text-openbox-green"
@@ -145,7 +145,7 @@ function PollsHolder({ communityID }) {
           onClick={handleCreatePoll}
           aria-label="create poll"
         >
-          <AddIcon />
+          <AddIcon style={{ color: "white" }} />
         </IconButton>
       </h1>
 
@@ -204,9 +204,7 @@ function PollsHolder({ communityID }) {
         )}
       </div>
 
-      <h1 className="text-xxl relative my-4 bg-[#c0c0c0] text-white p-2">
-        Closed Polls
-      </h1>
+      <h1 className="text-xxl relative my-4  text-black p-2">Closed Polls</h1>
 
       <div style={{ overflowX: "auto", whiteSpace: "nowrap", marginTop: 15 }}>
         {inActivePolls.length === 0 ? (
