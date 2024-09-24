@@ -24,9 +24,11 @@ import {
   deleteDoc,
   runTransaction,
 } from "firebase/firestore";
+import { useRouter } from "next/navigation";
 
 export default class ManageUser {
   static manageUserState = (setUser, setSignedIn) => {
+    const router = useRouter();
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -37,7 +39,8 @@ export default class ManageUser {
         // User is signed in.
         setUser(user);
 
-        window.location.href = "http://localhost:3000/Home";
+        //window.location.href = "http://localhost:3000/Home";
+        router.push(`/Home`);
       } else {
         setSignedIn(false);
         setUser(null);
@@ -45,9 +48,6 @@ export default class ManageUser {
         console.log("No user is logged in");
       }
     });
-
-    // To stop listening for changes (unsubscribe) - optional
-    //return () => unsubscribe();
   };
 
   static forgotPassword = (email, setError, setForgotPassword) => {
@@ -70,6 +70,7 @@ export default class ManageUser {
     const candidatesCollectionRef = collection(DB, "users");
     console.log(`Email : ${email}`);
     const q = query(candidatesCollectionRef, where("Email", "==", userEmail));
+    if (typeof window === "undefined") return;
 
     try {
       const snapshot = await getDocs(q);
@@ -88,7 +89,7 @@ export default class ManageUser {
           "doc.data().CommunitiesJoined,",
           doc.data().CommunitiesJoined
         );
-        //const combinedObject = { ...object1, ...object2 };
+
         CommunityDB.getAllUserCommunities(
           doc.data().CommunitiesJoined,
           setUserCommunities
@@ -97,14 +98,13 @@ export default class ManageUser {
       });
     } catch (error) {
       console.error("Error getting Profile Data: ", error);
-      alert(error);
+      //alert(error);
     }
   };
   static editPassword = (newPassword, setError) => {
     const auth = getAuth();
 
     const user = auth.currentUser;
-    //const newPassword = getASecureRandomPassword();
 
     updatePassword(user, newPassword)
       .then(() => {
@@ -177,7 +177,7 @@ export default class ManageUser {
       });
     } catch (error) {
       console.error("Error getting Profile Data: ", error);
-      alert(error);
+      //alert(error);
     }
   };
 
@@ -196,6 +196,8 @@ export default class ManageUser {
   };
 
   static joinCommunity = async (communityID) => {
+    if (typeof window === "undefined") return;
+
     const currentUser = localStorage.getItem("Email");
 
     const candidatesCollectionRef = collection(DB, "users");
@@ -238,59 +240,9 @@ export default class ManageUser {
       }
     } catch (error) {
       console.error("Error getting user ID: ", error);
-      alert(error);
+      //alert(error);
     }
   };
-
-  // static getAllCommunities = async () => {
-  //    const currentUser = localStorage.getItem("Email");
-
-  //    const candidatesCollectionRef = collection(DB, "users");
-
-  //    const q = query(
-  //      candidatesCollectionRef,
-  //      where("Email", "==", currentUser)
-  //    );
-
-  //    try {
-  //      const snapshot = await getDocs(q);
-  //      if (snapshot.empty) {
-  //        console.log("No matching documents.");
-  //        return;
-  //      }
-
-  //      let userID;
-  //      snapshot.forEach((doc) => {
-  //        userID = doc.id;
-  //      });
-  //      const userRef = doc(DB, "users", userID);
-  //      const userDoc = await getDoc(userRef);
-
-  //      if (userDoc.exists()) {
-  //        const userData = userDoc.data();
-  //        let joinedCommunities = userData.CommunitiesJoined;
-
-  //        if (joinedCommunities.includes(communityID)) {
-  //          alert("You already joined the community");
-  //        } else {
-  //          joinedCommunities.push(communityID);
-  //          try {
-  //            // Update the status field
-  //            await updateDoc(userRef, {
-  //              CommunitiesJoined: joinedCommunities,
-  //            });
-  //            console.log("Community Joined Updated successfully.");
-  //          } catch (error) {
-  //            console.error("Error updating community joined:", error);
-  //            throw error;
-  //          }
-  //        }
-  //      }
-  //    } catch (error) {
-  //      console.error("Error getting user ID: ", error);
-  //      alert(error);
-  //    }
-  // }
 
   //here i am adding the polls to the engaged user field in /users collection
   static addPollToCommunity = async (docID, communityID, newPoll) => {
@@ -344,6 +296,7 @@ export default class ManageUser {
 
   static addUserToGlobalIfNotThere = async (email) => {
     const glocalCommunity = doc(DB, "communities", "jf9rDPUP2v5CJ2S9aoKt");
+    if (typeof window === "undefined") return;
 
     try {
       const globalCommunityDoc = await getDoc(glocalCommunity);

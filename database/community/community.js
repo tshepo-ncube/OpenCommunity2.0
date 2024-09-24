@@ -96,6 +96,7 @@ export default class CommunityDB {
           description: data.description,
           category: data.category,
           status: data.status, // Include status in the fetched data
+          communityImage: data.communityImage,
         });
       });
 
@@ -209,7 +210,8 @@ export default class CommunityDB {
           description: data.description,
           category: data.category,
           status: data.status, // Include status in the fetched data
-          users: data.users || [], // Ensure users field is included
+          users: data.users || [], // Ensure users field is included,
+          communityImage: data.communityImage,
         });
       });
 

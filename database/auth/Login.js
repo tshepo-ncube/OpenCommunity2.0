@@ -1,31 +1,11 @@
-import DB from "../DB";
 import ManageUser from "./ManageUser";
-import {
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  signOut,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "firebase/auth";
-
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  getDocs,
-  runTransaction,
-} from "firebase/firestore";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 export default class LoginUser {
   static loginUser = (userData, setUser, setError, router, setLoggedIn) => {
     const { email, password } = userData;
     const auth = getAuth();
+    if (typeof window === "undefined") return;
 
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {

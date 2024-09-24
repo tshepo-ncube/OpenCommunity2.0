@@ -18,6 +18,7 @@ import {
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import StorageDB from "../StorageDB";
 import UserDB from "./users";
+import { eventScheduler, pollScheduler } from "../../Utils/scheduleEmails";
 
 export default class EventDB {
   // Existing methods...
@@ -41,6 +42,9 @@ export default class EventDB {
     try {
       const eventRef = await addDoc(collection(DB, "events"), eventWithStatus);
       console.log("Document ID: ", eventRef.id);
+
+      eventScheduler(eventRef.id);
+      pollScheduler(eventRef.id);
     } catch (e) {
       console.error("Error adding document:", e);
       throw e;

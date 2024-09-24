@@ -19,7 +19,7 @@ import { doc, getDoc } from "firebase/firestore";
 import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
-
+import strings from "../../../../Utils/strings.json";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
@@ -99,7 +99,10 @@ export default function CommunityPage({ params }) {
   const [allPolls, setAllPolls] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [pollsUpdated, setPollsUpdated] = useState(false);
-  const [USER_ID, setUSER_ID] = useState(localStorage.getItem("UserID"));
+  if (typeof window !== "undefined") {
+    const [USER_ID, setUSER_ID] = useState(localStorage.getItem("UserID"));
+  }
+
   const [community, setCommunity] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
   const [currentEvent, setCurrentEvent] = useState(null);
@@ -111,15 +114,7 @@ export default function CommunityPage({ params }) {
   const [currentEventObject, setCurrentEventObject] = useState(null);
   const [activeTab, setActiveTab] = useState("events");
   const [currentDate, setCurrentDate] = useState(new Date());
-
-  const events = [
-    {
-      title: "Soccer Fun Day",
-      start: new Date(),
-      end: new Date(),
-      color: "#bcd727",
-    },
-  ];
+  const [events, setEvents] = useState([]);
   useEffect(() => {
     if (id) {
       const fetchCommunity = async () => {
@@ -149,6 +144,45 @@ export default function CommunityPage({ params }) {
   }, [selectedImages]);
 
   useEffect(() => {
+    console.log("ALL Events :", allEvents);
+    console.log(allEvents[0]);
+    if (allEvents && allEvents[0]) {
+      console.log(allEvents[0].Name);
+      console.log();
+      setEvents(
+        allEvents.map((event) => {
+          console.log(event.StartDate);
+          // Remove the 'age' field and add a new field 'isAdult'
+
+          if (event.status == "past") {
+          }
+          return {
+            title: event.Name, // Keep the 'name' field
+            start: new Date(event.StartDate.seconds * 1000), // Keep the 'city' field
+            end: new Date(event.StartDate.seconds * 1000), // Keep the 'city' field
+            color: event.status === "past" ? "#FF0000" : "#bcd727",
+          };
+        })
+      );
+    } else {
+      console.log("allEvents is undefined or null");
+    }
+
+    let transformedUsers = allEvents.map((event) => {
+      // Remove the 'age' field and add a new field 'isAdult'
+      return {
+        title: event.Name, // Keep the 'name' field
+        start: new Date(event.StartDate), // Keep the 'city' field
+        end: new Date(event.EndDate), // Keep the 'city' field
+        color: "#bcd727",
+      };
+    });
+    // allEvents.forEach(function (element) {
+    //   console.log(element);
+    // });
+  }, [allEvents]);
+
+  useEffect(() => {
     console.log("All Polls Changed: ", allPolls);
     if (allPolls.length > 0 && !pollsUpdated) {
       updatePolls();
@@ -164,6 +198,8 @@ export default function CommunityPage({ params }) {
     // Fetch RSVP status for each event when the component loads
     const fetchRSVPStatus = async () => {
       const updatedRSVPState = {};
+      if (typeof window === "undefined") return;
+
       for (const event of allEvents) {
         const isRSVPed =
           event.rsvp && event.rsvp.includes(localStorage.getItem("Email"));
@@ -243,6 +279,8 @@ export default function CommunityPage({ params }) {
 
   const handleRSVP = async (event) => {
     console.log(event);
+    if (typeof window === "undefined") return;
+
     try {
       await EventDB.addRSVP(event.id, localStorage.getItem("Email"));
       setRsvpState((prev) => ({ ...prev, [event.id]: true }));
@@ -259,7 +297,7 @@ export default function CommunityPage({ params }) {
       console.log("sending....");
       try {
         const res = await axios.post(
-          "http://localhost:8080/sendEventInvite",
+          strings.server_endpoints.sendEventInvite,
           { subject, body, start, end, location, email },
           {
             headers: {
@@ -279,6 +317,8 @@ export default function CommunityPage({ params }) {
   };
 
   const handleLeave = async (eventID) => {
+    if (typeof window === "undefined") return;
+
     try {
       await EventDB.removeRSVP(eventID, localStorage.getItem("Email"));
       setRsvpState((prev) => ({ ...prev, [eventID]: false }));
@@ -367,8 +407,9 @@ export default function CommunityPage({ params }) {
       <div
         className="relative text-white py-4 h-80"
         style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+          backgroundImage: community.communityImage
+            ? `url(${community.communityImage})` // Use the image if it exists
+            : `url('https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`, // Fallback URL,
           backgroundSize: "cover",
         }}
       >
@@ -696,7 +737,7 @@ export default function CommunityPage({ params }) {
                 All Comments and Ratings
               </Typography>
 
-              {currentEventObject && currentEventObject.Reviews.length > 0 ? (
+              {currentEventObject && currentEventObject.Reviews ? (
                 <ul className="list-none p-0">
                   {currentEventObject.Reviews.map((review, index) => (
                     <li

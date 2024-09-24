@@ -23,6 +23,8 @@ import {
 
 export default class RegisterUser {
   static registerUser = (userData, setUser, setError) => {
+    if (typeof window === "undefined") return;
+
     const { name, surname, email, password, diet } = userData;
     const auth = getAuth();
     createUserWithEmailAndPassword(auth, email, password)
@@ -59,7 +61,7 @@ export default class RegisterUser {
       setUser(user);
     } catch (e) {
       console.error("Error adding document: ", e);
-      alert(e);
+      //alert(e);
     }
   };
 }

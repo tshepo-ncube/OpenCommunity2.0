@@ -19,6 +19,8 @@ export default class RecommendationDB {
     description,
     additionalData = {}
   ) => {
+    if (typeof window === "undefined") return;
+
     const userEmail = localStorage.getItem("Email"); // Get the logged-in user's email
 
     if (!userEmail) {

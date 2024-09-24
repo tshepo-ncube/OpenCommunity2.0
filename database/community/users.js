@@ -79,6 +79,8 @@ export default class UserDB {
   };
 
   static addPoints = async (point) => {
+    if (typeof window === "undefined") return;
+
     const userRef = doc(DB, "users", localStorage.getItem("UserID"));
 
     const docSnap = await getDoc(userRef);
@@ -117,6 +119,8 @@ export default class UserDB {
   };
 
   static removePoints = async (point) => {
+    if (typeof window === "undefined") return;
+
     const userRef = doc(DB, "users", localStorage.getItem("UserID"));
 
     const docSnap = await getDoc(userRef);
