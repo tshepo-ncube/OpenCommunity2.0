@@ -24,7 +24,7 @@ const CommunityRecommendationPage = () => {
   // const [showConfetti, setShowConfetti] = useState < boolean > false;
   const [communityName, setCommunityName] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("general");
+  const [category, setCategory] = useState("General");
   const [showConfetti, setShowConfetti] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,7 +33,7 @@ const CommunityRecommendationPage = () => {
   const [formData, setFormData] = useState({
     communityName: "",
     description: "",
-    category: "general",
+    category: "General",
   });
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const CommunityRecommendationPage = () => {
         { userEmail, category: formData.category }
       );
 
-      setFormData({ communityName: "", description: "", category: "general" });
+      setFormData({ communityName: "", description: "", category: "General" });
       toast.success("Your community recommendation has been submitted!");
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 5000);

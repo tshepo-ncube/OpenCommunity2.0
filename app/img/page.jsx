@@ -15,7 +15,7 @@ const CreateCommunity = () => {
   const [description, setDescription] = useState("");
   const [submittedData, setSubmittedData] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
-  const [category, setCategory] = useState("general");
+  const [category, setCategory] = useState("General");
   const [view, setView] = useState("Communities");
   const [userName, setUserName] = useState("");
   const [userSurname, setUserSurname] = useState("");
@@ -109,7 +109,7 @@ const CreateCommunity = () => {
 
     setName("");
     setDescription("");
-    setCategory("general");
+    setCategory("General");
     setImage(null); //image
     setEditIndex(null);
     setPopupOpen(false);
