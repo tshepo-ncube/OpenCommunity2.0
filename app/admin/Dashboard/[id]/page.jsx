@@ -36,7 +36,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     rsvpEndDateTime: eventData.rsvpEndDateTime,
     location: eventData.Location,
     description: eventData.EventDescription,
-    status: "active",
+    status: "Active",
   });
 
   const handleChangeEvent = (e) => {

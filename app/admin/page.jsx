@@ -311,14 +311,14 @@ const CreateCommunity = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={(e) => handleFormSubmit(e, "draft")}
+                    onClick={(e) => handleFormSubmit(e, "Draft")}
                     className="btn bg-gray-500 hover:bg-gray-700 btn text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
                     Save as Draft
                   </button>
                   <button
                     type="button"
-                    onClick={(e) => handleFormSubmit(e, "active")}
+                    onClick={(e) => handleFormSubmit(e, "Active")}
                     className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
                     {editIndex !== null ? "Save" : "Create"}

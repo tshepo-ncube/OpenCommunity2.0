@@ -63,13 +63,13 @@ const EventsHolder = ({
           let updatedEvent = { ...event };
           let newStatus = event.status;
 
-          if (event.status === "draft") {
+          if (event.status === "Draft") {
             return updatedEvent;
           }
 
           if (event.RsvpEndTime && event.RsvpEndTime.toDate() > currentDate) {
-            if (event.status !== "rsvp") {
-              newStatus = "rsvp";
+            if (event.status !== "RSVP") {
+              newStatus = "RSVP";
             }
           } else if (event.EndDate && event.EndDate.toDate() < currentDate) {
             if (event.status !== "past") {
@@ -80,8 +80,8 @@ const EventsHolder = ({
               event.RsvpEndTime &&
               event.RsvpEndTime.toDate() <= currentDate
             ) {
-              if (event.status !== "active") {
-                newStatus = "active";
+              if (event.status !== "Active") {
+                newStatus = "Active";
               }
             }
           }
@@ -135,7 +135,7 @@ const EventsHolder = ({
 
   const handleUnarchive = async (id) => {
     try {
-      await EventDB.updateEventStatus(id, "active");
+      await EventDB.updateEventStatus(id, "Active");
       updateEventsStatus();
     } catch (error) {
       console.error("Error unarchiving event:", error);
@@ -159,7 +159,7 @@ const EventsHolder = ({
 
   const handlePost = async (id) => {
     try {
-      await EventDB.updateEventStatus(id, "active");
+      await EventDB.updateEventStatus(id, "Active");
       updateEventsStatus();
     } catch (error) {
       console.error("Error posting event:", error);
@@ -190,7 +190,7 @@ const EventsHolder = ({
   };
 
   const handleExportRSVP = (event) => {
-    exportToExcel("rsvp", event.Name);
+    exportToExcel("RSVP", event.Name);
   };
 
   const handleExportAnalytics = (event) => {
@@ -212,7 +212,7 @@ const EventsHolder = ({
     let sheetTitle;
     let fileName;
 
-    if (context === "rsvp") {
+    if (context === "RSVP") {
       sheetTitle = `RSVP_List_${eventName}`.substring(0, 31);
       fileName = `RSVP_List_${eventName.replace(/\s+/g, "_")}.xlsx`;
     } else if (context === "analytics") {
@@ -227,13 +227,13 @@ const EventsHolder = ({
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "active":
+      case "Active":
         return green[500];
       case "archived":
         return red[500];
-      case "draft":
+      case "Draft":
         return blue[500];
-      case "rsvp":
+      case "RSVP":
         return yellow[500];
       default:
         return "#000";
@@ -344,7 +344,7 @@ const EventsHolder = ({
                         <AssessmentIcon />
                       </IconButton>
                     )}
-                    {value.status !== "draft" && (
+                    {value.status !== "Draft" && (
                       <IconButton
                         size="small"
                         onClick={() => handleDeleteConfirmation(value.id)}
@@ -379,13 +379,13 @@ const EventsHolder = ({
                 </CardContent>
 
                 <CardActions>
-                  {value.status === "draft" && (
+                  {value.status === "Draft" && (
                     <Button size="small" onClick={() => handlePost(value.id)}>
                       Post
                     </Button>
                   )}
 
-                  {(value.status === "rsvp" || value.status === "active") && (
+                  {(value.status === "RSVP" || value.status === "Active") && (
                     <></>
                   )}
 
@@ -558,7 +558,7 @@ const EventsHolder = ({
           }}
         >
           <Typography id="analytics-modal-title" variant="h6" component="h2">
-            {selectedEvent?.status === "rsvp"
+            {selectedEvent?.status === "RSVP"
               ? `RSVP List for ${selectedEvent?.Name}`
               : selectedEvent?.status === "past"
               ? `Analytics for ${selectedEvent?.Name}`
@@ -567,7 +567,7 @@ const EventsHolder = ({
           <Box
             sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 2 }}
           >
-            {selectedEvent?.status === "rsvp" && (
+            {selectedEvent?.status === "RSVP" && (
               <Button
                 size="small"
                 onClick={() => handleExportRSVP(selectedEvent)}
