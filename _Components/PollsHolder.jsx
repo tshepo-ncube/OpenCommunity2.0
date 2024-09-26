@@ -56,6 +56,8 @@ function PollsHolder({ communityID }) {
     );
     setInActivePolls(inActive);
     setActivePolls(active);
+
+    console.log("All Polls : ", allPolls);
   }, [allPolls]);
 
   const handleCreatePoll = () => {

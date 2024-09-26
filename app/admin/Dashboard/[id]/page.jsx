@@ -562,8 +562,8 @@ export default function CommunityPage({ params }) {
 
   const handleEditEventSubmit = (eventDetails) => {
     //createEvent(eventDetails, params.id);
-    console.log("Editing Event DB: ", eventDetails);
 
+    // check if the event is edited after RSVP is closed.
     try {
       EventDB.editEventFromUI(eventDetails);
       handleSnackbarClick();
@@ -673,11 +673,11 @@ export default function CommunityPage({ params }) {
         )}
       </div>
 
-      <Chatbot
+      {/* <Chatbot
         communityID={params.id}
         setEventForm={setEventForm}
         setShowEventForm={setShowEventForm}
-      />
+      /> */}
       <Snackbar
         open={openSnackbar}
         autoHideDuration={2000}

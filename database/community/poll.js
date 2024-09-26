@@ -66,11 +66,16 @@ export default class PollDB {
 
         const object2 = { id: doc.id };
 
+        const metadata = {
+          fromCache: doc.metadata.fromCache,
+          hasPendingWrites: doc.metadata.hasPendingWrites,
+        };
+
         //const combinedObject = { ...object1, ...object2 };
 
         // if(doc.data().PollCloseDate)
 
-        pollsArray.push({ ...object2, ...doc.data() });
+        pollsArray.push({ ...object2, ...doc.data(), metadata });
       });
 
       setPolls(pollsArray);

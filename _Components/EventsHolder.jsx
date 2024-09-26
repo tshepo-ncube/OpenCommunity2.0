@@ -284,12 +284,32 @@ const EventsHolder = ({
       EventID: id,
       endTime: convertTimestamp(eventObject.EndDate).time_string,
       //location: eventObject.Location,
+
       Location: eventObject.Location,
       EventDescription: eventObject.EventDescription,
       rsvpEndDateTime: `${
         convertTimestamp(eventObject.RsvpEndTime).date_string
       }T${convertTimestamp(eventObject.RsvpEndTime).time_string}`,
     }));
+    //if (typeof window === "undefined") return;
+    const rsvpDate = new Date(eventObject.RsvpEndTime.seconds * 1000);
+
+    // Get the current date and time
+    const currentDate = new Date();
+
+    // Check if rsvpDate is in the past or future
+    if (rsvpDate < currentDate) {
+      console.log("The RSVP date is in the past.");
+      console.log("RSVP Closed");
+      localStorage.setItem(`EDIT_EVENT_RSVP_CLOSED_${id}`, true);
+    } else {
+      console.log("The RSVP date is in the future.");
+      localStorage.setItem(`EDIT_EVENT_RSVP_CLOSED_${id}`, false);
+    }
+
+    console.log("RSVP DATE");
+    console.log("RSVP Date:", rsvpDate);
+    //localStorage.setItem("EditEvent", JSON.stringify(eventObject));
 
     setShowEditForm(true);
 

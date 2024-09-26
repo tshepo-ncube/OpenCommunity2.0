@@ -20,6 +20,11 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import StorageDB from "../StorageDB";
 import UserDB from "./users";
 import { eventScheduler, pollScheduler } from "../../Utils/scheduleEmails";
+import { notify } from "../../Utils/Notification/notification";
+import {
+  notifyRsvpdUsersOfEventChange,
+  notifyCommunityOfEventChange,
+} from "../../Utils/Notification/notification";
 
 export default class EventDB {
   static convertToFirebaseTimestamp = (dateString) => {
@@ -40,8 +45,11 @@ export default class EventDB {
   };
   // Existing methods...
 
-  static editEventFromUI = async (eventData, handleSnackbarClick) => {
+  static editEventFromUI = async (eventData) => {
     //convertToFirebaseTimestamp();
+
+    // console.log("THIS IS EVENT DATA: ", eventData);
+    // return;
     const id = eventData.eventID;
     const eventObjectForFirebase =
       EventDB.prepareEventDataForFirebase(eventData);
@@ -57,7 +65,7 @@ export default class EventDB {
     // };
 
     console.log(id, eventObjectForFirebase);
-    EventDB.editEvent(id, eventObjectForFirebase, handleSnackbarClick);
+    EventDB.editEvent(id, eventObjectForFirebase);
   };
 
   static deleteEvent = async (id) => {
@@ -70,7 +78,7 @@ export default class EventDB {
     }
   };
 
-  static editEvent = async (id, object, handleSnackbarClick) => {
+  static editEvent = async (id, object) => {
     try {
       const eventRef = doc(DB, "events", id);
 
@@ -79,7 +87,33 @@ export default class EventDB {
       await updateDoc(eventRef, object);
       console.log("Done editing an event.");
 
-      handleSnackbarClick();
+      const boolString = localStorage.getItem(`EDIT_EVENT_RSVP_CLOSED_${id}`);
+
+      // Convert the string into a boolean
+      const boolValue = boolString === "true";
+
+      console.log(boolValue);
+
+      const docSnap = await getDoc(eventRef);
+      if (docSnap.exists()) {
+        console.log("Event Data:", docSnap.data());
+        if (boolValue) {
+          console.log("RSVP closed, so send notification to oONLY rsvps");
+
+          notifyRsvpdUsersOfEventChange(id);
+        } else {
+          console.log(
+            "RSVP still open, so send notification to entire community"
+          );
+          notifyCommunityOfEventChange(docSnap.data().CommunityID);
+        }
+      } else {
+        // Document does not exist
+        console.log("No such document!");
+      }
+
+      //  handleSnackbarClick();
+      window.location.reload();
     } catch (err) {
       console.log("Error Editing Snackbar : ", err);
     }
@@ -103,16 +137,16 @@ export default class EventDB {
     }
   };
 
-  static editEvent = async (eventID, eventObject) => {
-    const eventRef = doc(DB, "events", eventID);
-    try {
-      await updateDoc(eventRef, eventObject);
-      console.log(`Event ${eventID} updated successfully.`);
-    } catch (e) {
-      console.error("Error updating document:", e);
-      throw e;
-    }
-  };
+  // static editEvent = async (eventID, eventObject) => {
+  //   const eventRef = doc(DB, "events", eventID);
+  //   try {
+  //     await updateDoc(eventRef, eventObject);
+  //     console.log(`Event ${eventID} updated successfully.`);
+  //   } catch (e) {
+  //     console.error("Error updating document:", e);
+  //     throw e;
+  //   }
+  // };
 
   static updateEventStatus = async (id, status) => {
     const eventRef = doc(DB, "events", id);
