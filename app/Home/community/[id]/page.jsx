@@ -110,11 +110,14 @@ export default function CommunityPage({ params }) {
   const [rating, setRating] = useState(0);
   const [selectedImages, setSelectedImages] = useState([]);
   const [alertOpen, setAlertOpen] = useState(false);
-  const [rsvpState, setRsvpState] = useState({}); // Track RSVP state for each event
+  const [rsvpState, setRsvpState] = useState({});
   const [currentEventObject, setCurrentEventObject] = useState(null);
   const [activeTab, setActiveTab] = useState("events");
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState([]);
+  const [confirmUnRSVP, setConfirmUnRSVP] = useState(false);
+  const [currentEventToUnRSVP, setCurrentEventToUnRSVP] = useState(null);
+
   useEffect(() => {
     if (id) {
       const fetchCommunity = async () => {
@@ -152,14 +155,12 @@ export default function CommunityPage({ params }) {
       setEvents(
         allEvents.map((event) => {
           console.log(event.StartDate);
-          // Remove the 'age' field and add a new field 'isAdult'
-
           if (event.status == "past") {
           }
           return {
-            title: event.Name, // Keep the 'name' field
-            start: new Date(event.StartDate.seconds * 1000), // Keep the 'city' field
-            end: new Date(event.StartDate.seconds * 1000), // Keep the 'city' field
+            title: event.Name,
+            start: new Date(event.StartDate.seconds * 1000),
+            end: new Date(event.StartDate.seconds * 1000),
             color: event.status === "past" ? "#FF0000" : "#bcd727",
           };
         })
@@ -169,17 +170,13 @@ export default function CommunityPage({ params }) {
     }
 
     let transformedUsers = allEvents.map((event) => {
-      // Remove the 'age' field and add a new field 'isAdult'
       return {
-        title: event.Name, // Keep the 'name' field
-        start: new Date(event.StartDate), // Keep the 'city' field
-        end: new Date(event.EndDate), // Keep the 'city' field
+        title: event.Name,
+        start: new Date(event.StartDate),
+        end: new Date(event.EndDate),
         color: "#bcd727",
       };
     });
-    // allEvents.forEach(function (element) {
-    //   console.log(element);
-    // });
   }, [allEvents]);
 
   useEffect(() => {
@@ -195,7 +192,6 @@ export default function CommunityPage({ params }) {
   }, [community]);
 
   useEffect(() => {
-    // Fetch RSVP status for each event when the component loads
     const fetchRSVPStatus = async () => {
       const updatedRSVPState = {};
       if (typeof window === "undefined") return;
@@ -285,15 +281,12 @@ export default function CommunityPage({ params }) {
       await EventDB.addRSVP(event.id, localStorage.getItem("Email"));
       setRsvpState((prev) => ({ ...prev, [event.id]: true }));
 
-      // const { subject, body, start, end, location, email } = req.body;
       let subject = `${event.Name} Meeting Invite`;
       let location = event.Location;
       let start = new Date(event.StartDate.seconds * 1000).toISOString();
       let end = new Date(event.EndDate.seconds * 1000).toISOString();
       let email = localStorage.getItem("Email");
       let body = `This is an invite to ${event.Name}`;
-      // const date =
-      // console.log(date.toISOString()); // Output: "2024-08-09T06:00:00.000Z"
       console.log("sending....");
       try {
         const res = await axios.post(
@@ -316,15 +309,29 @@ export default function CommunityPage({ params }) {
     }
   };
 
-  const handleLeave = async (eventID) => {
+  const handleLeave = async (event) => {
+    setCurrentEventToUnRSVP(event);
+    setConfirmUnRSVP(true);
+  };
+
+  const confirmLeave = async () => {
     if (typeof window === "undefined") return;
 
     try {
-      await EventDB.removeRSVP(eventID, localStorage.getItem("Email"));
-      setRsvpState((prev) => ({ ...prev, [eventID]: false }));
+      await EventDB.removeRSVP(
+        currentEventToUnRSVP.id,
+        localStorage.getItem("Email")
+      );
+      setRsvpState((prev) => ({ ...prev, [currentEventToUnRSVP.id]: false }));
     } catch (error) {
       console.error("Error removing RSVP:", error);
     }
+    setConfirmUnRSVP(false);
+  };
+
+  const cancelLeave = () => {
+    setConfirmUnRSVP(false);
+    setCurrentEventToUnRSVP(null);
   };
 
   const isRSVPed = (eventID) => rsvpState[eventID] || false;
@@ -350,11 +357,6 @@ export default function CommunityPage({ params }) {
     return <div>No Community found with ID: {id}</div>;
   }
 
-  // const formatDate = (dateStr) => new Date(dateStr).toLocaleDateString();
-
-  // const formatDate = (dateObj) =>
-  //   new Date(dateObj.seconds * 1000).toISOString();
-
   const formatDate = (dateObj) => {
     const isoString = new Date(dateObj.seconds * 1000).toISOString();
     const date = new Date(isoString);
@@ -376,40 +378,29 @@ export default function CommunityPage({ params }) {
   };
   const formatTime = (dateStr) => new Date(dateStr).toLocaleTimeString();
 
-  // Filter events based on status
   const upcomingEvents = allEvents.filter(
     (event) => event.status === "active" || event.status === "rsvp"
   );
 
-  const pastEvents = allEvents.filter(
-    (event) => event.status === "past" // Adjust filtering based on your status or date
-  );
+  const pastEvents = allEvents.filter((event) => event.status === "past");
 
   const handleSubmitReview = () => {
     const newReview = {
       Comment: comment,
-
       Rating: rating,
     };
-
-    //Call the function to add the review
-    // EventDB.addReview("3jBBeJTzU4ozzianyqeM", newReview);
 
     EventDB.handleImageUpload(currentEventObject.id, selectedImages, newReview);
   };
 
-  // useEffect(() => {
-  //   console.log("Adding points...");
-  //   UserDB.addPoints();
-  // }, []);
   return (
     <div className="">
       <div
         className="relative text-white py-4 h-80"
         style={{
           backgroundImage: community.communityImage
-            ? `url(${community.communityImage})` // Use the image if it exists
-            : `url('https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`, // Fallback URL,
+            ? `url(${community.communityImage})`
+            : `url('https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
           backgroundSize: "cover",
         }}
       >
@@ -422,11 +413,7 @@ export default function CommunityPage({ params }) {
           <center className="mt-6">
             <button
               onClick={() => {
-                window.open(
-                  `${community.WebUrl}`,
-                  // "https://teams.microsoft.com/l/channel/19%3a28846b557cf84441955bb303c21d5543%40thread.tacv2/Modjajiii?groupId=5e98ea06-b4c1-4f72-a52f-f84260611fef&tenantId=bd82620c-6975-47c3-9533-ab6b5493ada3",
-                  "_blank"
-                );
+                window.open(`${community.WebUrl}`, "_blank");
               }}
               className="bg-white rounded text-black px-6 py-1 mx-2 border border-gray-300"
             >
@@ -461,15 +448,14 @@ export default function CommunityPage({ params }) {
             onNavigate={(date) => setCurrentDate(date)}
             onView={(view) => console.log(view)}
             defaultView="month"
-            // Customizing event appearance
             eventPropGetter={(event) => {
-              const backgroundColor = event.color || "#3174ad"; // Default color if none provided
+              const backgroundColor = event.color || "#3174ad";
               return {
                 style: {
                   backgroundColor,
-                  color: "white", // Text color for better contrast
-                  borderRadius: "5px", // Optional: round the corners of the event box
-                  border: "none", // Optional: remove the default border
+                  color: "white",
+                  borderRadius: "5px",
+                  border: "none",
                 },
               };
             }}
@@ -478,7 +464,6 @@ export default function CommunityPage({ params }) {
       </center>
 
       <div className="flex justify-center mb-6 space-x-10 mt-4">
-        {/* Tab Buttons */}
         <button
           className={`px-6 py-2 text-lg ${
             activeTab === "events"
@@ -500,7 +485,6 @@ export default function CommunityPage({ params }) {
           POLLS
         </button>
       </div>
-      {/* TAB CONTENT FOR EVENTS */}
       <div>
         {activeTab === "events" && (
           <div className="rounded bg-gray-50 p-4 pb-4">
@@ -513,7 +497,6 @@ export default function CommunityPage({ params }) {
                       key={event.id}
                       className="min-w-[300px] w-[300px] bg-white shadow rounded-md p-4"
                     >
-                      {/* Event Image */}
                       <div className="mb-4">
                         <img
                           src="https://www.pngkey.com/png/detail/233-2332677_ega-png.png"
@@ -551,30 +534,17 @@ export default function CommunityPage({ params }) {
                       <div className="mt-4">
                         {event.status === "active" ? (
                           <div className="flex space-x-4">
-                            {/* Closed Button */}
-                            <button
-                              className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
-                              onClick={handleClosedEventClick}
-                            >
-                              Closed
-                            </button>
-
-                            {/* Share Button */}
-                            <button
-                              className="flex-1 bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400 transition-all"
-                              onClick={() => handleShare(event)}
-                            >
-                              Share
-                            </button>
+                            <span className="flex-1 text-gray-700 font-bold py-2 px-4 rounded-md">
+                              RSVP for this event is CLOSED
+                            </span>
                           </div>
                         ) : (
                           event.status === "rsvp" && (
                             <div className="flex space-x-4">
-                              {/* RSVP/Un-RSVP Button */}
                               {isRSVPed(event.id) ? (
                                 <button
                                   className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
-                                  onClick={() => handleLeave(event.id)}
+                                  onClick={() => handleLeave(event)}
                                 >
                                   UN RSVP
                                 </button>
@@ -597,7 +567,6 @@ export default function CommunityPage({ params }) {
             ) : (
               <Typography>No upcoming events to display</Typography>
             )}
-            {/* Past Events */}
 
             <div className="rounded bg-gray-50 p-4 relative">
               <h2 className="text-2xl font-semibold mb-4">Past Events</h2>
@@ -610,7 +579,6 @@ export default function CommunityPage({ params }) {
                         key={event.id}
                         className="min-w-[300px] w-[300px] bg-white shadow-2xl rounded-md flex flex-col p-4"
                       >
-                        {/* Event Image */}
                         <div className="mb-4">
                           <img
                             src="https://th.bing.com/th/id/OIP.F00dCf4bXxX0J-qEEf4qIQHaD6?rs=1&pid=ImgDetMain"
@@ -661,19 +629,16 @@ export default function CommunityPage({ params }) {
           </div>
         )}
       </div>
-      {/* TAB CONTENT FOR POLLS */}
       <div>
         {activeTab === "polls" && (
           <div>
             <div className="flex flex-wrap gap-4 justify-start">
-              {" "}
-              {/* Adjust alignment here */}
               {allPolls.length > 0 ? (
                 allPolls.map((poll, index) => (
                   <div
                     key={index}
                     className="p-4 bg-white shadow-lg rounded-md max-w-xs w-full"
-                    style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)" }} // Custom shadow style
+                    style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)" }}
                   >
                     <h3 className="text-xl font-semibold border-b-2 border-gray-300 mb-2">
                       {poll.Question}
@@ -684,8 +649,6 @@ export default function CommunityPage({ params }) {
                           key={poll_option_index}
                           className="mt-2 flex items-center"
                         >
-                          {" "}
-                          {/* Align items here */}
                           <input
                             type="radio"
                             name={`poll-${poll.id}`}
@@ -731,7 +694,6 @@ export default function CommunityPage({ params }) {
       >
         <DialogContent>
           <div className="flex">
-            {/* Left Column - Current Content */}
             <div className="flex-1 pr-4">
               <Typography variant="h6" gutterBottom>
                 All Comments and Ratings
@@ -765,7 +727,6 @@ export default function CommunityPage({ params }) {
               )}
             </div>
 
-            {/* Right Column - User Review */}
             <div className="flex-1 pl-4">
               <Typography variant="h6" gutterBottom>
                 Leave a Comment & Rating
@@ -800,6 +761,25 @@ export default function CommunityPage({ params }) {
         <DialogActions>
           <Button onClick={handleCloseDialog} color="primary">
             Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* UNRSVP Confirmation Dialog */}
+      <Dialog open={confirmUnRSVP} onClose={cancelLeave}>
+        <DialogTitle>Confirm Un-RSVP</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to un-RSVP from the event:{" "}
+            {currentEventToUnRSVP?.Name}?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelLeave} color="primary">
+            No
+          </Button>
+          <Button onClick={confirmLeave} color="primary" autoFocus>
+            Yes
           </Button>
         </DialogActions>
       </Dialog>
