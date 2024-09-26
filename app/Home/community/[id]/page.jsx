@@ -378,7 +378,7 @@ export default function CommunityPage({ params }) {
 
   // Filter events based on status
   const upcomingEvents = allEvents.filter(
-    (event) => event.status === "active" || event.status === "rsvp"
+    (event) => event.status === "Active" || event.status === "RSVP"
   );
 
   const pastEvents = allEvents.filter(
@@ -549,26 +549,18 @@ export default function CommunityPage({ params }) {
                       </Typography>
 
                       <div className="mt-4">
-                        {event.status === "active" ? (
+                        {event.status === "Active" ? (
                           <div className="flex space-x-4">
                             {/* Closed Button */}
                             <button
                               className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
                               onClick={handleClosedEventClick}
                             >
-                              Closed
-                            </button>
-
-                            {/* Share Button */}
-                            <button
-                              className="flex-1 bg-gray-300 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-400 transition-all"
-                              onClick={() => handleShare(event)}
-                            >
-                              Share
+                              RSVP for event is Closed
                             </button>
                           </div>
                         ) : (
-                          event.status === "rsvp" && (
+                          event.status === "RSVP" && (
                             <div className="flex space-x-4">
                               {/* RSVP/Un-RSVP Button */}
                               {isRSVPed(event.id) ? (
