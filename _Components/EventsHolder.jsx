@@ -310,7 +310,7 @@ const EventsHolder = ({
                         width: 70,
                         height: 40,
                         display: "flex",
-                        alignItems: "right",
+                        alignItems: "center",
                         justifyContent: "center",
                         borderRadius: "4px",
                         typography: "caption",
@@ -318,7 +318,13 @@ const EventsHolder = ({
                         marginTop: "0px", // Adjust this value as needed
                       }}
                     >
-                      <Typography variant="caption">{value.status}</Typography>
+                      <Typography variant="caption">
+                        {value.status === "rsvp"
+                          ? "RSVP"
+                          : value.status === "active"
+                          ? "Active"
+                          : value.status}
+                      </Typography>
                     </Box>
                   )}
 
