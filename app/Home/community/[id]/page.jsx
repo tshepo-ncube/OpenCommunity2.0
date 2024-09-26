@@ -12,10 +12,11 @@ import {
   Rating,
   DialogActions,
 } from "@mui/material";
+
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import UserDB from "@/database/community/users";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
@@ -401,17 +402,64 @@ export default function CommunityPage({ params }) {
     (event) => event.status === "past" // Adjust filtering based on your status or date
   );
 
-  const handleSubmitReview = () => {
-    const newReview = {
-      Comment: comment,
+  const handleSubmitReview = async () => {
+    const currentDate = new Date();
 
-      Rating: rating,
-    };
+    try {
+      // Instead of using URL.createObjectURL, we'll create a simple object with file information
+      const imageInfo = selectedImages.map((image) => ({
+        name: image.name,
+        type: image.file.type,
+        size: image.file.size,
+      }));
 
-    //Call the function to add the review
-    // EventDB.addReview("3jBBeJTzU4ozzianyqeM", newReview);
+      const newReview = {
+        Comment: comment,
+        Rating: rating,
+        date: currentDate.toISOString(),
+        images: imageInfo,
+      };
 
-    EventDB.handleImageUpload(currentEventObject.id, selectedImages, newReview);
+      // Ensure we have a valid event ID
+      if (!currentEventObject || !currentEventObject.id) {
+        throw new Error("Invalid event data");
+      }
+
+      // Update the event document in Firestore
+      const eventRef = doc(db, "events", currentEventObject.id);
+      await updateDoc(eventRef, {
+        Reviews: arrayUnion(newReview),
+      });
+
+      // Clear form and close dialog
+      setComment("");
+      setRating(0);
+      setSelectedImages([]);
+      setOpenDialog(false);
+
+      // Update the local state to reflect the new review
+      setCurrentEventObject((prevEvent) => ({
+        ...prevEvent,
+        Reviews: [...(prevEvent.Reviews || []), newReview],
+      }));
+
+      // Show success message
+      alert("Review submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting review:", error);
+
+      // Provide more detailed error information
+      let errorMessage = "Failed to submit review. ";
+      if (error.code === "permission-denied") {
+        errorMessage += "You don't have permission to perform this action.";
+      } else if (error.code === "not-found") {
+        errorMessage += "The event data could not be found.";
+      } else {
+        errorMessage += "Please try again. Error: " + error.message;
+      }
+
+      alert(errorMessage);
+    }
   };
 
   // useEffect(() => {
@@ -757,21 +805,25 @@ export default function CommunityPage({ params }) {
                 <ul className="list-none p-0">
                   {currentEventObject.Reviews.map((review, index) => (
                     <li
-                      className="bg-gray-200 p-4 mb-4 rounded flex items-center"
+                      className="bg-gray-200 p-4 mb-4 rounded flex flex-col justify-between"
                       key={index}
                     >
                       <div className="flex-1">
+                        <div className="flex items-center mb-2">
+                          <Rating
+                            name={`rating-${index}`}
+                            value={review.Rating}
+                            readOnly
+                            precision={0.5}
+                          />
+                        </div>
                         <Typography variant="body1">
                           {review.Comment}
                         </Typography>
                       </div>
-                      <div className="flex items-center ml-4">
-                        <Rating
-                          name={`rating-${index}`}
-                          value={review.Rating}
-                          readOnly
-                          precision={0.5}
-                        />
+                      <div className="mt-2 text-right text-sm text-gray-600">
+                        {new Date(review.date).toLocaleDateString()}{" "}
+                        {/* Format date */}
                       </div>
                     </li>
                   ))}
