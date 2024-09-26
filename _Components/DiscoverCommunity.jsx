@@ -145,13 +145,21 @@ const DiscoverCommunity = ({ email }) => {
 
   const filteredData = filterDataByCategoryAndStatus(submittedData);
 
+  // Function to capitalize the first letter of a category
+  const capitalizeFirstLetter = (category) => {
+    return category.charAt(0).toUpperCase() + category.slice(1);
+  };
+
   const uniqueCategories = Array.from(
-    new Set(submittedData.map((data) => data.category))
+    new Set(submittedData.map((data) => capitalizeFirstLetter(data.category)))
   );
+
   uniqueCategories.unshift("All Communities");
 
   const stringToColor = (category) => {
-    switch (category.toLowerCase()) {
+    const formattedCategory =
+      category.charAt(0).toUpperCase() + category.slice(1);
+    switch (formattedCategory.toLowerCase()) {
       case "general":
         return "#a3c2e7";
       case "social":
@@ -164,8 +172,8 @@ const DiscoverCommunity = ({ email }) => {
         return "#d4a1d1";
       default:
         let hash = 0;
-        for (let i = 0; i < category.length; i++) {
-          hash = category.charCodeAt(i) + ((hash << 5) - hash);
+        for (let i = 0; i < formattedCategory.length; i++) {
+          hash = formattedCategory.charCodeAt(i) + ((hash << 5) - hash);
         }
         const color = `hsl(${Math.abs(hash) % 360}, 70%, 80%)`;
         return color;
@@ -361,7 +369,7 @@ const DiscoverCommunity = ({ email }) => {
                           }}
                           className="text-sm font-bold rounded-md absolute top-0 right-0 z-10"
                         >
-                          {data.category}
+                          {capitalizeFirstLetter(data.category)}
                         </div>
 
                         <CardContent className="flex-grow">
