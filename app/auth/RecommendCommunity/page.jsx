@@ -211,10 +211,7 @@ const CommunityRecommendationPage = () => {
                     >
                       {["General", "Sports", "Social", "Development"].map(
                         (cat) => (
-                          <option
-                            key={cat.toLowerCase()}
-                            value={cat.toLowerCase()}
-                          >
+                          <option key={cat} value={cat}>
                             {cat}
                           </option>
                         )

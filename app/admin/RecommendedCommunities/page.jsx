@@ -85,7 +85,7 @@ export default function RecommendationsTable() {
   };
 
   const handleAddClick = async (rec) => {
-    const categories = ["general", "Sports", "Social", "Development"];
+    const categories = ["General", "Sports", "Social", "Development"];
 
     const { value: formValues } = await Swal.fire({
       title: "Create Community",
@@ -116,6 +116,10 @@ export default function RecommendationsTable() {
                 .join("")}
             </select>
           </div>
+          <div>
+            <label for="image" class="block text-sm font-medium text-gray-700">Upload Image</label>
+            <input type="file" id="image" accept="image/*" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" />
+          </div>
         </div>
       `,
       showCloseButton: true,
@@ -138,7 +142,6 @@ export default function RecommendationsTable() {
         footer: "custom-swal-footer",
       },
       didOpen: () => {
-        // Apply custom styling after the popup is open
         const confirmButton = document.querySelector(".swal2-confirm");
         if (confirmButton) {
           confirmButton.style.backgroundColor = "#bcd727";
@@ -146,17 +149,25 @@ export default function RecommendationsTable() {
           confirmButton.style.color = "#ffffff"; // Ensuring text is readable
         }
       },
-      preConfirm: () => ({
-        name: document.getElementById("name").value,
-        description: document.getElementById("description").value,
-        category: document.getElementById("category").value,
-      }),
+      preConfirm: () => {
+        const imageFile = document.getElementById("image").files[0]; // Capture the uploaded file
+        return {
+          name: document.getElementById("name").value,
+          description: document.getElementById("description").value,
+          category: document.getElementById("category").value,
+          image: imageFile, // Include the image file in the return value
+        };
+      },
     });
 
     if (formValues) {
+      const { name, description, category, image } = formValues;
       try {
+        // Handle the image upload logic here, e.g., upload to your server or storage
+        const imageUrl = await uploadImage(image); // You'll need to implement this function
+
         await CommunityDB.createCommunity(
-          formValues,
+          { name, description, category, imageUrl }, // Pass the imageUrl instead of image
           () => {},
           () => {}
         );
