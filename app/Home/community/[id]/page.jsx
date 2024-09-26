@@ -254,6 +254,27 @@ export default function CommunityPage({ params }) {
       });
   };
 
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const newImages = files.map((file, index) => ({
+      file,
+      name: `image_${selectedImages.length + index + 1}`,
+    }));
+    setSelectedImages((prevImages) => [...prevImages, ...newImages]);
+  };
+
+  const handleImageDeselect = (indexToRemove) => {
+    setSelectedImages((prevImages) => {
+      const updatedImages = prevImages.filter(
+        (_, index) => index !== indexToRemove
+      );
+      return updatedImages.map((img, index) => ({
+        ...img,
+        name: `image_${index + 1}`,
+      }));
+    });
+  };
+
   const handleCommentReview = (event) => {
     console.log("This is the event :", event);
     setCurrentEvent(event.eventName);
@@ -328,11 +349,6 @@ export default function CommunityPage({ params }) {
   };
 
   const isRSVPed = (eventID) => rsvpState[eventID] || false;
-
-  const handleImageUpload = (event) => {
-    const files = Array.from(event.target.files);
-    setSelectedImages((prevImages) => [...prevImages, ...files]);
-  };
 
   if (loading) {
     return (
@@ -785,6 +801,47 @@ export default function CommunityPage({ params }) {
                   value={rating}
                   onChange={(e, newValue) => setRating(newValue)}
                 />
+              </div>
+              {/* Image Upload Section */}
+              <div className="mt-4">
+                <Typography variant="body1">Upload Images</Typography>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageUpload}
+                  className="mt-2"
+                />
+                {selectedImages.length > 0 && (
+                  <div className="mt-2">
+                    <Typography variant="body2">
+                      {selectedImages.length} image(s) selected
+                    </Typography>
+                    <div className="flex flex-wrap mt-2">
+                      {selectedImages.map((image, index) => (
+                        <div key={index} className="relative m-1">
+                          <img
+                            src={URL.createObjectURL(image.file)}
+                            alt={image.name}
+                            className="w-20 h-20 object-cover"
+                          />
+                          <Typography
+                            variant="caption"
+                            className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-center"
+                          >
+                            {image.name}
+                          </Typography>
+                          <button
+                            onClick={() => handleImageDeselect(index)}
+                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               <Button
                 variant="contained"
