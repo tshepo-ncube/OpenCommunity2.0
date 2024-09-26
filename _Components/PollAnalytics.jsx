@@ -30,6 +30,38 @@ const generateRandomColor = () => {
   return color;
 };
 
+function convertTimestampToString(firestoreTimestamp) {
+  // Check if the provided timestamp is valid
+  if (!firestoreTimestamp || !firestoreTimestamp.toDate) {
+    throw new Error("Invalid Firestore Timestamp.");
+  }
+
+  // Convert Firestore Timestamp to JavaScript Date
+  const dateObject = firestoreTimestamp.toDate();
+
+  // Convert Date to a readable string (using toLocaleString)
+  // const dateString = dateObject.toLocaleString(); // You can use toISOString() if you prefer
+  const dateString = dateObject.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  return dateString;
+}
+
+function pollCloseDateFormat(dateString) {
+  const date = new Date(dateString);
+
+  // Format the date to "day month year" format
+  const formattedDate = date.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  return formattedDate;
+}
+
 export default function PollAnalytics({ poll }) {
   console.log("This is poll from analytics ", poll);
 
@@ -72,6 +104,10 @@ export default function PollAnalytics({ poll }) {
     <Box sx={{ flexGrow: 1, padding: 4 }}>
       <h1 className="text-3xl text-black">{poll.Question}</h1>
       <Box sx={{ flexGrow: 1 }}>
+        <h1>
+          {convertTimestampToString(poll.createdAt)} -{" "}
+          {pollCloseDateFormat(poll.PollCloseDate)}
+        </h1>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={12} md={12} lg={12}>
             <Bar
