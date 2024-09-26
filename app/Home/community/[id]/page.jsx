@@ -534,30 +534,41 @@ export default function CommunityPage({ params }) {
                       <div className="mt-4">
                         {event.status === "active" ? (
                           <div className="flex space-x-4">
-                            <span className="flex-1 text-gray-700 font-bold py-2 px-4 rounded-md">
-                              RSVP for this event is CLOSED
-                            </span>
+                            {isRSVPed(event.id) ? (
+                              <button
+                                className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
+                                onClick={() => handleLeave(event)}
+                              >
+                                UN RSVP
+                              </button>
+                            ) : (
+                              <span className="flex-1 text-gray-700 font-bold py-2 px-4 rounded-md">
+                                RSVP for this event is CLOSED
+                              </span>
+                            )}
+                          </div>
+                        ) : event.status === "rsvp" ? (
+                          <div className="flex space-x-4">
+                            {isRSVPed(event.id) ? (
+                              <button
+                                className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
+                                onClick={() => handleLeave(event)}
+                              >
+                                UN RSVP
+                              </button>
+                            ) : (
+                              <button
+                                className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
+                                onClick={() => handleRSVP(event)}
+                              >
+                                RSVP
+                              </button>
+                            )}
                           </div>
                         ) : (
-                          event.status === "rsvp" && (
-                            <div className="flex space-x-4">
-                              {isRSVPed(event.id) ? (
-                                <button
-                                  className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
-                                  onClick={() => handleLeave(event)}
-                                >
-                                  UN RSVP
-                                </button>
-                              ) : (
-                                <button
-                                  className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
-                                  onClick={() => handleRSVP(event)}
-                                >
-                                  RSVP
-                                </button>
-                              )}
-                            </div>
-                          )
+                          <span className="flex-1 text-gray-700 font-bold py-2 px-4 rounded-md">
+                            Event status unknown
+                          </span>
                         )}
                       </div>
                     </li>
