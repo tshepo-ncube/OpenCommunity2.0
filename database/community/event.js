@@ -13,6 +13,7 @@ import {
   query,
   where,
   arrayUnion,
+  Timestamp,
   arrayRemove,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -21,7 +22,43 @@ import UserDB from "./users";
 import { eventScheduler, pollScheduler } from "../../Utils/scheduleEmails";
 
 export default class EventDB {
+  static convertToFirebaseTimestamp = (dateString) => {
+    // Convert string date like "2024-09-28T01:46" to Firestore Timestamp
+    return Timestamp.fromDate(new Date(dateString));
+  };
+  static prepareEventDataForFirebase = (data) => {
+    console.log("prepareEventData for firebase", data);
+    return {
+      Name: data.eventName,
+      StartDate: EventDB.convertToFirebaseTimestamp(data.startDateTime),
+      EndDate: EventDB.convertToFirebaseTimestamp(data.endDateTime),
+      RsvpEndTime: EventDB.convertToFirebaseTimestamp(data.rsvpEndDateTime),
+      Location: data.location,
+      EventDescription: data.description,
+      status: data.status,
+    };
+  };
   // Existing methods...
+
+  static editEventFromUI = async (eventData, handleSnackbarClick) => {
+    //convertToFirebaseTimestamp();
+    const id = eventData.eventID;
+    const eventObjectForFirebase =
+      EventDB.prepareEventDataForFirebase(eventData);
+    console.log(eventObjectForFirebase);
+    // var object = {
+    //   Name: data.eventName,
+    //   startDateTime: convertToFirebaseTimestamp(data.startDateTime),
+    //   endDateTime: convertToFirebaseTimestamp(data.endDateTime),
+    //   rsvpEndDateTime: convertToFirebaseTimestamp(data.rsvpEndDateTime),
+    //   location: data.location,
+    //   description: data.description,
+    //   status: data.status,
+    // };
+
+    console.log(id, eventObjectForFirebase);
+    EventDB.editEvent(id, eventObjectForFirebase, handleSnackbarClick);
+  };
 
   static deleteEvent = async (id) => {
     try {
@@ -30,6 +67,21 @@ export default class EventDB {
     } catch (e) {
       console.error("Error deleting document:", e);
       throw e;
+    }
+  };
+
+  static editEvent = async (id, object, handleSnackbarClick) => {
+    try {
+      const eventRef = doc(DB, "events", id);
+
+      console.log("about to update an event");
+      // Update the community document
+      await updateDoc(eventRef, object);
+      console.log("Done editing an event.");
+
+      handleSnackbarClick();
+    } catch (err) {
+      console.log("Error Editing Snackbar : ", err);
     }
   };
 

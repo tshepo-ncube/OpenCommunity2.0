@@ -18,7 +18,7 @@ import {
   Paper,
 } from "@mui/material";
 import * as XLSX from "xlsx";
-
+import { IoMdClose } from "react-icons/io";
 import AnalyticsDB from "../database/community/analytics";
 
 import EventDB from "../database/community/event";
@@ -40,6 +40,7 @@ const EventsHolder = ({
   handleCreateNewEvent,
   setShowEventForm,
   setEventForm,
+  setShowEditForm,
 }) => {
   const [allEvents, setAllEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -106,6 +107,8 @@ const EventsHolder = ({
         setAllEvents(updatedEvents);
       }
     };
+
+    console.log(allEvents);
 
     updateEventsStatus();
     const interval = setInterval(updateEventsStatus, 60000);
@@ -241,7 +244,59 @@ const EventsHolder = ({
   };
 
   const upcomingEvents = allEvents.filter((event) => event.status !== "past");
+
+  console.log("Upcoming Events : ", upcomingEvents);
   const pastEvents = allEvents.filter((event) => event.status === "past");
+
+  const getEventById = (id) => {
+    return allEvents.find((event) => event.id === id);
+  };
+
+  const convertTimestamp = (timestamp) => {
+    // Convert seconds to milliseconds
+    const date = new Date(timestamp.seconds * 1000);
+
+    // Extract date components
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, "0");
+
+    // Extract time components
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    // Format the output
+    const date_string = `${year}-${month}-${day}`;
+    const time_string = `${hours}:${minutes}`;
+
+    return { date_string, time_string };
+  };
+  const handleEdit = (id) => {
+    console.log("Handle Edit Object : ", getEventById(id));
+    var eventObject = getEventById(id);
+
+    setEventForm((prevState) => ({
+      ...prevState,
+      Name: eventObject.Name,
+      startDate: convertTimestamp(eventObject.StartDate).date_string,
+      startTime: convertTimestamp(eventObject.StartDate).time_string,
+      endDate: convertTimestamp(eventObject.EndDate).date_string,
+      EventID: id,
+      endTime: convertTimestamp(eventObject.EndDate).time_string,
+      //location: eventObject.Location,
+      Location: eventObject.Location,
+      EventDescription: eventObject.EventDescription,
+      rsvpEndDateTime: `${
+        convertTimestamp(eventObject.RsvpEndTime).date_string
+      }T${convertTimestamp(eventObject.RsvpEndTime).time_string}`,
+    }));
+
+    setShowEditForm(true);
+
+    console.log("Editing this event: ", eventObject);
+    console.log("TimeStamp: ", eventObject.StartDate);
+    console.log("time stamp: ", convertTimestamp(eventObject.StartDate));
+  };
 
   return (
     <div className="mt-4">
@@ -374,15 +429,20 @@ const EventsHolder = ({
                     <br />
                     <strong>Location:</strong> {value.Location}
                     <br />
-                    <strong>Description:</strong> {value.Description}
+                    <strong>Description:</strong> {value.EventDescription}
                   </Typography>
                 </CardContent>
 
                 <CardActions>
+                  <Button size="small" onClick={() => handleEdit(value.id)}>
+                    Edit
+                  </Button>
                   {value.status === "draft" && (
-                    <Button size="small" onClick={() => handlePost(value.id)}>
-                      Post
-                    </Button>
+                    <>
+                      <Button size="small" onClick={() => handlePost(value.id)}>
+                        Post
+                      </Button>
+                    </>
                   )}
 
                   {(value.status === "rsvp" || value.status === "active") && (

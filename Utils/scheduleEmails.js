@@ -63,6 +63,22 @@ const scheduleEventEndReminder = async (eventID) => {
   }
 };
 
+const scheduleEventChangeNotificaiton = async (eventID) => {
+  try {
+    const res = await axios.post(
+      strings.server_endpoints.scheduleEventEndReminder,
+      { eventID },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 async function eventScheduler(eventID) {
   scheduleEventEndReminder(eventID);
   scheduleEventStartReminder(eventID);
