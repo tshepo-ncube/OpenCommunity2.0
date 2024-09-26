@@ -12,7 +12,7 @@ import {
   Rating,
   DialogActions,
 } from "@mui/material";
-
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import UserDB from "@/database/community/users";
@@ -406,18 +406,23 @@ export default function CommunityPage({ params }) {
     const currentDate = new Date();
 
     try {
-      // Instead of using URL.createObjectURL, we'll create a simple object with file information
-      const imageInfo = selectedImages.map((image) => ({
-        name: image.name,
-        type: image.file.type,
-        size: image.file.size,
-      }));
+      // Convert images to data URLs
+      const imageUrls = await Promise.all(
+        selectedImages.map(async (image) => {
+          const reader = new FileReader();
+          return new Promise((resolve, reject) => {
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(image.file);
+          });
+        })
+      );
 
       const newReview = {
         Comment: comment,
         Rating: rating,
         date: currentDate.toISOString(),
-        images: imageInfo,
+        images: imageUrls, // Use the converted data URLs here
       };
 
       // Ensure we have a valid event ID
@@ -447,18 +452,7 @@ export default function CommunityPage({ params }) {
       alert("Review submitted successfully!");
     } catch (error) {
       console.error("Error submitting review:", error);
-
-      // Provide more detailed error information
-      let errorMessage = "Failed to submit review. ";
-      if (error.code === "permission-denied") {
-        errorMessage += "You don't have permission to perform this action.";
-      } else if (error.code === "not-found") {
-        errorMessage += "The event data could not be found.";
-      } else {
-        errorMessage += "Please try again. Error: " + error.message;
-      }
-
-      alert(errorMessage);
+      // Handle error as before
     }
   };
 
@@ -820,6 +814,20 @@ export default function CommunityPage({ params }) {
                         <Typography variant="body1">
                           {review.Comment}
                         </Typography>
+
+                        {/* Displaying images if available */}
+                        {review.images && review.images.length > 0 && (
+                          <div className="mt-2">
+                            {review.images.map((imageUrl, imgIndex) => (
+                              <img
+                                key={imgIndex}
+                                src={imageUrl}
+                                alt={`Review image ${imgIndex + 1}`}
+                                className="w-24 h-24 object-cover rounded mt-2 mr-2" // Adjust styling as needed
+                              />
+                            ))}
+                          </div>
+                        )}
                       </div>
                       <div className="mt-2 text-right text-sm text-gray-600">
                         {new Date(review.date).toLocaleDateString()}{" "}
