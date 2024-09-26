@@ -14,6 +14,9 @@ export default class LoginUser {
         setUser(user);
 
         localStorage.setItem("Email", user.email);
+        localStorage.setItem("UserID", user.uid); // Store the UserID
+        localStorage.setItem("Name", userDetails.Name); // Store name
+        localStorage.setItem("Surname", userDetails.Surname); // Store surname
         ManageUser.storeUserID(user.email);
         setLoggedIn(true);
         router.push("/Home");

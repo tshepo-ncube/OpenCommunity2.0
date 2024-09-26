@@ -406,6 +406,9 @@ export default function CommunityPage({ params }) {
     const currentDate = new Date();
 
     try {
+      // Log the UserID to verify
+      console.log("UserID from local storage:", localStorage.getItem("UserID"));
+
       // Convert images to data URLs
       const imageUrls = await Promise.all(
         selectedImages.map(async (image) => {
@@ -418,11 +421,21 @@ export default function CommunityPage({ params }) {
         })
       );
 
+      // Retrieve user details
+      const userID = localStorage.getItem("UserID");
+      const userEmail = localStorage.getItem("Email");
+      const userName = localStorage.getItem("Name"); // Retrieve name
+      const userSurname = localStorage.getItem("Surname"); // Retrieve surname
+
       const newReview = {
         Comment: comment,
         Rating: rating,
         date: currentDate.toISOString(),
         images: imageUrls, // Use the converted data URLs here
+        UserID: userID,
+        UserEmail: userEmail,
+        UserName: userName, // Add name
+        UserSurname: userSurname, // Add surname
       };
 
       // Ensure we have a valid event ID
@@ -813,6 +826,12 @@ export default function CommunityPage({ params }) {
                         </div>
                         <Typography variant="body1">
                           {review.Comment}
+                        </Typography>
+
+                        {/* Display the user's name and email */}
+                        <Typography variant="body2" className="font-semibold">
+                          {review.UserName} {review.UserSurname} -{" "}
+                          {review.UserEmail}
                         </Typography>
 
                         {/* Displaying images if available */}
