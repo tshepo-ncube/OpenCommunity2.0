@@ -425,6 +425,12 @@ export default function CommunityPage({ params }) {
       const userSurname = userData.Surname || "Unknown";
       const userEmail = userData.Email || localStorage.getItem("Email");
 
+      // Check if more than 10 images are selected
+      if (selectedImages.length > 10) {
+        alert("You can only upload up to 10 images.");
+        return; // Stop submission if more than 10 images are selected
+      }
+
       // Upload images to Firebase Storage and get download URLs
       const imageUrls = await Promise.all(
         selectedImages.map(async (image, index) => {
@@ -482,6 +488,24 @@ export default function CommunityPage({ params }) {
       alert(`Error submitting review: ${error.message}`);
     }
   };
+
+  // Ensure users can only select up to 10 images
+  const handleImageSelection = (event) => {
+    const selectedFiles = Array.from(event.target.files);
+
+    // Check if adding new images exceeds the limit
+    if (selectedImages.length + selectedFiles.length > 10) {
+      alert("You can only upload up to 10 images.");
+      return; // Do not add images if the limit is exceeded
+    }
+
+    // Update the selected images state
+    setSelectedImages((prevImages) => [
+      ...prevImages,
+      ...selectedFiles.map((file) => ({ file })),
+    ]);
+  };
+
   // useEffect(() => {
   //   console.log("Adding points...");
   //   UserDB.addPoints();
