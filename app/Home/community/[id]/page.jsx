@@ -895,15 +895,30 @@ export default function CommunityPage({ params }) {
 
                           {/* Displaying images if available */}
                           {review.images && review.images.length > 0 && (
-                            <div className="mt-2">
-                              {review.images.map((imageUrl, imgIndex) => (
-                                <img
-                                  key={imgIndex}
-                                  src={imageUrl}
-                                  alt={`Review image ${imgIndex + 1}`}
-                                  className="w-24 h-24 object-cover rounded mt-2 mr-2"
-                                />
-                              ))}
+                            <div className="mt-2 flex">
+                              {review.images
+                                .slice(0, 4)
+                                .map((imageUrl, imgIndex) => (
+                                  <img
+                                    key={imgIndex}
+                                    src={imageUrl}
+                                    alt={`Review image ${imgIndex + 1}`}
+                                    className="w-24 h-24 object-cover rounded mt-2 mr-2"
+                                  />
+                                ))}
+
+                              {review.images.length > 4 && (
+                                <div className="relative w-24 h-24 mt-2 mr-2">
+                                  <img
+                                    src={review.images[4]} // The 5th image
+                                    alt="More images"
+                                    className="w-full h-full object-cover rounded blur-sm"
+                                  />
+                                  <span className="absolute inset-0 flex items-center justify-center text-white bg-black bg-opacity-50 rounded">
+                                    + {review.images.length - 4} more
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
