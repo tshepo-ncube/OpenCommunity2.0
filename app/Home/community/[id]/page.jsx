@@ -812,7 +812,7 @@ export default function CommunityPage({ params }) {
                 <ul className="list-none p-0">
                   {currentEventObject.Reviews.map((review, index) => (
                     <li
-                      className="bg-gray-200 p-4 mb-4 rounded flex flex-col justify-between"
+                      className="bg-gray-200 p-4 mb-4 rounded flex flex-col justify-between relative" // Added relative for positioning
                       key={index}
                     >
                       <div className="flex-1">
@@ -828,10 +828,18 @@ export default function CommunityPage({ params }) {
                           {review.Comment}
                         </Typography>
 
-                        {/* Display the user's name and email */}
+                        {/* Display the user's name */}
                         <Typography variant="body2" className="font-semibold">
-                          {review.UserName} {review.UserSurname} -{" "}
-                          {review.UserEmail}
+                          {review.UserName} {review.UserSurname}
+                        </Typography>
+
+                        {/* Position the date in the top right corner */}
+                        <Typography
+                          variant="body2"
+                          className="text-gray-600 text-sm absolute top-0 right-0"
+                        >
+                          {new Date(review.date).toLocaleDateString()}{" "}
+                          {/* Format date */}
                         </Typography>
 
                         {/* Displaying images if available */}
@@ -848,10 +856,14 @@ export default function CommunityPage({ params }) {
                           </div>
                         )}
                       </div>
-                      <div className="mt-2 text-right text-sm text-gray-600">
-                        {new Date(review.date).toLocaleDateString()}{" "}
-                        {/* Format date */}
-                      </div>
+
+                      {/* Position the email in the bottom right corner */}
+                      <Typography
+                        variant="body2"
+                        className="text-gray-600 text-sm absolute bottom-0 right-0"
+                      >
+                        {review.UserEmail}
+                      </Typography>
                     </li>
                   ))}
                 </ul>
