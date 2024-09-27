@@ -12,6 +12,7 @@ import {
   Rating,
   DialogActions,
 } from "@mui/material";
+import imageCompression from "browser-image-compression";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -401,61 +402,73 @@ export default function CommunityPage({ params }) {
   const pastEvents = allEvents.filter(
     (event) => event.status === "past" // Adjust filtering based on your status or date
   );
-
   const handleSubmitReview = async () => {
     const currentDate = new Date();
 
     try {
-      // Log the UserID to verify
-      console.log("UserID from local storage:", localStorage.getItem("UserID"));
+      // Log the UserID to verify if it's correctly retrieved
+      const userID = localStorage.getItem("UserID");
 
-      // Convert images to data URLs
+      if (!userID) {
+        throw new Error("UserID is not available in local storage");
+      }
+
+      // Fetch user details from Firestore based on UserID
+      const userRef = doc(db, "users", userID); // Replace 'users' with your actual user collection
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        throw new Error("User not found in Firestore");
+      }
+
+      // Retrieve user details from the fetched data
+      const userData = userSnap.data();
+      const userName = userData.Name || "Unknown"; // Fallback if Name is null
+      const userSurname = userData.Surname || "Unknown"; // Fallback if Surname is null
+      const userEmail = userData.Email || localStorage.getItem("Email"); // Get email from Firestore or fallback to localStorage
+
+      // Convert selected images to data URLs for uploading
       const imageUrls = await Promise.all(
         selectedImages.map(async (image) => {
           const reader = new FileReader();
           return new Promise((resolve, reject) => {
-            reader.onloadend = () => resolve(reader.result);
+            reader.onloadend = () => resolve(reader.result); // Convert image to data URL
             reader.onerror = reject;
-            reader.readAsDataURL(image.file);
+            reader.readAsDataURL(image.file); // Read the image file
           });
         })
       );
 
-      // Retrieve user details
-      const userID = localStorage.getItem("UserID");
-      const userEmail = localStorage.getItem("Email");
-      const userName = localStorage.getItem("Name"); // Retrieve name
-      const userSurname = localStorage.getItem("Surname"); // Retrieve surname
-
+      // Create the new review object with fetched user data
       const newReview = {
-        Comment: comment,
-        Rating: rating,
-        date: currentDate.toISOString(),
-        images: imageUrls, // Use the converted data URLs here
-        UserID: userID,
-        UserEmail: userEmail,
-        UserName: userName, // Add name
-        UserSurname: userSurname, // Add surname
+        Comment: comment, // User's review comment
+        Rating: rating, // User's rating
+        date: currentDate.toISOString(), // Date of the review in ISO format
+        images: imageUrls, // Data URLs of the uploaded images
+        UserID: userID, // User ID
+        UserEmail: userEmail, // Email retrieved from Firestore or localStorage
+        UserName: userName, // Fetched from Firestore
+        UserSurname: userSurname, // Fetched from Firestore
       };
 
-      // Ensure we have a valid event ID
+      // Ensure we have a valid event ID before submitting the review
       if (!currentEventObject || !currentEventObject.id) {
         throw new Error("Invalid event data");
       }
 
-      // Update the event document in Firestore
+      // Update the event document in Firestore by adding the new review
       const eventRef = doc(db, "events", currentEventObject.id);
       await updateDoc(eventRef, {
-        Reviews: arrayUnion(newReview),
+        Reviews: arrayUnion(newReview), // Add the new review to the existing reviews array
       });
 
-      // Clear form and close dialog
-      setComment("");
-      setRating(0);
-      setSelectedImages([]);
-      setOpenDialog(false);
+      // Clear the form and close the review dialog after submission
+      setComment(""); // Reset comment field
+      setRating(0); // Reset rating field
+      setSelectedImages([]); // Clear selected images
+      setOpenDialog(false); // Close the dialog
 
-      // Update the local state to reflect the new review
+      // Update the local state with the new review
       setCurrentEventObject((prevEvent) => ({
         ...prevEvent,
         Reviews: [...(prevEvent.Reviews || []), newReview],
@@ -465,7 +478,7 @@ export default function CommunityPage({ params }) {
       alert("Review submitted successfully!");
     } catch (error) {
       console.error("Error submitting review:", error);
-      // Handle error as before
+      alert("Error submitting review. Please try again.");
     }
   };
 
@@ -810,62 +823,77 @@ export default function CommunityPage({ params }) {
 
               {currentEventObject && currentEventObject.Reviews ? (
                 <ul className="list-none p-0">
-                  {currentEventObject.Reviews.map((review, index) => (
-                    <li
-                      className="bg-gray-200 p-4 mb-4 rounded flex flex-col justify-between relative" // Added relative for positioning
-                      key={index}
-                    >
-                      <div className="flex-1">
-                        <div className="flex items-center mb-2">
-                          <Rating
-                            name={`rating-${index}`}
-                            value={review.Rating}
-                            readOnly
-                            precision={0.5}
-                          />
+                  {currentEventObject.Reviews.map((review, index) => {
+                    // Get user initials for the profile icon
+                    const userInitials = `${review.UserName?.[0] || ""}${
+                      review.UserSurname?.[0] || ""
+                    }`.toUpperCase();
+
+                    return (
+                      <li
+                        className="bg-gray-200 p-4 mb-4 rounded flex flex-col justify-between relative" // Added relative for positioning
+                        key={index}
+                      >
+                        <div className="flex items-center mb-4">
+                          {/* Profile icon with initials */}
+                          <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center mr-3">
+                            <span className="text-lg font-semibold">
+                              {userInitials}
+                            </span>
+                          </div>
+
+                          {/* User name and surname */}
+                          <Typography variant="body2" className="font-semibold">
+                            {review.UserName} {review.UserSurname}
+                          </Typography>
                         </div>
-                        <Typography variant="body1">
-                          {review.Comment}
-                        </Typography>
 
-                        {/* Display the user's name */}
-                        <Typography variant="body2" className="font-semibold">
-                          {review.UserName} {review.UserSurname}
-                        </Typography>
+                        <div className="flex-1">
+                          <div className="flex items-center mb-2">
+                            <Rating
+                              name={`rating-${index}`}
+                              value={review.Rating}
+                              readOnly
+                              precision={0.5}
+                            />
+                          </div>
+                          <Typography variant="body1">
+                            {review.Comment}
+                          </Typography>
 
-                        {/* Position the date in the top right corner */}
+                          {/* Position the date in the top right corner */}
+                          <Typography
+                            variant="body2"
+                            className="text-gray-600 text-sm absolute top-0 right-0"
+                          >
+                            {new Date(review.date).toLocaleDateString()}{" "}
+                          </Typography>
+
+                          {/* Displaying images if available */}
+                          {review.images && review.images.length > 0 && (
+                            <div className="mt-2">
+                              {review.images.map((imageUrl, imgIndex) => (
+                                <img
+                                  key={imgIndex}
+                                  src={imageUrl}
+                                  alt={`Review image ${imgIndex + 1}`}
+                                  className="w-24 h-24 object-cover rounded mt-2 mr-2"
+                                />
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Position the email in the bottom right corner */}
                         <Typography
                           variant="body2"
-                          className="text-gray-600 text-sm absolute top-0 right-0"
+                          className="text-gray-600 text-sm absolute bottom-0 right-0"
                         >
-                          {new Date(review.date).toLocaleDateString()}{" "}
-                          {/* Format date */}
+                          {review.UserEmail}
                         </Typography>
-
-                        {/* Displaying images if available */}
-                        {review.images && review.images.length > 0 && (
-                          <div className="mt-2">
-                            {review.images.map((imageUrl, imgIndex) => (
-                              <img
-                                key={imgIndex}
-                                src={imageUrl}
-                                alt={`Review image ${imgIndex + 1}`}
-                                className="w-24 h-24 object-cover rounded mt-2 mr-2" // Adjust styling as needed
-                              />
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Position the email in the bottom right corner */}
-                      <Typography
-                        variant="body2"
-                        className="text-gray-600 text-sm absolute bottom-0 right-0"
-                      >
-                        {review.UserEmail}
-                      </Typography>
-                    </li>
-                  ))}
+                      </li>
+                    );
+                  })}
                 </ul>
               ) : (
                 <Typography variant="body1">No reviews available.</Typography>
