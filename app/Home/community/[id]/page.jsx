@@ -13,7 +13,7 @@ import {
   DialogActions,
 } from "@mui/material";
 import imageCompression from "browser-image-compression";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Import storage functions
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import UserDB from "@/database/community/users";
@@ -404,51 +404,55 @@ export default function CommunityPage({ params }) {
   );
   const handleSubmitReview = async () => {
     const currentDate = new Date();
+    const storage = getStorage(); // Initialize Firebase Storage
 
     try {
-      // Log the UserID to verify if it's correctly retrieved
       const userID = localStorage.getItem("UserID");
 
       if (!userID) {
         throw new Error("UserID is not available in local storage");
       }
 
-      // Fetch user details from Firestore based on UserID
-      const userRef = doc(db, "users", userID); // Replace 'users' with your actual user collection
+      const userRef = doc(db, "users", userID); // Fetch user details from Firestore
       const userSnap = await getDoc(userRef);
 
       if (!userSnap.exists()) {
         throw new Error("User not found in Firestore");
       }
 
-      // Retrieve user details from the fetched data
       const userData = userSnap.data();
-      const userName = userData.Name || "Unknown"; // Fallback if Name is null
-      const userSurname = userData.Surname || "Unknown"; // Fallback if Surname is null
-      const userEmail = userData.Email || localStorage.getItem("Email"); // Get email from Firestore or fallback to localStorage
+      const userName = userData.Name || "Unknown";
+      const userSurname = userData.Surname || "Unknown";
+      const userEmail = userData.Email || localStorage.getItem("Email");
 
-      // Convert selected images to data URLs for uploading
+      // Upload images to Firebase Storage and get download URLs
       const imageUrls = await Promise.all(
-        selectedImages.map(async (image) => {
-          const reader = new FileReader();
-          return new Promise((resolve, reject) => {
-            reader.onloadend = () => resolve(reader.result); // Convert image to data URL
-            reader.onerror = reject;
-            reader.readAsDataURL(image.file); // Read the image file
-          });
+        selectedImages.map(async (image, index) => {
+          try {
+            const storageRef = ref(
+              storage,
+              `reviews/${userID}_${currentDate.getTime()}_${index}`
+            ); // Create a unique reference for each image
+            const snapshot = await uploadBytes(storageRef, image.file); // Upload the image file to Firebase Storage
+            const downloadURL = await getDownloadURL(snapshot.ref); // Get the download URL of the uploaded image
+            return downloadURL; // Return the download URL for storing in Firestore
+          } catch (uploadError) {
+            console.error("Error uploading image:", uploadError);
+            throw uploadError;
+          }
         })
       );
 
       // Create the new review object with fetched user data
       const newReview = {
-        Comment: comment, // User's review comment
-        Rating: rating, // User's rating
-        date: currentDate.toISOString(), // Date of the review in ISO format
-        images: imageUrls, // Data URLs of the uploaded images
-        UserID: userID, // User ID
-        UserEmail: userEmail, // Email retrieved from Firestore or localStorage
-        UserName: userName, // Fetched from Firestore
-        UserSurname: userSurname, // Fetched from Firestore
+        Comment: comment,
+        Rating: rating,
+        date: currentDate.toISOString(),
+        images: imageUrls, // Store only the URLs of the uploaded images
+        UserID: userID,
+        UserEmail: userEmail,
+        UserName: userName,
+        UserSurname: userSurname,
       };
 
       // Ensure we have a valid event ID before submitting the review
@@ -456,32 +460,28 @@ export default function CommunityPage({ params }) {
         throw new Error("Invalid event data");
       }
 
-      // Update the event document in Firestore by adding the new review
       const eventRef = doc(db, "events", currentEventObject.id);
       await updateDoc(eventRef, {
         Reviews: arrayUnion(newReview), // Add the new review to the existing reviews array
       });
 
-      // Clear the form and close the review dialog after submission
-      setComment(""); // Reset comment field
-      setRating(0); // Reset rating field
-      setSelectedImages([]); // Clear selected images
-      setOpenDialog(false); // Close the dialog
+      // Reset the form and state after submission
+      setComment("");
+      setRating(0);
+      setSelectedImages([]);
+      setOpenDialog(false);
 
-      // Update the local state with the new review
       setCurrentEventObject((prevEvent) => ({
         ...prevEvent,
         Reviews: [...(prevEvent.Reviews || []), newReview],
       }));
 
-      // Show success message
       alert("Review submitted successfully!");
     } catch (error) {
       console.error("Error submitting review:", error);
-      alert("Error submitting review. Please try again.");
+      alert(`Error submitting review: ${error.message}`);
     }
   };
-
   // useEffect(() => {
   //   console.log("Adding points...");
   //   UserDB.addPoints();
