@@ -82,7 +82,7 @@ function Home() {
       giff: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2gxdGswZGFkdmFxcTdvZmU2dW40Z3UycW4zOWFiZzBpanBxcHhnaCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/QpVUMRUJGokfqXyfa1/giphy.gif",
     },
     {
-      name: "Sustainability Advocates",
+      name: "Sustainability",
       description:
         "A group dedicated to promoting sustainable practices and reducing the company's carbon footprint.",
       image:
