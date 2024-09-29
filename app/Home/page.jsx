@@ -178,17 +178,17 @@ function Home() {
           <CollapsableSidebar />
 
           <div className="flex-grow p-6">
-            '
             <div className="p-8">
               <p class="text-4xl left-0 font-black text-gray-900 dark:text-white">
                 Recommened Communities
               </p>
 
-              <p className=" text-gray-900">
+              <p className="text-m text-gray-900">
                 These are the communities recommended to you
                 <br />
                 based on your interests and in app activity.
               </p>
+
               <div className="flex overflow-x-auto space-x-4 p-4">
                 {cards.map((card, index) => (
                   //   <div
