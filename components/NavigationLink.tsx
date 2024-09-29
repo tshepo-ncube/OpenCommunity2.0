@@ -1,0 +1,40 @@
+interface Props {
+  children: React.ReactNode;
+  name: string;
+  isOpen: boolean;
+}
+
+const NavigationLink = ({ children, name, isOpen }: Props) => {
+  return (
+    <div onClick={() => {}}>
+      {isOpen ? (
+        <>
+          <a
+            href="#"
+            className="flex p-1 rounded cursor-pointer stroke-[0.75] hover:stroke-neutral-100 stroke-neutral-400 text-neutral-400 hover:text-neutral-100 place-items-center gap-3 hover:bg-neutral-700/30 transition-colors duration-100"
+          >
+            {children}
+            <p className="text-inherit font-poppins overflow-clip whitespace-nowrap tracking-wide">
+              {name}
+            </p>
+          </a>
+        </>
+      ) : (
+        <>
+          {children}
+          {/* <a
+            href="#"
+            className="flex p-1 rounded cursor-pointer stroke-[0.75] hover:stroke-neutral-100 stroke-neutral-400 text-neutral-400 hover:text-neutral-100 place-items-center gap-3 hover:bg-neutral-700/30 transition-colors duration-100"
+          >
+            {children}
+            <p className="text-inherit font-poppins overflow-clip whitespace-nowrap tracking-wide">
+              {name}
+            </p>
+          </a> */}
+        </>
+      )}
+    </div>
+  );
+};
+
+export default NavigationLink;

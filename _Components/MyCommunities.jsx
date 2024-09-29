@@ -12,6 +12,8 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CommunityDB from "../database/community/community";
 import { useRouter } from "next/navigation";
+import CardDemo from "./CardDemo";
+import CardGiff from "./CardGiff";
 
 const DiscoverCommunity = ({ email }) => {
   const [loading, setLoading] = useState(true);
@@ -217,7 +219,7 @@ const DiscoverCommunity = ({ email }) => {
         </form>
       </div>
 
-      <div className="flex justify-center flex-wrap mt-2">
+      <div className="flex justify-center flex-wrap mt-2 mb-20">
         {!loading ? (
           <>
             {filteredData.length === 0 ? (
@@ -225,18 +227,32 @@ const DiscoverCommunity = ({ email }) => {
                 No communities found.
               </Typography>
             ) : (
-              <Grid container spacing={2} style={{ padding: 14 }}>
+              <div className="grid grid-cols-4 gap-4">
                 {filteredData.map((data, index) => (
-                  <Grid item xs={6} md={4} lg={4} key={index}>
-                    <div
-                      className="relative w-full max-w-sm bg-white border border-gray_og rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex-grow flex flex-col h-full cursor-pointer"
-                      onClick={() => {
-                        handleViewCommunity(data);
-                        console.log(data);
-                      }}
-                      style={{ position: "relative" }}
-                    >
-                      <img
+                  <div
+                    className="relative w-full max-w-sm bg-white border border-gray_og rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 flex-grow flex flex-col h-full cursor-pointer"
+                    // onClick={() => {
+                    //   handleViewCommunity(data);
+                    //   console.log(data);
+                    // }}
+                    style={{ position: "relative" }}
+                  >
+                    <CardDemo
+                      name={data.name}
+                      image={data.communityImage}
+                      category={data.category}
+                      description={data.description}
+                      data={data}
+                      handleViewCommunity={handleViewCommunity}
+                    />
+                    {/* 
+                    <CardGiff
+                      name={data.name}
+                      image={data.communityImage}
+                      // category={data.category}
+                      description={data.description}
+                    /> */}
+                    {/* <img
                         className="h-56 w-full rounded-t-lg object-cover"
                         // src={
                         //   data.communityImage
@@ -276,11 +292,11 @@ const DiscoverCommunity = ({ email }) => {
                         </div>
                         <div className="flex-grow" />
                         <div className="flex justify-center mb-0">
-                          {/* Button for viewing community */}
+                         
                         </div>
                       </div>
 
-                      {/* Open icon for view button with Tooltip */}
+                     
                       <Tooltip title="View community" arrow>
                         <IconButton
                           style={{
@@ -298,11 +314,10 @@ const DiscoverCommunity = ({ email }) => {
                         >
                           <OpenInNewIcon fontSize="small" />
                         </IconButton>
-                      </Tooltip>
-                    </div>
-                  </Grid>
+                      </Tooltip> */}
+                  </div>
                 ))}
-              </Grid>
+              </div>
             )}
           </>
         ) : (

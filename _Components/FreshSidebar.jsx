@@ -1,15 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { SidebarDemo } from "../../_Components/SidebarDemo";
-import Navigation from "@/components/Navigation";
-import CardDemo from "../../_Components/CardDemo";
-import CardGiff from "../../_Components/CardGiff";
-import SideBar, { SidebarItem } from "../../_Components/side_tshepo";
-import Logo from "@/lib/images/Logo1.png";
 import Image from "next/image";
-import FreshSidebar from "@/_Components/FreshSidebar";
-export default function page() {
+import Logo from "@/lib/images/Logo1.png";
+
+export default function FreshSidebar() {
   const cards = [
     {
       name: "Tech Innovators",
@@ -27,7 +22,6 @@ export default function page() {
         "https://plus.unsplash.com/premium_photo-1680040211009-169b40ee81bb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8U3VzdGFpbmFiaWxpdHl8ZW58MHx8MHx8fDA%3D",
       giff: "",
     },
-
     {
       name: "Health & Wellness",
       description:
@@ -36,42 +30,17 @@ export default function page() {
         "https://plus.unsplash.com/premium_photo-1665673312770-90df9f77ddfa?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGhlYWx0aHxlbnwwfHwwfHx8MA%3D%3D",
       giff: "https://media.giphy.com/media/1pA8T9LnjEVbp8Hugv/giphy.gif?cid=790b7611mhxy4ucfj2z54jdp48r5036s2va7id30cl93a47y&ep=v1_gifs_search&rid=giphy.gif&ct=g",
     },
-
-    // Add more communities as needed
   ];
 
   return (
     <>
-      <FreshSidebar />
-
-      <br />
-      <br />
-
-      <br />
-
-      <br />
-
-      <br />
-
-      <br />
-
-      <br />
-
-      <br />
-
-      <br />
-
-      <div className="min-h-screen bg-gray-100">
-        <div className="sidebar min-h-screen w-[3.35rem] overflow-hidden border-r hover:w-56 hover:bg-white hover:shadow-lg">
+      {/* Parent flex container to handle the layout */}
+      <div className="flex min-h-screen bg-gray-100">
+        {/* Sidebar */}
+        <div className="sidebar min-h-screen w-[5.35rem] overflow-hidden border-r hover:w-120 hover:bg-white hover:shadow-lg transition-all">
           <div className="flex h-screen flex-col justify-between pt-2 pb-6">
             <div>
               <div className="w-max p-2.5">
-                {/* <img
-                  src="https://tailus.io/images/logo.svg"
-                  className="w-32"
-                  alt=""
-                ></img> */}
-
                 <Image src={Logo} alt="Logo" width={20} height={20} />
               </div>
               <ul className="mt-6 space-y-2 tracking-wide">
@@ -204,26 +173,30 @@ export default function page() {
                 </li>
               </ul>
             </div>
-            <div className="w-max -mb-3">
-              <a
-                href="#"
-                className="group flex items-center space-x-4 rounded-md px-4 py-3 text-gray-600"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 group-hover:fill-openbox-green"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-                <span className="group-hover:text-gray-700">Settings</span>
-              </a>
-            </div>
+          </div>
+        </div>
+
+        {/* Main content area */}
+        <div className="flex-grow p-6">
+          <h1 className="text-3xl font-bold">Main Content</h1>
+          <p className="mt-4">
+            This is the content area to the right of the sidebar. You can place
+            anything here, such as cards, text, images, etc.
+          </p>
+
+          {/* You can map over the cards or add more content */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            {cards.map((card, index) => (
+              <div key={index} className="bg-white p-4 shadow-lg rounded-lg">
+                <img
+                  src={card.image}
+                  alt={card.name}
+                  className="h-48 w-full object-cover rounded-md"
+                />
+                <h2 className="mt-4 text-xl font-bold">{card.name}</h2>
+                <p className="mt-2 text-gray-600">{card.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

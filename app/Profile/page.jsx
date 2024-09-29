@@ -10,7 +10,7 @@ import {
   LogOutIcon,
   ArrowLeftIcon,
 } from "lucide-react";
-
+import InterestsSelection from "../../_Components/InterestsSelection";
 const dietaryRequirements = [
   "None",
   "Vegetarian",
@@ -274,6 +274,10 @@ const Profile = () => {
                       </option>
                     ))}
                   </select>
+                </div>
+
+                <div>
+                  <InterestsSelection />
                 </div>
                 <div>
                   <motion.button

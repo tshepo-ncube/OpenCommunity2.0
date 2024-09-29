@@ -113,7 +113,6 @@ export default class EventDB {
       }
 
       //  handleSnackbarClick();
-      window.location.reload();
     } catch (err) {
       console.log("Error Editing Snackbar : ", err);
     }

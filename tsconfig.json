@@ -42,7 +42,10 @@
     "_Components/sidebar.jsx",
     "_Components/MyCommunities.jsx",
     "_Components/MapComponent.jsx",
-    "app/Profile/page.jsx"
+    "app/Profile/page.jsx",
+    "components/ui/sidebar.jsx",
+    "lib/utils.js",
+    "components/ui/sidebar.jsx"
   ],
   "exclude": ["node_modules"]
 }

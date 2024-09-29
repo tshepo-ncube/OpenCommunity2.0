@@ -6,6 +6,7 @@ import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
 import Image from "next/image";
 import Logo from "@/lib/images/Logo.jpeg";
+import FreshSidebar from "../../_Components/FreshSidebar";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import DiscoverCommunity from "../../_Components/DiscoverCommunity";
 import MyCommunities from "../../_Components/MyCommunities";
@@ -13,8 +14,10 @@ import Tabs from "@mui/material/Tabs";
 import UserDB from "../../database/community/users";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
+import CollapsableSidebar from "../../_Components/CollapsableSidebar";
 import { styled } from "@mui/system";
 import ManageUser from "@/database/auth/ManageUser";
+import CardGiff from "@/_Components/CardGiff";
 import {
   CircularProgress,
   Grid,
@@ -69,6 +72,35 @@ function a11yProps(index) {
 }
 
 function Home() {
+  const cards = [
+    {
+      name: "Tech Innovators",
+      description:
+        "This community focuses on exploring the latest technologies and innovations in the industry.",
+      image:
+        "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dGVjaG5vbG9neXxlbnwwfHwwfHx8MA%3D%3D",
+      giff: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2gxdGswZGFkdmFxcTdvZmU2dW40Z3UycW4zOWFiZzBpanBxcHhnaCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/QpVUMRUJGokfqXyfa1/giphy.gif",
+    },
+    {
+      name: "Sustainability Advocates",
+      description:
+        "A group dedicated to promoting sustainable practices and reducing the company's carbon footprint.",
+      image:
+        "https://plus.unsplash.com/premium_photo-1680040211009-169b40ee81bb?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8U3VzdGFpbmFiaWxpdHl8ZW58MHx8MHx8fDA%3D",
+      giff: "https://media.giphy.com/media/26CYzjDCeIns0EZt6/giphy.gif?cid=790b76111v3v8czkjyjfabioabx5ej3oofdv0rwpkrw6qvyr&ep=v1_gifs_search&rid=giphy.gif&ct=g",
+    },
+
+    {
+      name: "Health & Wellness",
+      description:
+        "Promoting mental and physical well-being by offering tips and resources for a healthier lifestyle.",
+      image:
+        "https://plus.unsplash.com/premium_photo-1665673312770-90df9f77ddfa?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGhlYWx0aHxlbnwwfHwwfHx8MA%3D%3D",
+      giff: "https://media.giphy.com/media/1pA8T9LnjEVbp8Hugv/giphy.gif?cid=790b7611mhxy4ucfj2z54jdp48r5036s2va7id30cl93a47y&ep=v1_gifs_search&rid=giphy.gif&ct=g",
+    },
+
+    // Add more communities as needed
+  ];
   const [value, setValue] = React.useState(0);
   const [profileData, setProfileData] = React.useState({
     CommunitiesJoined: [],
@@ -138,43 +170,79 @@ function Home() {
   return (
     <>
       <div className="App text-center" style={{ backgroundColor: "#f5f5f5" }}>
-        <Header />
-        <center className="mt-8">
-          <Box sx={{ width: "100%", marginTop: 4 }}>
-            <div className="flex justify-center mt-6">
-              <div className="text-base font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
-                <ul className="flex flex-wrap -mb-px">
-                  <li className="me-2">
-                    <a
-                      href="#"
-                      onClick={() => handleTabClick("My Communities")}
-                      className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
-                        activeTab === "My Communities"
-                          ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
-                          : "border-transparent"
-                      }`}
-                    >
-                      My Communities
-                    </a>
-                  </li>
-                  <li className="me-2">
-                    <a
-                      href="#"
-                      onClick={() => handleTabClick("Discover Communities")}
-                      className={`inline-block p-5 border-b-2 rounded-t-lg ${
-                        activeTab === "Discover Communities"
-                          ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
-                          : "hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 border-transparent"
-                      }`}
-                    >
-                      Discover Communities
-                    </a>
-                  </li>
-                </ul>
+        {/* <Header /> */}
+
+        <div className="flex min-h-screen bg-gray-100">
+          {/* <FreshSidebar /> */}
+
+          <CollapsableSidebar />
+
+          <div className="flex-grow p-6">
+            '
+            <div className="p-8">
+              <p class="text-4xl left-0 font-black text-gray-900 dark:text-white">
+                Recommened Communities
+              </p>
+
+              <p className=" text-gray-900">
+                These are the communities recommended to you
+                <br />
+                based on your interests and in app activity.
+              </p>
+              <div className="flex overflow-x-auto space-x-4 p-4">
+                {cards.map((card, index) => (
+                  //   <div
+                  //     key={index}
+                  //     className="flex-none w-64 bg-white shadow-md rounded-lg p-4"
+                  //   >
+                  //     <h2 className="text-lg font-bold mb-2">{card.title}</h2>
+                  //     <p>{card.description}</p>
+                  //   </div>
+                  <CardGiff
+                    name={card.name}
+                    description={card.description}
+                    image={card.image}
+                    giff={card.giff}
+                  />
+                ))}
               </div>
             </div>
+            <center className="">
+              <Box sx={{ width: "100%", marginTop: 0 }}>
+                <div className="flex justify-center mt-2">
+                  <div className="text-base font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+                    <ul className="flex flex-wrap -mb-px">
+                      <li className="me-2">
+                        <a
+                          href="#"
+                          onClick={() => handleTabClick("My Communities")}
+                          className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+                            activeTab === "My Communities"
+                              ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                              : "border-transparent"
+                          }`}
+                        >
+                          My Communities
+                        </a>
+                      </li>
+                      <li className="me-2">
+                        <a
+                          href="#"
+                          onClick={() => handleTabClick("Discover Communities")}
+                          className={`inline-block p-5 border-b-2 rounded-t-lg ${
+                            activeTab === "Discover Communities"
+                              ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                              : "hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 border-transparent"
+                          }`}
+                        >
+                          Discover Communities
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
 
-            {/* <Box
+                {/* <Box
               sx={{
                 borderBottom: "5px solid white", // Set the border color to green
                 borderColor: "white",
@@ -196,7 +264,7 @@ function Home() {
               </Tabs>
             </Box> */}
 
-            {/* <CustomTabPanel value={value} index={0}>
+                {/* <CustomTabPanel value={value} index={0}>
               <MyCommunities email={email} />
             </CustomTabPanel>
 
@@ -204,17 +272,19 @@ function Home() {
               <DiscoverCommunity email={email} />
             </CustomTabPanel> */}
 
-            {activeTab === "My Communities" ? (
-              <>
-                <MyCommunities email={email} />
-              </>
-            ) : (
-              <>
-                <DiscoverCommunity email={email} />
-              </>
-            )}
-          </Box>
-        </center>
+                {activeTab === "My Communities" ? (
+                  <>
+                    <MyCommunities email={email} />
+                  </>
+                ) : (
+                  <>
+                    <DiscoverCommunity email={email} />
+                  </>
+                )}
+              </Box>
+            </center>
+          </div>
+        </div>
       </div>
     </>
   );
