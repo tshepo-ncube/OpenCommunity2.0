@@ -151,12 +151,31 @@ function Header() {
             <Image src={Logo} alt="Logo" width={250} height={80} />
           </Box>
           {/* Added Toggle Switch and Label */}
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <Switch checked={isAdmin} onChange={handleToggleChange} />
-            <Typography sx={{ color: "black", ml: 1 }}>
-              {isAdmin ? "Admin" : "User"}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Switch
+              checked={isAdmin}
+              onChange={handleToggleChange}
+              sx={{
+                "& .MuiSwitch-switchBase.Mui-checked": {
+                  color: "#bcd727",
+                },
+                "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                  backgroundColor: "#bcd727",
+                },
+              }}
+            />
+
+            <Typography sx={{ color: "black", mt: 1 }}>
+              {isAdmin ? "Admin View" : "User View"}
             </Typography>
           </Box>
+
           <IconButton
             size="large"
             aria-label="account of current user"
