@@ -34,7 +34,6 @@ const userNavItems = [
   "Leaderboard",
   "Teams",
   "Outlook",
-  "Logout",
 ];
 
 const adminNavItems = [
@@ -42,7 +41,6 @@ const adminNavItems = [
   "View Recommendations",
   "Teams",
   "Outlook",
-  "Logout",
 ];
 
 // Override AppBar styles to set background color to green
