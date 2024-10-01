@@ -27,14 +27,23 @@ import { useRouter } from "next/navigation";
 import { styled } from "@mui/system";
 
 const drawerWidth = 240;
-const navItems = [
+
+// Separate arrays for user view and admin view
+const userNavItems = [
   "Home",
-  "Admin View",
-  "View Recommendations",
   "Recommend a community",
   "Leaderboard",
-  "Outlook",
   "Teams",
+  "Outlook",
+  "Logout",
+];
+
+const adminNavItems = [
+  "Admin View",
+  "View Recommendations",
+  "Teams",
+  "Outlook",
+  "Logout",
 ];
 
 // Override AppBar styles to set background color to green
@@ -105,8 +114,24 @@ function Header() {
   };
 
   const handleToggleChange = () => {
-    setIsAdmin((prev) => !prev); // Toggle between User and Admin
+    setIsAdmin((prev) => {
+      const newState = !prev;
+
+      // If switching to Admin view, load the admin page first
+      if (newState) {
+        router.push("/admin");
+      }
+      // If switching to User view, load the home page first
+      else {
+        router.push("/Home");
+      }
+
+      return newState; // Toggle between User and Admin
+    });
   };
+
+  // Determine which navItems to display based on isAdmin state
+  const navItems = isAdmin ? adminNavItems : userNavItems;
 
   const drawer = (
     <Box sx={{ textAlign: "center", height: "100%", position: "relative" }}>
