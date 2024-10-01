@@ -21,6 +21,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import Switch from "@mui/material/Switch"; // Added Switch for the toggle button
 import ManageUser from "@/database/auth/ManageUser";
 import { useRouter } from "next/navigation";
 import { styled } from "@mui/system";
@@ -66,6 +67,8 @@ function Header() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const router = useRouter();
   const [loggedIn, setLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false); // Toggle state for User/Admin label
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
@@ -90,6 +93,10 @@ function Header() {
     } else if (item === "View Recommendations") {
       router.push("/admin/RecommendedCommunities");
     }
+  };
+
+  const handleToggleChange = () => {
+    setIsAdmin((prev) => !prev); // Toggle between User and Admin
   };
 
   const drawer = (
@@ -129,6 +136,13 @@ function Header() {
           </IconButton>
           <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
             <Image src={Logo} alt="Logo" width={250} height={80} />
+          </Box>
+          {/* Added Toggle Switch and Label */}
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Switch checked={isAdmin} onChange={handleToggleChange} />
+            <Typography sx={{ color: "black", ml: 1 }}>
+              {isAdmin ? "Admin" : "User"}
+            </Typography>
           </Box>
           <IconButton
             size="large"
