@@ -35,7 +35,6 @@ const navItems = [
   "Leaderboard",
   "Outlook",
   "Teams",
-  "Logout",
 ];
 
 // Override AppBar styles to set background color to green
@@ -62,6 +61,16 @@ const CustomAccountCircle = styled(AccountCircle)(({ theme }) => ({
     color: "grey", // Muted color of #bcd727
   },
 }));
+
+// Styles for the logout button to fix it at the bottom and make it red
+const LogoutButton = styled(ListItemButton)({
+  position: "absolute",
+  bottom: 0,
+  width: "100%",
+  color: "red",
+  textAlign: "center",
+  borderTop: "1px solid #e0e0e0", // Add a divider line above logout
+});
 
 function Header() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -100,7 +109,7 @@ function Header() {
   };
 
   const drawer = (
-    <Box sx={{ textAlign: "center" }}>
+    <Box sx={{ textAlign: "center", height: "100%", position: "relative" }}>
       <Typography variant="h6" sx={{ my: 2 }}>
         <Image src={Logo} alt="Logo" width={300} height={100} />
       </Typography>
@@ -118,6 +127,10 @@ function Header() {
           </ListItem>
         ))}
       </List>
+      {/* Logout Button styled to be at the bottom and red */}
+      <LogoutButton onClick={() => handleListItemClick("Logout")}>
+        <ListItemText primary="Logout" />
+      </LogoutButton>
     </Box>
   );
 
@@ -170,6 +183,7 @@ function Header() {
               boxSizing: "border-box",
               width: "20%",
               backgroundColor: "#ffffff", // Match the AppBar background color
+              position: "relative", // Make sure the sidebar is positioned relatively
             },
           }}
         >
