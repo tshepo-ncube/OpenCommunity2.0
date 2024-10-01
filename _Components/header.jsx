@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Sidebar from "./sidebar";
 import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
@@ -19,7 +19,6 @@ import ListItemText from "@mui/material/ListItemText";
 import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import Switch from "@mui/material/Switch"; // Added Switch for the toggle button
 import ManageUser from "@/database/auth/ManageUser";
@@ -48,26 +47,26 @@ const adminNavItems = [
 
 // Override AppBar styles to set background color to green
 const CustomAppBar = styled(AppBar)({
-  backgroundColor: "white", // Your desired green color
+  backgroundColor: "white",
 });
 
 // Create a styled MenuIcon with the desired color, hover effect, and larger size
 const CustomMenuIcon = styled(MenuIcon)(({ theme }) => ({
   color: "#bcd727",
-  fontSize: 40, // Adjust this value to make the icon larger
-  transition: "color 0.3s", // Smooth transition for color change
+  fontSize: 40,
+  transition: "color 0.3s",
   "&:hover": {
-    color: "#a2b438", // Muted color of #bcd727
+    color: "#a2b438",
   },
 }));
 
 // Create a styled AccountCircle with the desired color and hover effect
 const CustomAccountCircle = styled(AccountCircle)(({ theme }) => ({
   color: "grey",
-  fontSize: 50, // Adjust this value to make the icon larger
-  transition: "color 0.3s", // Smooth transition for color change
+  fontSize: 50,
+  transition: "color 0.3s",
   "&:hover": {
-    color: "grey", // Muted color of #bcd727
+    color: "grey",
   },
 }));
 
@@ -78,11 +77,11 @@ const LogoutButton = styled(ListItemButton)({
   width: "100%",
   color: "red",
   textAlign: "center",
-  borderTop: "1px solid #e0e0e0", // Add a divider line above logout
+  borderTop: "1px solid #e0e0e0",
 });
 
 function Header() {
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouter();
   const [loggedIn, setLoggedIn] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false); // Toggle state for User/Admin label
@@ -113,22 +112,30 @@ function Header() {
     }
   };
 
+  // Toggle between User and Admin view
   const handleToggleChange = () => {
     setIsAdmin((prev) => {
       const newState = !prev;
 
-      // If switching to Admin view, load the admin page first
+      // Save the new state to localStorage
+      localStorage.setItem("isAdmin", newState);
+
+      // Navigate based on the new state
       if (newState) {
         router.push("/admin");
-      }
-      // If switching to User view, load the home page first
-      else {
+      } else {
         router.push("/Home");
       }
 
-      return newState; // Toggle between User and Admin
+      return newState; // Return the new state
     });
   };
+
+  useEffect(() => {
+    // Retrieve the toggle state from localStorage when the component loads
+    const savedToggleState = localStorage.getItem("isAdmin") === "true";
+    setIsAdmin(savedToggleState);
+  }, []);
 
   // Determine which navItems to display based on isAdmin state
   const navItems = isAdmin ? adminNavItems : userNavItems;
@@ -227,7 +234,7 @@ function Header() {
               boxSizing: "border-box",
               width: "20%",
               backgroundColor: "#ffffff", // Match the AppBar background color
-              position: "relative", // Make sure the sidebar is positioned relatively
+              position: "relative",
             },
           }}
         >
