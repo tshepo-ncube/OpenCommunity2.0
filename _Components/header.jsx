@@ -103,7 +103,7 @@ function Header() {
   const handleToggleChange = () => {
     setIsAdmin((prev) => {
       const newState = !prev;
-      localStorage.setItem("isAdmin", newState);
+      localStorage.setItem("isAdminView", JSON.stringify(newState));
       if (newState) {
         router.push("/admin");
       } else {
@@ -122,10 +122,19 @@ function Header() {
           () => {},
           () => {},
           (isAdminUser) => {
-            setIsAdmin(isAdminUser);
             setShowAdminToggle(isAdminUser);
+            if (isAdminUser) {
+              // Only load the saved admin view state if the user is actually an admin
+              const savedAdminView = localStorage.getItem("isAdminView");
+              setIsAdmin(savedAdminView ? JSON.parse(savedAdminView) : false);
+            } else {
+              setIsAdmin(false);
+            }
           }
         );
+      } else {
+        setShowAdminToggle(false);
+        setIsAdmin(false);
       }
     });
 
