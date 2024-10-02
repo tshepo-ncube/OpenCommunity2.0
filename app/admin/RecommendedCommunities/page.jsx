@@ -10,12 +10,18 @@ import {
   Alert,
   IconButton,
   Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogActions,
+  Button,
+  TextField,
+  MenuItem,
 } from "@mui/material";
 import Header from "../../../_Components/header";
 import { useTable } from "react-table";
 import Swal from "sweetalert2"; // Import SweetAlert2
 import { motion } from "framer-motion";
-import { FaHeart, FaRegHeart, FaEnvelope } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaEnvelope, FaPlus } from "react-icons/fa"; // Import the Plus icon
 import {
   BarChart,
   Bar,
@@ -33,6 +39,12 @@ export default function RecommendationsTable() {
   const [viewMode, setViewMode] = useState("table"); // 'table' or 'chart'
   const [isLoading, setIsLoading] = useState(false);
   const [likedRecommendations, setLikedRecommendations] = useState(new Set());
+  const [dialogOpen, setDialogOpen] = useState(false); // State for dialog
+  const [selectedRecommendation, setSelectedRecommendation] = useState(null); // State for selected recommendation
+  const [communityName, setCommunityName] = useState("");
+  const [communityDescription, setCommunityDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [image, setImage] = useState(null); // State for image
 
   useEffect(() => {
     const fetchRecommendations = async () => {
@@ -81,6 +93,49 @@ export default function RecommendationsTable() {
       }
       return updatedLikes;
     });
+  };
+
+  const handleDialogOpen = (recommendation) => {
+    setSelectedRecommendation(recommendation);
+    setCommunityName(recommendation.name);
+    setCommunityDescription(recommendation.description);
+    setCategory(recommendation.category);
+    setDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setDialogOpen(false);
+    setCommunityName("");
+    setCommunityDescription("");
+    setCategory("");
+    setImage(null);
+  };
+
+  const handleImageUpload = (event) => {
+    setImage(event.target.files[0]);
+  };
+
+  const handleCreateCommunity = async () => {
+    // Implement your community creation logic here
+    const communityData = {
+      name: communityName,
+      description: communityDescription,
+      category,
+      image, // You might need to handle image upload to your storage here
+    };
+
+    try {
+      await CommunityDB.createCommunity(communityData); // Call your createCommunity method
+      Swal.fire("Success", "Community created successfully!", "success");
+      handleDialogClose(); // Close the dialog after creation
+    } catch (error) {
+      console.error("Error creating community:", error);
+      Swal.fire(
+        "Error",
+        "Failed to create community. Please try again.",
+        "error"
+      );
+    }
   };
 
   const columns = React.useMemo(
@@ -150,12 +205,21 @@ export default function RecommendationsTable() {
         ),
       },
       {
-        Header: "Action", // You can change the header to whatever you want
+        Header: "Action",
         accessor: "action",
-        Cell: () => (
-          <span className="text-lg">+</span> // Add the plus sign here
+        Cell: ({ row }) => (
+          <Tooltip title="Create Community">
+            <motion.button
+              whileHover={{ scale: 1.2 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => handleDialogOpen(row.original)}
+              className="text-xl focus:outline-none"
+              style={{ color: "#bcd727" }}
+            >
+              <FaPlus />
+            </motion.button>
+          </Tooltip>
         ),
-        disableFilters: true,
       },
     ],
     [likedRecommendations]
@@ -235,14 +299,14 @@ export default function RecommendationsTable() {
           <CircularProgress />
         ) : viewMode === "table" ? (
           <div className="overflow-auto">
-            <table {...getTableProps()} className="min-w-full">
-              <thead>
+            <table {...getTableProps()} className="min-w-full bg-white border">
+              <thead className="bg-gray-100">
                 {headerGroups.map((headerGroup) => (
                   <tr {...headerGroup.getHeaderGroupProps()}>
                     {headerGroup.headers.map((column) => (
                       <th
                         {...column.getHeaderProps()}
-                        className="border px-4 py-2 bg-gray-200"
+                        className="border px-4 py-2 text-left"
                       >
                         {column.render("Header")}
                       </th>
@@ -254,7 +318,7 @@ export default function RecommendationsTable() {
                 {rows.map((row) => {
                   prepareRow(row);
                   return (
-                    <tr {...row.getRowProps()} className="hover:bg-gray-100">
+                    <tr {...row.getRowProps()} className="hover:bg-gray-50">
                       {row.cells.map((cell) => (
                         <td
                           {...cell.getCellProps()}
@@ -270,8 +334,8 @@ export default function RecommendationsTable() {
             </table>
           </div>
         ) : (
-          <div className="h-72 w-full">
-            <ResponsiveContainer>
+          <div className="flex justify-center">
+            <ResponsiveContainer width="100%" height={400}>
               <BarChart
                 data={chartData}
                 margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
@@ -286,6 +350,61 @@ export default function RecommendationsTable() {
           </div>
         )}
       </motion.div>
+
+      {/* Dialog for creating community */}
+      <Dialog open={dialogOpen} onClose={handleDialogClose}>
+        <DialogTitle>Create Community</DialogTitle>
+        <div className="p-4">
+          <TextField
+            label="Community Name"
+            value={communityName}
+            onChange={(e) => setCommunityName(e.target.value)}
+            fullWidth
+            required
+            className="mb-2"
+          />
+          <TextField
+            label="Description"
+            value={communityDescription}
+            onChange={(e) => setCommunityDescription(e.target.value)}
+            fullWidth
+            multiline
+            rows={4}
+            required
+            className="mb-2"
+          />
+          <TextField
+            label="Category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            select
+            fullWidth
+            required
+            className="mb-2"
+          >
+            <MenuItem value="general">general</MenuItem>
+            <MenuItem value="Social">Social</MenuItem>
+            <MenuItem value="Sports">Sports</MenuItem>
+            <MenuItem value="Development">Development</MenuItem>
+          </TextField>
+          <TextField
+            type="file"
+            onChange={handleImageUpload}
+            fullWidth
+            required
+            className="mb-2"
+            inputProps={{ accept: "image/*" }} // Allow only image uploads
+          />
+        </div>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleCreateCommunity} color="primary">
+            Create Community
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
