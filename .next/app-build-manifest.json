@@ -1,9 +1,9 @@
 {
   "pages": {
-    "/page": [
+    "/Home/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+      "static/chunks/app/Home/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
@@ -11,40 +11,15 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/Home/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/Home/page.js"
-    ],
-    "/Profile/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/Profile/page.js"
-    ],
-    "/auth/Register/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/auth/Register/page.js"
-    ],
     "/admin/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/admin/page.js"
     ],
-    "/auth/RecommendCommunity/page": [
+    "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/auth/RecommendCommunity/page.js"
-    ],
-    "/auth/Leaderboard/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/auth/Leaderboard/page.js"
-    ],
-    "/admin/RecommendedCommunities/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/RecommendedCommunities/page.js"
+      "static/chunks/app/page.js"
     ]
   }
 }

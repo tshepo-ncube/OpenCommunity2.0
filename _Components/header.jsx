@@ -36,12 +36,7 @@ const userNavItems = [
   "Outlook",
 ];
 
-const adminNavItems = [
-  "Admin View",
-  "View Recommendations",
-  "Teams",
-  "Outlook",
-];
+const adminNavItems = ["Home", "View Recommendations", "Teams", "Outlook"];
 
 // Override AppBar styles to set background color to green
 const CustomAppBar = styled(AppBar)({
