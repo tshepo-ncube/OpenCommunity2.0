@@ -1,14 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Sidebar from "./sidebar";
-import AddIcon from "@mui/icons-material/Add";
-import Fab from "@mui/material/Fab";
 import Image from "next/image";
 import Logo from "@/lib/images/Logo1.png";
 import PropTypes from "prop-types";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
-import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
@@ -20,14 +16,47 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import Switch from "@mui/material/Switch"; // Added Switch for the toggle button
+import Switch from "@mui/material/Switch";
 import ManageUser from "@/database/auth/ManageUser";
 import { useRouter } from "next/navigation";
 import { styled } from "@mui/system";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const drawerWidth = 240;
 
-// Separate arrays for user view and admin view
+// Styled components
+const CustomAppBar = styled(AppBar)({
+  backgroundColor: "white",
+});
+
+const CustomMenuIcon = styled(MenuIcon)(({ theme }) => ({
+  color: "#bcd727",
+  fontSize: 40,
+  transition: "color 0.3s",
+  "&:hover": {
+    color: "#a2b438",
+  },
+}));
+
+const CustomAccountCircle = styled(AccountCircle)(({ theme }) => ({
+  color: "grey",
+  fontSize: 50,
+  transition: "color 0.3s",
+  "&:hover": {
+    color: "grey",
+  },
+}));
+
+const LogoutButton = styled(ListItemButton)({
+  position: "absolute",
+  bottom: 0,
+  width: "100%",
+  color: "red",
+  textAlign: "center",
+  borderTop: "1px solid #e0e0e0",
+});
+
+// Navigation items
 const userNavItems = [
   "Home",
   "Recommend a community",
@@ -38,46 +67,12 @@ const userNavItems = [
 
 const adminNavItems = ["Home", "View Recommendations", "Teams", "Outlook"];
 
-// Override AppBar styles to set background color to green
-const CustomAppBar = styled(AppBar)({
-  backgroundColor: "white",
-});
-
-// Create a styled MenuIcon with the desired color, hover effect, and larger size
-const CustomMenuIcon = styled(MenuIcon)(({ theme }) => ({
-  color: "#bcd727",
-  fontSize: 40,
-  transition: "color 0.3s",
-  "&:hover": {
-    color: "#a2b438",
-  },
-}));
-
-// Create a styled AccountCircle with the desired color and hover effect
-const CustomAccountCircle = styled(AccountCircle)(({ theme }) => ({
-  color: "grey",
-  fontSize: 50,
-  transition: "color 0.3s",
-  "&:hover": {
-    color: "grey",
-  },
-}));
-
-// Styles for the logout button to fix it at the bottom and make it red
-const LogoutButton = styled(ListItemButton)({
-  position: "absolute",
-  bottom: 0,
-  width: "100%",
-  color: "red",
-  textAlign: "center",
-  borderTop: "1px solid #e0e0e0",
-});
-
 function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouter();
   const [loggedIn, setLoggedIn] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false); // Toggle state for User/Admin label
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showAdminToggle, setShowAdminToggle] = useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -105,32 +100,38 @@ function Header() {
     }
   };
 
-  // Toggle between User and Admin view
   const handleToggleChange = () => {
     setIsAdmin((prev) => {
       const newState = !prev;
-
-      // Save the new state to localStorage
       localStorage.setItem("isAdmin", newState);
-
-      // Navigate based on the new state
       if (newState) {
         router.push("/admin");
       } else {
         router.push("/Home");
       }
-
-      return newState; // Return the new state
+      return newState;
     });
   };
 
   useEffect(() => {
-    // Retrieve the toggle state from localStorage when the component loads
-    const savedToggleState = localStorage.getItem("isAdmin") === "true";
-    setIsAdmin(savedToggleState);
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        ManageUser.getProfileData(
+          user.email,
+          () => {},
+          () => {},
+          (isAdminUser) => {
+            setIsAdmin(isAdminUser);
+            setShowAdminToggle(isAdminUser);
+          }
+        );
+      }
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  // Determine which navItems to display based on isAdmin state
   const navItems = isAdmin ? adminNavItems : userNavItems;
 
   const drawer = (
@@ -152,7 +153,6 @@ function Header() {
           </ListItem>
         ))}
       </List>
-      {/* Logout Button styled to be at the bottom and red */}
       <LogoutButton onClick={() => handleListItemClick("Logout")}>
         <ListItemText primary="Logout" />
       </LogoutButton>
@@ -175,32 +175,31 @@ function Header() {
           <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
             <Image src={Logo} alt="Logo" width={250} height={80} />
           </Box>
-          {/* Added Toggle Switch and Label */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              flexDirection: "column",
-            }}
-          >
-            <Switch
-              checked={isAdmin}
-              onChange={handleToggleChange}
+          {showAdminToggle && (
+            <Box
               sx={{
-                "& .MuiSwitch-switchBase.Mui-checked": {
-                  color: "#bcd727",
-                },
-                "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                  backgroundColor: "#bcd727",
-                },
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "column",
               }}
-            />
-
-            <Typography sx={{ color: "black", mt: 1 }}>
-              {isAdmin ? "Admin View" : "User View"}
-            </Typography>
-          </Box>
-
+            >
+              <Switch
+                checked={isAdmin}
+                onChange={handleToggleChange}
+                sx={{
+                  "& .MuiSwitch-switchBase.Mui-checked": {
+                    color: "#bcd727",
+                  },
+                  "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                    backgroundColor: "#bcd727",
+                  },
+                }}
+              />
+              <Typography sx={{ color: "black", mt: 1 }}>
+                {isAdmin ? "Admin View" : "User View"}
+              </Typography>
+            </Box>
+          )}
           <IconButton
             size="large"
             aria-label="account of current user"
@@ -219,14 +218,14 @@ function Header() {
           open={mobileOpen}
           onClose={handleDrawerToggle}
           ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
+            keepMounted: true,
           }}
           sx={{
             display: { xs: "block" },
             "& .MuiDrawer-paper": {
               boxSizing: "border-box",
-              width: "20%",
-              backgroundColor: "#ffffff", // Match the AppBar background color
+              width: drawerWidth,
+              backgroundColor: "#ffffff",
               position: "relative",
             },
           }}

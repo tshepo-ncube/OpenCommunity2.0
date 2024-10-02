@@ -179,7 +179,6 @@ export default class ManageUser {
       console.error("Error getting Profile Data: ", error);
     }
   };
-
   static logoutUser = (setLoggedIn, router) => {
     const auth = getAuth();
     signOut(auth)
