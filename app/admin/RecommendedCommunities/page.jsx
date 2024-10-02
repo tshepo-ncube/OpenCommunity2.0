@@ -14,8 +14,8 @@ import {
 import Header from "../../../_Components/header";
 import { useTable } from "react-table";
 import Swal from "sweetalert2"; // Import SweetAlert2
-import { motion, AnimatePresence } from "framer-motion";
-import { FaHeart, FaRegHeart, FaPlus, FaEnvelope } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { FaHeart, FaRegHeart, FaEnvelope } from "react-icons/fa";
 import {
   BarChart,
   Bar,
@@ -24,17 +24,16 @@ import {
   CartesianGrid,
   Tooltip as RechartsTooltip,
   ResponsiveContainer,
-  Cell,
 } from "recharts";
+
 const mutedLimeGreen = "#d0e43f"; // Muted version of #bcd727
 
 export default function RecommendationsTable() {
   const [recommendations, setRecommendations] = useState([]);
   const [viewMode, setViewMode] = useState("table"); // 'table' or 'chart'
   const [isLoading, setIsLoading] = useState(false);
-  // const [likedRecommendations, setLikedRecommendations] =
-  //   useState < Set < string >> new Set();
   const [likedRecommendations, setLikedRecommendations] = useState(new Set());
+
   useEffect(() => {
     const fetchRecommendations = async () => {
       try {
@@ -84,100 +83,6 @@ export default function RecommendationsTable() {
     });
   };
 
-  const handleAddClick = async (rec) => {
-    const categories = ["general", "Sports", "Social", "Development"];
-
-    const { value: formValues, isConfirmed } = await Swal.fire({
-      title: "Create Community",
-      html: `
-        <div class="space-y-4">
-          <div>
-            <label for="name" class="block text-sm font-medium text-gray-700">Community Name</label>
-            <input id="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" value="${
-              rec.name
-            }" />
-          </div>
-          <div>
-            <label for="description" class="block text-sm font-medium text-gray-700">Community Description</label>
-            <textarea id="description" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">${
-              rec.description
-            }</textarea>
-          </div>
-          <div>
-            <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
-            <select id="category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-              ${categories
-                .map(
-                  (category) =>
-                    `<option value="${category}" ${
-                      category === rec.category ? "selected" : ""
-                    }>${category}</option>`
-                )
-                .join("")}
-            </select>
-          </div>
-          <div>
-            <label for="image" class="block text-sm font-medium text-gray-700">Community Image</label>
-            <input id="image" type="file" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
-          </div>
-        </div>
-      `,
-      showCloseButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Create Community",
-      cancelButtonText: "Cancel",
-      focusConfirm: false,
-      preConfirm: () => {
-        const name = document.getElementById("name").value;
-        const description = document.getElementById("description").value;
-        const category = document.getElementById("category").value;
-        const imageFile = document.getElementById("image").files[0];
-
-        if (!name || !description || !category || !imageFile) {
-          Swal.showValidationMessage(
-            "Please fill in all fields and upload an image."
-          );
-          return;
-        }
-
-        return { name, description, category, imageFile };
-      },
-    });
-
-    if (isConfirmed && formValues) {
-      const { name, description, category, imageFile } = formValues;
-      try {
-        // Add image upload logic here (e.g., upload to Firebase or server)
-        const imageUrl = await uploadImage(imageFile); // Your image upload function
-
-        await CommunityDB.createCommunity(
-          { name, description, category, imageUrl }, // Save image URL to the community data
-          () => {},
-          () => {}
-        );
-        await RecommendationDB.deleteRecommendation(rec.id);
-        const updatedRecommendations =
-          await RecommendationDB.getAllRecommendations();
-        setRecommendations(updatedRecommendations);
-        Swal.fire(
-          "Success",
-          "Community created and recommendation removed.",
-          "success"
-        );
-      } catch (error) {
-        console.error(
-          "Error creating community or deleting recommendation:",
-          error
-        );
-        Swal.fire(
-          "Error",
-          "There was an error creating the community or deleting the recommendation.",
-          "error"
-        );
-      }
-    }
-  };
-
   const columns = React.useMemo(
     () => [
       {
@@ -185,7 +90,7 @@ export default function RecommendationsTable() {
         accessor: "like",
         Cell: ({ row }) => (
           <Tooltip
-            content={
+            title={
               likedRecommendations.has(row.original.id) ? "Unlike" : "Like"
             }
           >
@@ -223,7 +128,7 @@ export default function RecommendationsTable() {
         accessor: "userEmail",
         Cell: ({ value, row }) => (
           <div className="flex items-center space-x-2">
-            <Tooltip content="Send Email">
+            <Tooltip title="Send Email">
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -245,16 +150,10 @@ export default function RecommendationsTable() {
         ),
       },
       {
+        Header: "Action", // You can change the header to whatever you want
         accessor: "action",
-        Cell: ({ row }) => (
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={() => handleAddClick(row.original)}
-            className="text-green-500"
-          >
-            <FaPlus style={{ color: "#bcd727" }} />
-          </motion.button>
+        Cell: () => (
+          <span className="text-lg">+</span> // Add the plus sign here
         ),
         disableFilters: true,
       },
@@ -292,23 +191,6 @@ export default function RecommendationsTable() {
       color: colors[index % colors.length],
     }));
   }, [recommendations]);
-
-  const CustomTooltip = ({ payload, label }) => {
-    if (payload && payload.length) {
-      const { category, color } = payload[0].payload;
-      return (
-        <div className="bg-white border border-gray-300 rounded-lg p-2">
-          <p className="text-gray-900 font-semibold">{category}</p>
-          <p className="text-gray-600">{`Count: ${payload[0].value}`}</p>
-          <div
-            className="w-4 h-4 rounded-full"
-            style={{ backgroundColor: color }}
-          ></div>
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <>
@@ -350,25 +232,17 @@ export default function RecommendationsTable() {
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-[#bcd727]"></div>
-          </div>
+          <CircularProgress />
         ) : viewMode === "table" ? (
-          <div className="overflow-x-auto">
-            <table
-              {...getTableProps()}
-              className="w-full border-collapse bg-white rounded-lg overflow-hidden shadow-lg"
-            >
+          <div className="overflow-auto">
+            <table {...getTableProps()} className="min-w-full">
               <thead>
                 {headerGroups.map((headerGroup) => (
-                  <tr
-                    {...headerGroup.getHeaderGroupProps()}
-                    className="bg-gray-300 text-gray-700"
-                  >
+                  <tr {...headerGroup.getHeaderGroupProps()}>
                     {headerGroup.headers.map((column) => (
                       <th
                         {...column.getHeaderProps()}
-                        className="p-4 text-left font-semibold"
+                        className="border px-4 py-2 bg-gray-200"
                       >
                         {column.render("Header")}
                       </th>
@@ -376,49 +250,38 @@ export default function RecommendationsTable() {
                   </tr>
                 ))}
               </thead>
-
               <tbody {...getTableBodyProps()}>
-                <AnimatePresence>
-                  {rows.map((row) => {
-                    prepareRow(row);
-                    return (
-                      <motion.tr
-                        {...row.getRowProps()}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="border-b hover:bg-gray-50 transition-colors"
-                      >
-                        {row.cells.map((cell) => (
-                          <td {...cell.getCellProps()} className="p-4">
-                            {cell.render("Cell")}
-                          </td>
-                        ))}
-                      </motion.tr>
-                    );
-                  })}
-                </AnimatePresence>
+                {rows.map((row) => {
+                  prepareRow(row);
+                  return (
+                    <tr {...row.getRowProps()} className="hover:bg-gray-100">
+                      {row.cells.map((cell) => (
+                        <td
+                          {...cell.getCellProps()}
+                          className="border px-4 py-2"
+                        >
+                          {cell.render("Cell")}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         ) : (
-          <div className="h-96 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="category" />
-                  <YAxis />
-                  <RechartsTooltip content={<CustomTooltip />} />
-                  {/* Legend component removed */}
-                  <Bar dataKey="count" name="Count">
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+          <div className="h-72 w-full">
+            <ResponsiveContainer>
+              <BarChart
+                data={chartData}
+                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="category" />
+                <YAxis />
+                <RechartsTooltip />
+                <Bar dataKey="count" fill="#bcd727" />
+              </BarChart>
             </ResponsiveContainer>
           </div>
         )}
@@ -426,5 +289,3 @@ export default function RecommendationsTable() {
     </>
   );
 }
-
-// export default RecommendationsTable;
