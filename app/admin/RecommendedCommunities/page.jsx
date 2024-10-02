@@ -87,7 +87,7 @@ export default function RecommendationsTable() {
   const handleAddClick = async (rec) => {
     const categories = ["general", "Sports", "Social", "Development"];
 
-    const { value: formValues } = await Swal.fire({
+    const { value: formValues, isConfirmed } = await Swal.fire({
       title: "Create Community",
       html: `
         <div class="space-y-4">
@@ -116,6 +116,10 @@ export default function RecommendationsTable() {
                 .join("")}
             </select>
           </div>
+          <div>
+            <label for="image" class="block text-sm font-medium text-gray-700">Community Image</label>
+            <input id="image" type="file" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+          </div>
         </div>
       `,
       showCloseButton: true,
@@ -123,40 +127,31 @@ export default function RecommendationsTable() {
       confirmButtonText: "Create Community",
       cancelButtonText: "Cancel",
       focusConfirm: false,
-      customClass: {
-        container: "custom-swal-container",
-        popup: "custom-swal-popup",
-        header: "custom-swal-header",
-        closeButton: "custom-swal-close",
-        icon: "custom-swal-icon",
-        image: "custom-swal-image",
-        content: "custom-swal-content",
-        input: "custom-swal-input",
-        actions: "custom-swal-actions",
-        confirmButton: "custom-swal-confirm",
-        cancelButton: "custom-swal-cancel",
-        footer: "custom-swal-footer",
-      },
-      didOpen: () => {
-        // Apply custom styling after the popup is open
-        const confirmButton = document.querySelector(".swal2-confirm");
-        if (confirmButton) {
-          confirmButton.style.backgroundColor = "#bcd727";
-          confirmButton.style.borderColor = "#bcd727";
-          confirmButton.style.color = "#ffffff"; // Ensuring text is readable
+      preConfirm: () => {
+        const name = document.getElementById("name").value;
+        const description = document.getElementById("description").value;
+        const category = document.getElementById("category").value;
+        const imageFile = document.getElementById("image").files[0];
+
+        if (!name || !description || !category || !imageFile) {
+          Swal.showValidationMessage(
+            "Please fill in all fields and upload an image."
+          );
+          return;
         }
+
+        return { name, description, category, imageFile };
       },
-      preConfirm: () => ({
-        name: document.getElementById("name").value,
-        description: document.getElementById("description").value,
-        category: document.getElementById("category").value,
-      }),
     });
 
-    if (formValues) {
+    if (isConfirmed && formValues) {
+      const { name, description, category, imageFile } = formValues;
       try {
+        // Add image upload logic here (e.g., upload to Firebase or server)
+        const imageUrl = await uploadImage(imageFile); // Your image upload function
+
         await CommunityDB.createCommunity(
-          formValues,
+          { name, description, category, imageUrl }, // Save image URL to the community data
           () => {},
           () => {}
         );
