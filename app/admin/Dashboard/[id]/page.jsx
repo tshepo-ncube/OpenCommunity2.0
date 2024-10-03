@@ -39,6 +39,8 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     status: "active",
   });
 
+  const [activeTab, setActiveTab] = useState(0); // For switching tabs
+
   const handleChangeEvent = (e) => {
     const { name, value } = e.target;
     setEventDetails((prevDetails) => ({
@@ -111,142 +113,185 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
         >
           x
         </button>
-        <form className="space-y-4">
-          <div>
-            <label
-              htmlFor="eventName"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Event Name
-            </label>
-            <input
-              type="text"
-              name="eventName"
-              id="eventName"
-              value={eventDetails.eventName}
-              onChange={handleChangeEvent}
-              placeholder="Enter event name"
-              className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
-              required
-            />
-          </div>
-          <div className="flex justify-between gap-4">
-            <div className="flex-1">
+
+        {/* Tabs for switching between current form and reoccurring events */}
+        <div className="flex justify-around mb-6 border-b border-gray-300">
+          <button
+            onClick={() => setActiveTab(0)}
+            className={`${
+              activeTab === 0
+                ? "border-b-4 border-openbox-green text-openbox-green"
+                : "text-gray-500"
+            } py-2 px-4`}
+          >
+            Once-off Event
+          </button>
+          <button
+            onClick={() => setActiveTab(1)}
+            className={`${
+              activeTab === 1
+                ? "border-b-4 border-openbox-green text-openbox-green"
+                : "text-gray-500"
+            } py-2 px-4`}
+          >
+            Reoccurring Event
+          </button>
+        </div>
+
+        {activeTab === 0 ? (
+          <form className="space-y-4">
+            {/* Current Event Form */}
+            <div>
+              <Typography variant="h5" className="text-center mb-4">
+                Once-off Event
+              </Typography>
               <label
-                htmlFor="startDateTime"
+                htmlFor="eventName"
                 className="block text-sm font-medium text-gray-700"
               >
-                Start Date & Time
+                Event Name
               </label>
               <input
-                type="datetime-local"
-                name="startDateTime"
-                id="startDateTime"
-                value={eventDetails.startDateTime}
+                type="text"
+                name="eventName"
+                id="eventName"
+                value={eventDetails.eventName}
                 onChange={handleChangeEvent}
+                placeholder="Enter event name"
                 className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
                 required
               />
             </div>
-            <div className="flex-1">
+
+            <div className="flex justify-between gap-4">
+              <div className="flex-1">
+                <label
+                  htmlFor="startDateTime"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Start Date & Time
+                </label>
+                <input
+                  type="datetime-local"
+                  name="startDateTime"
+                  id="startDateTime"
+                  value={eventDetails.startDateTime}
+                  onChange={handleChangeEvent}
+                  className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
+                  required
+                />
+              </div>
+              <div className="flex-1">
+                <label
+                  htmlFor="endDateTime"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  End Date & Time
+                </label>
+                <input
+                  type="datetime-local"
+                  name="endDateTime"
+                  id="endDateTime"
+                  value={eventDetails.endDateTime}
+                  onChange={handleChangeEvent}
+                  className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-between gap-4">
+              <div className="flex-1">
+                <label
+                  htmlFor="rsvpEndDateTime"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  RSVP End Date & Time
+                </label>
+                <input
+                  type="datetime-local"
+                  name="rsvpEndDateTime"
+                  id="rsvpEndDateTime"
+                  value={eventDetails.rsvpEndDateTime}
+                  onChange={handleChangeEvent}
+                  className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
               <label
-                htmlFor="endDateTime"
+                htmlFor="location"
                 className="block text-sm font-medium text-gray-700"
               >
-                End Date & Time
+                Location
               </label>
-              <input
-                type="datetime-local"
-                name="endDateTime"
-                id="endDateTime"
-                value={eventDetails.endDateTime}
-                onChange={handleChangeEvent}
+              <Autocomplete
+                apiKey={"AIzaSyA_nwBxUgw4RTZLvfRpt__cS1DIcYprbQ0"}
                 className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
+                name="location"
+                id="location"
+                onPlaceSelected={(place) => {
+                  setEventDetails((prevDetails) => ({
+                    ...prevDetails,
+                    location: place.formatted_address,
+                  }));
+                }}
                 required
               />
             </div>
-          </div>
-          <div className="flex justify-between gap-4">
-            <div className="flex-1">
+
+            <div>
               <label
-                htmlFor="rsvpEndDateTime"
+                htmlFor="description"
                 className="block text-sm font-medium text-gray-700"
               >
-                RSVP End Date & Time
+                Event Description
               </label>
-              <input
-                type="datetime-local"
-                name="rsvpEndDateTime"
-                id="rsvpEndDateTime"
-                value={eventDetails.rsvpEndDateTime}
+              <textarea
+                name="description"
+                id="description"
+                value={eventDetails.description}
                 onChange={handleChangeEvent}
+                placeholder="Enter event description"
                 className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
                 required
-              />
+              ></textarea>
             </div>
-          </div>
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={generateDescription}
+                className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4"
+              >
+                Generate Description
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveDraft}
+                className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4"
+              >
+                Save Draft
+              </button>
+              <button
+                type="submit"
+                onClick={handleSubmitEvent}
+                className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4"
+              >
+                Post Event
+              </button>
+            </div>
+          </form>
+        ) : (
           <div>
-            <label
-              htmlFor="location"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Location
-            </label>
-            <Autocomplete
-              apiKey={"AIzaSyA_nwBxUgw4RTZLvfRpt__cS1DIcYprbQ0"}
-              className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
-              name="location"
-              id="location"
-              onPlaceSelected={(place) => {
-                setEventDetails((prevDetails) => ({
-                  ...prevDetails,
-                  location: place.formatted_address,
-                }));
-              }}
-              required
-            />
+            {/* Tab 2: Reoccurring Events */}
+            <Typography variant="h5" className="text-center mb-4">
+              Reoccurring Event
+            </Typography>
           </div>
-          <div>
-            <label
-              htmlFor="description"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Event Description
-            </label>
-            <textarea
-              name="description"
-              id="description"
-              value={eventDetails.description}
-              onChange={handleChangeEvent}
-              placeholder="Enter event description"
-              className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
-              required
-            ></textarea>
-          </div>
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={generateDescription}
-              className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
-            >
-              generate description
-            </button>
-            <button
-              type="button"
-              onClick={handleSaveDraft}
-              className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
-            >
-              Save Draft
-            </button>
-            <button
-              type="submit"
-              onClick={handleSubmitEvent}
-              className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
-            >
-              Post Event
-            </button>
-          </div>
-        </form>
+        )}
       </div>
     </>
   );
