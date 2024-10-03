@@ -46,7 +46,15 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
       [name]: value,
     }));
   };
-
+  // Add this state at the beginning of your component
+  const [isRecurrencePopupOpen, setRecurrencePopupOpen] = useState(false);
+  const [recurrenceDetails, setRecurrenceDetails] = useState({
+    startDate: "",
+    frequency: "1",
+    frequencyUnit: "Week",
+    days: [], // e.g., ["M", "W", "F"]
+    endDate: "",
+  });
   const handleSubmitEvent = (e) => {
     e.preventDefault();
     onSubmit(eventDetails);
@@ -131,7 +139,6 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             />
           </div>
 
-          {/* Dropdown for Event Recurrence */}
           <div>
             <label
               htmlFor="recurrence"
@@ -142,8 +149,11 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             <select
               name="recurrence"
               id="recurrence"
-              value={eventDetails.recurrence} // Assuming this is in your state
-              onChange={handleChangeEvent}
+              onChange={(e) => {
+                if (e.target.value !== "does not repeat") {
+                  setRecurrencePopupOpen(true);
+                }
+              }}
               className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
             >
               <option value="does not repeat">Does not repeat</option>
@@ -156,6 +166,132 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             </select>
           </div>
 
+          {isRecurrencePopupOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-8 rounded shadow-lg w-3/4 max-w-lg">
+                <h2 className="text-lg font-semibold mb-4">Set Recurrence</h2>
+                <form>
+                  <div className="mb-4">
+                    <label className="block mb-2">Start</label>
+                    <input
+                      type="date"
+                      value={recurrenceDetails.startDate}
+                      onChange={(e) =>
+                        setRecurrenceDetails({
+                          ...recurrenceDetails,
+                          startDate: e.target.value,
+                        })
+                      }
+                      className="border border-gray-300 rounded w-full p-2"
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block mb-2">Repeat every</label>
+                    <input
+                      type="number"
+                      value={recurrenceDetails.frequency}
+                      onChange={(e) =>
+                        setRecurrenceDetails({
+                          ...recurrenceDetails,
+                          frequency: e.target.value,
+                        })
+                      }
+                      className="border border-gray-300 rounded w-1/4 p-2 inline-block"
+                      required
+                    />
+                    <select
+                      value={recurrenceDetails.frequencyUnit}
+                      onChange={(e) =>
+                        setRecurrenceDetails({
+                          ...recurrenceDetails,
+                          frequencyUnit: e.target.value,
+                        })
+                      }
+                      className="border border-gray-300 rounded p-2 ml-2"
+                    >
+                      <option value="Week">Week</option>
+                      <option value="Month">Month</option>
+                      <option value="Year">Year</option>
+                    </select>
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block mb-2">End</label>
+                    <input
+                      type="date"
+                      value={recurrenceDetails.endDate}
+                      onChange={(e) =>
+                        setRecurrenceDetails({
+                          ...recurrenceDetails,
+                          endDate: e.target.value,
+                        })
+                      }
+                      className="border border-gray-300 rounded w-full p-2"
+                      required
+                    />
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="block mb-2">Select Days</label>
+                    <div className="flex justify-between">
+                      {["S", "M", "T", "W", "T", "F", "S"].map((day) => (
+                        <button
+                          key={day}
+                          type="button"
+                          className={`border rounded-full w-8 h-8 ${
+                            recurrenceDetails.days.includes(day)
+                              ? "bg-purple-500 text-white"
+                              : "bg-gray-200"
+                          }`}
+                          onClick={() => {
+                            setRecurrenceDetails((prev) => {
+                              const newDays = prev.days.includes(day)
+                                ? prev.days.filter((d) => d !== day)
+                                : [...prev.days, day];
+                              return { ...prev, days: newDays };
+                            });
+                          }}
+                        >
+                          {day}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-gray-500 text-sm">
+                      Selected: {recurrenceDetails.days.join(", ")}
+                    </p>
+                  </div>
+
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setRecurrencePopupOpen(false)}
+                      className="mr-4"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        // Save recurrence logic here
+                        const occurrenceText = `Occurs every ${
+                          recurrenceDetails.frequency
+                        } ${
+                          recurrenceDetails.frequencyUnit
+                        } on ${recurrenceDetails.days.join(", ")}`;
+                        setRecurrencePopupOpen(false);
+                        // Update your eventDetails state with the occurrenceText if needed
+                      }}
+                      className="bg-blue-500 text-white rounded px-4 py-2"
+                    >
+                      Save
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
           <div className="flex justify-between gap-4">
             <div className="flex-1">
               <label
