@@ -9,83 +9,109 @@ export default function RecommendedCommunities() {
   useEffect(() => {
     CommunityDB.RecommendedCommunities(setRecommendedCommunities);
   }, []);
-  //   return (
-  //     <>
-  //       <h1>Hey there...</h1>
-
-  //       <div class="w-full inline-flex flex-nowrap">
-  //         <ul class="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
-  //           <li>
-  //             <img src="./facebook.svg" alt="Facebook" />
-  //           </li>
-  //           <li>
-  //             <img src="./disney.svg" alt="Disney" />
-  //           </li>
-  //           <li>
-  //             <img src="./airbnb.svg" alt="Airbnb" />
-  //           </li>
-  //           <li>
-  //             <img src="./apple.svg" alt="Apple" />
-  //           </li>
-  //           <li>
-  //             <img src="./spark.svg" alt="Spark" />
-  //           </li>
-  //           <li>
-  //             <img src="./samsung.svg" alt="Samsung" />
-  //           </li>
-  //           <li>
-  //             <img src="./quora.svg" alt="Quora" />
-  //           </li>
-  //           <li>
-  //             <img src="./sass.svg" alt="Sass" />
-  //           </li>
-  //         </ul>
-  //         {/* <ul
-  //           class="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll"
-  //           aria-hidden="true"
-  //         >
-  //           <li>
-  //             <img src="./facebook.svg" alt="Facebook" />
-  //           </li>
-  //           <li>
-  //             <img src="./disney.svg" alt="Disney" />
-  //           </li>
-  //           <li>
-  //             <img src="./airbnb.svg" alt="Airbnb" />
-  //           </li>
-  //           <li>
-  //             <img src="./apple.svg" alt="Apple" />
-  //           </li>
-  //           <li>
-  //             <img src="./spark.svg" alt="Spark" />
-  //           </li>
-  //           <li>
-  //             <img src="./samsung.svg" alt="Samsung" />
-  //           </li>
-  //           <li>
-  //             <img src="./quora.svg" alt="Quora" />
-  //           </li>
-  //           <li>
-  //             <img src="./sass.svg" alt="Sass" />
-  //           </li>
-  //         </ul> */}
-  //       </div>
-
-  //     </>
-  //   );
-
-  const cards = data.map((card, index) => (
-    <Card key={card.src} card={card} index={index} />
-  ));
-
   return (
-    <div className="w-full h-full py-20">
-      <h2 className="max-w-7xl pl-4 mx-auto text-xl md:text-5xl font-bold text-neutral-800 dark:text-neutral-200 font-sans">
-        Get to know your iSad.
-      </h2>
-      <Carousel items={cards} />
-    </div>
+    <>
+      <h1>Hey there...</h1>
+
+      <div class="w-full inline-flex flex-nowrap">
+        <ul class="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
+          {recommendedCommunities.map((message) => (
+            <li>
+              <div className="flex w-100 flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-700 dark:shadow-neutral-700/70">
+                <img
+                  className="w-full h-auto rounded-t-xl"
+                  src="https://images.unsplash.com/photo-1680868543815-b8666dba60f7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=320&q=80"
+                  alt="Card Image"
+                ></img>
+                <div className="p-4 md:p-5">
+                  <h3 className="text-lg font-bold text-gray-800 dark:text-white">
+                    Card title
+                  </h3>
+                  <p className="mt-1 text-gray-500 dark:text-neutral-400">
+                    Some quick example text to build on the card title and make
+                    up the bulk of the card's content.
+                  </p>
+                  <a
+                    className="mt-2 py-2 px-3 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none"
+                    href="#"
+                  >
+                    Go somewhere
+                  </a>
+                </div>
+              </div>
+            </li>
+          ))}
+
+          {/* <li>
+            <img src="./facebook.svg" alt="Facebook" />
+          </li>
+          <li>
+            <img src="./disney.svg" alt="Disney" />
+          </li>
+          <li>
+            <img src="./airbnb.svg" alt="Airbnb" />
+          </li>
+          <li>
+            <img src="./apple.svg" alt="Apple" />
+          </li>
+          <li>
+            <img src="./spark.svg" alt="Spark" />
+          </li>
+          <li>
+            <img src="./samsung.svg" alt="Samsung" />
+          </li>
+          <li>
+            <img src="./quora.svg" alt="Quora" />
+          </li>
+          <li>
+            <img src="./sass.svg" alt="Sass" />
+          </li> */}
+        </ul>
+        {/* <ul
+            class="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll"
+            aria-hidden="true"
+          >
+            <li>
+              <img src="./facebook.svg" alt="Facebook" />
+            </li>
+            <li>
+              <img src="./disney.svg" alt="Disney" />
+            </li>
+            <li>
+              <img src="./airbnb.svg" alt="Airbnb" />
+            </li>
+            <li>
+              <img src="./apple.svg" alt="Apple" />
+            </li>
+            <li>
+              <img src="./spark.svg" alt="Spark" />
+            </li>
+            <li>
+              <img src="./samsung.svg" alt="Samsung" />
+            </li>
+            <li>
+              <img src="./quora.svg" alt="Quora" />
+            </li>
+            <li>
+              <img src="./sass.svg" alt="Sass" />
+            </li>
+          </ul> */}
+      </div>
+    </>
   );
+
+  //   const cards = data.map((card, index) => (
+  //     <Card key={card.src} card={card} index={index} />
+  //   ));
+
+  //   return (
+  //     <div className="w-full h-full py-20">
+  //       <h2 className="max-w-7xl pl-4 mx-auto text-xl md:text-5xl font-bold text-neutral-800 dark:text-neutral-200 font-sans">
+  //         Get to know your iSad.
+  //       </h2>
+  //       <Carousel items={cards} />
+  //     </div>
+  //   );
 }
 
 const DummyContent = () => {
