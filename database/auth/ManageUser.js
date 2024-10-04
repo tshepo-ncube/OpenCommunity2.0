@@ -141,8 +141,10 @@ export default class ManageUser {
     });
   };
 
-  static editProfileData = async (id, object) => {
+  static editProfileData = async (id, object, selectedInterests) => {
     const communityRef = doc(DB, "users", id);
+
+    object.Interests = selectedInterests;
 
     // Set the "capital" field of the city 'DC'
     await updateDoc(communityRef, object);

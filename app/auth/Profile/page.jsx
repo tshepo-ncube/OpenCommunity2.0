@@ -556,6 +556,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import ManageUser from "@/database/auth/ManageUser";
+import InterestSelection from "../../../_Components/InterestsSelection";
 import { Tab } from "@headlessui/react";
 import {
   UserCircleIcon,
@@ -595,9 +596,18 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const router = useRouter();
 
+  const [selectedInterests, setSelectedInterests] = useState([]);
+
   useEffect(() => {
     ManageUser.getProfileData(localStorage.getItem("Email"), setProfile);
   }, []);
+
+  useEffect(() => {
+    // ManageUser.getProfileData(localStorage.getItem("Email"), setProfile);
+
+    console.log("My Interests: ", profile.Interests);
+    setSelectedInterests(profile.Interests);
+  }, [profile]);
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -617,7 +627,11 @@ const Profile = () => {
 
   const handleEditProfileSubmit = async (e) => {
     e.preventDefault();
-    const success = await ManageUser.editProfileData(profile.id, profile);
+    const success = await ManageUser.editProfileData(
+      profile.id,
+      profile,
+      selectedInterests
+    );
     if (success) {
       ManageUser.getProfileData(profile.Email, setProfile);
     }
@@ -827,6 +841,19 @@ const Profile = () => {
                       </option>
                     ))}
                   </select>
+                </div>
+
+                <div>
+                  {selectedInterests ? (
+                    <>
+                      <InterestSelection
+                        selectedInterests={selectedInterests}
+                        setSelectedInterests={setSelectedInterests}
+                      />
+                    </>
+                  ) : (
+                    <></>
+                  )}
                 </div>
                 <div>
                   <motion.button
