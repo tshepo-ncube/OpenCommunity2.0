@@ -8,6 +8,7 @@ import Image from "next/image";
 import Logo from "@/lib/images/Logo.jpeg";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import DiscoverCommunity from "../../_Components/DiscoverCommunity";
+import RecommendedCommunities from "../../_Components/RecommendedCommunities";
 import MyCommunities from "../../_Components/MyCommunities";
 import Tabs from "@mui/material/Tabs";
 import UserDB from "../../database/community/users";
@@ -139,6 +140,12 @@ function Home() {
     <>
       <div className="App text-center" style={{ backgroundColor: "#f5f5f5" }}>
         <Header />
+
+        <div>
+          <h1 className="font-bold text-xxl">Recommended Communities</h1>
+          <RecommendedCommunities />
+        </div>
+
         <center className="mt-8">
           <Box sx={{ width: "100%", marginTop: 4 }}>
             <div className="flex justify-center mt-6">

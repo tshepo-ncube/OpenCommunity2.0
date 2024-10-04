@@ -16,11 +16,11 @@ const InterestSelection = ({ selectedInterests, setSelectedInterests }) => {
   // ];
 
   const interests = [
-    { interest: "Running", category: "Sports/Fitness" },
-    { interest: "Yoga", category: "Sports/Fitness" },
-    { interest: "Team Sports", category: "Sports/Fitness" },
-    { interest: "Strength Training", category: "Sports/Fitness" },
-    { interest: "Outdoor Adventure", category: "Sports/Fitness" },
+    { interest: "Running", category: "Sports" },
+    { interest: "Yoga", category: "Sports" },
+    { interest: "Team Sports", category: "Sports" },
+    { interest: "Strength Training", category: "Sports" },
+    { interest: "Outdoor Adventure", category: "Sports" },
 
     { interest: "Movies and TV", category: "General" },
     { interest: "Reading", category: "General" },
@@ -28,20 +28,20 @@ const InterestSelection = ({ selectedInterests, setSelectedInterests }) => {
     { interest: "Cooking", category: "General" },
     { interest: "Board Games", category: "General" },
 
-    { interest: "Team-Building Activities", category: "Company Retreat" },
-    { interest: "Workshops", category: "Company Retreat" },
-    { interest: "Outdoor Activities", category: "Company Retreat" },
-    { interest: "Cultural Experiences", category: "Company Retreat" },
-    { interest: "Relaxation Sessions", category: "Company Retreat" },
+    { interest: "Team-Building Activities", category: "Social" },
+    { interest: "Workshops", category: "Social" },
+    { interest: "Outdoor Activities", category: "Social" },
+    { interest: "Cultural Experiences", category: "Social" },
+    { interest: "Relaxation Sessions", category: "Social" },
 
-    { interest: "Networking", category: "Professional Development" },
+    { interest: "Networking", category: "Development" },
     {
       interest: "Workshops and Seminars",
-      category: "Professional Development",
+      category: "Development",
     },
-    { interest: "Public Speaking", category: "Professional Development" },
-    { interest: "Leadership Training", category: "Professional Development" },
-    { interest: "Mentorship", category: "Professional Development" },
+    { interest: "Public Speaking", category: "Development" },
+    { interest: "Leadership Training", category: "Development" },
+    { interest: "Mentorship", category: "Development" },
   ];
 
   // Function to toggle selection of interest
