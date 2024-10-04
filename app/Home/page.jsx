@@ -142,7 +142,6 @@ function Home() {
         <Header />
 
         <div>
-          <h1 className="font-bold text-xxl">Recommended Communities</h1>
           <RecommendedCommunities />
         </div>
 
