@@ -26,6 +26,7 @@ const Page = () => {
           .map((user) => ({
             ...user,
             Points: isNaN(Number(user.Points)) ? 0 : Number(user.Points),
+            ProfileImage: user.profileImage,
           }))
           .sort((a, b) => b.Points - a.Points);
         setUsers(processedUsers);
@@ -38,6 +39,10 @@ const Page = () => {
 
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    console.log("Processed Users: ", users);
+  }, [users]);
 
   useEffect(() => {
     if (!loading) {
@@ -145,8 +150,8 @@ const Page = () => {
                     index === 0
                       ? "order-1 hover:scale-105"
                       : index === 1
-                      ? "order-2 hover:scale-105"
-                      : "order-3 hover:scale-105"
+                        ? "order-2 hover:scale-105"
+                        : "order-3 hover:scale-105"
                   } transition-transform duration-300 transform`}
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -157,8 +162,8 @@ const Page = () => {
                       index === 1
                         ? "bg-[#FFD700]"
                         : index === 0
-                        ? "bg-[#C0C0C0]"
-                        : "bg-[#CD7F32]"
+                          ? "bg-[#C0C0C0]"
+                          : "bg-[#CD7F32]"
                     }`}
                   ></div>
                   <div className="p-6">

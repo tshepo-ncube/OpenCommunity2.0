@@ -40,6 +40,7 @@ const Profile = () => {
   const [profile, setProfile] = useState({});
   const [selectedImage, setSelectedImage] = useState(null);
   const [hasCustomImage, setHasCustomImage] = useState(false);
+  const [profileImageFile, setProfileImageFile] = useState(null);
   const [formData, setFormData] = useState({
     newPassword: "",
     confirmNewPassword: "",
@@ -60,17 +61,22 @@ const Profile = () => {
     });
   }, []);
 
+  useEffect(() => {
+    console.log("Something has changed...");
+  }, [profile]);
+
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      setProfileImageFile(file);
       const reader = new FileReader();
       reader.onload = (e) => {
         setSelectedImage(e.target.result);
         // Update profile object
-        setProfile((prevProfile) => ({
-          ...prevProfile,
-          profileImage: e.target.result,
-        }));
+        // setProfile((prevProfile) => ({
+        //   ...prevProfile,
+        //   profileImage: e.target.result,
+        // }));
         setHasCustomImage(true);
       };
       reader.readAsDataURL(file);
@@ -109,19 +115,21 @@ const Profile = () => {
 
   const handleEditProfileSubmit = async (e) => {
     e.preventDefault();
-    const success = await ManageUser.editProfileData(profile.id, profile);
-    if (success) {
-      ManageUser.getProfileData(profile.Email, (data) => {
-        setProfile(data);
-        if (data.profileImage) {
-          setSelectedImage(data.profileImage);
-          setHasCustomImage(true);
-        } else {
-          setSelectedImage(null);
-          setHasCustomImage(false);
-        }
-      });
-    }
+    // const success = await ManageUser.editProfileData(profile.id, profile);
+    // if (success) {
+    //   ManageUser.getProfileData(profile.Email, (data) => {
+    //     setProfile(data);
+    //     if (data.profileImage) {
+    //       setSelectedImage(data.profileImage);
+    //       setHasCustomImage(true);
+    //     } else {
+    //       setSelectedImage(null);
+    //       setHasCustomImage(false);
+    //     }
+    //   });
+    // }
+
+    ManageUser.setProfileImage(profileImageFile);
   };
 
   const handleNewPasswordSubmit = (e) => {
@@ -243,7 +251,7 @@ const Profile = () => {
                   <div className="flex-shrink-0 flex flex-col items-center">
                     <div className="relative">
                       <img
-                        src={selectedImage || "https://static.vecteezy.com/system/resources/thumbnails/002/318/271/small/user-profile-icon-free-vector.jpg"}
+                        src={selectedImage || profile.profileImage}
                         alt="Profile"
                         className="w-32 h-32 rounded-full object-cover"
                       />
