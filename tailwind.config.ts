@@ -67,6 +67,19 @@ const config: Config = {
         "1/7": "14.2857143%", // Custom fraction width
         "2/7": "28.5714286%", // Custom fraction width
       },
+
+      height: {
+        "4.5": "1.125rem", // Custom width, example
+        "18": "4.5rem", // Equivalent to 72px
+        "100": "25rem",
+        "105": "25.5rem", // Custom width
+        "110": "27.5rem", // Custom width
+        "120": "30rem", // Custom width
+        "128": "32rem", // Custom width
+        "160": "40rem", // Custom width
+        "1/7": "14.2857143%", // Custom fraction width
+        "2/7": "28.5714286%", // Custom fraction width
+      },
     },
   },
   plugins: [],

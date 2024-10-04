@@ -39,7 +39,7 @@
     "app/auth/RecommendCommunity/page.jsx",
     "app/auth/Leaderboard/page.jsx",
     "app/admin/RecommendedCommunities/page.jsx",
-    "_Components/sidebar.jsx",
+    "_Components/sidebar.tsx",
     "_Components/MyCommunities.jsx",
     "_Components/MapComponent.jsx",
     "app/Profile/page.jsx",
