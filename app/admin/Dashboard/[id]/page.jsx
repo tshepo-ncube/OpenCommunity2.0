@@ -111,7 +111,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
       <div
         className={`${
           isOpen ? "block" : "hidden"
-        } fixed top-1/4 left-1/4 transform -translate-x-1/4 -translate-y-1/4 bg-white p-10 rounded-md shadow-xl z-50 w-3/4 max-w-3xl max-h-120 overflow-y-auto`}
+        } fixed top-1/4 left-1/4 transform -translate-x-1/4 -translate-y-1/4 bg-white p-10 rounded-md shadow-xl z-50 w-3/4 max-w-3xl h-[600px] overflow-y-auto`}
       >
         <button
           onClick={onClose}
@@ -290,45 +290,44 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                   </div>
 
                   <div className="mb-4">
-                    <label className="block mb-2">Select Days</label>
-                    <div className="flex justify-between">
-                      {[
-                        { label: "S", value: "Sunday" },
-                        { label: "M", value: "Monday" },
-                        { label: "T", value: "Tuesday" },
-                        { label: "W", value: "Wednesday" },
-                        { label: "T", value: "Thursday" },
-                        { label: "F", value: "Friday" },
-                        { label: "S", value: "Saturday" },
-                      ].map((day) => (
-                        <button
-                          key={day.label}
-                          type="button"
-                          className={`border rounded-full w-8 h-8 ${
-                            recurrenceDetails.days.includes(day.value)
-                              ? "bg-purple-500 text-white"
-                              : "bg-gray-200"
-                          }`}
-                          onClick={() => {
-                            setRecurrenceDetails((prev) => {
-                              const newDays = prev.days.includes(day.value)
-                                ? prev.days.filter((d) => d !== day.value)
-                                : [...prev.days, day.value];
-                              return { ...prev, days: newDays };
-                            });
-                          }}
-                        >
-                          {day.label}
-                        </button>
-                      ))}
-                    </div>
-                    <p className="text-gray-500 text-sm">
-                      Selected: {recurrenceDetails.days.join(", ")}
-                    </p>
+                    {recurrenceDetails.frequencyUnit === "Week" && (
+                      <div className="flex justify-between">
+                        {[
+                          { label: "S", value: "Sunday" },
+                          { label: "M", value: "Monday" },
+                          { label: "T", value: "Tuesday" },
+                          { label: "W", value: "Wednesday" },
+                          { label: "T", value: "Thursday" },
+                          { label: "F", value: "Friday" },
+                          { label: "S", value: "Saturday" },
+                        ].map((day) => (
+                          <button
+                            key={day.label}
+                            type="button"
+                            className={`border rounded-full w-8 h-8 ${
+                              recurrenceDetails.days.includes(day.value)
+                                ? "bg-purple-500 text-white"
+                                : "bg-gray-200"
+                            }`}
+                            onClick={() => {
+                              setRecurrenceDetails((prev) => {
+                                const newDays = prev.days.includes(day.value)
+                                  ? prev.days.filter((d) => d !== day.value)
+                                  : [...prev.days, day.value];
+                                return { ...prev, days: newDays };
+                              });
+                            }}
+                          >
+                            {day.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
                     {/* Occurrence Text */}
                     {recurrenceDetails.frequencyUnit === "Week" && (
                       <p className="text-gray-700 mt-2">
-                        Occurs every {recurrenceDetails.frequency} week(s) on{" "}
+                        Occurs every {recurrenceDetails.frequency} weeks on{" "}
                         {recurrenceDetails.days.join(", ")}
                       </p>
                     )}
@@ -400,26 +399,6 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             </div>
           </div>
 
-          <div className="flex justify-between gap-4">
-            <div className="flex-1">
-              <label
-                htmlFor="rsvpEndDateTime"
-                className="block text-sm font-medium text-gray-700"
-              >
-                RSVP End Date & Time
-              </label>
-              <input
-                type="datetime-local"
-                name="rsvpEndDateTime"
-                id="rsvpEndDateTime"
-                value={eventDetails.rsvpEndDateTime}
-                onChange={handleChangeEvent}
-                className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
-                required
-              />
-            </div>
-          </div>
-
           <div>
             <label
               htmlFor="location"
@@ -427,17 +406,14 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             >
               Location
             </label>
-            <Autocomplete
-              apiKey={"AIzaSyA_nwBxUgw4RTZLvfRpt__cS1DIcYprbQ0"}
-              className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
+            <input
+              type="text"
               name="location"
               id="location"
-              onPlaceSelected={(place) => {
-                setEventDetails((prevDetails) => ({
-                  ...prevDetails,
-                  location: place.formatted_address,
-                }));
-              }}
+              value={eventDetails.location}
+              onChange={handleChangeEvent}
+              placeholder="Enter location"
+              className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
               required
             />
           </div>
