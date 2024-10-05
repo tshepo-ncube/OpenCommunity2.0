@@ -247,16 +247,24 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                     <label className="block mb-2">Repeat every</label>
                     <input
                       type="number"
-                      value={recurrenceDetails.frequency}
-                      onChange={(e) =>
+                      value={
+                        recurrenceDetails.frequencyUnit === "Year"
+                          ? 1 // Disable and show 1 for Year
+                          : recurrenceDetails.frequency
+                      }
+                      onChange={(e) => {
+                        const newFrequency = Math.max(1, e.target.value); // Ensure value is at least 1
                         setRecurrenceDetails({
                           ...recurrenceDetails,
-                          frequency: e.target.value,
-                        })
-                      }
+                          frequency: newFrequency,
+                        });
+                      }}
                       className="border border-gray-300 rounded w-1/4 p-2 inline-block"
                       required
+                      disabled={recurrenceDetails.frequencyUnit === "Year"}
+                      min="1" // Set minimum value to 1
                     />
+
                     <select
                       value={recurrenceDetails.frequencyUnit}
                       onChange={(e) =>
