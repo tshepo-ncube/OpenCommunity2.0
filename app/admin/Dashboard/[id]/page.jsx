@@ -289,6 +289,13 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                     />
                   </div>
 
+                  {/* Occurrence Text for Days */}
+                  {recurrenceDetails.frequencyUnit === "Day" && (
+                    <p className="text-gray-700 mt-2">
+                      Occurs every {recurrenceDetails.frequency} day(s)
+                    </p>
+                  )}
+
                   <div className="mb-4">
                     {recurrenceDetails.frequencyUnit === "Week" && (
                       <div className="flex justify-between">
@@ -324,7 +331,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                       </div>
                     )}
 
-                    {/* Occurrence Text */}
+                    {/* Occurrence Text for Weeks */}
                     {recurrenceDetails.frequencyUnit === "Week" && (
                       <p className="text-gray-700 mt-2">
                         Occurs every {recurrenceDetails.frequency} weeks on{" "}
@@ -464,7 +471,6 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     </>
   );
 };
-
 export default function CommunityPage({ params }) {
   const { id } = params;
   const [showEventForm, setShowEventForm] = useState(false);
