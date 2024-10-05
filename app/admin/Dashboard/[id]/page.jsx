@@ -325,6 +325,13 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                     <p className="text-gray-500 text-sm">
                       Selected: {recurrenceDetails.days.join(", ")}
                     </p>
+                    {/* Occurrence Text */}
+                    {recurrenceDetails.frequencyUnit === "Week" && (
+                      <p className="text-gray-700 mt-2">
+                        Occurs every {recurrenceDetails.frequency} week(s) on{" "}
+                        {recurrenceDetails.days.join(", ")}
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex justify-end">
