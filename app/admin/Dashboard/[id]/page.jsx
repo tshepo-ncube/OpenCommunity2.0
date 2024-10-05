@@ -151,8 +151,9 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               id="recurrence"
               onChange={(e) => {
                 const selectedValue = e.target.value;
+
+                // Update recurrence details based on selected value
                 if (selectedValue === "every weekday") {
-                  // Automatically select weekdays
                   setRecurrenceDetails((prev) => ({
                     ...prev,
                     days: [
@@ -162,9 +163,10 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                       "Thursday",
                       "Friday",
                     ],
+                    frequency: 1,
+                    frequencyUnit: "Week",
                   }));
                 } else if (selectedValue === "daily") {
-                  // Automatically select all days
                   setRecurrenceDetails((prev) => ({
                     ...prev,
                     days: [
@@ -176,11 +178,34 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                       "Friday",
                       "Saturday",
                     ],
+                    frequency: 1,
+                    frequencyUnit: "Day",
+                  }));
+                } else if (selectedValue === "weekly") {
+                  setRecurrenceDetails((prev) => ({
+                    ...prev,
+                    days: [],
+                    frequency: 1,
+                    frequencyUnit: "Week",
+                  }));
+                } else if (selectedValue === "monthly") {
+                  setRecurrenceDetails((prev) => ({
+                    ...prev,
+                    days: [],
+                    frequency: 1,
+                    frequencyUnit: "Month",
+                  }));
+                } else if (selectedValue === "yearly") {
+                  setRecurrenceDetails((prev) => ({
+                    ...prev,
+                    days: [],
+                    frequency: 1,
+                    frequencyUnit: "Year",
                   }));
                 } else {
-                  // Clear days or handle other selections if needed
                   setRecurrenceDetails((prev) => ({ ...prev, days: [] }));
                 }
+
                 if (selectedValue !== "does not repeat") {
                   setRecurrencePopupOpen(true);
                 }
@@ -193,7 +218,6 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               <option value="weekly">Weekly</option>
               <option value="monthly">Monthly</option>
               <option value="yearly">Yearly</option>
-              <option value="custom">Custom</option>
             </select>
           </div>
 
@@ -242,6 +266,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                       }
                       className="border border-gray-300 rounded p-2 ml-2"
                     >
+                      <option value="Day">Day</option>
                       <option value="Week">Week</option>
                       <option value="Month">Month</option>
                       <option value="Year">Year</option>
@@ -313,7 +338,6 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                     <button
                       type="button"
                       onClick={() => {
-                        // Save recurrence logic here
                         const occurrenceText = `Occurs every ${
                           recurrenceDetails.frequency
                         } ${
@@ -331,6 +355,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               </div>
             </div>
           )}
+
           <div className="flex justify-between gap-4">
             <div className="flex-1">
               <label
@@ -367,6 +392,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               />
             </div>
           </div>
+
           <div className="flex justify-between gap-4">
             <div className="flex-1">
               <label
@@ -386,6 +412,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               />
             </div>
           </div>
+
           <div>
             <label
               htmlFor="location"
@@ -407,6 +434,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               required
             />
           </div>
+
           <div>
             <label
               htmlFor="description"
@@ -424,6 +452,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               required
             ></textarea>
           </div>
+
           <div className="flex justify-end">
             <button
               type="button"
