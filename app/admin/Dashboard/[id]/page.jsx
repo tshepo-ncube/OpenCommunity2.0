@@ -194,7 +194,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                     days: [],
                     frequency: 1,
                     frequencyUnit: "Month",
-                    monthlyType: "specificDay", // Set initial type for monthly
+                    monthlyType: "specificDay",
                   }));
                 } else if (selectedValue === "yearly") {
                   setRecurrenceDetails((prev) => ({
@@ -203,6 +203,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                     frequency: 1,
                     frequencyUnit: "Year",
                   }));
+                  setRecurrencePopupOpen(true);
                 } else {
                   setRecurrenceDetails((prev) => ({ ...prev, days: [] }));
                 }
@@ -249,11 +250,11 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                       type="number"
                       value={
                         recurrenceDetails.frequencyUnit === "Year"
-                          ? 1 // Disable and show 1 for Year
+                          ? 1
                           : recurrenceDetails.frequency
                       }
                       onChange={(e) => {
-                        const newFrequency = Math.max(1, e.target.value); // Ensure value is at least 1
+                        const newFrequency = Math.max(1, e.target.value);
                         setRecurrenceDetails({
                           ...recurrenceDetails,
                           frequency: newFrequency,
@@ -262,7 +263,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                       className="border border-gray-300 rounded w-1/4 p-2 inline-block"
                       required
                       disabled={recurrenceDetails.frequencyUnit === "Year"}
-                      min="1" // Set minimum value to 1
+                      min="1"
                     />
 
                     <select
@@ -297,6 +298,151 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                       required
                     />
                   </div>
+
+                  {/* Yearly Recurrence Options */}
+                  {recurrenceDetails.frequencyUnit === "Year" && (
+                    <div className="mb-4">
+                      <label className="block mb-2">Select Yearly Option</label>
+
+                      <div className="mb-4">
+                        <input
+                          type="radio"
+                          name="yearlyType"
+                          value="on"
+                          checked={recurrenceDetails.yearlyType === "on"}
+                          onChange={() =>
+                            setRecurrenceDetails((prev) => ({
+                              ...prev,
+                              yearlyType: "on",
+                            }))
+                          }
+                        />
+                        <label className="ml-2">On</label>
+                        <select
+                          value={recurrenceDetails.month}
+                          onChange={(e) =>
+                            setRecurrenceDetails((prev) => ({
+                              ...prev,
+                              month: e.target.value,
+                            }))
+                          }
+                          className="border border-gray-300 rounded p-2 ml-2"
+                        >
+                          <option value="">Select Month</option>
+                          {[
+                            "January",
+                            "February",
+                            "March",
+                            "April",
+                            "May",
+                            "June",
+                            "July",
+                            "August",
+                            "September",
+                            "October",
+                            "November",
+                            "December",
+                          ].map((month) => (
+                            <option key={month} value={month}>
+                              {month}
+                            </option>
+                          ))}
+                        </select>
+
+                        <select
+                          value={recurrenceDetails.date}
+                          onChange={(e) =>
+                            setRecurrenceDetails((prev) => ({
+                              ...prev,
+                              date: e.target.value,
+                            }))
+                          }
+                          className="border border-gray-300 rounded p-2 ml-2"
+                        >
+                          <option value="">Select Date</option>
+                          {[...Array(31).keys()].map((day) => (
+                            <option key={day + 1} value={day + 1}>
+                              {day + 1}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="mb-4">
+                        <input
+                          type="radio"
+                          name="yearlyType"
+                          value="onThe"
+                          checked={recurrenceDetails.yearlyType === "onThe"}
+                          onChange={() =>
+                            setRecurrenceDetails((prev) => ({
+                              ...prev,
+                              yearlyType: "onThe",
+                            }))
+                          }
+                        />
+                        <label className="ml-2">On The</label>
+                        <select
+                          value={recurrenceDetails.occurrence}
+                          onChange={(e) =>
+                            setRecurrenceDetails((prev) => ({
+                              ...prev,
+                              occurrence: e.target.value,
+                            }))
+                          }
+                          className="border border-gray-300 rounded p-2 ml-2"
+                        >
+                          <option value="">Select Occurrence</option>
+                          <option value="first">First</option>
+                          <option value="second">Second</option>
+                          <option value="third">Third</option>
+                          <option value="fourth">Fourth</option>
+                          <option value="last">Last</option>
+                        </select>
+                        <select
+                          value={recurrenceDetails.dayOfWeek}
+                          onChange={(e) =>
+                            setRecurrenceDetails((prev) => ({
+                              ...prev,
+                              dayOfWeek: e.target.value,
+                            }))
+                          }
+                          className="border border-gray-300 rounded p-2 ml-2"
+                        >
+                          <option value="">Select Day</option>
+                          {[
+                            "Sunday",
+                            "Monday",
+                            "Tuesday",
+                            "Wednesday",
+                            "Thursday",
+                            "Friday",
+                            "Saturday",
+                          ].map((day) => (
+                            <option key={day} value={day}>
+                              {day}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {recurrenceDetails.yearlyType === "on" && (
+                        <p className="text-gray-700 mt-2">
+                          Occurs every {recurrenceDetails.frequency} year(s) on{" "}
+                          {recurrenceDetails.month} {recurrenceDetails.date}
+                        </p>
+                      )}
+
+                      {recurrenceDetails.yearlyType === "onThe" && (
+                        <p className="text-gray-700 mt-2">
+                          Occurs every {recurrenceDetails.frequency} year(s) on
+                          the {recurrenceDetails.occurrence}{" "}
+                          {recurrenceDetails.dayOfWeek} of{" "}
+                          {recurrenceDetails.month}
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                   {/* Monthly Recurrence Options */}
                   {recurrenceDetails.frequencyUnit === "Month" && (
@@ -598,6 +744,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     </>
   );
 };
+
 export default function CommunityPage({ params }) {
   const { id } = params;
   const [showEventForm, setShowEventForm] = useState(false);
