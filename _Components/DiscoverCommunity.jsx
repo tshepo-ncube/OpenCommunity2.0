@@ -328,13 +328,16 @@ const DiscoverCommunity = ({ email }) => {
               </Typography>
             ) : (
               <>
-                <div className="grid grid-cols-3 gap-y-4 gap-4">
+                <div
+                  style={{ marginTop: -40 }}
+                  className=" grid grid-cols-3 h-90 gap-y-4 gap-4 "
+                >
                   {paginatedData.map((data, index) => (
                     <div
-                      className=" flex flex-col cursor-pointer p-2  gap-y-4 gap-4"
-                      style={{ position: "relative" }}
+                      className=" h-110 flex flex-col cursor-pointer"
+                      style={{}}
                     >
-                      <CardContainer className="inter-var w-110">
+                      <CardContainer className=" w-110">
                         <CardBody className="bg-gray-50 relative group/card  dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] h-110 rounded-xl p-6 border  ">
                           <CardItem
                             translateZ="50"

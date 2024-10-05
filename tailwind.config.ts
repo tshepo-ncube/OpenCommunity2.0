@@ -71,7 +71,9 @@ const config: Config = {
       height: {
         "4.5": "1.125rem", // Custom width, example
         "18": "4.5rem", // Equivalent to 72px
-        "100": "25rem",
+        "50": "9.5rem",
+        "100": "23rem",
+
         "105": "25.5rem", // Custom width
         "110": "27.5rem", // Custom width
         "120": "30rem", // Custom width
