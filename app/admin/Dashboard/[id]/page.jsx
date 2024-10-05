@@ -150,7 +150,38 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               name="recurrence"
               id="recurrence"
               onChange={(e) => {
-                if (e.target.value !== "does not repeat") {
+                const selectedValue = e.target.value;
+                if (selectedValue === "every weekday") {
+                  // Automatically select weekdays
+                  setRecurrenceDetails((prev) => ({
+                    ...prev,
+                    days: [
+                      "Monday",
+                      "Tuesday",
+                      "Wednesday",
+                      "Thursday",
+                      "Friday",
+                    ],
+                  }));
+                } else if (selectedValue === "daily") {
+                  // Automatically select all days
+                  setRecurrenceDetails((prev) => ({
+                    ...prev,
+                    days: [
+                      "Sunday",
+                      "Monday",
+                      "Tuesday",
+                      "Wednesday",
+                      "Thursday",
+                      "Friday",
+                      "Saturday",
+                    ],
+                  }));
+                } else {
+                  // Clear days or handle other selections if needed
+                  setRecurrenceDetails((prev) => ({ ...prev, days: [] }));
+                }
+                if (selectedValue !== "does not repeat") {
                   setRecurrencePopupOpen(true);
                 }
               }}
@@ -236,25 +267,33 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                   <div className="mb-4">
                     <label className="block mb-2">Select Days</label>
                     <div className="flex justify-between">
-                      {["S", "M", "T", "W", "T", "F", "S"].map((day) => (
+                      {[
+                        { label: "S", value: "Sunday" },
+                        { label: "M", value: "Monday" },
+                        { label: "T", value: "Tuesday" },
+                        { label: "W", value: "Wednesday" },
+                        { label: "T", value: "Thursday" },
+                        { label: "F", value: "Friday" },
+                        { label: "S", value: "Saturday" },
+                      ].map((day) => (
                         <button
-                          key={day}
+                          key={day.label}
                           type="button"
                           className={`border rounded-full w-8 h-8 ${
-                            recurrenceDetails.days.includes(day)
+                            recurrenceDetails.days.includes(day.value)
                               ? "bg-purple-500 text-white"
                               : "bg-gray-200"
                           }`}
                           onClick={() => {
                             setRecurrenceDetails((prev) => {
-                              const newDays = prev.days.includes(day)
-                                ? prev.days.filter((d) => d !== day)
-                                : [...prev.days, day];
+                              const newDays = prev.days.includes(day.value)
+                                ? prev.days.filter((d) => d !== day.value)
+                                : [...prev.days, day.value];
                               return { ...prev, days: newDays };
                             });
                           }}
                         >
-                          {day}
+                          {day.label}
                         </button>
                       ))}
                     </div>
