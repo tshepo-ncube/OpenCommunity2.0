@@ -389,6 +389,22 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                           <option value="Saturday">Saturday</option>
                         </select>
                       </div>
+
+                      {/* Occurrence Text */}
+                      {recurrenceDetails.monthlyType === "specificDay" && (
+                        <p className="text-gray-700 mt-2">
+                          Occurs every {recurrenceDetails.frequency} months on
+                          day {recurrenceDetails.specificDay}
+                        </p>
+                      )}
+
+                      {recurrenceDetails.monthlyType === "occurrenceDay" && (
+                        <p className="text-gray-700 mt-2">
+                          Occurs every {recurrenceDetails.frequency} months on
+                          the {recurrenceDetails.occurrence}{" "}
+                          {recurrenceDetails.dayOfWeek}
+                        </p>
+                      )}
                     </div>
                   )}
 
