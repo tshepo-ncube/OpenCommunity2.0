@@ -597,6 +597,9 @@ const Profile = () => {
   });
   const [error, setError] = useState(null);
   const router = useRouter();
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [hasCustomImage, setHasCustomImage] = useState(false);
+  const [profileImageFile, setProfileImageFile] = useState(null);
 
   const [isOtherDietSelected, setIsOtherDietSelected] = useState(false);
   const [isOtherAllergySelected, setIsOtherAllergySelected] = useState(false);
@@ -605,6 +608,38 @@ const Profile = () => {
   const [otherAllergy, setOtherAllergy] = useState("");
 
   const [selectedInterests, setSelectedInterests] = useState([]);
+
+  const handleRemoveImage = () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to remove your profile picture?"
+    );
+    if (confirmed) {
+      setSelectedImage(null);
+      setProfile((prevProfile) => ({
+        ...prevProfile,
+        profileImage: null,
+      }));
+      setHasCustomImage(false);
+    }
+  };
+
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setProfileImageFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setSelectedImage(e.target.result);
+        // Update profile object
+        // setProfile((prevProfile) => ({
+        //   ...prevProfile,
+        //   profileImage: e.target.result,
+        // }));
+        setHasCustomImage(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   useEffect(() => {
     ManageUser.getProfileData(localStorage.getItem("Email"), setProfile);
@@ -773,7 +808,98 @@ const Profile = () => {
                 onSubmit={handleEditProfileSubmit}
                 className="space-y-6 p-8" // Increased padding for a wider look
               >
-                <div>
+                <div className="flex flex-col sm:flex-row sm:items-start">
+                  {/* Image holder */}
+                  <div className="flex-shrink-0 flex flex-col items-center">
+                    <div className="relative">
+                      <img
+                        src={selectedImage || profile.profileImage}
+                        alt="Profile"
+                        className="w-32 h-32 rounded-full object-cover"
+                      />
+                    </div>
+                    <input
+                      type="file"
+                      id="imageUpload"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      style={{ display: "none" }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        document.getElementById("imageUpload").click()
+                      }
+                      className="mt-2 text-sm text-[#bcd727]"
+                    >
+                      Edit
+                    </button>
+                    {hasCustomImage && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="mt-1 text-sm text-red-600"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  {/* Form fields */}
+                  <div className="flex-grow mt-6 sm:mt-0 sm:ml-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div>
+                        <label
+                          htmlFor="Name"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          First Name
+                        </label>
+                        <input
+                          type="text"
+                          name="Name"
+                          id="Name"
+                          value={profile.Name || ""}
+                          onChange={handleProfileChange}
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#bcd727] focus:border-[#bcd727] sm:text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="Surname"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Last Name
+                        </label>
+                        <input
+                          type="text"
+                          name="Surname"
+                          id="Surname"
+                          value={profile.Surname || ""}
+                          onChange={handleProfileChange}
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#bcd727] focus:border-[#bcd727] sm:text-sm"
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label
+                          htmlFor="Email"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Email
+                        </label>
+                        <input
+                          type="email"
+                          name="Email"
+                          id="Email"
+                          value={profile.Email || ""}
+                          onChange={handleProfileChange}
+                          disabled
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-50 text-gray-500 sm:text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* <div>
                   <label
                     htmlFor="Name"
                     className="block text-sm font-medium text-gray-700"
@@ -821,7 +947,7 @@ const Profile = () => {
                     disabled
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-50 text-gray-500 sm:text-sm"
                   />
-                </div>
+                </div> */}
                 <div>
                   <label
                     htmlFor="Diet"
