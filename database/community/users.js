@@ -71,6 +71,7 @@ export default class UserDB {
         Name: user.Name,
         Surname: user.Surname,
         Points: user.Points,
+        profileImage: user.profileImage,
       }));
     } catch (e) {
       console.error("Error getting users: ", e);

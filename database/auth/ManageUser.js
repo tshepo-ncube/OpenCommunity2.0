@@ -25,6 +25,8 @@ import {
   runTransaction,
 } from "firebase/firestore";
 import { useRouter } from "next/navigation";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import StorageDB from "../StorageDB"; // Import the Firebase storage instance
 
 export default class ManageUser {
   static manageUserState = (setUser, setSignedIn) => {
@@ -48,6 +50,39 @@ export default class ManageUser {
         console.log("No user is logged in");
       }
     });
+  };
+
+  static setProfileImage = (image) => {
+    console.log(image);
+    const storageRef = ref(
+      StorageDB,
+      `images/${localStorage.getItem("UserID")}/profileImage`
+    ); // Reference to where the file will be stored
+
+    // Upload the file to Firebase Storage
+    const uploadTask = uploadBytes(storageRef, image);
+    uploadTask
+      .then((snapshot) => {
+        console.log("Image uploaded successfully!");
+
+        // Get the download URL and set it to state
+        getDownloadURL(snapshot.ref).then((downloadURL) => {
+          //setUrl(downloadURL);
+          console.log("File available at", downloadURL);
+          ManageUser.setProfileImageFirebase(downloadURL);
+        });
+      })
+      .catch((error) => {
+        console.error("Error uploading image:", error);
+      });
+  };
+
+  static setProfileImageFirebase = async (imageURL) => {
+    const userRef = doc(DB, "users", localStorage.getItem("UserID"));
+    const object = { profileImage: imageURL };
+
+    // Set the "capital" field of the city 'DC'
+    await updateDoc(userRef, object);
   };
 
   static forgotPassword = (email, setError, setForgotPassword) => {

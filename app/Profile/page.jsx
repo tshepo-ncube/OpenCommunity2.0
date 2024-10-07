@@ -11,6 +11,9 @@ import {
   ArrowLeftIcon,
 } from "lucide-react";
 
+// Import the default profile image
+import defaultProfileImage from "../../lib/images/profile.png";
+
 const dietaryRequirements = [
   "None",
   "Vegetarian",
@@ -35,6 +38,9 @@ const foodAllergies = [
 
 const Profile = () => {
   const [profile, setProfile] = useState({});
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [hasCustomImage, setHasCustomImage] = useState(false);
+  const [profileImageFile, setProfileImageFile] = useState(null);
   const [formData, setFormData] = useState({
     newPassword: "",
     confirmNewPassword: "",
@@ -43,8 +49,53 @@ const Profile = () => {
   const router = useRouter();
 
   useEffect(() => {
-    ManageUser.getProfileData(localStorage.getItem("Email"), setProfile);
+    ManageUser.getProfileData(localStorage.getItem("Email"), (data) => {
+      setProfile(data);
+      if (data.profileImage) {
+        setSelectedImage(data.profileImage);
+        setHasCustomImage(true);
+      } else {
+        setSelectedImage(null);
+        setHasCustomImage(false);
+      }
+    });
   }, []);
+
+  useEffect(() => {
+    console.log("Something has changed...");
+  }, [profile]);
+
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setProfileImageFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setSelectedImage(e.target.result);
+        // Update profile object
+        // setProfile((prevProfile) => ({
+        //   ...prevProfile,
+        //   profileImage: e.target.result,
+        // }));
+        setHasCustomImage(true);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    const confirmed = window.confirm(
+      "Are you sure you want to remove your profile picture?"
+    );
+    if (confirmed) {
+      setSelectedImage(null);
+      setProfile((prevProfile) => ({
+        ...prevProfile,
+        profileImage: null,
+      }));
+      setHasCustomImage(false);
+    }
+  };
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
@@ -64,10 +115,21 @@ const Profile = () => {
 
   const handleEditProfileSubmit = async (e) => {
     e.preventDefault();
-    const success = await ManageUser.editProfileData(profile.id, profile);
-    if (success) {
-      ManageUser.getProfileData(profile.Email, setProfile);
-    }
+    // const success = await ManageUser.editProfileData(profile.id, profile);
+    // if (success) {
+    //   ManageUser.getProfileData(profile.Email, (data) => {
+    //     setProfile(data);
+    //     if (data.profileImage) {
+    //       setSelectedImage(data.profileImage);
+    //       setHasCustomImage(true);
+    //     } else {
+    //       setSelectedImage(null);
+    //       setHasCustomImage(false);
+    //     }
+    //   });
+    // }
+
+    ManageUser.setProfileImage(profileImageFile);
   };
 
   const handleNewPasswordSubmit = (e) => {
@@ -114,7 +176,7 @@ const Profile = () => {
                       ? "border-[#bcd727] text-[#bcd727]"
                       : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                   }
-                 flex-1 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`
+                     flex-1 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`
                 }
               >
                 {({ selected }) => (
@@ -136,7 +198,7 @@ const Profile = () => {
                       ? "border-[#bcd727] text-[#bcd727]"
                       : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                   }
-                 flex-1 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`
+                     flex-1 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`
                 }
               >
                 {({ selected }) => (
@@ -158,7 +220,7 @@ const Profile = () => {
                       ? "border-[#bcd727] text-[#bcd727]"
                       : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                   }
-                 flex-1 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`
+                     flex-1 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`
                 }
               >
                 {({ selected }) => (
@@ -182,57 +244,100 @@ const Profile = () => {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
                 onSubmit={handleEditProfileSubmit}
-                className="space-y-6 p-8" // Increased padding for a wider look
+                className="space-y-6 p-8"
               >
-                <div>
-                  <label
-                    htmlFor="Name"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    name="Name"
-                    id="Name"
-                    value={profile.Name || ""}
-                    onChange={handleProfileChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#bcd727] focus:border-[#bcd727] sm:text-sm"
-                  />
+                <div className="flex flex-col sm:flex-row sm:items-start">
+                  {/* Image holder */}
+                  <div className="flex-shrink-0 flex flex-col items-center">
+                    <div className="relative">
+                      <img
+                        src={selectedImage || profile.profileImage}
+                        alt="Profile"
+                        className="w-32 h-32 rounded-full object-cover"
+                      />
+                    </div>
+                    <input
+                      type="file"
+                      id="imageUpload"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      style={{ display: "none" }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        document.getElementById("imageUpload").click()
+                      }
+                      className="mt-2 text-sm text-[#bcd727]"
+                    >
+                      Edit
+                    </button>
+                    {hasCustomImage && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveImage}
+                        className="mt-1 text-sm text-red-600"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                  {/* Form fields */}
+                  <div className="flex-grow mt-6 sm:mt-0 sm:ml-8">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div>
+                        <label
+                          htmlFor="Name"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          First Name
+                        </label>
+                        <input
+                          type="text"
+                          name="Name"
+                          id="Name"
+                          value={profile.Name || ""}
+                          onChange={handleProfileChange}
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#bcd727] focus:border-[#bcd727] sm:text-sm"
+                        />
+                      </div>
+                      <div>
+                        <label
+                          htmlFor="Surname"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Last Name
+                        </label>
+                        <input
+                          type="text"
+                          name="Surname"
+                          id="Surname"
+                          value={profile.Surname || ""}
+                          onChange={handleProfileChange}
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#bcd727] focus:border-[#bcd727] sm:text-sm"
+                        />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label
+                          htmlFor="Email"
+                          className="block text-sm font-medium text-gray-700"
+                        >
+                          Email
+                        </label>
+                        <input
+                          type="email"
+                          name="Email"
+                          id="Email"
+                          value={profile.Email || ""}
+                          onChange={handleProfileChange}
+                          disabled
+                          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-50 text-gray-500 sm:text-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label
-                    htmlFor="Surname"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    name="Surname"
-                    id="Surname"
-                    value={profile.Surname || ""}
-                    onChange={handleProfileChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#bcd727] focus:border-[#bcd727] sm:text-sm"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="Email"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="Email"
-                    id="Email"
-                    value={profile.Email || ""}
-                    onChange={handleProfileChange}
-                    disabled
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 bg-gray-50 text-gray-500 sm:text-sm"
-                  />
-                </div>
+                {/* The rest of the form inputs */}
                 <div>
                   <label
                     htmlFor="Diet"
@@ -288,12 +393,13 @@ const Profile = () => {
               </motion.form>
             </Tab.Panel>
             <Tab.Panel>
+              {/* Password Reset Panel (unchanged) */}
               <motion.form
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
                 onSubmit={handleNewPasswordSubmit}
-                className="space-y-6 p-8" // Increased padding for a wider look
+                className="space-y-6 p-8"
               >
                 <div>
                   <label
@@ -349,6 +455,7 @@ const Profile = () => {
               </motion.form>
             </Tab.Panel>
             <Tab.Panel>
+              {/* Log Out Panel (unchanged) */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
