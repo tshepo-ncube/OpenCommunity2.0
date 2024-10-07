@@ -75,8 +75,13 @@ const DiscoverCommunity = ({ email }) => {
 
   const filteredData = filterDataByCategoryAndStatus(submittedData);
 
+  // Function to capitalize the first letter of a category
+  const capitalizeFirstLetter = (category) => {
+    return category.charAt(0).toUpperCase() + category.slice(1);
+  };
+
   const uniqueCategories = Array.from(
-    new Set(submittedData.map((data) => data.category))
+    new Set(submittedData.map((data) => capitalizeFirstLetter(data.category)))
   );
   uniqueCategories.unshift("All Communities");
 
@@ -261,10 +266,14 @@ const DiscoverCommunity = ({ email }) => {
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
+                          color: "white",
+                          fontSize: "0.875rem", // Adjust font size if needed
+                          fontWeight: "bold",
+                          borderRadius: "0.375rem", // Make sure to use rounded corners if needed
                         }}
-                        className="text-white text-sm font-bold rounded-md z-10"
+                        className="text-sm font-bold rounded-md absolute top-0 right-0 z-10"
                       >
-                        {data.category}
+                        {capitalizeFirstLetter(data.category)}
                       </div>
 
                       <div className="flex flex-col flex-grow mt-4 px-5 pb-5">
