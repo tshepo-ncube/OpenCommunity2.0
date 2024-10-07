@@ -59,37 +59,41 @@ const CreateCommunity = () => {
       );
     } else {
       console.log("creating a channel now...");
-      // CommunityDB.createCommunity(
-      //   communityData,
-      //   (newCommunity) =>
-      //     setSubmittedData((prevData) => [...prevData, newCommunity]),
-      //   setLoading
-      // );
+      CommunityDB.createCommunity(
+        communityData,
+        (newCommunity) =>
+          setSubmittedData((prevData) => [...prevData, newCommunity]),
+        setLoading
+      );
       //name, description, category, status
 
       try {
-        const res = await axios.post(
-          strings.server_endpoints.createChannel,
-          { name, description, category, status },
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        // const res = await axios.post(
+        //   strings.server_endpoints.createChannel,
+        //   { name, description, category, status },
+        //   {
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //   }
+        // );
 
-        console.log(res.data);
-        let data = res.data;
+        // console.log(res.data);
+        // let data = res.data;
 
         CommunityDB.createCommunity(
           communityData,
-          (newCommunity) =>
-            setSubmittedData((prevData) => [...prevData, newCommunity]),
-          setLoading,
-          {
-            WebUrl: data.webUrl,
-            ChannelID: data.id,
-          }
+          image,
+          (newCommunity) => {
+            setSubmittedData((prevData) => [...prevData, newCommunity]);
+          },
+          setLoading
+
+          // ,
+          // {
+          //   WebUrl: data.webUrl,
+          //   ChannelID: data.id,
+          // }
         );
       } catch (err) {
         console.log("error");
