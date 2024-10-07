@@ -11,6 +11,7 @@ import {
   getDocs,
 } from "firebase/firestore";
 import DB from "../DB";
+import { Interests } from "@mui/icons-material";
 
 export default class UserDB {
   static deleteUser = async (id) => {
@@ -60,6 +61,7 @@ export default class UserDB {
         Name: userData.Name,
         Surname: userData.Surname,
         Email: userData.Email,
+        Interests: userData.Interests,
       };
     } catch (e) {
       console.error("Error getting user data: ", e);

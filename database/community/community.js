@@ -39,6 +39,7 @@ export default class CommunityDB {
     //the above line of code is an array of Interests, which all belong to the interests below
     //e.g. userDetails = ["Running","Yoga"]
     // console.log(userDetails);
+    console.log("userDetails :", userDetails);
 
     const interests = [
       { interest: "Running", category: "Sports" },
