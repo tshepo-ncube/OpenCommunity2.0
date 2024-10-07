@@ -554,7 +554,7 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                             (() => {
                               try {
                                 const parsedContent = JSON.parse(
-                                  message.content[0].text.value.slice(7, -3)
+                                  message.content[0].text.value
                                 );
                                 return (
                                   <ChatCard
