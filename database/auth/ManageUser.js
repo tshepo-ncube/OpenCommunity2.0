@@ -40,8 +40,6 @@ export default class ManageUser {
 
         // User is signed in.
         setUser(user);
-
-        //window.location.href = "http://localhost:3000/Home";
         router.push(`/Home`);
       } else {
         setSignedIn(false);
@@ -90,20 +88,18 @@ export default class ManageUser {
     sendPasswordResetEmail(auth, email)
       .then(() => {
         // Password reset email sent!
-        // ..
         setForgotPassword(false);
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
         setError(errorMessage);
-        // ..
       });
   };
 
   static storeUserID = async (userEmail) => {
     const candidatesCollectionRef = collection(DB, "users");
-    console.log(`Email : ${email}`);
+    console.log(`Email : ${userEmail}`);
     const q = query(candidatesCollectionRef, where("Email", "==", userEmail));
     if (typeof window === "undefined") return;
 
@@ -133,12 +129,11 @@ export default class ManageUser {
       });
     } catch (error) {
       console.error("Error getting Profile Data: ", error);
-      //alert(error);
     }
   };
+
   static editPassword = (newPassword, setError) => {
     const auth = getAuth();
-
     const user = auth.currentUser;
 
     updatePassword(user, newPassword)
@@ -147,10 +142,7 @@ export default class ManageUser {
         alert("You have now updated your password");
       })
       .catch((error) => {
-        // An error ocurred
-        // ...
         alert("Error!!!");
-
         setError(error);
       });
   };
@@ -163,7 +155,6 @@ export default class ManageUser {
         console.log("User is logged in:", user);
         setSignedIn(true);
 
-        // User is signed in.
         setUser({
           email: user.email,
           name: user.displayName,
@@ -171,7 +162,6 @@ export default class ManageUser {
         });
 
         this.getProfileData(user.email, setProfile);
-      } else {
       }
     });
   };
@@ -182,10 +172,16 @@ export default class ManageUser {
     object.Interests = selectedInterests;
 
     // Set the "capital" field of the city 'DC'
+    // Update the user's profile data
     await updateDoc(communityRef, object);
   };
 
-  static getProfileData = async (email, setProfile, setUserCommunities) => {
+  static getProfileData = async (
+    email,
+    setProfile,
+    setUserCommunities,
+    setIsAdmin
+  ) => {
     const candidatesCollectionRef = collection(DB, "users");
     console.log(`Email : ${email}`);
     const q = query(candidatesCollectionRef, where("Email", "==", email));
@@ -200,24 +196,28 @@ export default class ManageUser {
       snapshot.forEach((doc) => {
         console.log(doc.id, "=>", doc.data());
 
+        const userData = doc.data();
         const object2 = { id: doc.id };
-        console.log(
-          "doc.data().CommunitiesJoined,",
-          doc.data().CommunitiesJoined
-        );
-        //const combinedObject = { ...object1, ...object2 };
+
+        // Check if the user is an admin
+        if (userData.Role === "admin") {
+          console.log("User is an admin");
+          setIsAdmin(true); // Set admin status
+        } else {
+          console.log("User is not an admin");
+          setIsAdmin(false); // Set non-admin status
+        }
+
         CommunityDB.getAllUserCommunities(
           doc.data().CommunitiesJoined,
           setUserCommunities
         );
-        setProfile({ ...doc.data(), ...object2 });
+        setProfile({ ...userData, ...object2 });
       });
     } catch (error) {
       console.error("Error getting Profile Data: ", error);
-      //alert(error);
     }
   };
-
   static logoutUser = (setLoggedIn, router) => {
     const auth = getAuth();
     signOut(auth)
@@ -225,10 +225,9 @@ export default class ManageUser {
         // Sign-out successful.
         setLoggedIn(false);
         router.push("/");
-        //window.location.href = "http://localhost:3000/sign-in";
       })
       .catch((error) => {
-        // An error happened.
+        console.error("Error signing out:", error);
       });
   };
 
@@ -236,9 +235,7 @@ export default class ManageUser {
     if (typeof window === "undefined") return;
 
     const currentUser = localStorage.getItem("Email");
-
     const candidatesCollectionRef = collection(DB, "users");
-
     const q = query(candidatesCollectionRef, where("Email", "==", currentUser));
 
     try {
@@ -264,7 +261,6 @@ export default class ManageUser {
         } else {
           joinedCommunities.push(communityID);
           try {
-            // Update the status field
             await updateDoc(userRef, {
               CommunitiesJoined: joinedCommunities,
             });
@@ -277,39 +273,30 @@ export default class ManageUser {
       }
     } catch (error) {
       console.error("Error getting user ID: ", error);
-      //alert(error);
     }
   };
 
-  //here i am adding the polls to the engaged user field in /users collection
   static addPollToCommunity = async (docID, communityID, newPoll) => {
-    const docRef = doc(DB, "users", docID); // Replace with your actual collection name and document ID
+    const docRef = doc(DB, "users", docID);
     console.log("starting...");
     try {
       const docSnap = await getDoc(docRef);
 
       if (docSnap.exists()) {
-        // Get the data
         const data = docSnap.data();
         const myCommunities = data.MyCommunities || [];
 
-        // Find the index of the community
         const communityIndex = myCommunities.findIndex(
           (community) => community.community_id === communityID
         );
 
         if (communityIndex !== -1) {
-          // Community exists, update the polls_engaged array
           myCommunities[communityIndex].polls_engaged.push(newPoll);
-
-          // Update the document in Firestore
           await updateDoc(docRef, {
             MyCommunities: myCommunities,
           });
-
           console.log(`Poll added to community ${communityID}`);
         } else {
-          // Community does not exist, create a new one
           myCommunities.push({
             community_id: communityID,
             polls_engaged: [newPoll],
@@ -317,7 +304,6 @@ export default class ManageUser {
           console.log(`New community ${communityID} created and poll added`);
         }
 
-        // Update the document in Firestore
         await updateDoc(docRef, {
           MyCommunities: myCommunities,
         });
