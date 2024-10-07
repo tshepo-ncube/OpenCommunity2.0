@@ -33,7 +33,8 @@ const generateRandomColor = () => {
 function convertTimestampToString(firestoreTimestamp) {
   // Check if the provided timestamp is valid
   if (!firestoreTimestamp || !firestoreTimestamp.toDate) {
-    throw new Error("Invalid Firestore Timestamp.");
+    //throw new Error("Invalid Firestore Timestamp.");
+    return "Invalid Firestore Timestamp.";
   }
 
   // Convert Firestore Timestamp to JavaScript Date
