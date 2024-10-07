@@ -23,6 +23,7 @@ import {
   deleteDoc,
   getDocs,
   runTransaction,
+  serverTimestamp,
 } from "firebase/firestore";
 
 import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
@@ -37,7 +38,15 @@ export default class PollDB {
 
   static createPoll = async (pollObject) => {
     try {
-      const pollRef = await addDoc(collection(DB, "polls"), pollObject);
+      // const pollRef = await addDoc(collection(DB, "polls"), {
+      //   ...pollObject,
+      //   createdAt: new Date(),
+      // });
+
+      const pollRef = await addDoc(collection(DB, "polls"), {
+        ...pollObject,
+        createdAt: serverTimestamp(), // This ensures the server sets the correct timestamp
+      });
       console.log("Document ID: ", pollRef.id);
     } catch (e) {
       console.log("Error adding document: ", e);
