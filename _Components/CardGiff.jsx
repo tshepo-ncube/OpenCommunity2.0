@@ -9,9 +9,12 @@ export default function CardGiff({ name, description, image, giff }) {
       onMouseEnter={() => setIsHovered(true)} // When mouse enters, show GIF
       onMouseLeave={() => setIsHovered(false)} // When mouse leaves, show static image
     >
+      {/* <div className="bg-transparent text-gray-900 p-2 text-md font-bold text-xl md:text-2xl ">
+        {name}
+      </div> */}
       <div
         className={cn(
-          "group w-full cursor-pointer overflow-hidden relative card h-96 rounded-md shadow-xl mx-auto flex flex-col justify-end p-4 border border-transparent dark:border-neutral-800",
+          "group w-full cursor-pointer overflow-hidden relative card h-96 rounded-b-md shadow-xl mx-auto flex flex-col justify-end p-4 border border-transparent dark:border-neutral-800",
           "hover:after:content-[''] hover:after:absolute hover:after:inset-0 hover:after:bg-black hover:after:opacity-50",
           "transition-all duration-500"
         )}
@@ -26,7 +29,7 @@ export default function CardGiff({ name, description, image, giff }) {
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundBlendMode: "multiply", // Darkens the background
-          backgroundColor: "rgba(0, 0, 0, 0.60)", // Dark overlay (50% opacity black)
+          backgroundColor: "rgba(0, 0, 0, 0.10)", // Dark overlay (50% opacity black)
         }}
       >
         {/* Preload hover GIF with opacity 0, show on hover */}

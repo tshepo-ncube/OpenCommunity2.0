@@ -6,6 +6,7 @@ const nextConfig = {
       "wallpapercave.com",
       "th.bing.com",
       "images.unsplash.com",
+      "firebasestorage.googleapis.com",
     ],
   },
 };

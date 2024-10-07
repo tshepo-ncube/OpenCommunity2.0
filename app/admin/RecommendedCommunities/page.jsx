@@ -317,117 +317,122 @@ export default function RecommendationsTable() {
 
   return (
     <>
-      <Header />
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto p-8 bg-gray-50 rounded-lg shadow-xl shadow-gray-700"
-      >
-        <h1 className="text-4xl font-extrabold mb-6 text-center text-gray-500">
-          Community Recommendations
-        </h1>
+      <div className="flex min-h-screen bg-gray-100">
+        <CollapsableSidebar />
 
-        {/* Tabs for view selection */}
-        <div className="flex justify-center mb-4">
-          <div className="flex border-b border-gray-200">
-            <div
-              onClick={() => setViewMode("table")}
-              className={`cursor-pointer px-4 py-2 text-center ${
-                viewMode === "table"
-                  ? "border-b-2 border-[#bcd727] text-[#bcd727] font-semibold"
-                  : "text-gray-600"
-              }`}
-            >
-              Table View
+        <div className="flex-grow p-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-7xl mx-auto p-8 bg-gray-50 rounded-lg shadow-xl shadow-gray-700"
+          >
+            <h1 className="text-4xl font-extrabold mb-6 text-center text-gray-500">
+              Community Recommendations
+            </h1>
+
+            {/* Tabs for view selection */}
+            <div className="flex justify-center mb-4">
+              <div className="flex border-b border-gray-200">
+                <div
+                  onClick={() => setViewMode("table")}
+                  className={`cursor-pointer px-4 py-2 text-center ${
+                    viewMode === "table"
+                      ? "border-b-2 border-[#bcd727] text-[#bcd727] font-semibold"
+                      : "text-gray-600"
+                  }`}
+                >
+                  Table View
+                </div>
+                <div
+                  onClick={() => setViewMode("chart")}
+                  className={`cursor-pointer px-4 py-2 text-center ${
+                    viewMode === "chart"
+                      ? "border-b-2 border-[#bcd727] text-[#bcd727] font-semibold"
+                      : "text-gray-600"
+                  }`}
+                >
+                  Chart View
+                </div>
+              </div>
             </div>
-            <div
-              onClick={() => setViewMode("chart")}
-              className={`cursor-pointer px-4 py-2 text-center ${
-                viewMode === "chart"
-                  ? "border-b-2 border-[#bcd727] text-[#bcd727] font-semibold"
-                  : "text-gray-600"
-              }`}
-            >
-              Chart View
-            </div>
-          </div>
-        </div>
 
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-[#bcd727]"></div>
-          </div>
-        ) : viewMode === "table" ? (
-          <div className="overflow-x-auto">
-            <table
-              {...getTableProps()}
-              className="w-full border-collapse bg-white rounded-lg overflow-hidden shadow-lg"
-            >
-              <thead>
-                {headerGroups.map((headerGroup) => (
-                  <tr
-                    {...headerGroup.getHeaderGroupProps()}
-                    className="bg-gray-300 text-gray-700"
-                  >
-                    {headerGroup.headers.map((column) => (
-                      <th
-                        {...column.getHeaderProps()}
-                        className="p-4 text-left font-semibold"
+            {isLoading ? (
+              <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-[#bcd727]"></div>
+              </div>
+            ) : viewMode === "table" ? (
+              <div className="overflow-x-auto">
+                <table
+                  {...getTableProps()}
+                  className="w-full border-collapse bg-white rounded-lg overflow-hidden shadow-lg"
+                >
+                  <thead>
+                    {headerGroups.map((headerGroup) => (
+                      <tr
+                        {...headerGroup.getHeaderGroupProps()}
+                        className="bg-gray-300 text-gray-700"
                       >
-                        {column.render("Header")}
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-
-              <tbody {...getTableBodyProps()}>
-                <AnimatePresence>
-                  {rows.map((row) => {
-                    prepareRow(row);
-                    return (
-                      <motion.tr
-                        {...row.getRowProps()}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="border-b hover:bg-gray-50 transition-colors"
-                      >
-                        {row.cells.map((cell) => (
-                          <td {...cell.getCellProps()} className="p-4">
-                            {cell.render("Cell")}
-                          </td>
+                        {headerGroup.headers.map((column) => (
+                          <th
+                            {...column.getHeaderProps()}
+                            className="p-4 text-left font-semibold"
+                          >
+                            {column.render("Header")}
+                          </th>
                         ))}
-                      </motion.tr>
-                    );
-                  })}
-                </AnimatePresence>
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="h-96 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="category" />
-                  <YAxis />
-                  <RechartsTooltip content={<CustomTooltip />} />
-                  {/* Legend component removed */}
-                  <Bar dataKey="count" name="Count">
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                      </tr>
                     ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </ResponsiveContainer>
-          </div>
-        )}
-      </motion.div>
+                  </thead>
+
+                  <tbody {...getTableBodyProps()}>
+                    <AnimatePresence>
+                      {rows.map((row) => {
+                        prepareRow(row);
+                        return (
+                          <motion.tr
+                            {...row.getRowProps()}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="border-b hover:bg-gray-50 transition-colors"
+                          >
+                            {row.cells.map((cell) => (
+                              <td {...cell.getCellProps()} className="p-4">
+                                {cell.render("Cell")}
+                              </td>
+                            ))}
+                          </motion.tr>
+                        );
+                      })}
+                    </AnimatePresence>
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="h-96 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height={400}>
+                    <BarChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="category" />
+                      <YAxis />
+                      <RechartsTooltip content={<CustomTooltip />} />
+                      {/* Legend component removed */}
+                      <Bar dataKey="count" name="Count">
+                        {chartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      </div>
     </>
   );
 }

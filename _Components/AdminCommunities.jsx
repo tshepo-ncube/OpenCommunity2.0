@@ -194,14 +194,14 @@ const AdminCommunity = () => {
         const events = filteredData.filter((event) => event.status === status);
 
         return (
-          <div key={status} className="mb-4">
+          <div key={status} className="mb-4 mt-10">
             <h2 className="text-xl font-bold mb-4">
               {status.charAt(0).toUpperCase() + status.slice(1)}
             </h2>
             {events.length === 0 ? (
               <p>No communities currently exist with the status: {status}</p>
             ) : (
-              <Grid container spacing={2} className="p-4">
+              <Grid container spacing={2} className="p-4 ">
                 {events.map((data, index) => (
                   <Grid item xs={6} md={4} lg={4} key={index}>
                     <div className="w-full max-w-sm bg-white border border-gray_og rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 relative">
@@ -779,7 +779,7 @@ const AdminCommunity = () => {
       )}
 
       <div className="w-full px-6 py-4">
-        <FormControl variant="outlined" className="mb-4 w-full md:w-1/4">
+        {/* <FormControl variant="outlined" className="mb-4 w-full md:w-1/4">
           <InputLabel>Filter By Status</InputLabel>
           <Select
             value={selectedStatus}
@@ -791,7 +791,35 @@ const AdminCommunity = () => {
             <MenuItem value="active">Active</MenuItem>
             <MenuItem value="archived">Archived</MenuItem>
           </Select>
-        </FormControl>
+        </FormControl> */}
+
+        <form class="max-w-sm mx-auto">
+          <label
+            for="countries"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+          >
+            Filter By Status
+          </label>
+          <select
+            value={selectedStatus}
+            onChange={handleStatusChange}
+            label="Status"
+            id="countries"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          >
+            {/* <option selected>Select a status</option> */}
+            <option value="All">All</option>
+            <option value="draft">Draft</option>
+            <option value="active">Active</option>
+            <option value="archived">Archived</option>
+
+            {/* <MenuItem value="All">All</MenuItem>
+            <MenuItem value="draft">Draft</MenuItem>
+            <MenuItem value="active">Active</MenuItem>
+            <MenuItem value="archived">Archived</MenuItem> */}
+          </select>
+        </form>
+
         {loading ? (
           <div className="flex justify-center">
             <CircularProgress />
