@@ -102,7 +102,7 @@ export default function PollAnalytics({ poll }) {
   };
 
   return (
-    <Box sx={{ flexGrow: 1, padding: 4 }}>
+    <Box sx={{ flexGrow: 1, padding: 0 }}>
       <h1 className="text-3xl text-black">{poll.Question}</h1>
       <Box sx={{ flexGrow: 1 }}>
         <h1>
@@ -112,7 +112,7 @@ export default function PollAnalytics({ poll }) {
         <Grid container spacing={2}>
           <Grid item xs={12} sm={12} md={12} lg={12}>
             <Bar
-              style={{ padding: 20, width: "80%" }}
+              style={{ padding: 2, width: "80%" }}
               data={data}
               options={options}
             />
