@@ -573,6 +573,7 @@ const dietaryRequirements = [
   "Keto",
   "Halal",
   "Kosher",
+  "Other",
 ];
 
 const foodAllergies = [
@@ -585,6 +586,7 @@ const foodAllergies = [
   "Soy",
   "Fish",
   "Shellfish",
+  "Other",
 ];
 
 const Profile = () => {
@@ -595,6 +597,12 @@ const Profile = () => {
   });
   const [error, setError] = useState(null);
   const router = useRouter();
+
+  const [isOtherDietSelected, setIsOtherDietSelected] = useState(false);
+  const [isOtherAllergySelected, setIsOtherAllergySelected] = useState(false);
+
+  const [otherDiet, setOtherDiet] = useState("");
+  const [otherAllergy, setOtherAllergy] = useState("");
 
   const [selectedInterests, setSelectedInterests] = useState([]);
 
@@ -616,6 +624,20 @@ const Profile = () => {
       [name]: value,
     }));
   };
+
+  useEffect(() => {
+    console.log(profile);
+    if (profile.otherDiet) {
+      console.log("profile has other Diet");
+      setOtherDiet(profile.otherDiet);
+      setIsOtherDietSelected(true);
+    }
+    if (profile.otherAllergy) {
+      console.log("profile has other Allergy");
+      setIsOtherAllergySelected(true);
+      setOtherAllergy(profile.otherAllergy);
+    }
+  }, [profile]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -821,6 +843,26 @@ const Profile = () => {
                     ))}
                   </select>
                 </div>
+
+                {isOtherDietSelected && (
+                  <div className="mt-2">
+                    <label
+                      className="block text-gray-700 text-sm font-bold mb-2"
+                      htmlFor="otherDiet"
+                    >
+                      Please specify other dietary requirements:
+                    </label>
+                    <input
+                      type="text"
+                      id="otherDiet"
+                      name="otherDiet"
+                      className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      value={otherDiet}
+                      onChange={(e) => setOtherDiet(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
                 <div>
                   <label
                     htmlFor="Allergies"
@@ -842,6 +884,26 @@ const Profile = () => {
                     ))}
                   </select>
                 </div>
+
+                {isOtherAllergySelected && (
+                  <div className="mt-2">
+                    <label
+                      className="block text-gray-700 text-sm font-bold mb-2"
+                      htmlFor="otherAllergy"
+                    >
+                      Please specify other food allergies:
+                    </label>
+                    <input
+                      type="text"
+                      id="otherAllergy"
+                      name="otherAllergy"
+                      className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      value={otherAllergy}
+                      onChange={(e) => setOtherAllergy(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
 
                 <div>
                   {selectedInterests ? (
