@@ -46,7 +46,7 @@ export default class UserDB {
 
   static getUser = async (userID) => {
     try {
-      const userRef = doc(DB, "Users", userID);
+      const userRef = doc(DB, "users", userID);
       const userDoc = await getDoc(userRef);
 
       if (!userDoc.exists()) {
