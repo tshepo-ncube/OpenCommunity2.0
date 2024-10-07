@@ -261,15 +261,18 @@ export default class EventDB {
   // Function to add a new review
   static addReview = async (documentId, imageUrls, newReview) => {
     // Reference to the document where you want to add the review
-    const reviewDocRef = doc(DB, "events", documentId); // Replace 'yourCollection' with your collection name
+    const reviewDocRef = doc(DB, "events", documentId);
+
+    // Add uploaded image URLs to the review object
     newReview.ReviewImages = imageUrls;
+
     try {
-      // Add the new review to the 'Reviews' array field
+      // Add the new review to the 'Reviews' array field in Firestore
       await updateDoc(reviewDocRef, {
         Reviews: arrayUnion(newReview), // Use arrayUnion to avoid duplicates
       });
       console.log("Review added successfully");
-      UserDB.addPoints(15);
+      UserDB.addPoints(15); // Assuming this adds points to the user
     } catch (error) {
       console.error("Error adding review: ", error);
     }
@@ -300,9 +303,21 @@ export default class EventDB {
       }
     }
 
-    // Optionally, store the image URLs in Firestore or use them as needed
-    console.log("Uploaded image URLs:", imageUrls);
-    EventDB.addReview(document_id, imageUrls, review_object);
+    // Get user details from local storage or any authenticated source
+    const userName = localStorage.getItem("Name");
+    const userSurname = localStorage.getItem("Surname");
+    const userEmail = localStorage.getItem("Email");
+
+    // Add user details to the review object
+    const updatedReviewObject = {
+      ...review_object,
+      UserName: userName,
+      UserSurname: userSurname,
+      UserEmail: userEmail,
+    };
+
+    // Call addReview function to save the review with the uploaded image URLs and user details
+    EventDB.addReview(document_id, imageUrls, updatedReviewObject);
   };
 
   // Function to add a comment with rating

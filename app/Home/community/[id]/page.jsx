@@ -12,10 +12,12 @@ import {
   Rating,
   DialogActions,
 } from "@mui/material";
+import imageCompression from "browser-image-compression";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Import storage functions
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import UserDB from "@/database/community/users";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
@@ -250,6 +252,27 @@ export default function CommunityPage({ params }) {
       });
   };
 
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const newImages = files.map((file, index) => ({
+      file,
+      name: `image_${selectedImages.length + index + 1}`,
+    }));
+    setSelectedImages((prevImages) => [...prevImages, ...newImages]);
+  };
+
+  const handleImageDeselect = (indexToRemove) => {
+    setSelectedImages((prevImages) => {
+      const updatedImages = prevImages.filter(
+        (_, index) => index !== indexToRemove
+      );
+      return updatedImages.map((img, index) => ({
+        ...img,
+        name: `image_${index + 1}`,
+      }));
+    });
+  };
+
   const handleCommentReview = (event) => {
     console.log("This is the event :", event);
     setCurrentEvent(event.eventName);
@@ -336,11 +359,6 @@ export default function CommunityPage({ params }) {
 
   const isRSVPed = (eventID) => rsvpState[eventID] || false;
 
-  const handleImageUpload = (event) => {
-    const files = Array.from(event.target.files);
-    setSelectedImages((prevImages) => [...prevImages, ...files]);
-  };
-
   if (loading) {
     return (
       <div>
@@ -382,15 +400,111 @@ export default function CommunityPage({ params }) {
     (event) => event.status === "active" || event.status === "rsvp"
   );
 
-  const pastEvents = allEvents.filter((event) => event.status === "past");
+  const pastEvents = allEvents.filter(
+    (event) => event.status === "past" // Adjust filtering based on your status or date
+  );
+  const handleSubmitReview = async () => {
+    const currentDate = new Date();
+    const storage = getStorage(); // Initialize Firebase Storage
 
-  const handleSubmitReview = () => {
-    const newReview = {
-      Comment: comment,
-      Rating: rating,
-    };
+    try {
+      const userID = localStorage.getItem("UserID");
 
-    EventDB.handleImageUpload(currentEventObject.id, selectedImages, newReview);
+      if (!userID) {
+        throw new Error("UserID is not available in local storage");
+      }
+
+      const userRef = doc(db, "users", userID); // Fetch user details from Firestore
+      const userSnap = await getDoc(userRef);
+
+      if (!userSnap.exists()) {
+        throw new Error("User not found in Firestore");
+      }
+
+      const userData = userSnap.data();
+      const userName = userData.Name || "Unknown";
+      const userSurname = userData.Surname || "Unknown";
+      const userEmail = userData.Email || localStorage.getItem("Email");
+
+      // Check if more than 10 images are selected
+      if (selectedImages.length > 10) {
+        alert("You can only upload up to 10 images.");
+        return; // Stop submission if more than 10 images are selected
+      }
+
+      // Upload images to Firebase Storage and get download URLs
+      const imageUrls = await Promise.all(
+        selectedImages.map(async (image, index) => {
+          try {
+            const storageRef = ref(
+              storage,
+              `reviews/${userID}_${currentDate.getTime()}_${index}`
+            ); // Create a unique reference for each image
+            const snapshot = await uploadBytes(storageRef, image.file); // Upload the image file to Firebase Storage
+            const downloadURL = await getDownloadURL(snapshot.ref); // Get the download URL of the uploaded image
+            return downloadURL; // Return the download URL for storing in Firestore
+          } catch (uploadError) {
+            console.error("Error uploading image:", uploadError);
+            throw uploadError;
+          }
+        })
+      );
+
+      // Create the new review object with fetched user data
+      const newReview = {
+        Comment: comment,
+        Rating: rating,
+        date: currentDate.toISOString(),
+        images: imageUrls, // Store only the URLs of the uploaded images
+        UserID: userID,
+        UserEmail: userEmail,
+        UserName: userName,
+        UserSurname: userSurname,
+      };
+
+      // Ensure we have a valid event ID before submitting the review
+      if (!currentEventObject || !currentEventObject.id) {
+        throw new Error("Invalid event data");
+      }
+
+      const eventRef = doc(db, "events", currentEventObject.id);
+      await updateDoc(eventRef, {
+        Reviews: arrayUnion(newReview), // Add the new review to the existing reviews array
+      });
+
+      // Reset the form and state after submission
+      setComment("");
+      setRating(0);
+      setSelectedImages([]);
+      setOpenDialog(false);
+
+      setCurrentEventObject((prevEvent) => ({
+        ...prevEvent,
+        Reviews: [...(prevEvent.Reviews || []), newReview],
+      }));
+
+      alert("Review submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      alert(`Error submitting review: ${error.message}`);
+    }
+  };
+
+  // Ensure users can only select up to 10 images
+  const handleImageSelection = (event) => {
+    const selectedFiles = Array.from(event.target.files);
+
+    // Check if adding new images exceeds the limit
+    if (selectedImages.length + selectedFiles.length > 10) {
+      alert("You can only upload up to 10 images.");
+      return; // Do not add images if the limit is exceeded
+    }
+
+    // Update the selected images state
+    setSelectedImages((prevImages) => [
+      ...prevImages,
+      ...selectedFiles.map((file) => ({ file })),
+    ]);
   };
 
   return (
@@ -712,26 +826,92 @@ export default function CommunityPage({ params }) {
 
               {currentEventObject && currentEventObject.Reviews ? (
                 <ul className="list-none p-0">
-                  {currentEventObject.Reviews.map((review, index) => (
-                    <li
-                      className="bg-gray-200 p-4 mb-4 rounded flex items-center"
-                      key={index}
-                    >
-                      <div className="flex-1">
-                        <Typography variant="body1">
-                          {review.Comment}
+                  {currentEventObject.Reviews.map((review, index) => {
+                    // Get user initials for the profile icon
+                    const userInitials = `${review.UserName?.[0] || ""}${
+                      review.UserSurname?.[0] || ""
+                    }`.toUpperCase();
+
+                    return (
+                      <li
+                        className="bg-gray-200 p-4 mb-4 rounded flex flex-col justify-between relative" // Added relative for positioning
+                        key={index}
+                      >
+                        <div className="flex items-center mb-4">
+                          {/* Profile icon with initials */}
+                          <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center mr-3">
+                            <span className="text-lg font-semibold">
+                              {userInitials}
+                            </span>
+                          </div>
+
+                          {/* User name and surname */}
+                          <Typography variant="body2" className="font-semibold">
+                            {review.UserName} {review.UserSurname}
+                          </Typography>
+                        </div>
+
+                        <div className="flex-1">
+                          <div className="flex items-center mb-2">
+                            <Rating
+                              name={`rating-${index}`}
+                              value={review.Rating}
+                              readOnly
+                              precision={0.5}
+                            />
+                          </div>
+                          <Typography variant="body1">
+                            {review.Comment}
+                          </Typography>
+
+                          {/* Position the date in the top right corner */}
+                          <Typography
+                            variant="body2"
+                            className="text-gray-600 text-sm absolute top-0 right-0"
+                          >
+                            {new Date(review.date).toLocaleDateString()}{" "}
+                          </Typography>
+
+                          {/* Displaying images if available */}
+                          {review.images && review.images.length > 0 && (
+                            <div className="mt-2 flex">
+                              {review.images
+                                .slice(0, 4)
+                                .map((imageUrl, imgIndex) => (
+                                  <img
+                                    key={imgIndex}
+                                    src={imageUrl}
+                                    alt={`Review image ${imgIndex + 1}`}
+                                    className="w-24 h-24 object-cover rounded mt-2 mr-2"
+                                  />
+                                ))}
+
+                              {review.images.length > 4 && (
+                                <div className="relative w-24 h-24 mt-2 mr-2">
+                                  <img
+                                    src={review.images[4]} // The 5th image
+                                    alt="More images"
+                                    className="w-full h-full object-cover rounded blur-sm"
+                                  />
+                                  <span className="absolute inset-0 flex items-center justify-center text-white bg-black bg-opacity-50 rounded">
+                                    + {review.images.length - 4} more
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Position the email in the bottom right corner */}
+                        <Typography
+                          variant="body2"
+                          className="text-gray-600 text-sm absolute bottom-0 right-0"
+                        >
+                          {review.UserEmail}
                         </Typography>
-                      </div>
-                      <div className="flex items-center ml-4">
-                        <Rating
-                          name={`rating-${index}`}
-                          value={review.Rating}
-                          readOnly
-                          precision={0.5}
-                        />
-                      </div>
-                    </li>
-                  ))}
+                      </li>
+                    );
+                  })}
                 </ul>
               ) : (
                 <Typography variant="body1">No reviews available.</Typography>
@@ -757,6 +937,47 @@ export default function CommunityPage({ params }) {
                   value={rating}
                   onChange={(e, newValue) => setRating(newValue)}
                 />
+              </div>
+              {/* Image Upload Section */}
+              <div className="mt-4">
+                <Typography variant="body1">Upload Images</Typography>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleImageUpload}
+                  className="mt-2"
+                />
+                {selectedImages.length > 0 && (
+                  <div className="mt-2">
+                    <Typography variant="body2">
+                      {selectedImages.length} image(s) selected
+                    </Typography>
+                    <div className="flex flex-wrap mt-2">
+                      {selectedImages.map((image, index) => (
+                        <div key={index} className="relative m-1">
+                          <img
+                            src={URL.createObjectURL(image.file)}
+                            alt={image.name}
+                            className="w-20 h-20 object-cover"
+                          />
+                          <Typography
+                            variant="caption"
+                            className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-center"
+                          >
+                            {image.name}
+                          </Typography>
+                          <button
+                            onClick={() => handleImageDeselect(index)}
+                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               <Button
                 variant="contained"

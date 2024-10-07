@@ -54,12 +54,19 @@ export default class UserDB {
         return null;
       }
 
-      return userDoc.data();
+      const userData = userDoc.data();
+      console.log("User data retrieved:", userData); // Add this line for logging
+      return {
+        Name: userData.Name,
+        Surname: userData.Surname,
+        Email: userData.Email,
+      };
     } catch (e) {
       console.error("Error getting user data: ", e);
       alert("Error getting user data.");
     }
   };
+
   static getAllUsers = async () => {
     try {
       const usersCollection = collection(DB, "users");

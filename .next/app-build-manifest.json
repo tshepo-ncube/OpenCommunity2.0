@@ -1,5 +1,13 @@
 {
   "pages": {
+<<<<<<< HEAD
+=======
+    "/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/page.js"
+    ],
+>>>>>>> comment_and_review
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -16,6 +24,7 @@
       "static/chunks/main-app.js",
       "static/css/app/Home/community/[id]/page.css",
       "static/chunks/app/Home/community/[id]/page.js"
+<<<<<<< HEAD
     ],
     "/admin/page": [
       "static/chunks/webpack.js",
@@ -26,6 +35,8 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
+=======
+>>>>>>> comment_and_review
     ]
   }
 }
