@@ -20,6 +20,16 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/admin/Dashboard/[id]/page.js"
+    ],
+    "/image_gen/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/image_gen/page.js"
+    ],
+    "/more/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/more/page.js"
     ]
   }
 }
