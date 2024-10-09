@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Autocomplete from "react-google-autocomplete";
 import CommunityDB from "@/database/community/community";
 import Snackbar from "@mui/material/Snackbar";
@@ -17,17 +17,20 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import axios from "axios";
 
-const createEvent = (eventDetails, communityID) => {
-  EventDB.createEvent({
-    Name: eventDetails.eventName,
-    StartDate: new Date(eventDetails.startDateTime),
-    EndDate: new Date(eventDetails.endDateTime),
-    RsvpEndTime: new Date(eventDetails.rsvpEndDateTime),
-    EventDescription: eventDetails.description,
-    Location: eventDetails.location,
-    CommunityID: communityID,
-    status: eventDetails.status,
-  });
+const createEvent = (eventDetails, communityID, selectedImages) => {
+  EventDB.createEvent(
+    {
+      Name: eventDetails.eventName,
+      StartDate: new Date(eventDetails.startDateTime),
+      EndDate: new Date(eventDetails.endDateTime),
+      RsvpEndTime: new Date(eventDetails.rsvpEndDateTime),
+      EventDescription: eventDetails.description,
+      Location: eventDetails.location,
+      CommunityID: communityID,
+      status: eventDetails.status,
+    },
+    selectedImages
+  );
 };
 
 const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
@@ -41,6 +44,45 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     status: "active",
   });
 
+  const [selectedImages, setSelectedImages] = useState([]);
+
+  // Function to handle image selection
+  // const handleImageChange = (e) => {
+  //   const files = Array.from(e.target.files); // Convert FileList to an array
+  //   setSelectedImages(files);
+  // };
+
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+
+    // Check if the total selected images exceed the limit
+    if (files.length + selectedImages.length > 5) {
+      alert(`You can only upload up to 5 images.`);
+      return; // Stop the function if limit is exceeded
+    }
+
+    setSelectedImages((prevImages) => [...prevImages, ...files]);
+  };
+
+  useEffect(() => {
+    console.log("Selected images :", selectedImages);
+  }, [selectedImages]);
+
+  // Function to render image previews
+  const renderPreviews = () => {
+    return selectedImages.map((image, index) => {
+      return (
+        <div key={index} className="relative m-2 w-24 h-24">
+          <img
+            src={URL.createObjectURL(image)}
+            alt={`preview-${index}`}
+            className="w-full h-full object-cover rounded-lg shadow-md"
+          />
+        </div>
+      );
+    });
+  };
+
   const handleChangeEvent = (e) => {
     const { name, value } = e.target;
     setEventDetails((prevDetails) => ({
@@ -51,7 +93,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
 
   const handleSubmitEvent = (e) => {
     e.preventDefault();
-    onSubmit(eventDetails);
+    onSubmit(eventDetails, selectedImages);
     onClose();
   };
 
@@ -103,7 +145,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   };
 
   return (
-    <>
+    <div className="">
       {isOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-20 z-10"></div>
       )}
@@ -114,11 +156,11 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
       >
         <button
           onClick={onClose}
-          className="absolute p-2 top-2 right-2 text-gray-500 hover:text-gray-700"
+          className="max-h-full overflow-y-auto absolute p-2 top-2 right-2 text-gray-500 hover:text-gray-700"
         >
           <IoMdClose size={25} />
         </button>
-        <form className="space-y-4">
+        <form className="space-y-4 h-160 max-h-110 overflow-y-auto">
           <div>
             <label
               htmlFor="eventName"
@@ -223,6 +265,51 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               required
             />
           </div>
+
+          <div class="flex items-center justify-center w-full">
+            <label
+              for="dropzone-file"
+              class="flex flex-col items-center justify-center w-full h-20 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+            >
+              <div class="flex flex-col items-center justify-center">
+                <svg
+                  class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 16"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                  />
+                </svg>
+                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                  <span class="font-semibold">Click to upload images</span> or
+                  drag and drop
+                </p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                  SVG, PNG, JPG or GIF (MAX. 800x400px)
+                </p>
+              </div>
+              <input
+                id="dropzone-file"
+                type="file"
+                class="hidden"
+                accept="image/*"
+                multiple
+                onChange={handleImageChange}
+              />
+            </label>
+          </div>
+
+          <div className="flex flex-col items-center ">
+            <div className="mt-6 flex flex-wrap ">{renderPreviews()}</div>
+          </div>
+
           <div>
             <label
               htmlFor="description"
@@ -265,7 +352,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
           </div>
         </form>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -527,6 +614,8 @@ export default function CommunityPage({ params }) {
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
   const [currentView, setCurrentView] = useState("infoManagement");
   const [users, setUsers] = useState([]);
+  const [eventImages, setEventImages] = useState(null);
+  const fileInputRef = useRef(null);
 
   const handleSnackbarClick = () => {
     setOpenSnackbar(true);
@@ -556,8 +645,8 @@ export default function CommunityPage({ params }) {
     });
   };
 
-  const handleEventSubmit = (eventDetails) => {
-    createEvent(eventDetails, params.id);
+  const handleEventSubmit = (eventDetails, selectedImages) => {
+    createEvent(eventDetails, params.id, selectedImages);
   };
 
   const handleEditEventSubmit = (eventDetails) => {

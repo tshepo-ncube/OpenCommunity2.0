@@ -119,22 +119,94 @@ export default class EventDB {
     }
   };
 
-  static createEvent = async (eventObject) => {
+  static createEvent = async (eventObject, selectedImages) => {
+    const eventImages = await EventDB.uploadEventImages(selectedImages);
     const eventWithStatus = {
       ...eventObject,
       status: eventObject.status || "active",
+      EventImages: eventImages,
     };
 
     try {
       const eventRef = await addDoc(collection(DB, "events"), eventWithStatus);
       console.log("Document ID: ", eventRef.id);
 
-      eventScheduler(eventRef.id);
-      pollScheduler(eventRef.id);
+      // eventScheduler(eventRef.id);
+      // pollScheduler(eventRef.id);
     } catch (e) {
       console.error("Error adding document:", e);
       throw e;
     }
+  };
+
+  // static uploadEventImages = async (eventID, imagesList) => {
+  //   const storageRef = ref(StorageDB, `images/events/${eventID}/`);
+  //   try {
+  //     // Upload the file
+  //     const snapshot = await uploadBytes(storageRef, image);
+
+  //     // Get the download URL
+  //     const downloadURL = await getDownloadURL(snapshot.ref);
+
+  //     console.log("File available at", downloadURL);
+  //     return downloadURL;
+  //   } catch (err) {
+  //     // setError(Failed to upload image: ${err.message});
+  //     return "no image was saved to firebase";
+  //   }
+  // };
+
+  static uploadEventImages = async (images) => {
+    // Array to store the download URLs
+    const downloadURLs = [];
+
+    for (let i = 0; i < images.length; i++) {
+      const image = images[i];
+
+      // Create a unique reference for each image
+      const storageRef = ref(StorageDB, `images/events/${image.name}`);
+
+      try {
+        // Upload the file
+        const snapshot = await uploadBytes(storageRef, image);
+
+        // Get the download URL
+        const downloadURL = await getDownloadURL(snapshot.ref);
+
+        console.log(`File ${i + 1} available at`, downloadURL);
+
+        // Add the download URL to the array
+        downloadURLs.push(downloadURL);
+      } catch (err) {
+        console.error(`Failed to upload image ${image.name}:`, err);
+        downloadURLs.push("Failed to upload");
+      }
+    }
+
+    // Return the array of download URLs (or errors)
+    return downloadURLs;
+  };
+
+  static createCommunity = async (item, image, setCommunities, setLoading) => {
+    setLoading(true);
+    const communityURL = await CommunityDB.uploadCommunityImage(image);
+    const object = {
+      users: [],
+      name: item.name,
+      description: item.description,
+      category: item.category,
+      status: item.status || "active", // Include status field with default value "active"
+      communityImage: communityURL,
+    };
+    try {
+      const docRef = await addDoc(collection(DB, "communities"), object);
+      console.log("Document ID: ", docRef.id);
+    } catch (e) {
+      console.log("Error adding document: ", e);
+    }
+
+    await this.getAllCommunities(setCommunities, setLoading); // Wait for communities to be fetched
+    setLoading(false);
   };
 
   // static editEvent = async (eventID, eventObject) => {
