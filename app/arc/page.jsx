@@ -39,7 +39,9 @@ function CommunityScoreChecker() {
         // Update lastCheck to current date after checking the score
         const today = new Date();
         await updateDoc(communityRef, { lastCheck: today });
+
         console.log("Community Score checked and lastCheck updated to:", today);
+        return score;
       } else {
         console.error("No such document for community:", communityID);
       }
@@ -100,7 +102,13 @@ function CommunityScoreChecker() {
         const shouldCheck = await shouldCheckScore(communityID);
         if (shouldCheck) {
           console.log("I should check");
-          await checkCommunityScore(communityID); // Perform score check and update lastCheck
+          const score = await checkCommunityScore(communityID); // Perform score check and update lastCheck
+
+          console.log("Score: ", score);
+
+          if (score < 15) {
+            setIsOpen(true);
+          }
         } else {
           console.log("no need to check");
         }

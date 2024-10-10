@@ -11,7 +11,8 @@
     "scheduleEventStartReminder": "http://localhost:8080/scheduleEventStartReminder",
     "scheduleEventEndReminder": "http://localhost:8080/scheduleEventEndReminder",
     "remindUsersOfNewPoll": "http://localhost:8080/remindUsersOfNewPoll",
-    "schedulePollEndReminder": "http://localhost:8080/schedulePollEndReminder"
+    "schedulePollEndReminder": "http://localhost:8080/schedulePollEndReminder",
+    "notifyMembersOfInactiveCommunity": "http://localhost:8080/notifyMembersOfInactiveCommunity"
   },
 
   "button": {
