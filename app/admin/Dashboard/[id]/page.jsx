@@ -7,6 +7,8 @@ import Alert from "@mui/material/Alert";
 import { IoMdClose } from "react-icons/io";
 import Chatbot from "../../../../_Components/Chatbot";
 import strings from "../../../../Utils/strings.json";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import DB from "../../../../database/DB";
 import Header from "../../../../_Components/header";
 import EventsHolder from "../../../../_Components/EventsHolder";
 import PollsHolder from "../../../../_Components/PollsHolder";
@@ -18,9 +20,6 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import axios from "axios";
 import OpenAI from "openai";
-
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import DB from "../../../../database/DB"; // Make sure to import your Firebase config
 
 const openai = new OpenAI({
   apiKey:
