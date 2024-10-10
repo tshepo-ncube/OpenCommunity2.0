@@ -25,6 +25,7 @@ import {
   notifyRsvpdUsersOfEventChange,
   notifyCommunityOfEventChange,
 } from "../../Utils/Notification/notification";
+import CommunityDB from "./community";
 
 export default class EventDB {
   static convertToFirebaseTimestamp = (dateString) => {

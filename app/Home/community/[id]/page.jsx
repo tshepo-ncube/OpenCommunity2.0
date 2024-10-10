@@ -21,6 +21,8 @@ import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
+import CommunityDB from "@/database/community/community";
+
 import strings from "../../../../Utils/strings.json";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
@@ -141,6 +143,19 @@ export default function CommunityPage({ params }) {
       fetchCommunity();
       PollDB.getPollFromCommunityIDForUser(id, setAllPolls);
       EventDB.getEventFromCommunityID(id, setAllEvents);
+
+      try {
+        console.log(
+          CommunityDB.getAllCommunities(
+            () => {},
+            () => {}
+          )
+        );
+        console.log("got communities");
+      } catch (err) {
+        console.log("an error");
+        console.log("error geting communities - ", err);
+      }
     }
   }, [id]);
 
@@ -246,6 +261,7 @@ export default function CommunityPage({ params }) {
       .then(() => {
         setPollsUpdated(false);
         PollDB.getPollFromCommunityIDForUser(id, setAllPolls);
+        CommunityDB.incrementCommunityScore(params.id, 1);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -302,6 +318,21 @@ export default function CommunityPage({ params }) {
 
     try {
       await EventDB.addRSVP(event.id, localStorage.getItem("Email"));
+      // await CommunityDB.incrementCommunityScore(params.id, 1);
+      console.log("CommunityDB: ", CommunityDB);
+      console.log("About to test");
+
+      try {
+        // await CommunityDB.incrementCommunityScore(id, 1);
+        CommunityDB.getAllCommunities(
+          () => {},
+          () => {}
+        );
+        console.log("got communities");
+      } catch (err) {
+        console.log("an error");
+        console.log("RSVP - ", err);
+      }
       setRsvpState((prev) => ({ ...prev, [event.id]: true }));
 
       let subject = `${event.Name} Meeting Invite`;
@@ -484,6 +515,13 @@ export default function CommunityPage({ params }) {
       }));
 
       alert("Review submitted successfully!");
+      // await CommunityDB.incrementCommunityScore(id, 1);
+
+      try {
+        CommunityDB.incrementCommunityScore(id, 1);
+      } catch (err) {
+        console.log(err);
+      }
     } catch (error) {
       console.error("Error submitting review:", error);
       alert(`Error submitting review: ${error.message}`);
