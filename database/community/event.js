@@ -119,8 +119,56 @@ export default class EventDB {
     }
   };
 
-  static createEvent = async (eventObject, selectedImages) => {
-    const eventImages = await EventDB.uploadEventImages(selectedImages);
+  static createEvent = async (eventObject, selectedImage) => {
+    if (variable instanceof File) {
+      // The variable is a File
+      console.log("event imag is a file");
+      const eventImage = await EventDB.uploadEventImage(selectedImage);
+
+      const eventWithStatus = {
+        ...eventObject,
+        status: eventObject.status || "active",
+        EventImages: eventImage,
+      };
+
+      try {
+        const eventRef = await addDoc(
+          collection(DB, "events"),
+          eventWithStatus
+        );
+        console.log("Document ID: ", eventRef.id);
+
+        // eventScheduler(eventRef.id);
+        // pollScheduler(eventRef.id);
+      } catch (e) {
+        console.error("Error adding document:", e);
+        throw e;
+      }
+    } else {
+      // The variable is not a File
+      console.log("Event Image is AI gen");
+
+      const eventWithStatus = {
+        ...eventObject,
+        status: eventObject.status || "active",
+        EventImages: selectedImages,
+      };
+
+      try {
+        const eventRef = await addDoc(
+          collection(DB, "events"),
+          eventWithStatus
+        );
+        console.log("Document ID: ", eventRef.id);
+
+        // eventScheduler(eventRef.id);
+        // pollScheduler(eventRef.id);
+      } catch (e) {
+        console.error("Error adding document:", e);
+        throw e;
+      }
+    }
+
     const eventWithStatus = {
       ...eventObject,
       status: eventObject.status || "active",
@@ -156,35 +204,32 @@ export default class EventDB {
   //   }
   // };
 
-  static uploadEventImages = async (images) => {
+  static uploadEventImage = async (image) => {
     // Array to store the download URLs
-    const downloadURLs = [];
+    var downloadURL = "";
 
-    for (let i = 0; i < images.length; i++) {
-      const image = images[i];
+    // Create a unique reference for each image
+    const storageRef = ref(StorageDB, `images/events/${image.name}`);
 
-      // Create a unique reference for each image
-      const storageRef = ref(StorageDB, `images/events/${image.name}`);
+    try {
+      // Upload the file
+      const snapshot = await uploadBytes(storageRef, image);
 
-      try {
-        // Upload the file
-        const snapshot = await uploadBytes(storageRef, image);
+      // Get the download URL
+      const url = await getDownloadURL(snapshot.ref);
 
-        // Get the download URL
-        const downloadURL = await getDownloadURL(snapshot.ref);
+      console.log(`Event Image available at`, url);
 
-        console.log(`File ${i + 1} available at`, downloadURL);
-
-        // Add the download URL to the array
-        downloadURLs.push(downloadURL);
-      } catch (err) {
-        console.error(`Failed to upload image ${image.name}:`, err);
-        downloadURLs.push("Failed to upload");
-      }
+      // Add the download URL to the array
+      downloadURL = url;
+    } catch (err) {
+      console.error(`Failed to upload image ${image.name}:`, err);
+      //downloadURLs.push("Failed to upload");
+      downloadURL = "Failed to upload";
     }
 
     // Return the array of download URLs (or errors)
-    return downloadURLs;
+    return downloadURL;
   };
 
   static createCommunity = async (item, image, setCommunities, setLoading) => {

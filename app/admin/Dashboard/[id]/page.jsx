@@ -12,6 +12,7 @@ import EventsHolder from "../../../../_Components/EventsHolder";
 import PollsHolder from "../../../../_Components/PollsHolder";
 import EventDB from "@/database/community/event";
 import Box from "@mui/material/Box";
+import { ThreeDots } from "react-loader-spinner";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
@@ -23,7 +24,7 @@ const openai = new OpenAI({
     "sk-bpVg50afhh0TSnh3EgewxTyiUgN_5ZiJc8iMx5QqI2T3BlbkFJrTZEo-YBWqDSMnfFbHYtJAn8RgktF9INtMjGjUVwYA",
   dangerouslyAllowBrowser: true,
 });
-const MAX_KEEP_IMAGES = 3;
+const MAX_KEEP_IMAGES = 1;
 
 const createEvent = (eventDetails, communityID, selectedImages) => {
   EventDB.createEvent(
@@ -65,6 +66,12 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   const [loading, setLoading] = useState(false); // Handle loading state
   const [error, setError] = useState(null); // Handle errors
 
+  const [eventImage, setEventImage] = useState(null);
+
+  useEffect(() => {
+    console.log("Kept Images : ", eventImage);
+  }, [eventImage]);
+
   // Function to generate 3 new images
   const generateImages = async () => {
     if (eventDetails.description === "") {
@@ -101,7 +108,34 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
 
     if (!keptImages.includes(url)) {
       setKeptImages((prevKeptImages) => [...prevKeptImages, url]);
+      setEventImage(url);
     }
+  };
+
+  // Function to render the image
+  const renderImage = () => {
+    if (!eventImage) return null; // No image to show
+
+    // Check if eventImage is a File object
+    if (eventImage instanceof File) {
+      // Create a temporary URL for the image file to display it
+      return (
+        <img
+          src={URL.createObjectURL(eventImage)}
+          alt="Selected Image"
+          className="mt-3 max-w-full h-auto"
+        />
+      );
+    }
+
+    // If eventImage is a URL, display it directly
+    return (
+      <img
+        src={eventImage}
+        alt="Event Image"
+        className="mt-3 max-w-full h-auto"
+      />
+    );
   };
 
   useEffect(() => {
@@ -120,15 +154,24 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   };
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
+    // const files = Array.from(e.target.files);
 
     // Check if the total selected images exceed the limit
-    if (files.length + selectedImages.length > 5) {
-      alert(`You can only upload up to 5 images.`);
-      return; // Stop the function if limit is exceeded
-    }
+    // if (files.length + selectedImages.length > 5) {
+    //   alert(`You can only upload up to 5 images.`);
+    //   return; // Stop the function if limit is exceeded
+    // }
 
-    setSelectedImages((prevImages) => [...prevImages, ...files]);
+    // setSelectedImages((prevImages) => [...prevImages, ...files]);
+    // setEventImage(e.target.files);
+
+    const file = e.target.files[0]; // Get the first selected file (only one since 'multiple' is not used)
+    if (file) {
+      console.log("Got a file.");
+      setEventImage(file); // Save the file to the state
+    } else {
+      console.log("It aint a file.");
+    }
   };
 
   useEffect(() => {
@@ -160,7 +203,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
 
   const handleSubmitEvent = (e) => {
     e.preventDefault();
-    onSubmit(eventDetails, selectedImages);
+    onSubmit(eventDetails, eventImage);
     onClose();
   };
 
@@ -265,6 +308,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 required
               />
             </div>
+
             <div className="flex-1">
               <label
                 htmlFor="endDateTime"
@@ -367,7 +411,6 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 type="file"
                 class="hidden"
                 accept="image/*"
-                multiple
                 onChange={handleImageChange}
               />
             </label>
@@ -383,17 +426,34 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-300 mb-4"
               disabled={loading}
             >
-              {loading ? "Generating..." : "Generate Images"}
+              {loading ? (
+                <>
+                  <ThreeDots
+                    visible={true}
+                    height="20"
+                    width="40"
+                    color="#bcd727"
+                    radius="9"
+                    ariaLabel="three-dots-loading"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                  />
+                </>
+              ) : (
+                "Generate Images"
+              )}
             </button>
 
             {error && <p className="text-red-500 mb-4">{error}</p>}
+
+            {renderImage()}
             {/* Show Kept Images */}
             {keptImages.length > 0 && (
               <div className="flex flex-wrap justify-center mt-4">
-                <h3 className="text-lg font-bold mb-2 w-full text-center">
+                {/* <h3 className="text-lg font-bold mb-2 w-full text-center">
                   Kept Images ({keptImages.length}/{MAX_KEEP_IMAGES})
-                </h3>
-                {keptImages.map((imageUrl, index) => (
+                </h3> */}
+                {/* {keptImages.map((imageUrl, index) => (
                   <div key={index} className="m-2 w-32 h-32">
                     <img
                       src={imageUrl}
@@ -401,7 +461,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                       className="w-full h-full object-cover rounded-lg shadow-lg"
                     />
                   </div>
-                ))}
+                ))} */}
               </div>
             )}
 

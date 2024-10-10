@@ -70,6 +70,63 @@ const DallEImageGenerator = () => {
       </button>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
+
+      {/* Show Kept Images */}
+      {keptImages.length > 0 && (
+        <div className="flex flex-wrap justify-center mt-4">
+          <h3 className="text-lg font-bold mb-2 w-full text-center">
+            Kept Images ({keptImages.length}/{MAX_KEEP_IMAGES})
+          </h3>
+          {keptImages.map((imageUrl, index) => (
+            <div key={index} className="m-2 w-32 h-32">
+              <img
+                src={imageUrl}
+                alt={`kept-${index}`}
+                className="w-full h-full object-cover rounded-lg shadow-lg"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Generated Images */}
+      {generatedImages.length > 0 && (
+        <div className="flex flex-wrap justify-center mt-4">
+          <h3 className="text-lg font-bold mb-2 w-full text-center">
+            Generated Images
+          </h3>
+          {generatedImages.map((imageUrl, index) => (
+            <div key={index} className="relative m-2 w-64 h-64">
+              <img
+                src={imageUrl}
+                alt={`generated-${index}`}
+                className="w-full h-full object-cover rounded-lg shadow-lg"
+              />
+              <button
+                onClick={() => keepImage(imageUrl)}
+                className="absolute bottom-2 left-2 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
+              >
+                Keep
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Regenerate Button */}
+      {generatedImages.length > 0 && keptImages.length < MAX_KEEP_IMAGES && (
+        <button
+          onClick={regenerateImages}
+          className="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600 transition duration-300 mt-4"
+          disabled={loading}
+        >
+          {loading ? "Regenerating..." : "Regenerate Images"}
+        </button>
+      )}
+
+      <p className="text-sm text-gray-500 mt-4">
+        You can keep a maximum of {MAX_KEEP_IMAGES} images.
+      </p>
     </div>
   );
 };
