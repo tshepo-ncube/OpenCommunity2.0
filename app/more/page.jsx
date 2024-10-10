@@ -213,10 +213,14 @@ function CommunityScoreChecker() {
   useEffect(() => {
     console.log("About to check");
     const checkIfNeeded = async () => {
-      if (isFirstOfMonth()) {
+      if (!isFirstOfMonth()) {
         const shouldCheck = await shouldCheckScore(communityID);
+
         if (shouldCheck) {
+          console.log("Should Check is true");
           await checkCommunityScore(communityID); // Perform score check and update lastCheck
+        } else {
+          console.log("Should Check is false");
         }
       } else {
         console.log("its not the first of the month");
