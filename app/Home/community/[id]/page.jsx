@@ -143,19 +143,6 @@ export default function CommunityPage({ params }) {
       fetchCommunity();
       PollDB.getPollFromCommunityIDForUser(id, setAllPolls);
       EventDB.getEventFromCommunityID(id, setAllEvents);
-
-      try {
-        console.log(
-          CommunityDB.getAllCommunities(
-            () => {},
-            () => {}
-          )
-        );
-        console.log("got communities");
-      } catch (err) {
-        console.log("an error");
-        console.log("error geting communities - ", err);
-      }
     }
   }, [id]);
 
@@ -317,22 +304,10 @@ export default function CommunityPage({ params }) {
     if (typeof window === "undefined") return;
 
     try {
-      await EventDB.addRSVP(event.id, localStorage.getItem("Email"));
-      // await CommunityDB.incrementCommunityScore(params.id, 1);
-      console.log("CommunityDB: ", CommunityDB);
-      console.log("About to test");
+      // await EventDB.addRSVP(event.id, localStorage.getItem("Email"));
+      console.log("id ", id);
+      await CommunityDB.incrementCommunityScore(id, 1);
 
-      try {
-        // await CommunityDB.incrementCommunityScore(id, 1);
-        CommunityDB.getAllCommunities(
-          () => {},
-          () => {}
-        );
-        console.log("got communities");
-      } catch (err) {
-        console.log("an error");
-        console.log("RSVP - ", err);
-      }
       setRsvpState((prev) => ({ ...prev, [event.id]: true }));
 
       let subject = `${event.Name} Meeting Invite`;
@@ -356,7 +331,6 @@ export default function CommunityPage({ params }) {
         let data = res.data;
       } catch (err) {
         console.log(err);
-        console.log("error");
       }
     } catch (error) {
       console.error("Error RSVPing:", error);
@@ -515,13 +489,13 @@ export default function CommunityPage({ params }) {
       }));
 
       alert("Review submitted successfully!");
-      // await CommunityDB.incrementCommunityScore(id, 1);
+      await CommunityDB.incrementCommunityScore(id, 1);
 
-      try {
-        CommunityDB.incrementCommunityScore(id, 1);
-      } catch (err) {
-        console.log(err);
-      }
+      // try {
+      //   CommunityDB.incrementCommunityScore(id, 1);
+      // } catch (err) {
+      //   console.log(err);
+      // }
     } catch (error) {
       console.error("Error submitting review:", error);
       alert(`Error submitting review: ${error.message}`);
