@@ -32,6 +32,7 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
+import CommunityDB from "@/database/community/community";
 
 // Custom styles
 const CustomTab = styled(Tab)({
@@ -78,6 +79,8 @@ function Home() {
     CommunitiesJoined: [],
   });
 
+  const [hottestCommunity, setHottestCommunity] = useState(null);
+
   const [activeTab, setActiveTab] = useState("My Communities");
 
   const handleTabClick = (tab) => {
@@ -104,6 +107,10 @@ function Home() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    console.log("Hottest Community :", hottestCommunity);
+  }, [hottestCommunity]);
 
   // Function to generate consistent color based on category
   const stringToColor = (category) => {
@@ -135,6 +142,8 @@ function Home() {
     console.log(
       "------------------------------------------------------------------------------------"
     );
+
+    CommunityDB.getHottestCommunity(setHottestCommunity);
 
     ManageUser.addUserToGlobalIfNotThere("m.be@outlook.com");
   }, []);

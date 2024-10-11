@@ -249,6 +249,39 @@ export default class CommunityDB {
     setLoading(false);
   };
 
+  static getHottestCommunity = async (setHotCommunity) => {
+    let hottestCommunity = null;
+
+    try {
+      const querySnapshot = await getDocs(collection(DB, "communities"));
+
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+
+        // Assign a score of 0 if the community has no score field
+        const community = {
+          id: doc.id,
+          name: data.name,
+          description: data.description,
+          category: data.category,
+          status: data.status, // Include status in the fetched data
+          communityImage: data.communityImage,
+          score: data.score || 0, // Assign 0 if score is undefined or null
+        };
+
+        // Compare score and track the community with the highest score
+        if (!hottestCommunity || community.score > hottestCommunity.score) {
+          hottestCommunity = community;
+        }
+      });
+
+      // Set the hottest community (the one with the highest score)
+      setHotCommunity(hottestCommunity);
+    } catch (e) {
+      console.error("Error fetching communities: ", e);
+    }
+  };
+
   static joinCommunity = async (CommunityData) => {
     if (typeof window === "undefined") return;
 

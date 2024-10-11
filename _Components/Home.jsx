@@ -1,6 +1,8 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+
+import CommunityDB from "@/database/community/community";
 
 // utils/analytics.js
 
@@ -16,17 +18,38 @@ import Link from "next/link";
 // import ReactGA from 'react-ga';
 
 const Home = () => {
+  const [hottestCommunity, setHottestCommunity] = useState(null);
+
+  useEffect(() => {
+    //Adding points
+
+    CommunityDB.getHottestCommunity(setHottestCommunity);
+  }, []);
+
+  useEffect(() => {
+    //Adding points
+
+    console.log("Hottest Community : ", hottestCommunity);
+  }, [hottestCommunity]);
+
   return (
     <div
       style={{ marginTop: -50 }}
       className="bg-black-500 min-h-screen mb-18 "
     >
       {/* Hero Section */}
+      {/* // `url('${hottestCommunity.communityImage}')`, */}
+      {/* https://images.unsplash.com/photo-1434648957308-5e6a859697e8?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
+       */}
+
       <div
         className="relative text-white py-20 h-screen grid place-items-center"
         style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1434648957308-5e6a859697e8?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+          backgroundImage: `url('${
+            hottestCommunity.communityImage
+              ? hottestCommunity.communityImage
+              : "https://images.unsplash.com/photo-1434648957308-5e6a859697e8?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          }')`,
           backgroundSize: "cover",
         }}
       >
