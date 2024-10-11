@@ -8,6 +8,20 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: [
+          "ui-sans-serif",
+          "system-ui",
+          "Helvetica",
+          "Arial",
+          "sans-serif",
+        ],
+        helvetica: ["Helvetica", "Arial", "sans-serif"], // Add Helvetica
+        serif: ["ui-serif", "Georgia"],
+        mono: ["ui-monospace", "SFMono-Regular"],
+        display: ["Oswald"],
+        body: ['"Open Sans"'],
+      },
       animation: {
         "infinite-scroll": "infinite-scroll 125s linear infinite",
       },
