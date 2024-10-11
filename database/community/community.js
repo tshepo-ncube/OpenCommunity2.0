@@ -8,6 +8,7 @@ import {
   deleteDoc,
   getDocs,
   getDoc,
+  runTransaction,
 } from "firebase/firestore";
 import ManageUser from "../auth/ManageUser";
 import UserDB from "./users";
@@ -15,6 +16,51 @@ import StorageDB from "../StorageDB";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default class CommunityDB {
+  static testFunction = () => {
+    console.log("----------------------------------------------");
+    console.log("Test function works!");
+    console.log("----------------------------------------------");
+  };
+  static incrementCommunityScore = async (communityID, incrementValue) => {
+    console.log("starting transaction soon...");
+    if (typeof window === "undefined") return;
+    try {
+      const communityRef = doc(DB, "communities", communityID); // Reference to the community document
+      console.log("CommunityRef:", communityRef);
+
+      console.log("got ref");
+
+      // Start a transaction
+      await runTransaction(DB, async (transaction) => {
+        console.log("run transaction ref");
+        // Get the current data of the document
+        const docSnapshot = await transaction.get(communityRef);
+
+        // Check if the document exists
+        if (!docSnapshot.exists()) {
+          throw new Error("Community document does not exist!");
+        }
+
+        const CommunityData = docSnapshot.data();
+
+        // Create a copy of the current community data
+        const newCommunityData = { ...CommunityData };
+
+        // Ensure that a score field exists in the document, default to 0 if not present
+        const currentScore = newCommunityData.score || 0;
+
+        // Increment the community score by the provided increment value
+        newCommunityData.score = currentScore + incrementValue;
+
+        // Update the document with the new community data and incremented score
+        transaction.update(communityRef, { score: newCommunityData.score });
+      });
+
+      console.log("Community Score incremented successfully!");
+    } catch (error) {
+      console.error("Transaction failed: ", error);
+    }
+  };
   static uploadCommunityImage = async (image) => {
     const storageRef = ref(StorageDB, `images/${image.name}`);
     try {

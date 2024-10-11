@@ -8,6 +8,20 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: [
+          "ui-sans-serif",
+          "system-ui",
+          "Helvetica",
+          "Arial",
+          "sans-serif",
+        ],
+        helvetica: ["Helvetica", "Arial", "sans-serif"], // Add Helvetica
+        serif: ["ui-serif", "Georgia"],
+        mono: ["ui-monospace", "SFMono-Regular"],
+        display: ["Oswald"],
+        body: ['"Open Sans"'],
+      },
       animation: {
         "infinite-scroll": "infinite-scroll 125s linear infinite",
       },
@@ -76,7 +90,7 @@ const config: Config = {
       height: {
         "4.5": "1.125rem", // Custom width, example
         "18": "4.5rem", // Equivalent to 72px
-
+        "20": "10rem",
         "25": "12rem",
         "100": "25rem",
         "105": "25.5rem", // Custom width

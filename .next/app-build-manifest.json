@@ -19,7 +19,8 @@
     "/Home/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/Home/page.js"
+      "static/chunks/app/Home/page.js",
+      "static/chunks/app/Profile/page.js"
     ]
   }
 }

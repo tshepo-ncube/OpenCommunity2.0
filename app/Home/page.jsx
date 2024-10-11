@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from "react";
 // import Header from "../_Components/header";
 import Header from "../../_Components/header";
+import Navbar from "@/_Components/Navbar";
+import Carousel from "@/_Components/Carousel";
+import HotCommunity from "@/_Components/Home";
 import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
 import Image from "next/image";
@@ -138,12 +141,22 @@ function Home() {
 
   return (
     <>
-      <div className="App text-center" style={{ backgroundColor: "#f5f5f5" }}>
-        <Header />
+      <div className=" text-center" style={{ backgroundColor: "#f5f5f5" }}>
+        {/* <div className="App text-center" style={{ backgroundColor: "#f5f5f5" }}>
+        
+         */}
 
-        <div>
+        {/* <Header /> */}
+
+        <Navbar isHome={true} />
+
+        <HotCommunity />
+
+        <Carousel />
+
+        {/* <div>
           <RecommendedCommunities />
-        </div>
+        </div> */}
 
         <center className="mt-8">
           <Box sx={{ width: "100%", marginTop: 4 }}>

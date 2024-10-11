@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import ManageUser from "@/database/auth/ManageUser";
 import { Tab } from "@headlessui/react";
+import InterestSelection from "@/_Components/InterestsSelection";
 import {
   UserCircleIcon,
   KeyIcon,
@@ -22,6 +23,7 @@ const dietaryRequirements = [
   "Keto",
   "Halal",
   "Kosher",
+  "Other",
 ];
 
 const foodAllergies = [
@@ -34,10 +36,27 @@ const foodAllergies = [
   "Soy",
   "Fish",
   "Shellfish",
+  "Other",
+];
+
+//new Yan has added but its not showing yet
+const interests = [
+  "None",
+  "Peanuts",
+  "Tree nuts",
+  "Milk",
+  "Eggs",
+  "Wheat",
+  "Soy",
+  "Fish",
+  "Shellfish",
+  "Other",
 ];
 
 const Profile = () => {
   const [profile, setProfile] = useState({});
+  const [isOtherDietSelected, setIsOtherDietSelected] = useState(false);
+  const [isOtherAllergySelected, setIsOtherAllergySelected] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [hasCustomImage, setHasCustomImage] = useState(false);
   const [profileImageFile, setProfileImageFile] = useState(null);
@@ -45,24 +64,66 @@ const Profile = () => {
     newPassword: "",
     confirmNewPassword: "",
   });
+
+  const [selectedInterests, setSelectedInterests] = useState([]);
+  const [otherDiet, setOtherDiet] = useState("");
+  const [otherAllergy, setOtherAllergy] = useState("");
   const [error, setError] = useState(null);
   const router = useRouter();
-
+  const [activeTab, setActiveTab] = useState("personalDetails");
+  const [userCommunities, setUserCommunities] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
   useEffect(() => {
-    ManageUser.getProfileData(localStorage.getItem("Email"), (data) => {
-      setProfile(data);
-      if (data.profileImage) {
-        setSelectedImage(data.profileImage);
-        setHasCustomImage(true);
-      } else {
-        setSelectedImage(null);
-        setHasCustomImage(false);
-      }
-    });
+    console.log("Getting Profile Data...");
+    // ManageUser.getProfileData(localStorage.getItem("Email"), (data) => {
+    //   setProfile(data);
+    //   console.log("The Data :", data);
+    //   if (data.profileImage) {
+    //     setSelectedImage(data.profileImage);
+    //     setHasCustomImage(true);
+    //   } else {
+    //     setSelectedImage(null);
+    //     setHasCustomImage(false);
+    //   }
+    // });
+
+    ManageUser.getProfileData(
+      localStorage.getItem("Email"),
+      setProfile,
+      setUserCommunities,
+      setIsAdmin
+    );
   }, []);
 
   useEffect(() => {
     console.log("Something has changed...");
+
+    // setProfile(data);
+    // console.log("The Data :", data);
+    if (profile.profileImage) {
+      setSelectedImage(profile.profileImage);
+      setHasCustomImage(true);
+    } else {
+      setSelectedImage(null);
+      setHasCustomImage(false);
+    }
+    setSelectedInterests(profile.Interests);
+    console.log("Profile :", profile);
+  }),
+    [profile];
+
+  useEffect(() => {
+    console.log(profile);
+    if (profile.otherDiet) {
+      console.log("profile has other Diet");
+      setOtherDiet(profile.otherDiet);
+      setIsOtherDietSelected(true);
+    }
+    if (profile.otherAllergy) {
+      console.log("profile has other Allergy");
+      setIsOtherAllergySelected(true);
+      setOtherAllergy(profile.otherAllergy);
+    }
   }, [profile]);
 
   const handleImageChange = (e) => {
@@ -99,6 +160,22 @@ const Profile = () => {
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
+
+    //new Yan added in this code
+    if (name === "Diet") {
+      setIsOtherDietSelected(value === "Other");
+      if (value !== "Other") {
+        setOtherDiet(""); // Clear if not "Other"
+      }
+    }
+
+    if (name === "Allergies") {
+      setIsOtherAllergySelected(value === "Other");
+      if (value !== "Other") {
+        setOtherAllergy(""); // Clear if not "Other"
+      }
+    }
+
     setProfile((prevProfile) => ({
       ...prevProfile,
       [name]: value,
@@ -113,23 +190,67 @@ const Profile = () => {
     }));
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (activeTab === "personalDetails") {
+      const updatedUser = {
+        ...user,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        allergies: formData.allergies.split(",").map((item) => item.trim()),
+        //injuries: formData.injuries,
+      };
+      setUser(updatedUser);
+    } else if (activeTab === "passwordReset") {
+      // Handle password reset logic
+    }
+  };
+
+  // const handleEditProfileSubmit = async (e) => {
+  //   e.preventDefault();
+  //   // const success = await ManageUser.editProfileData(profile.id, profile);
+  //   // if (success) {
+  //   //   ManageUser.getProfileData(profile.Email, (data) => {
+  //   //     setProfile(data);
+  //   //     if (data.profileImage) {
+  //   //       setSelectedImage(data.profileImage);
+  //   //       setHasCustomImage(true);
+  //   //     } else {
+  //   //       setSelectedImage(null);
+  //   //       setHasCustomImage(false);
+  //   //     }
+  //   //   });
+  //   // }
+
+  //   ManageUser.setProfileImage(profileImageFile);
+  // };
+
   const handleEditProfileSubmit = async (e) => {
     e.preventDefault();
-    // const success = await ManageUser.editProfileData(profile.id, profile);
-    // if (success) {
-    //   ManageUser.getProfileData(profile.Email, (data) => {
-    //     setProfile(data);
-    //     if (data.profileImage) {
-    //       setSelectedImage(data.profileImage);
-    //       setHasCustomImage(true);
-    //     } else {
-    //       setSelectedImage(null);
-    //       setHasCustomImage(false);
-    //     }
-    //   });
-    // }
 
-    ManageUser.setProfileImage(profileImageFile);
+    if (otherAllergy !== "") {
+      // Update the profile with the otherAllergy field
+      setProfile((prevProfile) => ({
+        ...prevProfile, // Keep the existing profile fields
+        otherAllergy: otherAllergy, // Add or update the otherAllergy field
+      }));
+    }
+
+    if (otherDiet !== "") {
+      // Update the profile with the otherAllergy field
+      setProfile((prevProfile) => ({
+        ...prevProfile, // Keep the existing profile fields
+        otherDiet: otherDiet, // Add or update the otherAllergy field
+      }));
+    }
+    const success = await ManageUser.editProfileData(profile.id, profile);
+    if (success) {
+      // If the profile update was successful, fetch the updated profile data
+      ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
+    } else {
+      // Handle failure
+    }
   };
 
   const handleNewPasswordSubmit = (e) => {
@@ -359,6 +480,25 @@ const Profile = () => {
                     ))}
                   </select>
                 </div>
+                {isOtherDietSelected && (
+                  <div className="mt-2">
+                    <label
+                      className="block text-gray-700 text-sm font-bold mb-2"
+                      htmlFor="otherDiet"
+                    >
+                      Please specify other dietary requirements:
+                    </label>
+                    <input
+                      type="text"
+                      id="otherDiet"
+                      name="otherDiet"
+                      className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      value={otherDiet}
+                      onChange={(e) => setOtherDiet(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
                 <div>
                   <label
                     htmlFor="Allergies"
@@ -379,6 +519,38 @@ const Profile = () => {
                       </option>
                     ))}
                   </select>
+                </div>
+                {isOtherAllergySelected && (
+                  <div className="mt-2">
+                    <label
+                      className="block text-gray-700 text-sm font-bold mb-2"
+                      htmlFor="otherAllergy"
+                    >
+                      Please specify other food allergies:
+                    </label>
+                    <input
+                      type="text"
+                      id="otherAllergy"
+                      name="otherAllergy"
+                      className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                      value={otherAllergy}
+                      onChange={(e) => setOtherAllergy(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+
+                <div>
+                  {selectedInterests ? (
+                    <>
+                      <InterestSelection
+                        selectedInterests={selectedInterests}
+                        setSelectedInterests={setSelectedInterests}
+                      />
+                    </>
+                  ) : (
+                    <></>
+                  )}
                 </div>
                 <div>
                   <motion.button

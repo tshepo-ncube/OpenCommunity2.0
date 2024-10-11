@@ -21,6 +21,8 @@ import { doc, getDoc, updateDoc, arrayUnion } from "firebase/firestore";
 import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
+import CommunityDB from "@/database/community/community";
+
 import strings from "../../../../Utils/strings.json";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
@@ -246,6 +248,7 @@ export default function CommunityPage({ params }) {
       .then(() => {
         setPollsUpdated(false);
         PollDB.getPollFromCommunityIDForUser(id, setAllPolls);
+        CommunityDB.incrementCommunityScore(params.id, 1);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -301,7 +304,10 @@ export default function CommunityPage({ params }) {
     if (typeof window === "undefined") return;
 
     try {
-      await EventDB.addRSVP(event.id, localStorage.getItem("Email"));
+      // await EventDB.addRSVP(event.id, localStorage.getItem("Email"));
+      console.log("id ", id);
+      await CommunityDB.incrementCommunityScore(id, 1);
+
       setRsvpState((prev) => ({ ...prev, [event.id]: true }));
 
       let subject = `${event.Name} Meeting Invite`;
@@ -325,7 +331,6 @@ export default function CommunityPage({ params }) {
         let data = res.data;
       } catch (err) {
         console.log(err);
-        console.log("error");
       }
     } catch (error) {
       console.error("Error RSVPing:", error);
@@ -484,6 +489,13 @@ export default function CommunityPage({ params }) {
       }));
 
       alert("Review submitted successfully!");
+      await CommunityDB.incrementCommunityScore(id, 1);
+
+      // try {
+      //   CommunityDB.incrementCommunityScore(id, 1);
+      // } catch (err) {
+      //   console.log(err);
+      // }
     } catch (error) {
       console.error("Error submitting review:", error);
       alert(`Error submitting review: ${error.message}`);
