@@ -144,19 +144,44 @@ const Navbar = ({ isHome }) => {
         className="max-w-[1240px] m-auto flex justify-between items-center p-4 text-white"
         style={{}}
       >
-        <Link href="/">
-          <h1 style={{ color: `${textColor}` }} className="font-bold text-4xl">
-            OpenCommunity
-          </h1>
+        <Link href="/Home">
+          {!scrolling ? (
+            <>
+              <div className="relative text-center">
+                <h2 className="text-4xl font-bold flex space-x-1">
+                  <span className="text-white  px-2 py-1 ">Open </span>
+                  <span
+                    className="text-white bg-green-400 px-2 py-1 rounded-tl-md rounded-tr-md rounded-bl-3xl rounded-br-md"
+                    style={{ backgroundColor: "#bcd727" }}
+                  >
+                    Community
+                  </span>
+                </h2>
+                {/* <p className="mt-4 text-gray-600 text-2xl">
+                  Connect. Collaborate. Create.
+                </p> */}
+              </div>
+            </>
+          ) : (
+            <>
+              <h1
+                style={{ color: `${textColor}` }}
+                className="font-bold text-4xl"
+              >
+                OpenCommunity
+              </h1>
+            </>
+          )}
         </Link>
+
         <ul style={{ color: `${textColor}` }} className="hidden sm:flex">
           <li className="p-4 text-white">
-            <Link href="/" className="p-4 text-white">
+            <Link href="/Home" className="p-4 text-white">
               Home
             </Link>
           </li>
           <li className="p-4 text-white">
-            <Link href="/" className="p-4 text-white">
+            <Link href="/auth/Profile" className="p-4 text-white">
               Profile
             </Link>
           </li>
@@ -182,25 +207,25 @@ const Navbar = ({ isHome }) => {
             </>
           )}
           <li className="p-4">
-            <Link href="/blog">Admin</Link>
+            <Link href="/admin">Admin</Link>
           </li>
           {/* <li className="p-4">
             <Link href="/about">About</Link>
           </li> */}
           <li className="p-4">
-            <Link href="/pricing">Leaderboard</Link>
+            <Link href="/auth/Leaderboard">Leaderboard</Link>
           </li>
           <li className="p-4">
-            <Link href="/pricing">Recommend Communities</Link>
+            <Link href="/auth/Recommend Communities">
+              Recommend Communities
+            </Link>
           </li>
 
           <li className="p-4">
-            <Link href="/pricing">
-              <div class="flex justify-center">
-                <MdDarkMode size={25} />
-                <p className="ml-2 mr-2">Dark Mode</p>
-              </div>
-            </Link>
+            <div class="flex justify-center">
+              <MdDarkMode size={25} />
+              <p className="ml-2 mr-2">Dark Mode</p>
+            </div>
           </li>
           {/* <li className="p-4">
             {signedIn ? (
