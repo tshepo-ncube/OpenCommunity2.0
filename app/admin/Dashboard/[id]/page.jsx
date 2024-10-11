@@ -1037,6 +1037,8 @@ export default function CommunityPage({ params }) {
     closeModal();
   };
 
+  const arhiveCommunity = () => {};
+
   return (
     <div className="bg-background_gray h-full">
       <Header />
@@ -1180,14 +1182,22 @@ export default function CommunityPage({ params }) {
                     inactivity. If the inactivity continues, the community will
                     be archived to ensure proper management of active groups.
                   </p>
-                  {/* <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                    The European Union’s General Data Protection Regulation
+                  <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                    {/* The European Union’s General Data Protection Regulation
                     (G.D.P.R.) goes into effect on May 25 and is meant to ensure
                     a common set of data rights in the European Union. It
                     requires organizations to notify users as soon as possible
                     of high-risk data breaches that could personally affect
-                    them.
-                  </p> */}
+                    them. */}
+                    <div
+                      class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
+                      role="alert"
+                    >
+                      <span class="font-medium">Warning alert!</span> Members of
+                      a community won't be able to see a community once you
+                      archive it.
+                    </div>
+                  </p>
                 </div>
 
                 {/* Modal footer */}
@@ -1199,10 +1209,10 @@ export default function CommunityPage({ params }) {
                     Notify members
                   </button>
                   <button
-                    onClick={closeModal}
-                    className="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                    onClick={arhiveCommunity}
+                    className="py-2.5 px-5 ms-3 text-sm font-medium text-white focus:outline-none bg-red-500 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                   >
-                    Decline
+                    Archive Community
                   </button>
                 </div>
               </div>

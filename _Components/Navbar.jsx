@@ -136,8 +136,8 @@ const Navbar = ({ isHome }) => {
       }}
       className={` ${
         isHome
-          ? `${scrolling ? "bg-openbox-green  z-100" : "opacity-50  z-100"}`
-          : `bg-openbox-green  z-100`
+          ? `${scrolling ? "bg-openbox-green  z-90" : "  z-90"}`
+          : `bg-openbox-green  z-90`
       }   fixed left-0 top-0 w-full z-100 ease-in duration-300 `}
     >
       <div

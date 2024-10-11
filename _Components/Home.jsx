@@ -42,11 +42,13 @@ const Home = () => {
       {/* https://images.unsplash.com/photo-1434648957308-5e6a859697e8?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D
        */}
 
+      {/* https://wallpapercave.com/wp/wp2167295.jpg */}
+
       <div
         className="relative text-white py-20 h-screen grid place-items-center"
         style={{
           backgroundImage: `url('${
-            hottestCommunity.communityImage
+            hottestCommunity && hottestCommunity.communityImage
               ? hottestCommunity.communityImage
               : "https://images.unsplash.com/photo-1434648957308-5e6a859697e8?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           }')`,
@@ -72,7 +74,7 @@ const Home = () => {
               </p>
 
               <Link href="/chat" target={"_blank"}>
-                <button className="opacity-50 text-white px-4 py-2 mt-4 rounded-full border border-white hover:text-black hover:bg-white hover:border-white-800 focus:outline-none focus:border-gray-900 transition duration-300">
+                <button className=" text-white px-4 py-2 mt-4 rounded-full border border-white hover:text-black hover:bg-white hover:border-white-800 focus:outline-none focus:border-gray-900 transition duration-300">
                   Visit Community
                 </button>
               </Link>
