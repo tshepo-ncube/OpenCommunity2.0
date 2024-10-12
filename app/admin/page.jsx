@@ -7,6 +7,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import strings from "../../Utils/strings.json";
 import UserDB from "../../database/community/users"; // Make sure this import path is correct
+import { doc, updateDoc } from "firebase/firestore";
+import DB from "../../database/DB"; // Ensure you are importing your Firestore DB instance
 
 const CreateCommunity = () => {
   const [activeTab, setActiveTab] = useState("tab1");
@@ -119,6 +121,36 @@ const CreateCommunity = () => {
     };
     fetchUsers();
   }, []);
+
+  const handleAdminRoleChange = async (email, newRole) => {
+    try {
+      // Fetch all users with document IDs
+      const users = await UserDB.getAllUsers();
+
+      // Find the user whose email matches the one passed to the function
+      const userToUpdate = users.find((user) => user.Email === email);
+
+      if (userToUpdate) {
+        // Use the document ID to reference the user
+        const userRef = doc(DB, "users", userToUpdate.id);
+
+        // Update the Role field with the new role value
+        await updateDoc(userRef, { Role: newRole });
+        console.log(
+          `Role updated successfully for user: ${userToUpdate.Email}`
+        );
+      } else {
+        console.log("No user found with the provided email.");
+      }
+    } catch (error) {
+      console.error("Error updating user role:", error);
+    }
+  };
+
+  const onRoleChange = (event, email) => {
+    const newRole = event.target.checked ? "admin" : "user"; // Assuming it's a checkbox
+    handleAdminRoleChange(email, newRole); // Call the function with the user's email and the new role
+  };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -261,16 +293,17 @@ const CreateCommunity = () => {
                     <td className="py-2 px-4 border-b">{user.Name}</td>
                     <td className="py-2 px-4 border-b">{user.Surname}</td>
                     <td className="py-2 px-4 border-b">{user.Email}</td>
-                    <td className="py-2 px-4 border-b">
-                      {/* Checkbox for admin role */}
-                      <input
-                        type="checkbox"
-                        checked={
-                          user.Role && user.Role.toLowerCase() === "admin"
-                        } // Check if role is admin
-                        onChange={() => {}} // Placeholder for any onChange logic you might want
-                      />
-                    </td>
+                    <input
+                      type="checkbox"
+                      checked={user.Role === "admin"}
+                      onChange={() =>
+                        handleAdminRoleChange(
+                          user.Email,
+                          user.Role === "admin" ? "user" : "admin"
+                        )
+                      }
+                    />
+
                     <td className="py-2 px-4 border-b">
                       <input type="checkbox" />
                     </td>

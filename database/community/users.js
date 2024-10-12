@@ -9,6 +9,8 @@ import {
   runTransaction,
   updateDoc,
   getDocs,
+  query, // Import the query function
+  where, // Import the where function
 } from "firebase/firestore";
 import DB from "../DB";
 import { Interests } from "@mui/icons-material";
@@ -73,17 +75,19 @@ export default class UserDB {
     try {
       const usersCollection = collection(DB, "users");
       const usersSnapshot = await getDocs(usersCollection);
-      const usersList = usersSnapshot.docs.map((doc) => doc.data());
 
-      // Extract only Name, Surname, and Points
-      return usersList.map((user) => ({
-        Name: user.Name,
-        Surname: user.Surname,
-        Points: user.Points,
-        Email: user.Email,
-        Role: user.Role,
-        profileImage: user.profileImage,
+      // Map through each document and extract user data, including the document ID
+      const usersList = usersSnapshot.docs.map((doc) => ({
+        id: doc.id, // Add the document ID here
+        Name: doc.data().Name,
+        Surname: doc.data().Surname,
+        Points: doc.data().Points,
+        Email: doc.data().Email,
+        Role: doc.data().Role,
+        profileImage: doc.data().profileImage,
       }));
+
+      return usersList; // Return the list with document IDs included
     } catch (e) {
       console.error("Error getting users: ", e);
       alert("Error getting users.");
