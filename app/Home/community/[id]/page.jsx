@@ -26,7 +26,7 @@ import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-
+import ImageGallery from "@/_Components/ImageGallery";
 const locales = {
   "en-US": enUS,
 };
@@ -101,6 +101,8 @@ export default function CommunityPage({ params }) {
   const [allPolls, setAllPolls] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [pollsUpdated, setPollsUpdated] = useState(false);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryImages, setGalleryImages] = useState([]);
   if (typeof window !== "undefined") {
     const [USER_ID, setUSER_ID] = useState(localStorage.getItem("UserID"));
   }
@@ -140,7 +142,14 @@ export default function CommunityPage({ params }) {
       EventDB.getEventFromCommunityID(id, setAllEvents);
     }
   }, [id]);
+  const handleOpenGallery = (images) => {
+    setGalleryImages(images);
+    setGalleryOpen(true);
+  };
 
+  const handleCloseGallery = () => {
+    setGalleryOpen(false);
+  };
   useEffect(() => {
     console.log(selectedImages);
   }, [selectedImages]);
@@ -908,9 +917,14 @@ export default function CommunityPage({ params }) {
                                 ))}
 
                               {review.images.length > 4 && (
-                                <div className="relative w-24 h-24 mt-2 mr-2">
+                                <div
+                                  className="relative w-24 h-24 mt-2 mr-2 cursor-pointer"
+                                  onClick={() =>
+                                    handleOpenGallery(review.images)
+                                  }
+                                >
                                   <img
-                                    src={review.images[4]} // The 5th image
+                                    src={review.images[4]}
                                     alt="More images"
                                     className="w-full h-full object-cover rounded blur-sm"
                                   />
@@ -1018,6 +1032,12 @@ export default function CommunityPage({ params }) {
           </Button>
         </DialogActions>
       </Dialog>
+      {/* Image Gallery Dialog */}
+      <ImageGallery
+        images={galleryImages}
+        open={galleryOpen}
+        onClose={handleCloseGallery}
+      />
     </div>
   );
 }
