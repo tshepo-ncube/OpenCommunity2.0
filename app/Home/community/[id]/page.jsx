@@ -294,7 +294,19 @@ export default function CommunityPage({ params }) {
     try {
       await EventDB.addRSVP(event.id, localStorage.getItem("Email"));
       setRsvpState((prev) => ({ ...prev, [event.id]: true }));
+      setRsvpCounts((prev) => ({
+        ...prev,
+        [event.id]: (prev[event.id] || 0) + 1,
+      }));
 
+      // Update the allEvents state to reflect the new RSVP
+      setAllEvents((prevEvents) =>
+        prevEvents.map((e) =>
+          e.id === event.id
+            ? { ...e, rsvp: [...(e.rsvp || []), localStorage.getItem("Email")] }
+            : e
+        )
+      );
       let subject = `${event.Name} Meeting Invite`;
       let location = event.Location;
       let start = new Date(event.StartDate.seconds * 1000).toISOString();
@@ -337,12 +349,32 @@ export default function CommunityPage({ params }) {
         localStorage.getItem("Email")
       );
       setRsvpState((prev) => ({ ...prev, [currentEventToUnRSVP.id]: false }));
+      setRsvpCounts((prev) => ({
+        ...prev,
+        [currentEventToUnRSVP.id]: Math.max(
+          (prev[currentEventToUnRSVP.id] || 0) - 1,
+          0
+        ),
+      }));
+
+      // Update the allEvents state to reflect the removed RSVP
+      setAllEvents((prevEvents) =>
+        prevEvents.map((e) =>
+          e.id === currentEventToUnRSVP.id
+            ? {
+                ...e,
+                rsvp: (e.rsvp || []).filter(
+                  (email) => email !== localStorage.getItem("Email")
+                ),
+              }
+            : e
+        )
+      );
     } catch (error) {
       console.error("Error removing RSVP:", error);
     }
     setConfirmUnRSVP(false);
   };
-
   const cancelLeave = () => {
     setConfirmUnRSVP(false);
     setCurrentEventToUnRSVP(null);
