@@ -66,9 +66,6 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
       { sender: "AI", content: [] },
     ]);
 
-    // let threadID = "thread_Fs2VYok9YAiXZ1qHv5TpDeIZ";
-    // let runID = "run_GuV63F5sRM7OOAFTnZqhOtU3";
-    // let assistantID = "asst_EiHgeiLbxcs1r1855lryoIe8";
     let instructions = `You are an assistant designed to help 
       recommend new events for the ${communityData.name}. Your primary task is to 
       recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
@@ -78,10 +75,11 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
          with fields name, description, predicted_attendance, optimal_timing, 
          start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
           an event or just answering a question you can respond normally (NO JSON, JUST TEXT)`;
-
+    // const newMessageCopy = newMessage.slice();
     try {
       const res = await axios.post(
-        strings.server_endpoints.sendMessage,
+        "http://localhost:8080/sendMessage",
+        // strings.server_endpoints.sendMessage,
         { newMessage, threadID, runID, assistantID, instructions },
         {
           headers: {
@@ -89,6 +87,7 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
           },
         }
       );
+      setNewMessage("");
 
       console.log("Returned Messages: ", res.data.messages);
       //setMessages(res.data.messages);

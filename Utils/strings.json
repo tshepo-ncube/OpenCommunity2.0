@@ -1,6 +1,6 @@
 {
   "server_endpoints": {
-    "sendMessage": "/sendMessage",
+    "sendMessage": "http://localhost:8080/sendMessage",
     "fetchMessages": "http://localhost:8080/fetchMessages",
     "createAssistant": "http://localhost:8080/createAssistant",
     "createChannel": "http://localhost:8080/createChannel",
