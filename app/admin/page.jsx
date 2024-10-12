@@ -124,18 +124,21 @@ const CreateCommunity = () => {
 
   const handleAdminRoleChange = async (email, newRole) => {
     try {
-      // Fetch all users with document IDs
-      const users = await UserDB.getAllUsers();
+      const updatedRole = newRole === "admin" ? "user" : "admin"; // Toggle between roles
 
-      // Find the user whose email matches the one passed to the function
-      const userToUpdate = users.find((user) => user.Email === email);
+      const allUsers = await UserDB.getAllUsers(); // Get all users
+      const userToUpdate = allUsers.find((user) => user.Email === email); // Find the user by email
 
       if (userToUpdate) {
-        // Use the document ID to reference the user
-        const userRef = doc(DB, "users", userToUpdate.id);
+        const userRef = doc(DB, "users", userToUpdate.id); // Get the document reference for the user
+        await updateDoc(userRef, { Role: updatedRole }); // Update the user's role
 
-        // Update the Role field with the new role value
-        await updateDoc(userRef, { Role: newRole });
+        // Update the local state to reflect the change without refreshing the page
+        const updatedUsers = users.map((user) =>
+          user.Email === email ? { ...user, Role: updatedRole } : user
+        );
+        setUsers(updatedUsers);
+
         console.log(
           `Role updated successfully for user: ${userToUpdate.Email}`
         );
@@ -297,10 +300,7 @@ const CreateCommunity = () => {
                       type="checkbox"
                       checked={user.Role === "admin"}
                       onChange={() =>
-                        handleAdminRoleChange(
-                          user.Email,
-                          user.Role === "admin" ? "user" : "admin"
-                        )
+                        handleAdminRoleChange(user.Email, user.Role)
                       }
                     />
 
