@@ -250,7 +250,9 @@ const CreateCommunity = () => {
                 <tr>
                   <th className="py-2 px-4 border-b">Name</th>
                   <th className="py-2 px-4 border-b">Surname</th>
-                  <th className="py-2 px-4 border-b">Points</th>
+                  <th className="py-2 px-4 border-b">Email</th>
+                  <th className="py-2 px-4 border-b">Admin Role</th>
+                  <th className="py-2 px-4 border-b">Super Admin Role</th>
                 </tr>
               </thead>
               <tbody>
@@ -258,7 +260,13 @@ const CreateCommunity = () => {
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="py-2 px-4 border-b">{user.Name}</td>
                     <td className="py-2 px-4 border-b">{user.Surname}</td>
-                    <td className="py-2 px-4 border-b">{user.Points}</td>
+                    <td className="py-2 px-4 border-b">{user.Email}</td>
+                    <td className="py-2 px-4 border-b">
+                      <input type="checkbox" />
+                    </td>
+                    <td className="py-2 px-4 border-b">
+                      <input type="checkbox" />
+                    </td>
                   </tr>
                 ))}
               </tbody>
