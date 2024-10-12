@@ -262,7 +262,14 @@ const CreateCommunity = () => {
                     <td className="py-2 px-4 border-b">{user.Surname}</td>
                     <td className="py-2 px-4 border-b">{user.Email}</td>
                     <td className="py-2 px-4 border-b">
-                      <input type="checkbox" />
+                      {/* Checkbox for admin role */}
+                      <input
+                        type="checkbox"
+                        checked={
+                          user.Role && user.Role.toLowerCase() === "admin"
+                        } // Check if role is admin
+                        onChange={() => {}} // Placeholder for any onChange logic you might want
+                      />
                     </td>
                     <td className="py-2 px-4 border-b">
                       <input type="checkbox" />

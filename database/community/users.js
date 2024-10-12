@@ -81,6 +81,7 @@ export default class UserDB {
         Surname: user.Surname,
         Points: user.Points,
         Email: user.Email,
+        Role: user.Role,
         profileImage: user.profileImage,
       }));
     } catch (e) {
