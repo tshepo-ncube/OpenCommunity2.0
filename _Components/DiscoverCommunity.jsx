@@ -117,7 +117,8 @@ const DiscoverCommunity = ({ email }) => {
   };
 
   const handleViewCommunity = (data) => {
-    router.push(`/userview?id=${data.id}`);
+    // Programmatically navigate to /hme
+    router.push("/discoverview");
   };
 
   const handleCloseSnackbar = () => {
