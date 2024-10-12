@@ -219,7 +219,7 @@ const CreateCommunity = () => {
           } rounded-t-lg`}
           onClick={() => setActiveTab("tab1")}
         >
-          Communities
+          Community Management
         </button>
         <button
           className={`px-4 py-2 ${
@@ -229,7 +229,7 @@ const CreateCommunity = () => {
           } rounded-t-lg`}
           onClick={() => setActiveTab("tab2")}
         >
-          Users
+          User Management
         </button>
       </div>
 
