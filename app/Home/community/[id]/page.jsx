@@ -178,7 +178,21 @@ export default function CommunityPage({ params }) {
       };
     });
   }, [allEvents]);
+  const [rsvpCounts, setRsvpCounts] = useState({});
 
+  useEffect(() => {
+    const countRSVPs = () => {
+      const counts = {};
+      allEvents.forEach((event) => {
+        counts[event.id] = event.rsvp ? event.rsvp.length : 0;
+      });
+      setRsvpCounts(counts);
+    };
+
+    if (allEvents.length > 0) {
+      countRSVPs();
+    }
+  }, [allEvents]);
   useEffect(() => {
     console.log("All Polls Changed: ", allPolls);
     if (allPolls.length > 0 && !pollsUpdated) {
@@ -530,7 +544,10 @@ export default function CommunityPage({ params }) {
                           {formatDate(event.RsvpEndTime)}
                         </div>
                       </Typography>
-
+                      <div className="mt-2 text-sm text-gray-600">
+                        <strong>Number of RSVPs:</strong>{" "}
+                        {rsvpCounts[event.id] || 0}
+                      </div>
                       <div className="mt-4">
                         {event.status === "active" ? (
                           <div className="flex space-x-4">
