@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, IconButton } from "@mui/material";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
-const ImageGallery = ({ images, open, onClose }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+const ImageGallery = ({ images, initialIndex, open, onClose }) => {
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+
+  useEffect(() => {
+    setCurrentIndex(initialIndex);
+  }, [initialIndex]);
 
   const handlePrevious = () => {
     setCurrentIndex((prevIndex) =>

@@ -103,6 +103,7 @@ export default function CommunityPage({ params }) {
   const [pollsUpdated, setPollsUpdated] = useState(false);
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryImages, setGalleryImages] = useState([]);
+  const [initialImageIndex, setInitialImageIndex] = useState(0);
   if (typeof window !== "undefined") {
     const [USER_ID, setUSER_ID] = useState(localStorage.getItem("UserID"));
   }
@@ -142,8 +143,9 @@ export default function CommunityPage({ params }) {
       EventDB.getEventFromCommunityID(id, setAllEvents);
     }
   }, [id]);
-  const handleOpenGallery = (images) => {
+  const handleOpenGallery = (images, index = 0) => {
     setGalleryImages(images);
+    setInitialImageIndex(index);
     setGalleryOpen(true);
   };
 
@@ -904,16 +906,23 @@ export default function CommunityPage({ params }) {
 
                           {/* Displaying images if available */}
                           {review.images && review.images.length > 0 && (
-                            <div className="mt-2 flex">
+                            <div className="mt-2 flex flex-wrap">
                               {review.images
                                 .slice(0, 4)
                                 .map((imageUrl, imgIndex) => (
-                                  <img
+                                  <div
                                     key={imgIndex}
-                                    src={imageUrl}
-                                    alt={`Review image ${imgIndex + 1}`}
-                                    className="w-24 h-24 object-cover rounded mt-2 mr-2"
-                                  />
+                                    className="w-24 h-24 m-1 cursor-pointer"
+                                    onClick={() =>
+                                      handleOpenGallery(review.images, imgIndex)
+                                    }
+                                  >
+                                    <img
+                                      src={imageUrl}
+                                      alt={`Review image ${imgIndex + 1}`}
+                                      className="w-full h-full object-cover rounded"
+                                    />
+                                  </div>
                                 ))}
 
                               {review.images.length > 4 && (
