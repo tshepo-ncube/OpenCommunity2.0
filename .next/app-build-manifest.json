@@ -11,11 +11,6 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/auth/Profile/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/auth/Profile/page.js"
-    ],
     "/Home/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
