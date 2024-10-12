@@ -1221,11 +1221,11 @@ export default function CommunityPage({ params }) {
         )}
       </>
 
-      {/* <Chatbot
+      <Chatbot
         communityID={params.id}
         setEventForm={setEventForm}
         setShowEventForm={setShowEventForm}
-      /> */}
+      />
       <Snackbar
         open={openSnackbar}
         autoHideDuration={2000}
