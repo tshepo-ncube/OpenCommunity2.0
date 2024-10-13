@@ -316,10 +316,10 @@ const CreateCommunity = () => {
                       Email
                     </th>
                     <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
-                      Role
+                      Admin Role
                     </th>
                     <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
-                      Actions
+                      Super Admin Role
                     </th>
                   </tr>
                 </thead>
@@ -329,7 +329,7 @@ const CreateCommunity = () => {
                       <td className="px-4 py-2">{user.Name}</td>
                       <td className="px-4 py-2">{user.Surname}</td>
                       <td className="px-4 py-2">{user.Email}</td>
-                      <td className="px-4 py-2">{user.Role}</td>
+
                       <td className="px-4 py-2">
                         <label>
                           <input
