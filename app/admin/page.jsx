@@ -306,19 +306,19 @@ const CreateCommunity = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead>
                   <tr>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-500">
                       Name
                     </th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-500">
                       Surname
                     </th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-500">
                       Email
                     </th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-500">
                       Admin Role
                     </th>
-                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-500">
                       Super Admin Role
                     </th>
                   </tr>
@@ -340,6 +340,9 @@ const CreateCommunity = () => {
                             }
                           />
                         </label>
+                      </td>
+                      <td className="px-4 py-2">
+                        <input type="checkbox" />
                       </td>
                     </tr>
                   ))}
