@@ -31,6 +31,9 @@ const CreateCommunity = () => {
   const userPopupRef = useRef(null);
   const [image, setImage] = useState(null);
   const [users, setUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState(""); // State for search query
+
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleUploadButtonClick = () => {
     if (fileInputRef.current) {
@@ -205,6 +208,11 @@ const CreateCommunity = () => {
     }
   };
 
+  // Filter users based on the search term
+  const filteredUsers = users.filter((user) => {
+    const fullName = `${user.Name} ${user.Surname} ${user.Email}`.toLowerCase();
+    return fullName.includes(searchTerm.toLowerCase());
+  });
   return (
     <div className="flex-col items-center min-h-screen relative text-center">
       <Header />
@@ -277,41 +285,70 @@ const CreateCommunity = () => {
           )}
         </>
       ) : (
-        <div className="container mx-auto px-4 py-8">
-          <h2 className="text-2xl font-bold mb-4">User List</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="py-2 px-4 border-b">Name</th>
-                  <th className="py-2 px-4 border-b">Surname</th>
-                  <th className="py-2 px-4 border-b">Email</th>
-                  <th className="py-2 px-4 border-b">Admin Role</th>
-                  <th className="py-2 px-4 border-b">Super Admin Role</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="py-2 px-4 border-b">{user.Name}</td>
-                    <td className="py-2 px-4 border-b">{user.Surname}</td>
-                    <td className="py-2 px-4 border-b">{user.Email}</td>
-                    <input
-                      type="checkbox"
-                      checked={user.Role === "admin"}
-                      onChange={() =>
-                        handleAdminRoleChange(user.Email, user.Role)
-                      }
-                    />
+        // User Management Tab
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold mb-4">User Management</h2>
 
-                    <td className="py-2 px-4 border-b">
-                      <input type="checkbox" />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          {/* Search Bar */}
+          <div className="mb-4">
+            <input
+              type="text"
+              placeholder="Search by name, surname, or email"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="border rounded w-full py-2 px-3"
+            />
           </div>
+
+          {/* User List */}
+          {filteredUsers.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                      Name
+                    </th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                      Surname
+                    </th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                      Email
+                    </th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                      Role
+                    </th>
+                    <th className="px-4 py-2 text-left text-sm font-medium text-gray-500">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {filteredUsers.map((user) => (
+                    <tr key={user.Email}>
+                      <td className="px-4 py-2">{user.Name}</td>
+                      <td className="px-4 py-2">{user.Surname}</td>
+                      <td className="px-4 py-2">{user.Email}</td>
+                      <td className="px-4 py-2">{user.Role}</td>
+                      <td className="px-4 py-2">
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={user.Role === "admin"}
+                            onChange={() =>
+                              handleAdminRoleChange(user.Email, user.Role)
+                            }
+                          />
+                        </label>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p>No results found</p>
+          )}
         </div>
       )}
     </div>
