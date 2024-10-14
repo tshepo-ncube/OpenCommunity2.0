@@ -335,12 +335,22 @@ const CreateCommunity = () => {
                           <input
                             type="checkbox"
                             checked={user.Role === "admin"}
-                            onChange={() =>
-                              handleAdminRoleChange(user.Email, user.Role)
-                            }
+                            onChange={(e) => {
+                              const isChecked = e.target.checked; // Get the current checkbox state
+                              const confirmationMessage = isChecked
+                                ? `Are you sure you want to give admin rights to ${user.Email}?`
+                                : `Are you sure you want to revoke admin rights from ${user.Email}?`;
+
+                              const confirmation =
+                                window.confirm(confirmationMessage);
+                              if (confirmation) {
+                                handleAdminRoleChange(user.Email, user.Role);
+                              }
+                            }}
                           />
                         </label>
                       </td>
+
                       <td className="px-4 py-2">
                         <input type="checkbox" />
                       </td>
