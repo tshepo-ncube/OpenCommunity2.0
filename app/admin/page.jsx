@@ -263,8 +263,123 @@ const CreateCommunity = () => {
               ref={popupRef}
               className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-auto max-h-full overflow-auto"
             >
-              {/* Community creation form */}
-              {/* ... (The form content remains the same as in your original code) */}
+              <h1 className="text-xl font-bold  text-gray-700 tracking-wide mb-4">
+                Create a new community
+              </h1>
+              <form className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-m text-gray-700 text-left font-semibold"
+                  >
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="category"
+                    className="block text-m text-gray-700 text-left font-semibold"
+                  >
+                    Category
+                  </label>
+                  <select
+                    id="category"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                    required
+                  >
+                    <option value="General">General</option>
+                    <option value="Sports">Sports/Fitness</option>
+                    <option value="Social">Social Activities</option>
+                    <option value="Retreat">Company Retreat</option>
+                    <option value="Development">
+                      Professional Development
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="description"
+                    className="block text-m text-gray-700 text-left font-semibold"
+                  >
+                    Community Description
+                    {/* can we have a word limit for this */}
+                  </label>
+                  <textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="mt-1 p-2  h-40 border border-gray-300 rounded-md w-full"
+                    required
+                  />
+                </div>
+
+                {/* Add Image here */}
+
+                <div className="flex items-center space-x-4">
+                  <label
+                    htmlFor="image"
+                    className="block text-m text-gray-700 font-semibold"
+                  >
+                    Community Profile Image
+                  </label>
+                  <input
+                    type="file"
+                    id="image"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    accept="image/*"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleUploadButtonClick}
+                    className="p-2 bg-openbox-green hover:bg-hover-obgreen text-white rounded-md"
+                  >
+                    Choose Image
+                  </button>
+                  {image && (
+                    <p className="mt-2 text-gray-600">Uploaded: {image.name}</p>
+                  )}
+                </div>
+
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={generateDescription}
+                    className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                  >
+                    generate description
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => handleFormSubmit(e, "draft")}
+                    className="btn bg-gray-500 hover:bg-gray-700 btn text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                  >
+                    Save as Draft
+                  </button>
+                  <button
+                    type="button"
+                    onClick={(e) => handleFormSubmit(e, "active")}
+                    className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                  >
+                    {editIndex !== null ? "Save" : "Create"}
+                  </button>
+                  <CloseIcon
+                    className="absolute top-4 right-4 text-black-500 cursor-pointer"
+                    onClick={handleClosePopup}
+                  />
+                </div>
+              </form>
             </div>
           )}
           {submittedData.length === 0 ? (
