@@ -107,7 +107,7 @@ const Profile = () => {
       setSelectedImage(null);
       setHasCustomImage(false);
     }
-    setSelectedInterests(profile.Interests);
+    //setSelectedInterests(profile.Interests);
     console.log("Profile :", profile);
   }),
     [profile];
@@ -244,13 +244,15 @@ const Profile = () => {
         otherDiet: otherDiet, // Add or update the otherAllergy field
       }));
     }
-    const success = await ManageUser.editProfileData(profile.id, profile);
-    if (success) {
-      // If the profile update was successful, fetch the updated profile data
-      ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
-    } else {
-      // Handle failure
-    }
+    // const success = await ManageUser.editProfileData(profile.id, profile);
+    // if (success) {
+    //   // If the profile update was successful, fetch the updated profile data
+    //   ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
+    // } else {
+    //   // Handle failure
+    // }
+
+    console.log("About to make some edits......", profile);
   };
 
   const handleNewPasswordSubmit = (e) => {
