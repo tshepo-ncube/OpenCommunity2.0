@@ -1,6 +1,6 @@
 // DiscoverCommunity.jsx
 
-'use client'; // Must be the first line
+"use client"; // Must be the first line
 
 import React, { useEffect, useState } from "react";
 import {
@@ -165,21 +165,26 @@ const DiscoverCommunity = ({ email }) => {
       return false;
     }
     // Further filter communities within the category based on searchQuery
-    const filteredCommunities = groupedCommunities[category].filter((community) => {
-      const query = searchQuery.toLowerCase();
-      return (
-        community.name.toLowerCase().includes(query) ||
-        community.description.toLowerCase().includes(query) ||
-        (community.tags && community.tags.some((tag) => tag.toLowerCase().includes(query)))
-      );
-    });
+    const filteredCommunities = groupedCommunities[category].filter(
+      (community) => {
+        const query = searchQuery.toLowerCase();
+        return (
+          community.name.toLowerCase().includes(query) ||
+          community.description.toLowerCase().includes(query) ||
+          (community.tags &&
+            community.tags.some((tag) => tag.toLowerCase().includes(query)))
+        );
+      }
+    );
     // Update the groupedCommunities to include only filtered communities
     groupedCommunities[category] = filteredCommunities;
     return filteredCommunities.length > 0;
   });
 
   // Pagination for categories (four categories per page)
-  const totalCategoryPages = Math.ceil(filteredCategories.length / itemsPerPage);
+  const totalCategoryPages = Math.ceil(
+    filteredCategories.length / itemsPerPage
+  );
 
   const paginatedCategories = filteredCategories.slice(
     (currentPage - 1) * itemsPerPage,
@@ -282,6 +287,7 @@ const DiscoverCommunity = ({ email }) => {
                           <CardMedia
                             component="img"
                             height="175" // Half of the card height (350px / 2)
+                            className="h-40"
                             image={
                               data.communityImage
                                 ? data.communityImage
@@ -296,7 +302,9 @@ const DiscoverCommunity = ({ email }) => {
                           />
 
                           {/* Community Content */}
-                          <CardContent sx={{ flexGrow: 1, padding: "12px !important" }}>
+                          <CardContent
+                            sx={{ flexGrow: 1, padding: "12px !important" }}
+                          >
                             {/* Community Name */}
                             <Typography
                               gutterBottom
@@ -330,7 +338,9 @@ const DiscoverCommunity = ({ email }) => {
                               {data.description.length > 100 && (
                                 <Button
                                   size="small"
-                                  onClick={() => handleOpenModal(data.description)}
+                                  onClick={() =>
+                                    handleOpenModal(data.description)
+                                  }
                                   sx={{
                                     textTransform: "none",
                                     padding: 0,
@@ -379,7 +389,12 @@ const DiscoverCommunity = ({ email }) => {
                           </CardContent>
 
                           {/* Community Stats and Actions */}
-                          <CardContent sx={{ paddingTop: "0px !important", paddingBottom: "0px !important" }}>
+                          <CardContent
+                            sx={{
+                              paddingTop: "0px !important",
+                              paddingBottom: "0px !important",
+                            }}
+                          >
                             <Grid container alignItems="center">
                               {/* Left-aligned: Number of Members */}
                               <Grid item xs={6}>
@@ -387,10 +402,19 @@ const DiscoverCommunity = ({ email }) => {
                                   variant="body2"
                                   color="text.secondary"
                                   className="flex items-center"
-                                  style={{ fontFamily: "Poppins, sans-serif", textAlign: "left" }}
+                                  style={{
+                                    fontFamily: "Poppins, sans-serif",
+                                    textAlign: "left",
+                                  }}
                                 >
-                                  <People fontSize="small" style={{ marginRight: 4 }} />
-                                  {data.users ? data.users.length.toLocaleString() : 0} Members
+                                  <People
+                                    fontSize="small"
+                                    style={{ marginRight: 4 }}
+                                  />
+                                  {data.users
+                                    ? data.users.length.toLocaleString()
+                                    : 0}{" "}
+                                  Members
                                 </Typography>
                               </Grid>
 
@@ -400,10 +424,19 @@ const DiscoverCommunity = ({ email }) => {
                                   variant="body2"
                                   color="text.secondary"
                                   className="flex items-center justify-end"
-                                  style={{ fontFamily: "Poppins, sans-serif", textAlign: "right" }}
+                                  style={{
+                                    fontFamily: "Poppins, sans-serif",
+                                    textAlign: "right",
+                                  }}
                                 >
-                                  <CalendarToday fontSize="small" style={{ marginRight: 4 }} />
-                                  {data.postsCount ? data.postsCount.toLocaleString() : 0} Events
+                                  <CalendarToday
+                                    fontSize="small"
+                                    style={{ marginRight: 4 }}
+                                  />
+                                  {data.postsCount
+                                    ? data.postsCount.toLocaleString()
+                                    : 0}{" "}
+                                  Events
                                 </Typography>
                               </Grid>
                             </Grid>
@@ -503,7 +536,11 @@ const DiscoverCommunity = ({ email }) => {
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert onClose={handleCloseSnackbar} severity="success" sx={{ width: "100%" }}>
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>
