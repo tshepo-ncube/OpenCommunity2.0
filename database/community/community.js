@@ -232,6 +232,7 @@ export default class CommunityDB {
       const querySnapshot = await getDocs(collection(DB, "communities"));
       querySnapshot.forEach((doc) => {
         const data = doc.data();
+        //var counter = await CommunityDB.getUpcomingEventsCount(doc.id);
         communities.push({
           id: doc.id,
           name: data.name,
@@ -239,6 +240,8 @@ export default class CommunityDB {
           category: data.category,
           status: data.status, // Include status in the fetched data
           communityImage: data.communityImage,
+          //UpcomingEventsCount: counter,
+          Tshepo: "Tshspoe",
         });
       });
 
@@ -547,5 +550,33 @@ export default class CommunityDB {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  static getUpcomingEventsCount = async (communityID) => {
+    const eventsRef = collection(DB, "events");
+    const q = query(eventsRef, where("CommunityID", "==", communityID));
+    var counter = 0;
+    try {
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
+        console.log("No matching documents.");
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.status === "past") {
+        } else {
+          counter += 1;
+        }
+      });
+
+      return counter;
+    } catch (e) {
+      console.error("Error getting event data:", e);
+      throw e;
+    }
+
+    return counter;
   };
 }

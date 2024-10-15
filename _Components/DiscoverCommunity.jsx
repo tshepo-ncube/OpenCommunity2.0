@@ -110,6 +110,10 @@ const DiscoverCommunity = ({ email }) => {
   }, []);
 
   useEffect(() => {
+    console.log("All Communties: ", submittedData);
+  }, [submittedData]);
+
+  useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentPage]);
 
@@ -566,8 +570,10 @@ const DiscoverCommunity = ({ email }) => {
                                   />
                                   {data.users
                                     ? data.users.length.toLocaleString()
-                                    : 0}{" "}
-                                  Members
+                                    : 0}
+                                  {data.users.length > 1
+                                    ? " Members"
+                                    : " Member"}
                                 </Typography>
                               </Grid>
 
