@@ -137,8 +137,8 @@ const Navbar = ({ isHome }) => {
       }}
       className={` ${
         isHome
-        // Changed the scroll background to Black instead for NAV
-          ? `${scrolling ? "bg-black  z-90" : "  z-90"}`
+          ? // Changed the scroll background to Black instead for NAV
+            `${scrolling ? "bg-black  z-90" : "  z-90"}`
           : `bg-openbox-green  z-90`
       }   fixed left-0 top-0 w-full z-100 ease-in duration-300 `}
     >
@@ -192,22 +192,24 @@ const Navbar = ({ isHome }) => {
                   Connect. Collaborate. Create.
                 </p> */}
               </div>
-        
             </>
           )}
         </Link>
 
         <ul style={{ color: `${textColor}` }} className="hidden sm:flex">
           <li className="p-4 text-white">
-            <Link href="/Home" className="p-4 text-white hover:bg-[#bcd727] hover:rounded-lg">
+            <Link
+              href="/Home"
+              className="py-2 px-4 text-white hover:bg-[#bcd727] hover:rounded-lg"
+            >
               Home
             </Link>
           </li>
-          <li className="p-4 text-white hover:bg-[#bcd727] hover:rounded-lg">
+          {/* <li className="p-4 text-white hover:bg-[#bcd727] hover:rounded-lg">
             <Link href="/auth/Profile" className="p-4 text-white">
               Profile
             </Link>
-          </li>
+          </li> */}
           {/* <li className="p-4">
             <Link href="/chat" target={"_blank"}>
               Chat
@@ -215,9 +217,6 @@ const Navbar = ({ isHome }) => {
           </li> */}
           {user ? (
             <>
-              {/* <li className="p-4">
-                <Link href="/goals">My Goals</Link>
-              </li> */}
               {/* <li className="p-4">
                 <Link href="/profile">Profile</Link>
               </li> */}
@@ -230,25 +229,54 @@ const Navbar = ({ isHome }) => {
             </>
           )}
           {/* ADMIN IS CURRENTLY HARD CODED, ADD Holly's Toggle Button for roles */}
-          {/* <li className="p-4">
-            <Link href="/admin">Admin</Link>
-          </li> */}
+          <li className="p-4">
+            <Link
+              href="/admin"
+              className="py-2 px-4 hover:bg-[#bcd727] hover:rounded-lg"
+            >
+              Admin
+            </Link>
+          </li>
           {/* <li className="p-4">
             <Link href="/about">About</Link>
           </li> */}
-          <li className="p-4 text-white hover:bg-[#bcd727] hover:rounded-lg">
-            <Link href="/auth/Leaderboard">Leaderboard</Link>
-          </li>
-          
-        {/* Profile Icon */}
-        <div className="hidden sm:flex items-center ml-4">
-          <img
-            src="https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
-            alt="Profile Icon"
-            className="w-10 h-10 rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
-          />
-        </div>
 
+          <li className="p-4 text-white ">
+            <Link
+              href="/auth/Leaderboard"
+              className="py-2 px-4 hover:bg-[#bcd727] hover:rounded-lg"
+            >
+              Leaderboard
+            </Link>
+          </li>
+
+          <li className="p-4 text-white ">
+            <Link
+              href="/auth/RecommendCommunity"
+              className="py-2 px-4 hover:bg-[#bcd727] hover:rounded-lg"
+            >
+              Recommend Community
+            </Link>
+          </li>
+
+          {/* <div className="hidden sm:flex items-center ml-4">
+            <img
+              src="https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
+              alt="Profile Icon"
+              className="w-10 h-10 rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
+            />
+          </div> */}
+
+          {/* Profile Icon */}
+          <Link href="/auth/Profile" className="p-2">
+            <div className="hidden sm:flex items-center ml-4">
+              <img
+                src="https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
+                alt="Profile Icon"
+                className="w-10 h-10 rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
+              />
+            </div>
+          </Link>
 
           {/* MOVED NEXT TO SEARCH BAR */}
           {/* <li className="p-4 text-white hover:bg-[#bcd727] hover:rounded-lg">
@@ -285,7 +313,6 @@ const Navbar = ({ isHome }) => {
             <Link href='/contact'>Contact</Link>
           </li> */}
         </ul>
-        
 
         {/* Mobile Button */}
         <div onClick={handleNav} className="block sm:hidden z-10">

@@ -373,6 +373,9 @@ const DiscoverCommunity = ({ email }) => {
 
                       <Card
                         className="flex flex-col h-full"
+                        onClick={() => {
+                          handleViewCommunity(data);
+                        }}
                         sx={{
                           display: "flex",
                           flexDirection: "column",
