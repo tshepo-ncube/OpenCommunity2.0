@@ -2,6 +2,7 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
+import { IconButton } from "@mui/material";
 import { MdDarkMode } from "react-icons/md";
 import { initializeApp } from "firebase/app";
 import {
@@ -136,7 +137,8 @@ const Navbar = ({ isHome }) => {
       }}
       className={` ${
         isHome
-          ? `${scrolling ? "bg-openbox-green  z-90" : "  z-90"}`
+        // Changed the scroll background to Black instead for NAV
+          ? `${scrolling ? "bg-black  z-90" : "  z-90"}`
           : `bg-openbox-green  z-90`
       }   fixed left-0 top-0 w-full z-100 ease-in duration-300 `}
     >
@@ -164,23 +166,44 @@ const Navbar = ({ isHome }) => {
             </>
           ) : (
             <>
-              <h1
+              {/* <h1
                 style={{ color: `${textColor}` }}
                 className="font-bold text-4xl"
               >
-                OpenCommunity
-              </h1>
+                Open 
+                <span
+                    className="text-white bg-green-400 px-2 py-1 rounded-tl-md rounded-tr-md rounded-bl-3xl rounded-br-md"
+                    style={{ backgroundColor: "#bcd727" }}
+                  >
+                    Community
+                  </span>
+              </h1> */}
+              <div className="relative text-center">
+                <h2 className="text-4xl font-bold flex space-x-1">
+                  <span className="text-white  px-2 py-1 ">Open </span>
+                  <span
+                    className="text-white bg-green-400 px-2 py-1 rounded-tl-md rounded-tr-md rounded-bl-3xl rounded-br-md"
+                    style={{ backgroundColor: "#bcd727" }}
+                  >
+                    Community
+                  </span>
+                </h2>
+                {/* <p className="mt-4 text-gray-600 text-2xl">
+                  Connect. Collaborate. Create.
+                </p> */}
+              </div>
+        
             </>
           )}
         </Link>
 
         <ul style={{ color: `${textColor}` }} className="hidden sm:flex">
           <li className="p-4 text-white">
-            <Link href="/Home" className="p-4 text-white">
+            <Link href="/Home" className="p-4 text-white hover:bg-[#bcd727] hover:rounded-lg">
               Home
             </Link>
           </li>
-          <li className="p-4 text-white">
+          <li className="p-4 text-white hover:bg-[#bcd727] hover:rounded-lg">
             <Link href="/auth/Profile" className="p-4 text-white">
               Profile
             </Link>
@@ -206,27 +229,42 @@ const Navbar = ({ isHome }) => {
               </li> */}
             </>
           )}
-          <li className="p-4">
+          {/* ADMIN IS CURRENTLY HARD CODED, ADD Holly's Toggle Button for roles */}
+          {/* <li className="p-4">
             <Link href="/admin">Admin</Link>
-          </li>
+          </li> */}
           {/* <li className="p-4">
             <Link href="/about">About</Link>
           </li> */}
-          <li className="p-4">
+          <li className="p-4 text-white hover:bg-[#bcd727] hover:rounded-lg">
             <Link href="/auth/Leaderboard">Leaderboard</Link>
           </li>
-          <li className="p-4">
+          
+        {/* Profile Icon */}
+        <div className="hidden sm:flex items-center ml-4">
+          <img
+            src="https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
+            alt="Profile Icon"
+            className="w-10 h-10 rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
+          />
+        </div>
+
+
+          {/* MOVED NEXT TO SEARCH BAR */}
+          {/* <li className="p-4 text-white hover:bg-[#bcd727] hover:rounded-lg">
             <Link href="/auth/Recommend Communities">
               Recommend Communities
             </Link>
-          </li>
+          </li> */}
 
-          <li className="p-4">
+          {/* REMOVED DARK MODE BECAUSE WHY? */}
+
+          {/* <li className="p-4">
             <div class="flex justify-center">
               <MdDarkMode size={25} />
               <p className="ml-2 mr-2">Dark Mode</p>
             </div>
-          </li>
+          </li> */}
           {/* <li className="p-4">
             {signedIn ? (
               <>
@@ -247,6 +285,7 @@ const Navbar = ({ isHome }) => {
             <Link href='/contact'>Contact</Link>
           </li> */}
         </ul>
+        
 
         {/* Mobile Button */}
         <div onClick={handleNav} className="block sm:hidden z-10">
