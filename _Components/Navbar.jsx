@@ -315,7 +315,7 @@ const Navbar = ({ isHome }) => {
                     : "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
                 }
                 alt="Profile Icon"
-                className="w-10 h-10 rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
+                className="w-12 h-12 rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
               />
             </div>
           </Link>

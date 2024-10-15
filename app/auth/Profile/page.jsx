@@ -274,6 +274,10 @@ const Profile = () => {
       // Handle failure
     }
 
+    if (profileImageFile !== null) {
+      ManageUser.setProfileImage(profileImageFile);
+    }
+
     console.log("About to make some edits......", profile);
   };
 
