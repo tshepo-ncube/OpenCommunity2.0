@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import { IconButton } from "@mui/material";
 import { MdDarkMode } from "react-icons/md";
+
+import ManageUser from "@/database/auth/ManageUser";
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -27,7 +29,37 @@ const Navbar = ({ isHome }) => {
   const [color, setColor] = useState("#0096FF");
   const [textColor, setTextColor] = useState("white");
   const [signedIn, setSignedIn] = useState(null);
+  const [profile, setProfile] = useState({});
   const [user, setUser] = useState(null);
+  const [userCommunities, setUserCommunities] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    console.log("Navbar - Getting Profile Data...");
+    // ManageUser.getProfileData(localStorage.getItem("Email"), (data) => {
+    //   setProfile(data);
+    //   console.log("The Data :", data);
+    //   if (data.profileImage) {
+    //     setSelectedImage(data.profileImage);
+    //     setHasCustomImage(true);
+    //   } else {
+    //     setSelectedImage(null);
+    //     setHasCustomImage(false);
+    //   }
+    // });
+
+    ManageUser.getProfileData(
+      localStorage.getItem("Email"),
+      setProfile,
+      setUserCommunities,
+      setIsAdmin
+    );
+  }, []);
+
+  useEffect(() => {
+    console.log("Profile :", profile);
+  }, [profile]);
+
   //   const auth = getAuth();
 
   //   useEffect(() => {
@@ -270,8 +302,18 @@ const Navbar = ({ isHome }) => {
           {/* Profile Icon */}
           <Link href="/auth/Profile" className="p-2">
             <div className="hidden sm:flex items-center ml-4">
+              {/* <img
+                src= "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
+                alt="Profile Icon"
+                className="w-10 h-10 rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
+              /> */}
+
               <img
-                src="https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
+                src={
+                  profile.profileImage
+                    ? profile.profileImage
+                    : "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
+                }
                 alt="Profile Icon"
                 className="w-10 h-10 rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
               />
