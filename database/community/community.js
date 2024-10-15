@@ -7,6 +7,8 @@ import {
   updateDoc,
   deleteDoc,
   getDocs,
+  query,
+  where,
   getDoc,
   runTransaction,
 } from "firebase/firestore";
@@ -241,7 +243,7 @@ export default class CommunityDB {
           status: data.status, // Include status in the fetched data
           communityImage: data.communityImage,
           //UpcomingEventsCount: counter,
-          Tshepo: "Tshspoe",
+          //Tshepo: "Tshspoe",
         });
       });
 
@@ -375,12 +377,53 @@ export default class CommunityDB {
     }
   };
 
+  // static getAllCommunities = async (setCommunities, setLoading) => {
+  //   setLoading(true);
+  //   const communities = [];
+  //   try {
+  //     const querySnapshot = await getDocs(collection(DB, "communities"));
+  //     querySnapshot.forEach(async (doc) => {
+  //       var upcomingEventsCount = await CommunityDB.getUpcomingEventsCount(
+  //         doc.id
+  //       );
+  //       if (upcomingEventsCount === undefined) {
+  //         upcomingEventsCount = 0;
+  //       }
+  //       console.log("Upcoming events: ", upcomingEventsCount);
+  //       const data = doc.data();
+  //       communities.push({
+  //         id: doc.id,
+  //         name: data.name,
+  //         description: data.description,
+  //         category: data.category,
+  //         status: data.status, // Include status in the fetched data
+  //         users: data.users || [], // Ensure users field is included,
+  //         communityImage: data.communityImage,
+  //         UpcomingEventsCount: upcomingEventsCount,
+  //       });
+  //     });
+
+  //     setCommunities(communities);
+  //   } catch (e) {
+  //     console.error("Error fetching communities: ", e);
+  //   }
+  //   setLoading(false);
+  // };
   static getAllCommunities = async (setCommunities, setLoading) => {
     setLoading(true);
     const communities = [];
     try {
       const querySnapshot = await getDocs(collection(DB, "communities"));
-      querySnapshot.forEach((doc) => {
+
+      for (const doc of querySnapshot.docs) {
+        let upcomingEventsCount = await CommunityDB.getUpcomingEventsCount(
+          doc.id
+        );
+        if (upcomingEventsCount === undefined) {
+          upcomingEventsCount = 0;
+        }
+        console.log("Upcoming events: ", upcomingEventsCount);
+
         const data = doc.data();
         communities.push({
           id: doc.id,
@@ -388,10 +431,11 @@ export default class CommunityDB {
           description: data.description,
           category: data.category,
           status: data.status, // Include status in the fetched data
-          users: data.users || [], // Ensure users field is included,
+          users: data.users || [], // Ensure users field is included
           communityImage: data.communityImage,
+          UpcomingEventsCount: upcomingEventsCount,
         });
-      });
+      }
 
       setCommunities(communities);
     } catch (e) {
@@ -574,6 +618,7 @@ export default class CommunityDB {
       return counter;
     } catch (e) {
       console.error("Error getting event data:", e);
+      return 0;
       throw e;
     }
 

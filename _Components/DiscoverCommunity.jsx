@@ -592,10 +592,13 @@ const DiscoverCommunity = ({ email }) => {
                                     fontSize="small"
                                     style={{ marginRight: 4 }}
                                   />
-                                  {data.postsCount
-                                    ? data.postsCount.toLocaleString()
-                                    : 0}{" "}
-                                  Events
+                                  {data.UpcomingEventsCount
+                                    ? data.UpcomingEventsCount.toLocaleString()
+                                    : 0}
+
+                                  {data.UpcomingEventsCount > 1
+                                    ? " Events"
+                                    : " Event"}
                                 </Typography>
                               </Grid>
                             </Grid>
