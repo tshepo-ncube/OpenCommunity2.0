@@ -483,40 +483,6 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
             className="mt-20  z-0 overflow-y-auto flex-1 mb-4 pr-4"
             style={{ height: "78%" }}
           >
-            <div className="chat chat-start">
-              <div className="chat-image avatar">
-                <div className="w-10 rounded-full">
-                  <img
-                    alt="Tailwind CSS chat bubble component"
-                    src="https://upload.wikimedia.org/wikipedia/commons/1/13/ChatGPT-Logo.png"
-                  />
-                </div>
-              </div>
-              <div className="chat-header">
-                {/* Obi-Wan Kenobi */}
-                {/* <time className="text-xs opacity-50">12:45</time> */}
-              </div>
-              <div className="chat-bubble bg-openbox-green text-white">
-                You were the Chosen One!
-              </div>
-              {/* <div className="chat-footer opacity-50">Delivered</div> */}
-            </div>
-            <div className="chat chat-end">
-              <div className="chat-image avatar">
-                <div className="w-10 rounded-full">
-                  <img
-                    alt="Tailwind CSS chat bubble component"
-                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                  />
-                </div>
-              </div>
-              <div className="chat-header">
-                {/* Anakin */}
-                {/* <time className="text-xs opacity-50">12:46</time> */}
-              </div>
-              <div className="chat-bubble">I hate you!</div>
-              {/* <div className="chat-footer opacity-50">Seen at 12:46</div> */}
-            </div>
             {/* Chat Messages */}
 
             {messages.length == 0 ? (
@@ -530,7 +496,7 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                     key={message.id}
                     className="flex gap-3 my-4 text-gray-600 text-sm flex-1"
                   >
-                    <span className="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
+                    {/* <span className="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
                       <div className="rounded-full bg-gray-100 border p-1">
                         <svg
                           stroke="none"
@@ -552,11 +518,11 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                           />
                         </svg>
                       </div>
-                    </span>
+                    </span> */}
                     <p className="leading-relaxed">
-                      <span className="block font-bold text-gray-700">
+                      {/* <span className="block font-bold text-gray-700">
                         {message.sender}{" "}
-                      </span>
+                      </span> */}
                       {/* {message.content[0].text.value} */}
                       {message.sender === "AI" ? (
                         <>
@@ -607,9 +573,30 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                                 //console.log(error);
                                 // If JSON parsing fails, render the content as a plain string
                                 return (
-                                  <p className=" bg-white  border w-90 p-2 rounded-lg mb-2 left-0">
-                                    {message.content[0].text.value}
-                                  </p>
+                                  // <p className=" bg-white  border w-90 p-2 rounded-lg mb-2 left-0">
+                                  //   {message.content[0].text.value}
+                                  // </p>
+
+                                  <>
+                                    <div className="chat chat-start">
+                                      <div className="chat-image avatar">
+                                        <div className="w-10 rounded-full">
+                                          <img
+                                            alt="Tailwind CSS chat bubble component"
+                                            src="https://upload.wikimedia.org/wikipedia/commons/1/13/ChatGPT-Logo.png"
+                                          />
+                                        </div>
+                                      </div>
+                                      <div className="chat-header">
+                                        {/* Obi-Wan Kenobi */}
+                                        {/* <time className="text-xs opacity-50">12:45</time> */}
+                                      </div>
+                                      <div className="chat-bubble bg-openbox-green text-white">
+                                        {message.content[0].text.value}
+                                      </div>
+                                      {/* <div className="chat-footer opacity-50">Delivered</div> */}
+                                    </div>
+                                  </>
                                 );
                               }
                             })()
@@ -628,9 +615,29 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                         </>
                       ) : (
                         <>
-                          <p className=" bg-openbox-green  border w-90 p-2 rounded-lg mb-2 left-0">
+                          {/* <p className=" bg-openbox-green  border w-90 p-2 rounded-lg mb-2 left-0">
                             {message.content[0].text.value}
-                          </p>
+                          </p> */}
+
+                          <div className="chat chat-end">
+                            <div className="chat-image avatar">
+                              <div className="w-10 rounded-full">
+                                <img
+                                  alt="Tailwind CSS chat bubble component"
+                                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                                />
+                              </div>
+                            </div>
+                            <div className="chat-header">
+                              {/* Anakin */}
+                              {/* <time className="text-xs opacity-50">12:46</time> */}
+                            </div>
+                            <div className="chat-bubble">
+                              {" "}
+                              {message.content[0].text.value}
+                            </div>
+                            {/* <div className="chat-footer opacity-50">Seen at 12:46</div> */}
+                          </div>
                         </>
                       )}
                     </p>
