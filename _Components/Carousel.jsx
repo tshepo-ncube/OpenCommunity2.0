@@ -13,12 +13,12 @@ const Carousel = () => {
 
   return (
     <>
-      <h1 className="text-black font-bold text-4xl text-center mt-6 mb-4 ">
+      {/* <h1 className="text-black font-bold text-4xl text-center mt-6 mb-4 ">
         Recommended Communities
-      </h1>
+      </h1> */}
       <div
         id="carouselExampleCaptions"
-        className="relative w-[80%] h-[500px] overflow-hidden mx-auto"
+        className="relative w-screen h-[600px] overflow-hidden"
         data-twe-carousel-init
         data-twe-ride="carousel"
       >
@@ -58,12 +58,38 @@ const Carousel = () => {
             {/* Black overlay */}
             <div className="absolute inset-0 bg-black opacity-40"></div>
 
-            <div className="absolute inset-x-[15%] bottom-5 py-5 text-center text-white md:block z-10">
+            {/* <div className="absolute inset-x-[30%] bottom-5 py-5 text-center text-white md:block z-10">
               <h5 className="text-xl">Baking Community</h5>
               <p>
                 Some representative placeholder content for the first slide.
               </p>
-            </div>
+            </div> */}
+              {/* <div
+                className="absolute left-[6%] bottom-5 pt-2 pb-5 text-white md:block z-10"
+              >
+                <h5 className="text-xl text-left">Baking Community</h5>
+                <p>
+                  Some representative placeholder content for the first slide.
+                </p>
+                <button className="mt-4 px-4 py-2 mb-40 text-white rounded bg-[#bcdc7272] hover:bg-[#a5c464]">
+                  Visit Community
+                </button>
+              </div> */}
+              <div
+                className="absolute left-[6%] bottom-5 pt-0 pb-5 text-white z-10"
+              >
+                <h1 className="font-bold text-6xl text-left mt-0 mb-1">Baking Community</h1>
+                <h1 className="text-left  text-2xl mt-4 mb-6">
+                  Some representative placeholder content for the first slide.
+                </h1>
+                <div className="mt-4 mb-30 flex justify-start">
+                  <button
+                    className="px-4 py-2 text-white font-bold text-2xl rounded bg-[#bcd727] hover:bg-[#6e7d19]"
+                  >
+                    Visit Community
+                  </button>
+                </div>
+              </div>
           </div>
 
           {/* <div
@@ -100,14 +126,22 @@ const Carousel = () => {
 
             {/* Black overlay */}
             <div className="absolute inset-0 bg-black opacity-40"></div>
-
-            <div className="absolute inset-x-[15%] bottom-5 py-5 text-center text-white md:block z-10">
-              <h5 className="text-xl">Reading Club</h5>
-              <p>
-                Some representative placeholder content for the second slide.
-              </p>
+            <div className="absolute left-[6%] bottom-5 pt-0 pb-5 text-white z-10">
+              <h1 className="font-bold text-6xl text-left mt-0 mb-1">Reading Club</h1>
+                <h1 className="text-left  text-2xl mt-4 mb-6">
+                  Some representative placeholder content for the first slide.
+                </h1>
+                <div className="mt-4 mb-30 flex justify-start">
+                  <button
+                    className="px-4 py-2 text-white font-bold text-2xl rounded bg-[#bcd727] hover:bg-[#6e7d19]"
+                  >
+                    Visit Community
+                  </button>
+                </div>
             </div>
           </div>
+
+
 
           {/* <div
             className={`relative float-left w-full h-full transition-transform duration-[600ms] ease-in-out ${
@@ -143,13 +177,21 @@ const Carousel = () => {
 
             {/* Black overlay */}
             <div className="absolute inset-0 bg-black opacity-40"></div>
-
-            <div className="absolute inset-x-[15%] bottom-5 py-5 text-center text-white md:block z-10">
-              <h5 className="text-xl">We Do Beer</h5>
-              <p>
-                Some representative placeholder content for the third slide.
-              </p>
+            <div className="absolute left-[6%] bottom-5 pt-0 pb-5 text-white z-10">
+              <h1 className="font-bold text-6xl text-left mt-0 mb-1">We Do Beer</h1>
+              <h1 className="text-2xl mt-4 mb-6">
+                Some representative placeholder content for the first slide.
+              </h1>
+                <div className="mt-4 mb-30 flex justify-start">
+                  <button
+                    className="px-4 py-2 text-white font-bold text-2xl rounded bg-[#bcd727] hover:bg-[#6e7d19]"
+                  >
+                    Visit Community
+                  </button>
+                </div>
             </div>
+
+
           </div>
 
           {/* <div
