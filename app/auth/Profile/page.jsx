@@ -96,7 +96,7 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Something has changed...");
+    // console.log("Something has changed...");
 
     // setProfile(data);
     // console.log("The Data :", data);
@@ -107,13 +107,7 @@ const Profile = () => {
       setSelectedImage(null);
       setHasCustomImage(false);
     }
-    //setSelectedInterests(profile.Interests);
-    console.log("Profile :", profile);
-  }),
-    [profile];
 
-  useEffect(() => {
-    console.log(profile);
     if (profile.otherDiet) {
       console.log("profile has other Diet");
       setOtherDiet(profile.otherDiet);
@@ -124,7 +118,24 @@ const Profile = () => {
       setIsOtherAllergySelected(true);
       setOtherAllergy(profile.otherAllergy);
     }
-  }, [profile]);
+    setSelectedInterests(profile.Interests);
+    // console.log("Profile :", profile);
+  }),
+    [profile];
+
+  // useEffect(() => {
+  //   console.log(profile);
+  //   if (profile.otherDiet) {
+  //     console.log("profile has other Diet");
+  //     setOtherDiet(profile.otherDiet);
+  //     setIsOtherDietSelected(true);
+  //   }
+  //   if (profile.otherAllergy) {
+  //     console.log("profile has other Allergy");
+  //     setIsOtherAllergySelected(true);
+  //     setOtherAllergy(profile.otherAllergy);
+  //   }
+  // }, [profile]);
 
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -244,13 +255,24 @@ const Profile = () => {
         otherDiet: otherDiet, // Add or update the otherAllergy field
       }));
     }
-    // const success = await ManageUser.editProfileData(profile.id, profile);
-    // if (success) {
-    //   // If the profile update was successful, fetch the updated profile data
-    //   ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
-    // } else {
-    //   // Handle failure
-    // }
+    const success = await ManageUser.editProfileData(
+      profile.id,
+      profile,
+      selectedInterests
+    );
+    if (success) {
+      // If the profile update was successful, fetch the updated profile data
+      // ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
+
+      ManageUser.getProfileData(
+        localStorage.getItem("Email"),
+        setProfile,
+        setUserCommunities,
+        setIsAdmin
+      );
+    } else {
+      // Handle failure
+    }
 
     console.log("About to make some edits......", profile);
   };
