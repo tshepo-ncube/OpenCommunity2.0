@@ -56,7 +56,7 @@ const InterestSelection = ({ selectedInterests, setSelectedInterests }) => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 ">
       <h2 className="text-xl font-semibold mb-4">Select your Interests</h2>
       <div className="flex flex-wrap gap-2">
         {interests.map((interest) => (
