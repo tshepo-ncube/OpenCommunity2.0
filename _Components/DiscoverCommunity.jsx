@@ -1,39 +1,71 @@
+// DiscoverCommunity.jsx
+
+"use client"; // Must be the first line
+
 import React, { useEffect, useState } from "react";
 import {
-  CircularProgress,
-  Grid,
   Card,
   CardContent,
-  Typography,
   CardActions,
+  CardMedia,
+  Typography,
   Button,
+  Chip,
+  Grid,
+  CircularProgress,
   Snackbar,
   Alert,
-  Tooltip,
-  IconButton,
+  TextField,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+  Modal,
+  Box,
+  Divider,
 } from "@mui/material";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import { useRouter } from "next/navigation";
+import {
+  CheckCircle,
+  People,
+  CalendarToday, // Calendar Icon
+  ArrowBack,
+  ArrowForward,
+  Search,
+} from "@mui/icons-material";
+
+// Import your database modules
 import CommunityDB from "@/database/community/community";
 import UserDB from "@/database/community/users";
 
+// Styles for the Modal
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  borderRadius: 2,
+  boxShadow: 24,
+  p: 4,
+};
+
 const DiscoverCommunity = ({ email }) => {
   const [loading, setLoading] = useState(true);
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
   const [submittedData, setSubmittedData] = useState([]);
-  const [editIndex, setEditIndex] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All Communities");
-  const [selectedStatus, setSelectedStatus] = useState("active");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(12);
+  const itemsPerPage = 4; // Four categories per page
+  const [openModal, setOpenModal] = useState(false);
+  const [modalContent, setModalContent] = useState("");
 
-  const router = useRouter();
+  // const [searchQuery, setSearchQuery] = useState("");
+  // const [selectedCategory, setSelectedCategory] = useState("All Communities");
+
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     const fetchCommunities = async () => {
@@ -50,23 +82,6 @@ const DiscoverCommunity = ({ email }) => {
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [currentPage]);
-
-  // const handleFormSubmit = (e) => {
-  //   e.preventDefault();
-  //   CommunityDB.createCommunity(
-  //     { name, description, category: "general" },
-  //     setSubmittedData,
-  //     setLoading
-  //   );
-  //   setName("");
-  //   setDescription("");
-  // };
-
-  const handleEdit = (index) => {
-    setName(submittedData[index].name);
-    setDescription(submittedData[index].description);
-    setEditIndex(index);
-  };
 
   const handleJoinCommunity = async (data) => {
     console.log("Joining a community");
@@ -95,6 +110,15 @@ const DiscoverCommunity = ({ email }) => {
     }
   };
 
+  const capitalizeFirstLetter = (category) => {
+    return category.charAt(0).toUpperCase() + category.slice(1);
+  };
+
+  const uniqueCategories = Array.from(
+    new Set(submittedData.map((data) => capitalizeFirstLetter(data.category)))
+  );
+  uniqueCategories.unshift("All Communities");
+
   const handleLeaveCommunity = async (data) => {
     const result = await CommunityDB.leaveCommunity(data.id, email);
     if (result.success) {
@@ -116,125 +140,122 @@ const DiscoverCommunity = ({ email }) => {
     }
   };
 
-  const handleViewCommunity = (data) => {
-    router.push(`/userview?id=${data.id}`);
-  };
-
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
 
-  const filterDataByCategoryAndStatus = (data) => {
-    return data.filter((item) => {
-      const categoryMatch =
-        selectedCategory.toLowerCase() === "all communities" ||
-        item.category.toLowerCase().includes(selectedCategory.toLowerCase());
+  const handleOpenModal = (description) => {
+    setModalContent(description);
+    setOpenModal(true);
+  };
 
-      const statusMatch =
-        selectedStatus.toLowerCase() === "all communities" ||
-        item.status === selectedStatus;
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setModalContent("");
+  };
 
-      const searchQueryMatch =
-        `${item.name.toLowerCase()} ${item.description.toLowerCase()} ${item.category.toLowerCase()}`.includes(
-          searchQuery.toLowerCase()
+  // Group communities by category
+  const groupedCommunities = submittedData.reduce((acc, community) => {
+    const category = community.category || "Uncategorized";
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(community);
+    return acc;
+  }, {});
+
+  // Get unique categories
+  const categories = Object.keys(groupedCommunities);
+
+  // Filter categories based on selectedCategory and searchQuery
+  const filteredCategories = categories.filter((category) => {
+    if (selectedCategory !== "All" && category !== selectedCategory) {
+      return false;
+    }
+    // Further filter communities within the category based on searchQuery
+    const filteredCommunities = groupedCommunities[category].filter(
+      (community) => {
+        const query = searchQuery.toLowerCase();
+        return (
+          community.name.toLowerCase().includes(query) ||
+          community.description.toLowerCase().includes(query) ||
+          (community.tags &&
+            community.tags.some((tag) => tag.toLowerCase().includes(query)))
         );
+      }
+    );
+    // Update the groupedCommunities to include only filtered communities
+    groupedCommunities[category] = filteredCommunities;
+    return filteredCommunities.length > 0;
+  });
 
-      return categoryMatch && statusMatch && searchQueryMatch;
-    });
-  };
-
-  const filteredData = filterDataByCategoryAndStatus(submittedData);
-
-  // Function to capitalize the first letter of a category
-  const capitalizeFirstLetter = (category) => {
-    return category.charAt(0).toUpperCase() + category.slice(1);
-  };
-
-  const uniqueCategories = Array.from(
-    new Set(submittedData.map((data) => capitalizeFirstLetter(data.category)))
+  // Pagination for categories (four categories per page)
+  const totalCategoryPages = Math.ceil(
+    filteredCategories.length / itemsPerPage
   );
 
-  uniqueCategories.unshift("All Communities");
-
-  const stringToColor = (category) => {
-    const formattedCategory =
-      category.charAt(0).toUpperCase() + category.slice(1);
-    switch (formattedCategory.toLowerCase()) {
-      case "general":
-        return "#a3c2e7";
-      case "social":
-        return "#f7b7a3";
-      case "retreat":
-        return "#f7a4a4";
-      case "sports":
-        return "#a3d9a5";
-      case "development":
-        return "#d4a1d1";
-      default:
-        let hash = 0;
-        for (let i = 0; i < formattedCategory.length; i++) {
-          hash = formattedCategory.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        const color = `hsl(${Math.abs(hash) % 360}, 70%, 80%)`;
-        return color;
-    }
-  };
-
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const paginatedCategories = filteredCategories.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
-  const selectCategory = (category) => {
-    setSelectedCategory(category);
-    setDropdownOpen(false);
-  };
-
-  // Pagination
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-
-  const handleNextPage = () => {
-    setCurrentPage((prevPage) => {
-      const newPage = prevPage + 1;
-      if (newPage <= totalPages) {
-        return newPage;
-      }
-      return prevPage;
-    });
-  };
-
-  const handlePreviousPage = () => {
-    setCurrentPage((prevPage) => {
-      const newPage = prevPage - 1;
-      if (newPage >= 1) {
-        return newPage;
-      }
-      return prevPage;
-    });
-  };
-
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const paginatedData = filteredData.slice(startIndex, endIndex);
-
   return (
     <>
+      {/* SEARCH AND FILTER BAR */}
       <div className="flex justify-center mt-4 mb-2">
-        <form className="max-w-lg mx-auto w-full z-90">
+        <div className="max-w-4xl w-full px-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <TextField
+              variant="outlined"
+              placeholder="Search communities..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              fullWidth
+              InputProps={{
+                startAdornment: <Search />,
+              }}
+              style={{ fontFamily: "Poppins, sans-serif" }}
+            />
+
+            <FormControl variant="outlined" style={{ minWidth: 200 }}>
+              <InputLabel id="category-select-label">Category</InputLabel>
+              <Select
+                labelId="category-select-label"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                label="Category"
+                style={{ fontFamily: "Poppins, sans-serif" }}
+              >
+                <MenuItem value="All">All</MenuItem>
+                {categories.map((category) => (
+                  <MenuItem key={category} value={category}>
+                    {capitalizeFirstLetter(category)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </div>
+        </div>
+      </div>
+
+      {/* <div className="flex justify-center mt-4 mb-2">
+        <form className="max-w-lg mx-auto w-full z-10">
           <div className="flex relative">
             <label
               htmlFor="search-dropdown"
-              style={{ fontFamily: "Poppins, sans-serif" }}
               className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
             >
-              Your Email
+              Search
             </label>
 
             <div className="relative w-full">
               <button
+                type="submit"
                 className="absolute top-0 start-0 mr-44 p-2.5 text-sm font-medium h-full text-white bg-openbox-green rounded-s-lg border border-openbox-green hover:bg-openbox-green focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                style={{ fontFamily: "Poppins, sans-serif" }}
               >
                 <svg
                   className="w-4 h-4"
@@ -259,21 +280,27 @@ const DiscoverCommunity = ({ email }) => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 type="search"
                 id="search-dropdown"
-                className="block p-2.5 pl-10 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                style={{ fontFamily: "Poppins, sans-serif" }}
+                className="ml-8 block p-2.5 w-full z-20 text-sm text-gray-900 bg-gray-50 rounded-s-lg border-s-gray-50 border-s-2 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-s-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:border-blue-500"
+                required
               />
             </div>
+
+            <label
+              htmlFor="search-dropdown"
+              className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+            >
+              Category
+            </label>
 
             <button
               id="dropdown-button"
               onClick={toggleDropdown}
               type="button"
               className="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-e-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600"
-              style={{ fontFamily: "Poppins, sans-serif" }}
             >
               {selectedCategory}
               <svg
-                className="w-4 h-4 ml-2"
+                className="w-2.5 h-2.5 ms-2.5"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -302,11 +329,7 @@ const DiscoverCommunity = ({ email }) => {
                       <button
                         type="button"
                         className="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                        onClick={() => {
-                          selectCategory(category);
-                          setSelectedCategory(category);
-                        }}
-                        style={{ fontFamily: "Poppins, sans-serif" }}
+                        onClick={() => selectCategory(category)}
                       >
                         {category}
                       </button>
@@ -317,192 +340,360 @@ const DiscoverCommunity = ({ email }) => {
             )}
           </div>
         </form>
-      </div>
+      </div> */}
 
-      <div className="flex justify-center flex-wrap mt-2">
+      {/* Community Cards Grouped by Category */}
+      <div className="container mx-auto px-4 py-8">
         {!loading ? (
           <>
-            {paginatedData.length === 0 ? (
+            {paginatedCategories.length === 0 ? (
               <Typography
-                variant="body1"
-                className="mt-4"
+                variant="h6"
+                className="mt-4 text-center"
                 style={{ fontFamily: "Poppins, sans-serif" }}
               >
                 No communities found.
               </Typography>
             ) : (
-              <Grid container spacing={2} style={{ padding: 14 }}>
-                {paginatedData.map((data, index) => (
-                  <Grid item xs={12} sm={6} md={4} key={index}>
-                    <div className="relative flex h-full">
-                      <Card
-                        className="w-full max-w-sm bg-white rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700 flex-grow flex flex-col relative"
-                        style={{ border: "none" }} // Remove the border
-                      >
-                        <a href="#">
-                          <img
-                            className="h-56 w-full rounded-t-lg object-cover"
-                            alt="product image"
-                            src={
+              paginatedCategories.map((category) => (
+                <div key={category} className="mb-8">
+                  {/* Category Heading */}
+                  <Typography
+                    variant="h5"
+                    component="h2"
+                    gutterBottom
+                    style={{
+                      fontFamily: "Poppins, sans-serif",
+                      fontWeight: 600,
+                      textAlign: "left",
+                    }}
+                  >
+                    {capitalizeFirstLetter(category)}
+                  </Typography>
+
+                  {/* Divider */}
+                  <Divider />
+
+                  {/* Communities Grid */}
+                  <Grid container spacing={4} className="mt-4">
+                    {groupedCommunities[category].map((data) => (
+                      <Grid item xs={12} sm={6} md={4} lg={3} key={data.id}>
+                        <Card
+                          className="flex flex-col h-full"
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            height: "350px", // Fixed card height
+                            boxShadow: 3,
+                            borderRadius: 2,
+                            transition: "transform 0.2s, box-shadow 0.2s",
+                            "&:hover": {
+                              transform: "scale(1.02)",
+                              boxShadow: 6,
+                            },
+                          }}
+                        >
+                          {/* Community Image */}
+                          <CardMedia
+                            component="img"
+                            height="175" // Half of the card height (350px / 2)
+                            className="h-40"
+                            image={
                               data.communityImage
                                 ? data.communityImage
-                                : "https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGRyaW5rc3xlbnwwfHwwfHx8MA%3D%3D"
+                                : "https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60"
                             }
+                            alt={`Image of ${data.name} community`}
+                            loading="lazy" // Enables lazy loading
+                            sx={{
+                              objectFit: "cover",
+                              width: "100%",
+                            }}
                           />
-                        </a>
 
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            backgroundColor: stringToColor(data.category),
-                            width: "83px",
-                            height: "36px",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            color: "white",
-                            fontSize: "0.875rem", // Adjust font size if needed
-                            fontWeight: "bold",
-                            borderRadius: "0.375rem", // Make sure to use rounded corners if needed
-                          }}
-                          className="text-sm font-bold rounded-md absolute top-0 right-0 z-10"
-                        >
-                          {capitalizeFirstLetter(data.category)}
-                        </div>
-
-                        <CardContent className="flex-grow">
-                          <a href="#">
+                          {/* Community Content */}
+                          <CardContent
+                            sx={{ flexGrow: 1, padding: "12px !important" }}
+                          >
+                            {/* Community Name */}
                             <Typography
-                              variant="h5"
-                              component="h2"
-                              className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white"
-                              style={{ fontFamily: "Poppins, sans-serif" }}
+                              gutterBottom
+                              variant="h6"
+                              component="div"
+                              style={{
+                                fontFamily: "Poppins, sans-serif",
+                                fontWeight: "bold", // Bold community names
+                                textAlign: "left",
+                              }}
                             >
                               {data.name}
                             </Typography>
-                          </a>
-                          <Typography
-                            variant="body2"
-                            color="textSecondary"
-                            style={{ fontFamily: "Poppins, sans-serif" }}
-                            className="mt-2"
-                          >
-                            {data.description}
-                          </Typography>
-                        </CardContent>
-                        <CardActions style={{ justifyContent: "center" }}>
-                          <div
-                            style={{
-                              display: "flex",
-                              gap: "8px",
-                              alignItems: "center",
+
+                            {/* Community Description */}
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              style={{
+                                fontFamily: "Poppins, sans-serif",
+                                display: "-webkit-box",
+                                WebkitLineClamp: 2, // Two lines for better readability
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                                textAlign: "left",
+                              }}
+                            >
+                              {data.description.length > 100
+                                ? `${data.description.substring(0, 100)}... `
+                                : data.description}
+                              {data.description.length > 100 && (
+                                <Button
+                                  size="small"
+                                  onClick={() =>
+                                    handleOpenModal(data.description)
+                                  }
+                                  sx={{
+                                    textTransform: "none",
+                                    padding: 0,
+                                    minWidth: "auto",
+                                    color: "#bcd727",
+                                    "&:hover": {
+                                      backgroundColor: "transparent",
+                                      textDecoration: "underline",
+                                    },
+                                  }}
+                                >
+                                  Read More
+                                </Button>
+                              )}
+                            </Typography>
+
+                            {/* Interest Tags */}
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {data.tags &&
+                                data.tags.slice(0, 3).map((tag) => (
+                                  <Chip
+                                    key={tag}
+                                    label={tag}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                      borderColor: "#bcd727",
+                                      color: "#bcd727",
+                                      fontFamily: "Poppins, sans-serif",
+                                    }}
+                                  />
+                                ))}
+                              {data.tags && data.tags.length > 3 && (
+                                <Chip
+                                  label={`+${data.tags.length - 3}`}
+                                  variant="outlined"
+                                  size="small"
+                                  sx={{
+                                    borderColor: "#bcd727",
+                                    color: "#bcd727",
+                                    fontFamily: "Poppins, sans-serif",
+                                  }}
+                                />
+                              )}
+                            </div>
+                          </CardContent>
+
+                          {/* Community Stats and Actions */}
+                          <CardContent
+                            sx={{
+                              paddingTop: "0px !important",
+                              paddingBottom: "0px !important",
                             }}
                           >
+                            <Grid container alignItems="center">
+                              {/* Left-aligned: Number of Members */}
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                  className="flex items-center"
+                                  style={{
+                                    fontFamily: "Poppins, sans-serif",
+                                    textAlign: "left",
+                                  }}
+                                >
+                                  <People
+                                    fontSize="small"
+                                    style={{ marginRight: 4 }}
+                                  />
+                                  {data.users
+                                    ? data.users.length.toLocaleString()
+                                    : 0}{" "}
+                                  Members
+                                </Typography>
+                              </Grid>
+
+                              {/* Right-aligned: Number of Events */}
+                              <Grid item xs={6}>
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                  className="flex items-center justify-end"
+                                  style={{
+                                    fontFamily: "Poppins, sans-serif",
+                                    textAlign: "right",
+                                  }}
+                                >
+                                  <CalendarToday
+                                    fontSize="small"
+                                    style={{ marginRight: 4 }}
+                                  />
+                                  {data.postsCount
+                                    ? data.postsCount.toLocaleString()
+                                    : 0}{" "}
+                                  Events
+                                </Typography>
+                              </Grid>
+                            </Grid>
+                          </CardContent>
+
+                          {/* Join/Joined Button */}
+                          <CardActions sx={{ padding: "12px !important" }}>
                             {data.users.includes(email) ? (
                               <Button
-                                size="small"
+                                fullWidth
+                                variant="outlined"
                                 disabled
-                                style={{ fontFamily: "Poppins, sans-serif" }}
+                                startIcon={<CheckCircle />}
+                                sx={{
+                                  borderColor: "#bcd727",
+                                  color: "#bcd727",
+                                  "&:disabled": {
+                                    borderColor: "#bcd727",
+                                    color: "#bcd727",
+                                  },
+                                  fontFamily: "Poppins, sans-serif",
+                                }}
                               >
-                                You are a member
+                                Joined
                               </Button>
                             ) : (
                               <Button
-                                size="small"
+                                fullWidth
+                                variant="contained"
                                 onClick={() => handleJoinCommunity(data)}
-                                style={{ fontFamily: "Poppins, sans-serif" }}
-                              ></Button>
+                                startIcon={<CheckCircle />}
+                                sx={{
+                                  backgroundColor: "#bcd727",
+                                  color: "#fff",
+                                  "&:hover": {
+                                    backgroundColor: "#a4b622",
+                                  },
+                                  fontFamily: "Poppins, sans-serif",
+                                }}
+                              >
+                                Join Community
+                              </Button>
                             )}
-                          </div>
-                        </CardActions>
-                        <div className="absolute top-2 right-2 flex gap-2 z-20">
-                          {!data.users.includes(email) && (
-                            <Tooltip title="Join Community" placement="top">
-                              <IconButton
-                                onClick={() => handleJoinCommunity(data)}
-                                style={{
-                                  color: "white", // Icon color
-                                  backgroundColor: "rgba(0, 0, 0, 0.5)",
-                                  padding: "4px",
-                                }}
-                                size="small"
-                              >
-                                <PersonAddIcon />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                          {data.users.includes(email) && (
-                            <Tooltip title="Leave Community" placement="top">
-                              <IconButton
-                                onClick={() => handleLeaveCommunity(data)}
-                                style={{
-                                  color: "white", // Icon color
-                                  backgroundColor: "rgba(0, 0, 0, 0.5)",
-                                  padding: "4px",
-                                }}
-                                size="small"
-                              >
-                                <ExitToAppIcon />
-                              </IconButton>
-                            </Tooltip>
-                          )}
-                          <Tooltip title="View Community" placement="top">
-                            <IconButton
-                              onClick={() => handleViewCommunity(data)}
-                              style={{
-                                color: "white", // Icon color
-                                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                                padding: "4px",
-                              }}
-                              size="small"
-                            >
-                              <OpenInNewIcon />
-                            </IconButton>
-                          </Tooltip>
-                        </div>
-                      </Card>
-                    </div>
+                          </CardActions>
+                        </Card>
+                      </Grid>
+                    ))}
                   </Grid>
-                ))}
-              </Grid>
+                </div>
+              ))
             )}
           </>
         ) : (
-          <CircularProgress />
+          <div className="flex justify-center">
+            <CircularProgress />
+          </div>
         )}
       </div>
 
-      <div className="flex justify-center mt-4">
-        <Button
-          disabled={currentPage === 1}
-          onClick={handlePreviousPage}
-          style={{ fontFamily: "Poppins, sans-serif" }}
-        >
-          Previous
-        </Button>
-        <span className="mx-4">
-          Page {currentPage} of {totalPages}
-        </span>
-        <Button
-          disabled={currentPage === totalPages}
-          onClick={handleNextPage}
-          style={{ fontFamily: "Poppins, sans-serif" }}
-        >
-          Next
-        </Button>
-      </div>
+      {/* Pagination for Categories */}
+      {totalCategoryPages > 1 && (
+        <div className="flex justify-center mt-4">
+          <Button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+            variant="outlined"
+            startIcon={<ArrowBack />}
+            sx={{ marginRight: 2 }}
+            style={{ fontFamily: "Poppins, sans-serif" }}
+          >
+            Previous
+          </Button>
+          <Typography
+            variant="body1"
+            className="mt-2"
+            style={{ fontFamily: "Poppins, sans-serif" }}
+          >
+            Page {currentPage} of {totalCategoryPages}
+          </Typography>
+          <Button
+            disabled={currentPage === totalCategoryPages}
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            variant="outlined"
+            endIcon={<ArrowForward />}
+            sx={{ marginLeft: 2 }}
+            style={{ fontFamily: "Poppins, sans-serif" }}
+          >
+            Next
+          </Button>
+        </div>
+      )}
 
+      {/* Snackbar for Notifications */}
       <Snackbar
         open={openSnackbar}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert onClose={handleCloseSnackbar} severity="success">
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>
+
+      {/* Modal for "Read More" */}
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        aria-labelledby="read-more-title"
+        aria-describedby="read-more-description"
+      >
+        <Box sx={modalStyle}>
+          <Typography
+            id="read-more-title"
+            variant="h6"
+            component="h2"
+            gutterBottom
+            style={{ fontFamily: "Poppins, sans-serif" }}
+          >
+            Community Description
+          </Typography>
+          <Typography
+            id="read-more-description"
+            sx={{ mt: 2 }}
+            style={{ fontFamily: "Poppins, sans-serif" }}
+          >
+            {modalContent}
+          </Typography>
+          <Button
+            onClick={handleCloseModal}
+            variant="contained"
+            color="primary"
+            sx={{
+              mt: 3,
+              backgroundColor: "#bcd727",
+              "&:hover": { backgroundColor: "#a4b622" },
+            }}
+            style={{ fontFamily: "Poppins, sans-serif" }}
+          >
+            Close
+          </Button>
+        </Box>
+      </Modal>
     </>
   );
 };
