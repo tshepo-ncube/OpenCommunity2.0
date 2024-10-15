@@ -32,7 +32,8 @@ import {
   ArrowForward,
   Search,
 } from "@mui/icons-material";
-
+import AddIcon from "@mui/icons-material/Add";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 // Import your database modules
 import CommunityDB from "@/database/community/community";
 import UserDB from "@/database/community/users";
@@ -66,6 +67,35 @@ const DiscoverCommunity = ({ email }) => {
   // const [selectedCategory, setSelectedCategory] = useState("All Communities");
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const interests = [
+    { interest: "Running", category: "Sports" },
+    { interest: "Yoga", category: "Sports" },
+    { interest: "Team Sports", category: "Sports" },
+    { interest: "Strength Training", category: "Sports" },
+    { interest: "Outdoor Adventure", category: "Sports" },
+
+    { interest: "Movies and TV", category: "General" },
+    { interest: "Reading", category: "General" },
+    { interest: "Music", category: "General" },
+    { interest: "Cooking", category: "General" },
+    { interest: "Board Games", category: "General" },
+
+    { interest: "Team-Building Activities", category: "Social" },
+    { interest: "Workshops", category: "Social" },
+    { interest: "Outdoor Activities", category: "Social" },
+    { interest: "Cultural Experiences", category: "Social" },
+    { interest: "Relaxation Sessions", category: "Social" },
+
+    { interest: "Networking", category: "Development" },
+    {
+      interest: "Workshops and Seminars",
+      category: "Development",
+    },
+    { interest: "Public Speaking", category: "Development" },
+    { interest: "Leadership Training", category: "Development" },
+    { interest: "Mentorship", category: "Development" },
+  ];
 
   useEffect(() => {
     const fetchCommunities = async () => {
@@ -201,6 +231,11 @@ const DiscoverCommunity = ({ email }) => {
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
+  };
+  const getInterestsByCategory = (category) => {
+    return interests
+      .filter((item) => item.category.toLowerCase() === category.toLowerCase())
+      .map((item) => item.interest);
   };
 
   return (
@@ -469,19 +504,27 @@ const DiscoverCommunity = ({ email }) => {
 
                             {/* Interest Tags */}
                             <div className="flex flex-wrap gap-1 mt-2">
-                              {data.tags &&
-                                data.tags.slice(0, 3).map((tag) => (
-                                  <Chip
-                                    key={tag}
-                                    label={tag}
-                                    variant="outlined"
-                                    size="small"
-                                    sx={{
-                                      borderColor: "#bcd727",
-                                      color: "#bcd727",
-                                      fontFamily: "Poppins, sans-serif",
-                                    }}
-                                  />
+                              {getInterestsByCategory(data.category)
+                                .slice(0, 3)
+                                .map((tag) => (
+                                  <>
+                                    <Chip
+                                      key={tag}
+                                      label={tag}
+                                      variant="filled"
+                                      size="small"
+                                      sx={{
+                                        borderColor: "",
+                                        color: "black",
+                                        fontFamily: "Poppins, sans-serif",
+                                      }}
+                                      className="hover:bg-gray-200 bg-gray-300"
+                                    />
+
+                                    {/* <span className="bg-gray-400 text-black rounded px-1 py-1">
+                                      {tag}
+                                    </span> */}
+                                  </>
                                 ))}
                               {data.tags && data.tags.length > 3 && (
                                 <Chip
@@ -577,7 +620,7 @@ const DiscoverCommunity = ({ email }) => {
                                 fullWidth
                                 variant="contained"
                                 onClick={() => handleJoinCommunity(data)}
-                                startIcon={<CheckCircle />}
+                                startIcon={<AddCircleOutlineIcon />}
                                 sx={{
                                   backgroundColor: "#bcd727",
                                   color: "#fff",
