@@ -103,6 +103,10 @@ const DiscoverCommunity = ({ email }) => {
     fetchCommunities();
   }, []);
 
+  useEffect(() => {
+    console.log("Submitted Data : ", submittedData);
+  }, [submittedData]);
+
   const handleViewCommunity = (data) => {
     // Redirect to the specified path format with community ID
     router.push(`/Home/community/${data.id}`);
@@ -506,9 +510,8 @@ const DiscoverCommunity = ({ email }) => {
 
                           {/* Interest Tags */}
                           <div className="flex flex-wrap gap-1 mt-2">
-                            {getInterestsByCategory(data.category)
-                              .slice(0, 3)
-                              .map((tag) => (
+                            {data.selectedInterests &&
+                              data.selectedInterests.map((tag) => (
                                 <>
                                   <Chip
                                     key={tag}

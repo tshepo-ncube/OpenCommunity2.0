@@ -148,6 +148,7 @@ export default class CommunityDB {
             category: data.category,
             status: data.status, // Include status in the fetched data
             communityImage: data.communityImage,
+            selectedInterests: data.selectedInterests,
           });
         }
       });
@@ -176,7 +177,13 @@ export default class CommunityDB {
     // }
   };
 
-  static createCommunity = async (item, image, setCommunities, setLoading) => {
+  static createCommunity = async (
+    item,
+    image,
+    setCommunities,
+    setLoading,
+    selectedInterests
+  ) => {
     setLoading(true);
     const communityURL = await CommunityDB.uploadCommunityImage(image);
     const object = {
@@ -186,6 +193,8 @@ export default class CommunityDB {
       category: item.category,
       status: item.status || "active", // Include status field with default value "active"
       communityImage: communityURL,
+      selectedInterests: selectedInterests,
+      createdAt: new Date(),
     };
     try {
       const docRef = await addDoc(collection(DB, "communities"), object);
@@ -242,6 +251,8 @@ export default class CommunityDB {
           category: data.category,
           status: data.status, // Include status in the fetched data
           communityImage: data.communityImage,
+          selectedInterests: data.selectedInterests,
+
           //UpcomingEventsCount: counter,
           //Tshepo: "Tshspoe",
         });
@@ -272,6 +283,7 @@ export default class CommunityDB {
           status: data.status, // Include status in the fetched data
           communityImage: data.communityImage,
           score: data.score || 0, // Assign 0 if score is undefined or null
+          selectedInterests: data.selectedInterests,
         };
 
         // Compare score and track the community with the highest score
@@ -422,7 +434,7 @@ export default class CommunityDB {
         if (upcomingEventsCount === undefined) {
           upcomingEventsCount = 0;
         }
-        console.log("Upcoming events: ", upcomingEventsCount);
+        //console.log("Upcoming events: ", upcomingEventsCount);
 
         const data = doc.data();
         communities.push({
@@ -434,6 +446,7 @@ export default class CommunityDB {
           users: data.users || [], // Ensure users field is included
           communityImage: data.communityImage,
           UpcomingEventsCount: upcomingEventsCount,
+          selectedInterests: data.selectedInterests,
         });
       }
 

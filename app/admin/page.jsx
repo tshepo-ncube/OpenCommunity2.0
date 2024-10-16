@@ -6,6 +6,7 @@ import AdminCommunity from "../../_Components/AdminCommunities";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import strings from "../../Utils/strings.json";
+import InterestSelection from "@/_Components/InterestsSelection";
 
 const CreateCommunity = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -15,7 +16,7 @@ const CreateCommunity = () => {
   const [description, setDescription] = useState("");
   const [submittedData, setSubmittedData] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
-  const [category, setCategory] = useState("general");
+  const [category, setCategory] = useState("Fitness & Wellness");
   const [view, setView] = useState("Communities");
   const [userName, setUserName] = useState("");
   const [userSurname, setUserSurname] = useState("");
@@ -25,6 +26,9 @@ const CreateCommunity = () => {
   const fileInputRef = useRef(null);
   const popupRef = useRef(null);
   const userPopupRef = useRef(null);
+
+  const [selectedInterests, setSelectedInterests] = useState([]);
+
   const handleUploadButtonClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -97,7 +101,8 @@ const CreateCommunity = () => {
           (newCommunity) => {
             setSubmittedData((prevData) => [...prevData, newCommunity]);
           },
-          setLoading
+          setLoading,
+          selectedInterests
 
           // ,
           // {
@@ -150,6 +155,10 @@ const CreateCommunity = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    console.log("Category: ", category);
+  }, [category]);
 
   const generateDescription = async () => {
     console.log("generate Description");
@@ -255,12 +264,20 @@ const CreateCommunity = () => {
                     className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                     required
                   >
-                    <option value="General">General</option>
-                    <option value="Sports">Sports/Fitness</option>
-                    <option value="Social">Social Activities</option>
-                    <option value="Retreat">Company Retreat</option>
-                    <option value="Development">
-                      Professional Development
+                    <option value="Fitness & Wellness">
+                      Fitness & Wellness
+                    </option>
+                    <option value="Food & Drinks">Food & Drinks</option>
+                    <option value="Arts & Culture">Arts & Culture</option>
+                    <option value="Tech & Gaming">Tech & Gaming</option>
+                    <option value="Social & Networking">
+                      Social & Networking
+                    </option>
+                    <option value="Hobbies & Interests">
+                      Hobbies & Interests
+                    </option>
+                    <option value="Travel & Adventure">
+                      Travel & Adventure
                     </option>
                   </select>
                 </div>
@@ -309,6 +326,15 @@ const CreateCommunity = () => {
                     <p className="mt-2 text-gray-600">Uploaded: {image.name}</p>
                   )}
                 </div>
+
+                <label className="block text-m text-gray-700 font-semibold">
+                  Select Community Interests
+                </label>
+                <InterestSelection
+                  max={3}
+                  setSelectedInterests={setSelectedInterests}
+                  selectedInterests={selectedInterests}
+                />
 
                 <div className="flex justify-end">
                   <button
