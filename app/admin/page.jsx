@@ -27,14 +27,14 @@ const CreateCommunity = () => {
   const [userPhone, setUserPhone] = useState("");
   const [roles, setRoles] = useState({ user: false, admin: false });
   const fileInputRef = useRef(null);
-  const popupRef = useRef(null);
   const userPopupRef = useRef(null);
   const [image, setImage] = useState(null);
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState(""); // State for search query
-
   const [searchTerm, setSearchTerm] = useState("");
 
+  const [selectedUser, setSelectedUser] = useState(null); // Selected user for role handover
+  const popupRef = useRef(null);
   const handleUploadButtonClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -123,6 +123,37 @@ const CreateCommunity = () => {
       }
     };
     fetchUsers();
+  }, []);
+
+  // Function to handle role handover
+  const handleHandoverRole = async () => {
+    if (selectedUser) {
+      try {
+        // Update the selected user's role to super admin
+        const userRef = doc(DB, "users", selectedUser.id);
+        await updateDoc(userRef, { role: "super_admin" });
+
+        // Show success message or perform further actions
+        console.log(`Super admin role handed over to: ${selectedUser.Email}`);
+        setPopupOpen(false); // Close popup after successful handover
+      } catch (error) {
+        console.error("Error handing over super admin role:", error);
+      }
+    } else {
+      alert("Please select a user to hand over the role.");
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setPopupOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   const handleAdminRoleChange = async (email, newRole) => {
@@ -400,21 +431,80 @@ const CreateCommunity = () => {
           )}
         </>
       ) : (
-        // User Management Tab
         <div className="mt-8 max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg relative">
-          {/* Handover My Role Button */}
+          {/* Button to open the Handover Role popup */}
           <div className="flex justify-end mb-4">
             <button
-              //onClick={handleHandoverRole}
-              className="px-4 py-2 text-white font-semibold rounded-lg shadow-md transition-colors"
-              style={{
-                backgroundColor: "#bcd727",
-                hover: { backgroundColor: "#a6c521" },
-              }}
+              onClick={handleOpenPopup}
+              className="btn bg-blue-500 hover:bg-blue-700 text-white font-medium rounded-lg px-5 py-2.5"
             >
               Handover My Role
             </button>
           </div>
+
+          {/* Popup for handover role */}
+          {isPopupOpen && (
+            <>
+              <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md z-10"></div>
+              <div
+                ref={popupRef}
+                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 max-h-full overflow-auto"
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold text-gray-800">
+                    Handover of Super Admin Role
+                  </h2>
+                  <button
+                    className="text-gray-500 hover:text-gray-700"
+                    onClick={handleClosePopup}
+                  >
+                    <CloseIcon />
+                  </button>
+                </div>
+                <p className="mb-4 text-gray-700">
+                  Please select an admin from the below list of users that you
+                  would like to pass your super admin role to. Please note that
+                  by doing this, you will no longer have super admin
+                  capabilities to assign and take away admin rights from the
+                  users of the system.
+                </p>
+
+                {/* User list to select for role handover */}
+                <div className="mb-6">
+                  <label className="block text-left font-semibold text-gray-700 mb-2">
+                    Select User:
+                  </label>
+                  <select
+                    value={selectedUser ? selectedUser.id : ""}
+                    onChange={(e) => {
+                      const user = filteredUsers.find(
+                        (user) => user.id === e.target.value
+                      );
+                      setSelectedUser(user);
+                    }}
+                    className="block w-full p-2 border border-gray-300 rounded-md"
+                  >
+                    <option value="">-- Select a user --</option>
+                    {filteredUsers.map((user) => (
+                      <option key={user.id} value={user.id}>
+                        {user.Name} {user.Surname} ({user.Email})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Submit button to confirm role handover */}
+                <div className="flex justify-end">
+                  <button
+                    onClick={handleHandoverRole}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
+                  >
+                    Handover Role
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Admin Management Header */}
           <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">
