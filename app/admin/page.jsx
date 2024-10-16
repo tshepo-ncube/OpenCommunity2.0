@@ -208,10 +208,13 @@ const CreateCommunity = () => {
     fetchUsers();
   }, []);
 
-  // Filter admin users based on the search term
+  // Modify the filteredAdminUsers to exclude the emails found in console
   const filteredAdminUsers = adminUsers.filter((user) => {
     const fullName = `${user.Name} ${user.Surname} ${user.Email}`.toLowerCase();
-    return fullName.includes(searchTerm.toLowerCase());
+    return (
+      fullName.includes(searchTerm.toLowerCase()) &&
+      !consoleEmails.includes(user.Email)
+    );
   });
   // Function to handle role handover
 
