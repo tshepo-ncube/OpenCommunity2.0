@@ -237,7 +237,7 @@ const CreateCommunity = () => {
           } rounded-t-lg`}
           onClick={() => setActiveTab("tab2")}
         >
-          User Management
+          Admin Management
         </button>
       </div>
 
@@ -401,57 +401,62 @@ const CreateCommunity = () => {
         </>
       ) : (
         // User Management Tab
-        <div className="mt-8">
-          <h2 className="text-lg font-semibold mb-4">User Management</h2>
+        <div className="mt-8 max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">
+            Admin Management
+          </h2>
 
           {/* Search Bar */}
-          <div className="mb-4">
+          <div className="mb-6">
             <input
               type="text"
               placeholder="Search by name, surname, or email"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="border rounded w-full py-2 px-3"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           {/* User List */}
           {filteredUsers.length > 0 ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead>
+              <table className="min-w-full bg-white shadow-md rounded-lg divide-y divide-gray-200">
+                <thead className="bg-gray-100">
                   <tr>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-500">
+                    <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Name
                     </th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-500">
+                    <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Surname
                     </th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-500">
+                    <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Email
                     </th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-500">
+                    <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                       Admin Role
-                    </th>
-                    <th className="px-4 py-2 text-center text-sm font-medium text-gray-500">
-                      Super Admin Role
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {filteredUsers.map((user) => (
-                    <tr key={user.Email}>
-                      <td className="px-4 py-2">{user.Name}</td>
-                      <td className="px-4 py-2">{user.Surname}</td>
-                      <td className="px-4 py-2">{user.Email}</td>
-
-                      <td className="px-4 py-2">
-                        <label>
+                    <tr key={user.Email} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {user.Name}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {user.Surname}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-900">
+                        {user.Email}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <label className="flex items-center justify-center">
                           <input
                             type="checkbox"
+                            className="form-checkbox h-5 w-5 text-blue-600"
                             checked={user.Role === "admin"}
                             onChange={(e) => {
-                              const isChecked = e.target.checked; // Get the current checkbox state
+                              const isChecked = e.target.checked;
                               const confirmationMessage = isChecked
                                 ? `Are you sure you want to give admin rights to ${user.Email}?`
                                 : `Are you sure you want to revoke admin rights from ${user.Email}?`;
@@ -465,17 +470,13 @@ const CreateCommunity = () => {
                           />
                         </label>
                       </td>
-
-                      <td className="px-4 py-2">
-                        <input type="checkbox" />
-                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           ) : (
-            <p>No results found</p>
+            <p className="text-center text-gray-500 mt-4">No results found</p>
           )}
         </div>
       )}
