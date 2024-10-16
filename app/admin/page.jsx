@@ -32,9 +32,35 @@ const CreateCommunity = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState(""); // State for search query
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [isConfirmationOpen, setIsConfirmationOpen] = useState(false); // State for confirmation modal
+  const [isConfirmPopupOpen, setConfirmPopupOpen] = useState(false); // State for confirmation popup
   const [selectedUser, setSelectedUser] = useState(null); // Selected user for role handover
   const popupRef = useRef(null);
+
+  // Create a new function to handle the actual role handover after confirmation
+  const handleConfirmHandover = async () => {
+    try {
+      // Update the selected user's role to super admin
+      const userRef = doc(DB, "users", selectedUser.id);
+      await updateDoc(userRef, { role: "super_admin" });
+
+      // Show success message or perform further actions
+      console.log(`Super admin role handed over to: ${selectedUser.Email}`);
+      setIsConfirmationOpen(false); // Close confirmation popup
+      setPopupOpen(false); // Close main popup
+      // Optionally show a success message
+      alert("Role handover successful!");
+    } catch (error) {
+      console.error("Error handing over super admin role:", error);
+      alert("Error occurred during role handover. Please try again.");
+    }
+  };
+  const handleCancelHandover = () => setIsConfirmationOpen(false); // Close confirmation modal
+
+  // Handle open and close for confirmation popup
+  const handleOpenConfirmPopup = () => setConfirmPopupOpen(true);
+  const handleCloseConfirmPopup = () => setConfirmPopupOpen(false);
+
   const handleUploadButtonClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -126,19 +152,10 @@ const CreateCommunity = () => {
   }, []);
 
   // Function to handle role handover
-  const handleHandoverRole = async () => {
-    if (selectedUser) {
-      try {
-        // Update the selected user's role to super admin
-        const userRef = doc(DB, "users", selectedUser.id);
-        await updateDoc(userRef, { role: "super_admin" });
 
-        // Show success message or perform further actions
-        console.log(`Super admin role handed over to: ${selectedUser.Email}`);
-        setPopupOpen(false); // Close popup after successful handover
-      } catch (error) {
-        console.error("Error handing over super admin role:", error);
-      }
+  const handleHandoverRole = () => {
+    if (selectedUser) {
+      setIsConfirmationOpen(true); // Show confirmation popup instead of immediate execution
     } else {
       alert("Please select a user to hand over the role.");
     }
@@ -436,9 +453,9 @@ const CreateCommunity = () => {
           <div className="flex justify-end mb-4">
             <button
               onClick={handleOpenPopup}
-              className="btn bg-blue-500 hover:bg-blue-700 text-white font-medium rounded-lg px-5 py-2.5"
+              className="btn bg-gray-400 hover:bg-gray-600 text-white font-medium rounded-lg px-5 py-2.5"
             >
-              Handover My Role
+              Role Handover
             </button>
           </div>
 
@@ -499,7 +516,40 @@ const CreateCommunity = () => {
                     onClick={handleHandoverRole}
                     className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
                   >
-                    Handover Role
+                    Handover my role
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Confirmation Modal */}
+          {isConfirmationOpen && (
+            <>
+              <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md z-50"></div>
+              <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-96">
+                <h3 className="text-lg font-bold mb-4">
+                  Confirm Role Handover
+                </h3>
+                <p className="mb-6 text-gray-700">
+                  Are you sure you want to hand over your super admin role to{" "}
+                  <span className="font-semibold">{selectedUser?.Email}</span>?
+                  <br />
+                  <br />
+                  This action cannot be undone.
+                </p>
+                <div className="flex justify-end space-x-4">
+                  <button
+                    onClick={() => setIsConfirmationOpen(false)}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleConfirmHandover}
+                    className="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg"
+                  >
+                    Confirm Handover
                   </button>
                 </div>
               </div>
