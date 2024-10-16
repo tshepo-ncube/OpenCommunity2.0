@@ -1,6 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-// import Header from "../_Components/header";
 import Header from "../../_Components/header";
 import Navbar from "@/_Components/Navbar";
 import Carousel from "@/_Components/Carousel";
@@ -82,17 +81,24 @@ function Home() {
   const [hottestCommunity, setHottestCommunity] = useState(null);
 
   const [activeTab, setActiveTab] = useState("My Communities");
+  const [UserCommunities, setUserCommunities] = React.useState([]);
+  const [email, setEmail] = React.useState("");
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
-    console.log(tab);
+    localStorage.setItem("activeTab", tab); // Save the active tab in localStorage
   };
-  const [UserCommunities, setUserCommunities] = React.useState([]);
-  const [email, setEmail] = React.useState("");
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  useEffect(() => {
+    const savedTab = localStorage.getItem("activeTab"); // Load the active tab from localStorage
+    if (savedTab) {
+      setActiveTab(savedTab);
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -112,7 +118,6 @@ function Home() {
     console.log("Hottest Community :", hottestCommunity);
   }, [hottestCommunity]);
 
-  // Function to generate consistent color based on category
   const stringToColor = (category) => {
     switch (category.toLowerCase()) {
       case "general":
@@ -126,47 +131,27 @@ function Home() {
       case "development":
         return "#9c27b0"; // Purple
       default:
-        // Generate a color based on hash if category not specified
         let hash = 0;
         for (let i = 0; i < category.length; i++) {
           hash = category.charCodeAt(i) + ((hash << 5) - hash);
         }
-        const color = `hsl(${Math.abs(hash) % 360}, 70%, 80%)`; // Fallback to HSL color
+        const color = `hsl(${Math.abs(hash) % 360}, 70%, 80%)`;
         return color;
     }
   };
 
   useEffect(() => {
-    //Adding points
     console.log("Adding Points...");
-    console.log(
-      "------------------------------------------------------------------------------------"
-    );
-
     CommunityDB.getHottestCommunity(setHottestCommunity);
-
     ManageUser.addUserToGlobalIfNotThere("m.be@outlook.com");
   }, []);
 
   return (
     <>
       <div className=" text-center" style={{ backgroundColor: "#f5f5f5" }}>
-        {/* <div className="App text-center" style={{ backgroundColor: "#f5f5f5" }}>
-        
-         */}
-
-        {/* <Header /> */}
-
         <Navbar isHome={true} />
-
         <HotCommunity />
-
         <Carousel />
-
-        {/* <div>
-          <RecommendedCommunities />
-        </div> */}
-
         <center className="mt-8">
           <Box sx={{ width: "100%", marginTop: 4 }}>
             <div className="flex justify-center mt-6">
@@ -202,44 +187,10 @@ function Home() {
               </div>
             </div>
 
-            {/* <Box
-              sx={{
-                borderBottom: "5px solid white", // Set the border color to green
-                borderColor: "white",
-                width: "100%",
-                height: "12vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "flex-start",
-                pt: 2,
-              }}
-            >
-              <Tabs
-                value={value}
-                onChange={handleChange}
-                aria-label="basic tabs example"
-              >
-                <CustomTab label="My Communities" {...a11yProps(0)} />
-                <CustomTab label="Discover Communities" {...a11yProps(1)} />
-              </Tabs>
-            </Box> */}
-
-            {/* <CustomTabPanel value={value} index={0}>
-              <MyCommunities email={email} />
-            </CustomTabPanel>
-
-            <CustomTabPanel value={value} index={1}>
-              <DiscoverCommunity email={email} />
-            </CustomTabPanel> */}
-
             {activeTab === "My Communities" ? (
-              <>
-                <MyCommunities email={email} />
-              </>
+              <MyCommunities email={email} />
             ) : (
-              <>
-                <DiscoverCommunity email={email} />
-              </>
+              <DiscoverCommunity email={email} />
             )}
           </Box>
         </center>
