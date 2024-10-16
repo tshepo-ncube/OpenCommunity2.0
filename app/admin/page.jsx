@@ -36,6 +36,7 @@ const CreateCommunity = () => {
   const [isConfirmPopupOpen, setConfirmPopupOpen] = useState(false); // State for confirmation popup
   const [selectedUser, setSelectedUser] = useState(null); // Selected user for role handover
   const popupRef = useRef(null);
+  const [adminUsers, setAdminUsers] = useState([]);
   const [consoleEmails, setConsoleEmails] = useState([]);
   // Create a new function to handle the actual role handover after confirmation
   const handleConfirmHandover = async () => {
@@ -193,11 +194,13 @@ const CreateCommunity = () => {
       setLoading(false);
     }, setLoading);
 
-    // Fetch users for Tab 2
     const fetchUsers = async () => {
       try {
         const userList = await UserDB.getAllUsers();
         setUsers(userList);
+        // Filter admin users
+        const admins = userList.filter((user) => user.Role === "admin");
+        setAdminUsers(admins);
       } catch (err) {
         console.error("Error fetching users:", err);
       }
@@ -205,6 +208,11 @@ const CreateCommunity = () => {
     fetchUsers();
   }, []);
 
+  // Filter admin users based on the search term
+  const filteredAdminUsers = adminUsers.filter((user) => {
+    const fullName = `${user.Name} ${user.Surname} ${user.Email}`.toLowerCase();
+    return fullName.includes(searchTerm.toLowerCase());
+  });
   // Function to handle role handover
 
   const handleHandoverRole = () => {
@@ -543,20 +551,20 @@ const CreateCommunity = () => {
                 {/* User list to select for role handover */}
                 <div className="mb-6">
                   <label className="block text-left font-semibold text-gray-700 mb-2">
-                    Select User:
+                    Select Admin User:
                   </label>
                   <select
                     value={selectedUser ? selectedUser.id : ""}
                     onChange={(e) => {
-                      const user = filteredUsers.find(
+                      const user = filteredAdminUsers.find(
                         (user) => user.id === e.target.value
                       );
                       setSelectedUser(user);
                     }}
                     className="block w-full p-2 border border-gray-300 rounded-md"
                   >
-                    <option value="">-- Select a user --</option>
-                    {filteredUsers.map((user) => (
+                    <option value="">-- Select an admin --</option>
+                    {filteredAdminUsers.map((user) => (
                       <option key={user.id} value={user.id}>
                         {user.Name} {user.Surname} ({user.Email})
                       </option>
