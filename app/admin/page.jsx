@@ -42,31 +42,27 @@ const CreateCommunity = () => {
   // Create a new function to handle the actual role handover after confirmation
   const handleConfirmHandover = async () => {
     try {
-      // Get the logged-in user's email from the consoleEmails state or wherever it is stored
-      const loggedInUserEmail = consoleEmails[0]; // Assuming the first email in the list is the logged-in user's email
-
-      // Find the logged-in user in the database
-      const allUsers = await UserDB.getAllUsers(); // Fetch all users
+      const loggedInUserEmail = consoleEmails[0];
+      const allUsers = await UserDB.getAllUsers();
       const loggedInUser = allUsers.find(
         (user) => user.Email === loggedInUserEmail
-      ); // Find the logged-in user
+      );
 
       if (loggedInUser) {
-        // Update the logged-in user's role to "no"
         const loggedInUserRef = doc(DB, "users", loggedInUser.id);
         await updateDoc(loggedInUserRef, { role: "noSuper" });
 
-        // Update the selected user's role to "super_admin"
         const selectedUserRef = doc(DB, "users", selectedUser.id);
         await updateDoc(selectedUserRef, { role: "super_admin" });
 
-        // Show success message or perform further actions
         console.log(`Super admin role handed over to: ${selectedUser.Email}`);
-        setIsConfirmationOpen(false); // Close confirmation popup
-        setPopupOpen(false); // Close main popup
+        setIsConfirmationOpen(false);
+        setPopupOpen(false);
 
-        // Optionally show a success message
         alert("Role handover successful!");
+
+        // Add this line to refresh the page
+        window.location.reload();
       } else {
         console.log("Logged-in user not found.");
         alert("Error: Logged-in user not found.");
@@ -76,7 +72,6 @@ const CreateCommunity = () => {
       alert("Error occurred during role handover. Please try again.");
     }
   };
-
   const handleCancelHandover = () => setIsConfirmationOpen(false); // Close confirmation modal
 
   // Handle open and close for confirmation popup
