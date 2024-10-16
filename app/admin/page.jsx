@@ -118,7 +118,9 @@ const CreateCommunity = () => {
     const isHighlighted = consoleEmails.includes(email);
     return (
       <td
-        className={`px-6 py-4 text-sm ${isHighlighted ? "text-red-600" : "text-gray-900"}`}
+        className={`px-6 py-4 text-sm ${
+          isHighlighted ? "text-red-600" : "text-gray-900"
+        }`}
       >
         {email}
       </td>
@@ -636,38 +638,50 @@ const CreateCommunity = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {filteredUsers.map((user) => (
-                    <tr key={user.Email} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {user.Name}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {user.Surname}
-                      </td>
-                      {renderEmailCell(user.Email)}
-                      <td className="px-6 py-4 text-center">
-                        <label className="flex items-center justify-center">
-                          <input
-                            type="checkbox"
-                            className="form-checkbox h-5 w-5 text-blue-600"
-                            checked={user.Role === "admin"}
-                            onChange={(e) => {
-                              const isChecked = e.target.checked;
-                              const confirmationMessage = isChecked
-                                ? `Are you sure you want to give admin rights to ${user.Email}?`
-                                : `Are you sure you want to revoke admin rights from ${user.Email}?`;
+                  {filteredUsers.map((user) => {
+                    const isHighlighted = consoleEmails.includes(user.Email);
+                    return (
+                      <tr
+                        key={user.Email}
+                        className={`hover:bg-gray-50 ${isHighlighted ? "bg-gray-200" : ""}`}
+                      >
+                        <td className="px-6 py-4 text-sm text-gray-900">
+                          {user.Name}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-900">
+                          {user.Surname}
+                        </td>
+                        {renderEmailCell(user.Email)}
+                        <td className="px-6 py-4 text-center">
+                          <label className="flex items-center justify-center">
+                            <input
+                              type="checkbox"
+                              className="form-checkbox h-5 w-5 text-blue-600"
+                              checked={user.Role === "admin"}
+                              onChange={(e) => {
+                                if (!isHighlighted) {
+                                  const isChecked = e.target.checked;
+                                  const confirmationMessage = isChecked
+                                    ? `Are you sure you want to give admin rights to ${user.Email}?`
+                                    : `Are you sure you want to revoke admin rights from ${user.Email}?`;
 
-                              const confirmation =
-                                window.confirm(confirmationMessage);
-                              if (confirmation) {
-                                handleAdminRoleChange(user.Email, user.Role);
-                              }
-                            }}
-                          />
-                        </label>
-                      </td>
-                    </tr>
-                  ))}
+                                  const confirmation =
+                                    window.confirm(confirmationMessage);
+                                  if (confirmation) {
+                                    handleAdminRoleChange(
+                                      user.Email,
+                                      user.Role
+                                    );
+                                  }
+                                }
+                              }}
+                              disabled={isHighlighted}
+                            />
+                          </label>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
