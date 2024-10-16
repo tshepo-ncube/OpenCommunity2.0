@@ -401,7 +401,22 @@ const CreateCommunity = () => {
         </>
       ) : (
         // User Management Tab
-        <div className="mt-8 max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+        <div className="mt-8 max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg relative">
+          {/* Handover My Role Button */}
+          <div className="flex justify-end mb-4">
+            <button
+              //onClick={handleHandoverRole}
+              className="px-4 py-2 text-white font-semibold rounded-lg shadow-md transition-colors"
+              style={{
+                backgroundColor: "#bcd727",
+                hover: { backgroundColor: "#a6c521" },
+              }}
+            >
+              Handover My Role
+            </button>
+          </div>
+
+          {/* Admin Management Header */}
           <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">
             Admin Management
           </h2>
