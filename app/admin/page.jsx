@@ -38,6 +38,7 @@ const CreateCommunity = () => {
   const popupRef = useRef(null);
   const [adminUsers, setAdminUsers] = useState([]);
   const [consoleEmails, setConsoleEmails] = useState([]);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false); // New state for super admin check
   // Create a new function to handle the actual role handover after confirmation
   const handleConfirmHandover = async () => {
     try {
@@ -102,8 +103,8 @@ const CreateCommunity = () => {
     const { name, checked } = e.target;
     setRoles((prevRoles) => ({ ...prevRoles, [name]: checked }));
   };
+  // Find emails in console and check for super admin message
   useEffect(() => {
-    // Function to find emails in console logs
     const findEmailsInConsole = () => {
       const originalConsoleLog = console.log;
       let foundEmails = [];
@@ -114,6 +115,13 @@ const CreateCommunity = () => {
             const email = arg.Email;
             if (email && typeof email === "string") {
               foundEmails.push(email);
+            }
+          } else if (typeof arg === "string") {
+            // Check for super admin messages
+            if (arg.includes("User is a super admin")) {
+              setIsSuperAdmin(true);
+            } else if (arg.includes("User is not a super admin")) {
+              setIsSuperAdmin(false);
             }
           }
         });
@@ -131,7 +139,6 @@ const CreateCommunity = () => {
 
     findEmailsInConsole();
   }, []);
-
   // ... (keep all existing functions)
 
   // Modified table cell rendering for email
@@ -362,16 +369,18 @@ const CreateCommunity = () => {
         >
           Community Management
         </button>
-        <button
-          className={`px-4 py-2 ${
-            activeTab === "tab2"
-              ? "bg-openbox-green text-white"
-              : "bg-gray-200 text-gray-700"
-          } rounded-t-lg`}
-          onClick={() => setActiveTab("tab2")}
-        >
-          Admin Management
-        </button>
+        {isSuperAdmin && (
+          <button
+            className={`px-4 py-2 ${
+              activeTab === "tab2"
+                ? "bg-openbox-green text-white"
+                : "bg-gray-200 text-gray-700"
+            } rounded-t-lg`}
+            onClick={() => setActiveTab("tab2")}
+          >
+            Admin Management
+          </button>
+        )}
       </div>
 
       {/* Tab Content */}
