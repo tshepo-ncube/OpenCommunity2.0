@@ -126,7 +126,16 @@ const CreateCommunity = () => {
       </td>
     );
   };
-
+  // Function to sort users, placing highlighted emails first
+  const sortUsers = (users) => {
+    return [...users].sort((a, b) => {
+      const isAHighlighted = consoleEmails.includes(a.Email);
+      const isBHighlighted = consoleEmails.includes(b.Email);
+      if (isAHighlighted && !isBHighlighted) return -1;
+      if (!isAHighlighted && isBHighlighted) return 1;
+      return 0;
+    });
+  };
   const handleFormSubmit = async (e, status) => {
     e.preventDefault();
 
@@ -638,7 +647,7 @@ const CreateCommunity = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {filteredUsers.map((user) => {
+                  {sortUsers(filteredUsers).map((user) => {
                     const isHighlighted = consoleEmails.includes(user.Email);
                     return (
                       <tr
