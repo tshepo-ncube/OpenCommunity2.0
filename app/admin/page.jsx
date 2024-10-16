@@ -36,7 +36,7 @@ const CreateCommunity = () => {
   const [isConfirmPopupOpen, setConfirmPopupOpen] = useState(false); // State for confirmation popup
   const [selectedUser, setSelectedUser] = useState(null); // Selected user for role handover
   const popupRef = useRef(null);
-
+  const [consoleEmails, setConsoleEmails] = useState([]);
   // Create a new function to handle the actual role handover after confirmation
   const handleConfirmHandover = async () => {
     try {
@@ -80,6 +80,49 @@ const CreateCommunity = () => {
   const handleRoleChange = (e) => {
     const { name, checked } = e.target;
     setRoles((prevRoles) => ({ ...prevRoles, [name]: checked }));
+  };
+  useEffect(() => {
+    // Function to find emails in console logs
+    const findEmailsInConsole = () => {
+      const originalConsoleLog = console.log;
+      let foundEmails = [];
+
+      console.log = function (...args) {
+        args.forEach((arg) => {
+          if (typeof arg === "object" && arg !== null) {
+            const email = arg.Email;
+            if (email && typeof email === "string") {
+              foundEmails.push(email);
+            }
+          }
+        });
+        originalConsoleLog.apply(console, args);
+      };
+
+      // Store found emails in state
+      setConsoleEmails(foundEmails);
+
+      // Restore original console.log after component unmounts
+      return () => {
+        console.log = originalConsoleLog;
+      };
+    };
+
+    findEmailsInConsole();
+  }, []);
+
+  // ... (keep all existing functions)
+
+  // Modified table cell rendering for email
+  const renderEmailCell = (email) => {
+    const isHighlighted = consoleEmails.includes(email);
+    return (
+      <td
+        className={`px-6 py-4 text-sm ${isHighlighted ? "text-red-600" : "text-gray-900"}`}
+      >
+        {email}
+      </td>
+    );
   };
 
   const handleFormSubmit = async (e, status) => {
@@ -601,9 +644,7 @@ const CreateCommunity = () => {
                       <td className="px-6 py-4 text-sm text-gray-900">
                         {user.Surname}
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-900">
-                        {user.Email}
-                      </td>
+                      {renderEmailCell(user.Email)}
                       <td className="px-6 py-4 text-center">
                         <label className="flex items-center justify-center">
                           <input
