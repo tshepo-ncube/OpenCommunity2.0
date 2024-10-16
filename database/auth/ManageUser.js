@@ -199,6 +199,15 @@ export default class ManageUser {
         const object2 = { id: doc.id };
 
         // Check if the user is an admin
+        if (userData.role === "super_admin") {
+          console.log("User is a super admin");
+          setIsAdmin(true); // Set admin status
+        } else {
+          console.log("User is not a a super admin");
+          setIsAdmin(false); // Set non-admin status
+        }
+
+        // Check if the user is an admin
         if (userData.Role === "admin") {
           console.log("User is an admin");
           setIsAdmin(true); // Set admin status
