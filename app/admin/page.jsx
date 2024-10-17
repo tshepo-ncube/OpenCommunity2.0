@@ -38,10 +38,38 @@ const CreateCommunity = () => {
   const popupRef = useRef(null);
   const [adminUsers, setAdminUsers] = useState([]);
   const [consoleEmails, setConsoleEmails] = useState([]);
-
-  const [selectedCommunity, setSelectedCommunity] = useState(""); // State to handle selected community
-  const [communities, setCommunities] = useState([]); // State for communities
   const [isSuperAdmin, setIsSuperAdmin] = useState(false); // New state for super admin check
+  const [isCommunityHandoverOpen, setCommunityHandoverOpen] = useState(false);
+  const [selectedCommunity, setSelectedCommunity] = useState(null);
+  const [selectedNewAdmin, setSelectedNewAdmin] = useState(null);
+  const [isHandoverConfirmationOpen, setHandoverConfirmationOpen] =
+    useState(false);
+  const communityHandoverRef = useRef(null);
+
+  // Add new handler for community admin handover
+  const handleCommunityHandover = async () => {
+    if (!selectedCommunity || !selectedNewAdmin) {
+      alert("Please select both a community and a new admin.");
+      return;
+    }
+
+    try {
+      const communityRef = doc(DB, "communities", selectedCommunity.id);
+      await updateDoc(communityRef, { admin: selectedNewAdmin.Email });
+
+      alert("Community admin rights successfully transferred!");
+      setCommunityHandoverOpen(false);
+
+      // Refresh the communities list
+      CommunityDB.getAllCommunities((data) => {
+        setSubmittedData(data);
+        setLoading(false);
+      }, setLoading);
+    } catch (error) {
+      console.error("Error transferring community admin rights:", error);
+      alert("Error occurred during transfer. Please try again.");
+    }
+  };
   // Create a new function to handle the actual role handover after confirmation
   const handleConfirmHandover = async () => {
     try {
@@ -559,10 +587,142 @@ const CreateCommunity = () => {
             </button>
           </div>
           <div className="flex justify-end mb-4">
-            <button className="btn bg-gray-400 hover:bg-gray-600 text-white font-medium rounded-lg px-5 py-2.5">
-              Community admin Handover
+            <button
+              onClick={() => setCommunityHandoverOpen(true)}
+              className="btn bg-gray-400 hover:bg-gray-600 text-white font-medium rounded-lg px-5 py-2.5"
+            >
+              Community Admin Handover
             </button>
           </div>
+
+          {/* Community Admin Handover Popup */}
+          {isCommunityHandoverOpen && (
+            <>
+              <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md z-10"></div>
+              <div
+                ref={communityHandoverRef}
+                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 max-h-full overflow-auto"
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold text-gray-800">
+                    Community Admin Handover
+                  </h2>
+                  <button
+                    className="text-gray-500 hover:text-gray-700"
+                    onClick={() => setCommunityHandoverOpen(false)}
+                  >
+                    <CloseIcon />
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Community Selection */}
+                  <div>
+                    <label className="block text-left font-semibold text-gray-700 mb-2">
+                      Select Community:
+                    </label>
+                    <select
+                      value={selectedCommunity ? selectedCommunity.id : ""}
+                      onChange={(e) => {
+                        const community = submittedData.find(
+                          (comm) => comm.id === e.target.value
+                        );
+                        setSelectedCommunity(community);
+                      }}
+                      className="block w-full p-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="">-- Select a community --</option>
+                      {submittedData.map((community) => (
+                        <option key={community.id} value={community.id}>
+                          {community.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* New Admin Selection */}
+                  <div>
+                    <label className="block text-left font-semibold text-gray-700 mb-2">
+                      Select New Admin:
+                    </label>
+                    <select
+                      value={selectedNewAdmin ? selectedNewAdmin.id : ""}
+                      onChange={(e) => {
+                        const user = users.find(
+                          (user) => user.id === e.target.value
+                        );
+                        setSelectedNewAdmin(user);
+                      }}
+                      className="block w-full p-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="">-- Select a new admin --</option>
+                      {users.map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.Name} {user.Surname} ({user.Email})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="flex justify-end space-x-4">
+                    <button
+                      onClick={() => setCommunityHandoverOpen(false)}
+                      className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => setHandoverConfirmationOpen(true)}
+                      className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
+                      disabled={!selectedCommunity || !selectedNewAdmin}
+                    >
+                      Transfer Admin Rights
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Confirmation Modal */}
+          {isHandoverConfirmationOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md z-50 flex items-center justify-center">
+              <div className="bg-white p-8 rounded-md shadow-xl max-w-md w-full mx-4">
+                <h3 className="text-lg font-bold mb-4">
+                  Confirm Community Admin Transfer
+                </h3>
+                <p className="mb-6 text-gray-700">
+                  Are you sure you want to transfer admin rights for{" "}
+                  <span className="font-semibold">
+                    {selectedCommunity?.name}
+                  </span>{" "}
+                  to{" "}
+                  <span className="font-semibold">
+                    {selectedNewAdmin?.Name} {selectedNewAdmin?.Surname}
+                  </span>
+                  ?
+                </p>
+                <div className="flex justify-end space-x-4">
+                  <button
+                    onClick={() => setHandoverConfirmationOpen(false)}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleCommunityHandover();
+                      setHandoverConfirmationOpen(false);
+                    }}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
+                  >
+                    Confirm Transfer
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Popup for handover role */}
           {isPopupOpen && (
