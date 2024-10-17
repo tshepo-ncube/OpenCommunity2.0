@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import Navbar from "@/_Components/Navbar";
 import Autocomplete from "react-google-autocomplete";
 import CommunityDB from "@/database/community/community";
 import Snackbar from "@mui/material/Snackbar";
@@ -1041,6 +1042,7 @@ export default function CommunityPage({ params }) {
 
   return (
     <div className="bg-background_gray h-full">
+      <Navbar />
       <Header />
       {/* <div className="flex flex-col fixed bottom-7 right-4">
         <button
