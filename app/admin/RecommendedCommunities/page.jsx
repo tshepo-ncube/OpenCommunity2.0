@@ -146,10 +146,10 @@ export default function RecommendationsTable() {
   };
 
   const handleAddClick = (rec) => {
-    setName(rec.name);
-    setDescription(rec.description);
-    setCategory("Fitness & Wellness"); // Default category
-    setPopupOpen(true);
+    setName(rec.name); // Populate with selected community name
+    setDescription(rec.description); // Populate with selected community description
+    setCategory("Fitness & Wellness"); // Default category or set it based on your logic
+    setPopupOpen(true); // Open the popup
   };
 
   const handleEmailClick = (email, name, description, category) => {
