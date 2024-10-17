@@ -38,6 +38,9 @@ const CreateCommunity = () => {
   const popupRef = useRef(null);
   const [adminUsers, setAdminUsers] = useState([]);
   const [consoleEmails, setConsoleEmails] = useState([]);
+
+  const [selectedCommunity, setSelectedCommunity] = useState(""); // State to handle selected community
+  const [communities, setCommunities] = useState([]); // State for communities
   const [isSuperAdmin, setIsSuperAdmin] = useState(false); // New state for super admin check
   // Create a new function to handle the actual role handover after confirmation
   const handleConfirmHandover = async () => {
@@ -553,6 +556,11 @@ const CreateCommunity = () => {
               className="btn bg-gray-400 hover:bg-gray-600 text-white font-medium rounded-lg px-5 py-2.5"
             >
               Role Handover
+            </button>
+          </div>
+          <div className="flex justify-end mb-4">
+            <button className="btn bg-gray-400 hover:bg-gray-600 text-white font-medium rounded-lg px-5 py-2.5">
+              Community admin Handover
             </button>
           </div>
 

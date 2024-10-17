@@ -224,7 +224,32 @@ export default class CommunityDB {
       throw error;
     }
   };
+
   static getAllCommunities = async (setCommunities, setLoading) => {
+    setLoading(true);
+    const communities = [];
+    try {
+      const querySnapshot = await getDocs(collection(DB, "communities"));
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        communities.push({
+          id: doc.id,
+          name: data.name,
+          description: data.description,
+          category: data.category,
+          status: data.status, // Include status in the fetched data
+          communityImage: data.communityImage,
+        });
+      });
+
+      setCommunities(communities);
+    } catch (e) {
+      console.error("Error fetching communities: ", e);
+    }
+    setLoading(false);
+  };
+
+  static getAllAdminCommunities = async (setCommunities, setLoading) => {
     setLoading(true);
     const communities = [];
     const adminEmail = localStorage.getItem("Email"); // Get the current admin email
