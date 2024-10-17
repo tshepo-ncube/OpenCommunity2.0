@@ -80,67 +80,47 @@ export default class CommunityDB {
     }
   };
 
-  static RecommendedCommunities = async (setCommunities) => {
+  static haveCommonItem = (arr1, arr2) => {
+    console.log(arr1, arr2);
+    const set1 = new Set(arr1);
+    return arr2.some((item) => set1.has(item));
+  };
+
+  static RecommendedCommunities = async (setCommunities, setLoading) => {
+    setLoading(true);
     if (typeof window === "undefined") return;
 
     const userDetails = await UserDB.getUser(localStorage.getItem("UserID"));
-    //the above line of code is an array of Interests, which all belong to the interests below
-    //e.g. userDetails = ["Running","Yoga"]
-    // console.log(userDetails);
+
     console.log("userDetails :", userDetails);
 
-    const interests = [
-      { interest: "Running", category: "Sports" },
-      { interest: "Yoga", category: "Sports" },
-      { interest: "Team Sports", category: "Sports" },
-      { interest: "Strength Training", category: "Sports" },
-      { interest: "Outdoor Adventure", category: "Sports" },
-
-      { interest: "Movies and TV", category: "General" },
-      { interest: "Reading", category: "General" },
-      { interest: "Music", category: "General" },
-      { interest: "Cooking", category: "General" },
-      { interest: "Board Games", category: "General" },
-
-      { interest: "Team-Building Activities", category: "Social" },
-      { interest: "Workshops", category: "Social" },
-      { interest: "Outdoor Activities", category: "Social" },
-      { interest: "Cultural Experiences", category: "Social" },
-      { interest: "Relaxation Sessions", category: "Social" },
-
-      { interest: "Networking", category: "Development" },
-      {
-        interest: "Workshops and Seminars",
-        category: "Development",
-      },
-      { interest: "Public Speaking", category: "Development" },
-      { interest: "Leadership Training", category: "Development" },
-      { interest: "Mentorship", category: "Development" },
-    ];
-
-    //now I would like to get communities with a category belonging to the interests of userDetails
-    //not all the communities
-
-    const userInterestCategories = interests
-      .filter((interestObj) =>
-        userDetails.Interests.includes(interestObj.interest)
-      ) // Get interest objects for the user's interests
-      .map((interestObj) => interestObj.category); // Extract the categories
-
-    // Remove duplicates in categories
-    const uniqueCategories = [...new Set(userInterestCategories)];
-
-    console.log("unique Cate: ", uniqueCategories);
-
-    // Step 2: Fetch communities and filter based on matching categories
     const communities = [];
+    var i = 0;
     try {
       const querySnapshot = await getDocs(collection(DB, "communities"));
       querySnapshot.forEach((doc) => {
         const data = doc.data();
+        console.log("this is a community ", i);
+        console.log(data);
 
-        // Only push communities that match one of the user's interest categories
-        if (uniqueCategories.includes(data.category)) {
+        console.log("data.selectedInterests : ", data.selectedInterests);
+        // communities.push({
+        //   id: doc.id,
+        //   name: data.name,
+        //   description: data.description,
+        //   category: data.category,
+        //   status: data.status, // Include status in the fetched data
+        //   communityImage: data.communityImage,
+        //   selectedInterests: data.selectedInterests,
+        // });
+        console.log(
+          "Have commont item : ",
+          this.haveCommonItem(data.selectedInterests, userDetails.Interests)
+        );
+        console.log("common.");
+        if (
+          this.haveCommonItem(data.selectedInterests, userDetails.Interests)
+        ) {
           communities.push({
             id: doc.id,
             name: data.name,
@@ -151,30 +131,20 @@ export default class CommunityDB {
             selectedInterests: data.selectedInterests,
           });
         }
+
+        i += 1;
       });
-      setCommunities(communities);
+      console.log("Length :", communities.length);
+      //setCommunities(communities);
+      setCommunities(communities.slice(0, 5));
+      setLoading(false);
     } catch (e) {
       console.error("Error fetching communities: ", e);
-      setCommunities([]);
+      console.log("Length :", communities.length);
+      //setCommunities(communities);
+      setCommunities(communities.slice(0, 5));
+      setLoading(false);
     }
-
-    // const communities = [];
-    // try {
-    //   const querySnapshot = await getDocs(collection(DB, "communities"));
-    //   querySnapshot.forEach((doc) => {
-    //     const data = doc.data();
-    //     communities.push({
-    //       id: doc.id,
-    //       name: data.name,
-    //       description: data.description,
-    //       category: data.category,
-    //       status: data.status, // Include status in the fetched data
-    //       communityImage: data.communityImage,
-    //     });
-    //   });
-    // } catch (e) {
-    //   console.error("Error fetching communities: ", e);
-    // }
   };
 
   static createCommunity = async (
