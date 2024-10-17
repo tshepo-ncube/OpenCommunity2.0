@@ -42,9 +42,31 @@ const CreateCommunity = () => {
   const [isCommunityHandoverOpen, setCommunityHandoverOpen] = useState(false);
   const [selectedCommunity, setSelectedCommunity] = useState(null);
   const [selectedNewAdmin, setSelectedNewAdmin] = useState(null);
+  const [currentAdmin, setCurrentAdmin] = useState(null);
   const [isHandoverConfirmationOpen, setHandoverConfirmationOpen] =
     useState(false);
   const communityHandoverRef = useRef(null);
+
+  // Update the community selection handler
+  const handleCommunitySelection = (e) => {
+    const communityId = e.target.value;
+    const community = submittedData.find((comm) => comm.id === communityId);
+    setSelectedCommunity(community);
+
+    if (community && community.admin) {
+      // Find the admin user details from the users array
+      const adminUser = users.find((user) => user.Email === community.admin);
+      setCurrentAdmin(
+        adminUser || {
+          Name: "Unknown",
+          Surname: "",
+          Email: community.admin,
+        }
+      );
+    } else {
+      setCurrentAdmin(null);
+    }
+  };
 
   // Add new handler for community admin handover
   const handleCommunityHandover = async () => {
@@ -623,12 +645,7 @@ const CreateCommunity = () => {
                     </label>
                     <select
                       value={selectedCommunity ? selectedCommunity.id : ""}
-                      onChange={(e) => {
-                        const community = submittedData.find(
-                          (comm) => comm.id === e.target.value
-                        );
-                        setSelectedCommunity(community);
-                      }}
+                      onChange={handleCommunitySelection}
                       className="block w-full p-2 border border-gray-300 rounded-md"
                     >
                       <option value="">-- Select a community --</option>
@@ -638,6 +655,23 @@ const CreateCommunity = () => {
                         </option>
                       ))}
                     </select>
+                  </div>
+
+                  {/* Current Admin Display */}
+                  <div>
+                    <label className="block text-left font-semibold text-gray-700 mb-2">
+                      Current Admin:
+                    </label>
+                    <input
+                      type="text"
+                      value={
+                        currentAdmin
+                          ? `${currentAdmin.Name} ${currentAdmin.Surname} (${currentAdmin.Email})`
+                          : "No admin assigned"
+                      }
+                      className="block w-full p-2 border border-gray-300 rounded-md bg-gray-50"
+                      disabled
+                    />
                   </div>
 
                   {/* New Admin Selection */}

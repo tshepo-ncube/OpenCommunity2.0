@@ -62,7 +62,7 @@ const DiscoverCommunity = ({ email }) => {
 
   const filterDataByCategoryAndStatus = (data) => {
     return data
-      .filter((item) => item.users.includes(email))
+      .filter((item) => Array.isArray(item.users) && item.users.includes(email))
       .filter((item) => {
         const categoryMatch =
           selectedCategory.toLowerCase() === "all communities" ||
