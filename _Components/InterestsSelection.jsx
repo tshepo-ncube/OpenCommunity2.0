@@ -76,11 +76,18 @@ const InterestSelection = ({
 
   // Function to toggle selection of interest
   const toggleInterest = (interest) => {
+    console.log(interest);
+    console.log(selectedInterests);
+    console.log();
     if (selectedInterests.includes(interest)) {
+      console.log("selectedInterests.includes(interest)");
       setSelectedInterests(selectedInterests.filter((i) => i !== interest));
     } else {
+      console.log("selectedInterests DOES NOT includes(interest)");
       if (selectedInterests.length < max) {
+        console.log("selectedInterests.length < max");
         setSelectedInterests([...selectedInterests, interest]);
+        console.log("just set selected interests");
       }
     }
   };
