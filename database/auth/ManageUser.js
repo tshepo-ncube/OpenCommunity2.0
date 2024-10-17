@@ -173,6 +173,8 @@ export default class ManageUser {
 
     // Set the "capital" field of the city 'DC'
     await updateDoc(communityRef, object);
+
+    return true;
   };
 
   static getProfileData = async (
