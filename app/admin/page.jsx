@@ -126,7 +126,8 @@ const CreateCommunity = () => {
     }
   };
   const handleCancelHandover = () => setIsConfirmationOpen(false); // Close confirmation modal
-
+  // Filter out only admin users for the dropdown
+  const adminOnlyUsers = users.filter((user) => user.Role === "admin");
   // Handle open and close for confirmation popup
   const handleOpenConfirmPopup = () => setConfirmPopupOpen(true);
   const handleCloseConfirmPopup = () => setConfirmPopupOpen(false);
@@ -666,7 +667,7 @@ const CreateCommunity = () => {
                       type="text"
                       value={
                         currentAdmin
-                          ? `${currentAdmin.Name} ${currentAdmin.Surname} (${currentAdmin.Email})`
+                          ? `(${currentAdmin.Email})`
                           : "No admin assigned"
                       }
                       className="block w-full p-2 border border-gray-300 rounded-md bg-gray-50"
@@ -682,7 +683,7 @@ const CreateCommunity = () => {
                     <select
                       value={selectedNewAdmin ? selectedNewAdmin.id : ""}
                       onChange={(e) => {
-                        const user = users.find(
+                        const user = adminOnlyUsers.find(
                           (user) => user.id === e.target.value
                         );
                         setSelectedNewAdmin(user);
@@ -690,7 +691,7 @@ const CreateCommunity = () => {
                       className="block w-full p-2 border border-gray-300 rounded-md"
                     >
                       <option value="">-- Select a new admin --</option>
-                      {users.map((user) => (
+                      {adminOnlyUsers.map((user) => (
                         <option key={user.id} value={user.id}>
                           {user.Name} {user.Surname} ({user.Email})
                         </option>
