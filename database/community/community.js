@@ -176,37 +176,23 @@ export default class CommunityDB {
 
   static createCommunity = async (item, image, setCommunities, setLoading) => {
     setLoading(true);
-
-    // Upload the community image and get the URL
     const communityURL = await CommunityDB.uploadCommunityImage(image);
-
-    // Retrieve the current user's email from localStorage (or any other user management system)
-    const adminEmail = localStorage.getItem("Email");
-
-    // Create the community object including the admin field
-    const communityObject = {
-      users: [], // Start with an empty users array
+    const object = {
+      users: [],
       name: item.name,
       description: item.description,
       category: item.category,
-      status: item.status || "active", // Default to active status
+      status: item.status || "active", // Include status field with default value "active"
       communityImage: communityURL,
-      admin: adminEmail, // Set the current user as the admin
     };
-
     try {
-      // Add the community document to Firestore
-      const docRef = await addDoc(
-        collection(DB, "communities"),
-        communityObject
-      );
-      console.log("Community created with Document ID: ", docRef.id);
+      const docRef = await addDoc(collection(DB, "communities"), object);
+      console.log("Document ID: ", docRef.id);
     } catch (e) {
-      console.error("Error adding community document: ", e);
+      console.log("Error adding document: ", e);
     }
 
-    // Refresh the list of communities
-    await this.getAllCommunities(setCommunities, setLoading);
+    await this.getAllCommunities(setCommunities, setLoading); // Wait for communities to be fetched
     setLoading(false);
   };
 
@@ -238,22 +224,27 @@ export default class CommunityDB {
       throw error;
     }
   };
-
   static getAllCommunities = async (setCommunities, setLoading) => {
     setLoading(true);
     const communities = [];
+    const adminEmail = localStorage.getItem("Email"); // Get the current admin email
+
     try {
       const querySnapshot = await getDocs(collection(DB, "communities"));
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        communities.push({
-          id: doc.id,
-          name: data.name,
-          description: data.description,
-          category: data.category,
-          status: data.status, // Include status in the fetched data
-          communityImage: data.communityImage,
-        });
+
+        // Only push communities where the admin field matches the logged-in admin's email
+        if (data.admin === adminEmail) {
+          communities.push({
+            id: doc.id,
+            name: data.name,
+            description: data.description,
+            category: data.category,
+            status: data.status, // Include status in the fetched data
+            communityImage: data.communityImage,
+          });
+        }
       });
 
       setCommunities(communities);
@@ -384,31 +375,6 @@ export default class CommunityDB {
       console.error("Error updating community status:", error);
       throw error;
     }
-  };
-
-  static getAllCommunities = async (setCommunities, setLoading) => {
-    setLoading(true);
-    const communities = [];
-    try {
-      const querySnapshot = await getDocs(collection(DB, "communities"));
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        communities.push({
-          id: doc.id,
-          name: data.name,
-          description: data.description,
-          category: data.category,
-          status: data.status, // Include status in the fetched data
-          users: data.users || [], // Ensure users field is included,
-          communityImage: data.communityImage,
-        });
-      });
-
-      setCommunities(communities);
-    } catch (e) {
-      console.error("Error fetching communities: ", e);
-    }
-    setLoading(false);
   };
 
   static joinCommunity = async (communityId, userEmail) => {
