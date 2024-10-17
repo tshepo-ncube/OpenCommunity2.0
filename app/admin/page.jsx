@@ -93,7 +93,9 @@ const CreateCommunity = () => {
         </div>
         <div className="mb-4">
           <p className="text-gray-700 mb-2">{error.message}</p>
-          <p className="text-gray-900 font-medium">Similar community:</p>
+          <p className="text-gray-900 font-medium">
+            Similar community name is:
+          </p>
           <p className="text-gray-700 bg-gray-50 p-2 rounded mt-1">
             {error.similarCommunity}
           </p>
