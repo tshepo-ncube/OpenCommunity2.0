@@ -96,7 +96,7 @@ export default function RecommendationsTable() {
     e.preventDefault();
 
     if (selectedInterests.length < 3) {
-      alert("Please add more interests");
+      Swal.fire("Error", "Please select at least 3 interests", "error");
       return;
     }
 
@@ -108,16 +108,34 @@ export default function RecommendationsTable() {
     };
 
     try {
+      setIsLoading(true);
+
+      // Create the community
       await CommunityDB.createCommunity(
         communityData,
         image,
         (newCommunity) => {
-          setSubmittedData((prevData) => [...prevData, newCommunity]);
+          console.log("Community created successfully:", newCommunity);
         },
-        setLoading,
+        setIsLoading,
         selectedInterests
       );
 
+      // Find and delete the recommendation after successful community creation
+      const recommendationToDelete = recommendations.find(
+        (rec) => rec.name === name
+      );
+
+      if (recommendationToDelete) {
+        await RecommendationDB.deleteRecommendation(recommendationToDelete.id);
+
+        // Update the recommendations state by fetching fresh data
+        const updatedRecommendations =
+          await RecommendationDB.getAllRecommendations();
+        setRecommendations(updatedRecommendations);
+      }
+
+      // Reset form fields
       setName("");
       setDescription("");
       setCategory("Fitness & Wellness");
@@ -125,26 +143,25 @@ export default function RecommendationsTable() {
       setSelectedInterests([]);
       setPopupOpen(false);
 
-      // Remove the recommendation after successful community creation
-      const rec = recommendations.find((r) => r.name === name);
-      if (rec) {
-        await RecommendationDB.deleteRecommendation(rec.id);
-        const updatedRecommendations =
-          await RecommendationDB.getAllRecommendations();
-        setRecommendations(updatedRecommendations);
-      }
-
-      Swal.fire("Success", "Community created successfully.", "success");
+      // Show success message
+      Swal.fire({
+        title: "Success",
+        text: "Community created successfully and removed from recommendations",
+        icon: "success",
+        confirmButtonColor: "#bcd727",
+      });
     } catch (error) {
-      console.error("Error creating community:", error);
-      Swal.fire(
-        "Error",
-        "Failed to create community. Please try again.",
-        "error"
-      );
+      console.error("Error in community creation:", error);
+      Swal.fire({
+        title: "Error",
+        text: "Failed to create community. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#bcd727",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
-
   const handleAddClick = (rec) => {
     setName(rec.name); // Populate with selected community name
     setDescription(rec.description); // Populate with selected community description
@@ -464,17 +481,10 @@ export default function RecommendationsTable() {
                 <div className="flex justify-end">
                   <button
                     type="button"
-                    onClick={(e) => handleFormSubmit(e, "draft")}
-                    className="btn bg-gray-500 hover:bg-gray-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
-                  >
-                    Save as Draft
-                  </button>
-                  <button
-                    type="button"
                     onClick={(e) => handleFormSubmit(e, "active")}
                     className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
-                    Create
+                    Create Community
                   </button>
                   <button
                     onClick={() => setPopupOpen(false)}
