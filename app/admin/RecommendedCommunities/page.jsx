@@ -144,7 +144,9 @@ export default function RecommendationsTable() {
       setCategory("Fitness & Wellness");
       setImage(null);
       setSelectedInterests([]);
-      setPopupOpen(false);
+
+      // Close the popup
+      setPopupOpen(false); // This closes the popup
 
       // Show success message
       Swal.fire({
@@ -165,6 +167,7 @@ export default function RecommendationsTable() {
       setIsLoading(false);
     }
   };
+
   const handleAddClick = (rec) => {
     setName(rec.name); // Populate with selected community name
     setDescription(rec.description); // Populate with selected community description
@@ -482,13 +485,6 @@ export default function RecommendationsTable() {
                 />
 
                 <div className="flex justify-end">
-                  <button
-                    type="button"
-                    onClick={(e) => handleFormSubmit(e, "draft")}
-                    className="btn bg-gray-500 hover:bg-gray-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
-                  >
-                    Save as Draft
-                  </button>
                   <button
                     type="button"
                     onClick={(e) => handleFormSubmit(e, "active")}
