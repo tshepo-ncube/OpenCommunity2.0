@@ -616,7 +616,7 @@ const Profile = () => {
                   {selectedInterests ? (
                     <>
                       <InterestSelection
-                        max={3}
+                        max={5}
                         selectedInterests={selectedInterests}
                         setSelectedInterests={setSelectedInterests}
                       />

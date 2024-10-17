@@ -104,15 +104,7 @@ export default class CommunityDB {
         console.log(data);
 
         console.log("data.selectedInterests : ", data.selectedInterests);
-        // communities.push({
-        //   id: doc.id,
-        //   name: data.name,
-        //   description: data.description,
-        //   category: data.category,
-        //   status: data.status, // Include status in the fetched data
-        //   communityImage: data.communityImage,
-        //   selectedInterests: data.selectedInterests,
-        // });
+
         console.log(
           "Have commont item : ",
           this.haveCommonItem(data.selectedInterests, userDetails.Interests)

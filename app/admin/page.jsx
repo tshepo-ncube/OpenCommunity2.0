@@ -95,21 +95,25 @@ const CreateCommunity = () => {
         // console.log(res.data);
         // let data = res.data;
 
-        CommunityDB.createCommunity(
-          communityData,
-          image,
-          (newCommunity) => {
-            setSubmittedData((prevData) => [...prevData, newCommunity]);
-          },
-          setLoading,
-          selectedInterests
+        if (selectedInterests.length < 3) {
+          alert("Please add more interests");
+        } else {
+          CommunityDB.createCommunity(
+            communityData,
+            image,
+            (newCommunity) => {
+              setSubmittedData((prevData) => [...prevData, newCommunity]);
+            },
+            setLoading,
+            selectedInterests
 
-          // ,
-          // {
-          //   WebUrl: data.webUrl,
-          //   ChannelID: data.id,
-          // }
-        );
+            // ,
+            // {
+            //   WebUrl: data.webUrl,
+            //   ChannelID: data.id,
+            // }
+          );
+        }
       } catch (err) {
         console.log("error");
       }
