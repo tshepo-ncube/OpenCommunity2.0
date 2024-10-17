@@ -25,6 +25,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/admin/RecommendedCommunities/page.js"
+    ],
+    "/auth/RecommendCommunity/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/auth/RecommendCommunity/page.js"
     ]
   }
 }

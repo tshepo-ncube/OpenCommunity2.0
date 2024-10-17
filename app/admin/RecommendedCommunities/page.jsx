@@ -168,7 +168,7 @@ export default function RecommendationsTable() {
   const handleAddClick = (rec) => {
     setName(rec.name); // Populate with selected community name
     setDescription(rec.description); // Populate with selected community description
-    setCategory("Fitness & Wellness"); // Default category or set it based on your logic
+    setCategory(rec.category); // Set category based on the selected recommendation
     setPopupOpen(true); // Open the popup
   };
 
