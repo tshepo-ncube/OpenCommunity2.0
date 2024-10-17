@@ -21,6 +21,10 @@ import {
   Box,
   Divider,
 } from "@mui/material";
+import { FaFire } from "react-icons/fa"; // Import the fire icon from react-icons
+
+import Image from "next/image";
+import FireSvg from "@/lib/images/trace.svg";
 import {
   CheckCircle,
   People,
@@ -34,10 +38,10 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
+import { FaFireAlt } from "react-icons/fa";
 import CommunityDB from "../database/community/community";
 import { useRouter } from "next/navigation";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Lens } from "../components/ui/lens";
@@ -377,7 +381,7 @@ const DiscoverCommunity = ({ email }) => {
                     //     </Tooltip>
                     //   </div>
                     // </Grid>
-                    <div className="">
+                    <div className="relative">
                       {/* <div className="w-full relative rounded-3xl overflow-hidden max-w-md mx-auto bg-gradient-to-r from-[#1D2235] to-[#121318] p-8 my-10">
                        */}
                       {/* <Rays />
@@ -419,6 +423,38 @@ const DiscoverCommunity = ({ email }) => {
                         </motion.div>
                       </div> */}
 
+                      {data.isHot ? (
+                        <>
+                          <button className="flex items-center absolute mt-1 mr-1  top-0 right-0 bg-red-500 text-white px-2 py-2 rounded-full">
+                            <FaFire className="mr-2" />
+                            <span>Hot</span>
+                          </button>
+                        </>
+                      ) : (
+                        <></>
+                      )}
+
+                      <div className="">
+                        {/* <div class="flex flex-row">
+                          <FaFireAlt
+                            color="white p-2"
+                            className="m-2"
+                            size={20}
+                          />
+
+                          <p className="text-white text-sm p-1">Hot</p>
+                        </div> */}
+                        {/* <button className="flex items-center absolute   top-0 left-0 bg-red-500 text-white px-4 py-2 rounded-full">
+                          <FaFire className="mr-2" />
+                          <span>Hot</span>
+                        </button> */}
+                        {/* <Image
+                          src={FireSvg}
+                          alt="FireSvg"
+                          style={{ width: "30px" }}
+                        /> */}
+                      </div>
+
                       <Card
                         className="flex flex-col h-full"
                         sx={{
@@ -427,14 +463,15 @@ const DiscoverCommunity = ({ email }) => {
                           height: "350px", // Fixed card height
                           boxShadow: 3,
                           borderRadius: 2,
-                          transition: "transform 0.2s, box-shadow 0.2s",
-                          "&:hover": {
-                            transform: "scale(1.02)",
-                            boxShadow: 6,
-                          },
+                          // transition: "transform 0.2s, box-shadow 0.2s",
+                          // "&:hover": {
+                          //   transform: "scale(1.02)",
+                          //   boxShadow: 6,
+                          // },
                         }}
                       >
                         {/* Community Image */}
+
                         <CardMedia
                           component="img"
                           height="175" // Half of the card height (350px / 2)

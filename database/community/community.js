@@ -205,6 +205,10 @@ export default class CommunityDB {
       const querySnapshot = await getDocs(collection(DB, "communities"));
       querySnapshot.forEach((doc) => {
         const data = doc.data();
+
+        // const score = data.scoreEE;
+        // var communityHot = false;
+
         //var counter = await CommunityDB.getUpcomingEventsCount(doc.id);
         communities.push({
           id: doc.id,
@@ -386,6 +390,10 @@ export default class CommunityDB {
   static getAllCommunities = async (setCommunities, setLoading) => {
     setLoading(true);
     const communities = [];
+
+    let highestScore = -90; // To track the highest score
+    let hotCommunityIndex = -1; // To track the index of the community with the highest score
+
     try {
       const querySnapshot = await getDocs(collection(DB, "communities"));
 
@@ -399,6 +407,9 @@ export default class CommunityDB {
         //console.log("Upcoming events: ", upcomingEventsCount);
 
         const data = doc.data();
+        // Check if score exists, if undefined assign a default value like 0
+        const score = data.score !== undefined ? data.score : 0;
+
         communities.push({
           id: doc.id,
           name: data.name,
@@ -409,9 +420,22 @@ export default class CommunityDB {
           communityImage: data.communityImage,
           UpcomingEventsCount: upcomingEventsCount,
           selectedInterests: data.selectedInterests,
+          score: score,
         });
-      }
 
+        //Check if this community has the highest score
+      }
+      // Mark the community with the highest score as hot
+      // if (hotCommunityIndex !== -1) {
+      //   //communities[hotCommunityIndex].isHot = true; // Set isHot to true for the highest-scored community
+      // }
+
+      communities.sort((a, b) => (b.score || 0) - (a.score || 0));
+
+      // Mark the first community (with the highest score) as `isHot: true`
+      if (communities.length > 0) {
+        communities[0].isHot = true;
+      }
       setCommunities(communities);
     } catch (e) {
       console.error("Error fetching communities: ", e);
