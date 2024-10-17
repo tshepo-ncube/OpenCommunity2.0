@@ -110,7 +110,16 @@ export default function RecommendationsTable() {
     try {
       setIsLoading(true);
 
-      // Create the community
+      // Find the recommendation before trying to delete it
+      const recommendationToDelete = recommendations.find(
+        (rec) => rec.name.toLowerCase() === name.toLowerCase()
+      );
+
+      if (!recommendationToDelete) {
+        throw new Error("Recommendation not found");
+      }
+
+      // Create the community first
       await CommunityDB.createCommunity(
         communityData,
         image,
@@ -121,19 +130,13 @@ export default function RecommendationsTable() {
         selectedInterests
       );
 
-      // Find and delete the recommendation after successful community creation
-      const recommendationToDelete = recommendations.find(
-        (rec) => rec.name === name
+      // After successful community creation, delete the recommendation
+      await RecommendationDB.deleteRecommendation(recommendationToDelete.id);
+
+      // Update the local state to remove the recommendation
+      setRecommendations((prevRecs) =>
+        prevRecs.filter((rec) => rec.id !== recommendationToDelete.id)
       );
-
-      if (recommendationToDelete) {
-        await RecommendationDB.deleteRecommendation(recommendationToDelete.id);
-
-        // Update the recommendations state by fetching fresh data
-        const updatedRecommendations =
-          await RecommendationDB.getAllRecommendations();
-        setRecommendations(updatedRecommendations);
-      }
 
       // Reset form fields
       setName("");
@@ -154,7 +157,7 @@ export default function RecommendationsTable() {
       console.error("Error in community creation:", error);
       Swal.fire({
         title: "Error",
-        text: "Failed to create community. Please try again.",
+        text: error.message || "Failed to create community. Please try again.",
         icon: "error",
         confirmButtonColor: "#bcd727",
       });
@@ -481,10 +484,17 @@ export default function RecommendationsTable() {
                 <div className="flex justify-end">
                   <button
                     type="button"
+                    onClick={(e) => handleFormSubmit(e, "draft")}
+                    className="btn bg-gray-500 hover:bg-gray-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                  >
+                    Save as Draft
+                  </button>
+                  <button
+                    type="button"
                     onClick={(e) => handleFormSubmit(e, "active")}
                     className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
-                    Create Community
+                    Create
                   </button>
                   <button
                     onClick={() => setPopupOpen(false)}
