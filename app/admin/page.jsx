@@ -162,14 +162,20 @@ const CreateCommunity = () => {
   const handleFormSubmit = async (e, status) => {
     e.preventDefault();
 
+    // Get the logged-in user's email (assuming consoleEmails stores the logged-in user's email)
+    const adminEmail = consoleEmails[0]; // Assuming the first email is the logged-in user's email
+
+    // Create the community data with the admin field
     const communityData = {
       name,
       description,
       category,
       status,
+      admin: adminEmail, // Adding the admin field with the logged-in user's email
     };
 
     if (editIndex !== null) {
+      // Update existing community
       CommunityDB.updateCommunity(
         { id: submittedData[editIndex].id, ...communityData },
         (updatedData) => {
@@ -180,7 +186,8 @@ const CreateCommunity = () => {
         setLoading
       );
     } else {
-      console.log("creating a channel now...");
+      // Create a new community
+      console.log("Creating a community now...");
       try {
         CommunityDB.createCommunity(
           communityData,
@@ -191,10 +198,11 @@ const CreateCommunity = () => {
           setLoading
         );
       } catch (err) {
-        console.log("error");
+        console.log("Error:", err);
       }
     }
 
+    // Clear the form fields after submission
     setName("");
     setDescription("");
     setCategory("general");

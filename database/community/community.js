@@ -176,23 +176,37 @@ export default class CommunityDB {
 
   static createCommunity = async (item, image, setCommunities, setLoading) => {
     setLoading(true);
+
+    // Upload the community image and get the URL
     const communityURL = await CommunityDB.uploadCommunityImage(image);
-    const object = {
-      users: [],
+
+    // Retrieve the current user's email from localStorage (or any other user management system)
+    const adminEmail = localStorage.getItem("Email");
+
+    // Create the community object including the admin field
+    const communityObject = {
+      users: [], // Start with an empty users array
       name: item.name,
       description: item.description,
       category: item.category,
-      status: item.status || "active", // Include status field with default value "active"
+      status: item.status || "active", // Default to active status
       communityImage: communityURL,
+      admin: adminEmail, // Set the current user as the admin
     };
+
     try {
-      const docRef = await addDoc(collection(DB, "communities"), object);
-      console.log("Document ID: ", docRef.id);
+      // Add the community document to Firestore
+      const docRef = await addDoc(
+        collection(DB, "communities"),
+        communityObject
+      );
+      console.log("Community created with Document ID: ", docRef.id);
     } catch (e) {
-      console.log("Error adding document: ", e);
+      console.error("Error adding community document: ", e);
     }
 
-    await this.getAllCommunities(setCommunities, setLoading); // Wait for communities to be fetched
+    // Refresh the list of communities
+    await this.getAllCommunities(setCommunities, setLoading);
     setLoading(false);
   };
 
