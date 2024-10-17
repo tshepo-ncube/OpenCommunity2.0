@@ -355,7 +355,8 @@ export default function RecommendationsTable() {
           <div className="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-md z-50">
             <div
               ref={popupRef}
-              className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-auto max-h-[90vh] overflow-auto"
+              className="fixed top-0 left-1/2 transform -translate-x-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2"
+              style={{ marginTop: "50px" }} // Adjust this value for spacing from the top
             >
               <h1 className="text-xl font-bold text-gray-700 tracking-wide mb-4">
                 Create a new community
