@@ -239,6 +239,7 @@ export default class CommunityDB {
           category: data.category,
           status: data.status, // Include status in the fetched data
           communityImage: data.communityImage,
+          admin: data.admin,
         });
       });
 

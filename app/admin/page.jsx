@@ -640,6 +640,7 @@ const CreateCommunity = () => {
 
                 <div className="space-y-6">
                   {/* Community Selection */}
+                  {/* Community Selection */}
                   <div>
                     <label className="block text-left font-semibold text-gray-700 mb-2">
                       Select Community:
@@ -652,7 +653,7 @@ const CreateCommunity = () => {
                       <option value="">-- Select a community --</option>
                       {submittedData.map((community) => (
                         <option key={community.id} value={community.id}>
-                          {community.name}
+                          {community.name} - {community.admin}
                         </option>
                       ))}
                     </select>
