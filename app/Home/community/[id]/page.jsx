@@ -732,6 +732,19 @@ export default function CommunityPage({ params }) {
                               alt={event.Name}
                               className="w-full h-40 object-cover rounded"
                             />
+
+                            <div className="mt-4 mb-2">
+                              <div className="flex items-center justify-center space-x-2">
+                                <Rating
+                                  value={averageRating}
+                                  readOnly
+                                  precision={0.1}
+                                />
+                                <span className="text-sm text-gray-600">
+                                  ({event.Reviews?.length || 0} reviews)
+                                </span>
+                              </div>
+                            </div>
                           </div>
                           <div className="border-b-2 border-gray-300 mb-2">
                             <h3 className="text-xl font-semibold text-center">
@@ -754,19 +767,6 @@ export default function CommunityPage({ params }) {
                             <div>
                               <strong>End Date:</strong>{" "}
                               {formatDate(event.EndDate)}
-                            </div>
-                          </div>
-
-                          <div className="mt-4 mb-2">
-                            <div className="flex items-center justify-center space-x-2">
-                              <Rating
-                                value={averageRating}
-                                readOnly
-                                precision={0.1}
-                              />
-                              <span className="text-sm text-gray-600">
-                                ({event.Reviews?.length || 0} reviews)
-                              </span>
                             </div>
                           </div>
 
