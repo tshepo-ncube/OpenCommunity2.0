@@ -711,52 +711,76 @@ export default function CommunityPage({ params }) {
               {pastEvents.length > 0 ? (
                 <div className="overflow-x-auto">
                   <ul className="flex space-x-6">
-                    {pastEvents.map((event) => (
-                      <li
-                        key={event.id}
-                        className="min-w-[300px] w-[300px] bg-white shadow-2xl rounded-md flex flex-col p-4"
-                      >
-                        <div className="mb-4">
-                          <img
-                            src="https://th.bing.com/th/id/OIP.F00dCf4bXxX0J-qEEf4qIQHaD6?rs=1&pid=ImgDetMain"
-                            alt={event.Name}
-                            className="w-full h-40 object-cover rounded"
-                          />
-                        </div>
-                        <div className="border-b-2 border-gray-300 mb-2">
-                          <h3 className="text-xl font-semibold text-center">
-                            {event.Name}
-                          </h3>
-                        </div>
+                    {pastEvents.map((event) => {
+                      // Calculate average rating
+                      const averageRating =
+                        event.Reviews && event.Reviews.length > 0
+                          ? event.Reviews.reduce(
+                              (sum, review) => sum + review.Rating,
+                              0
+                            ) / event.Reviews.length
+                          : 0;
 
-                        <div className="text-gray-600 flex-grow">
-                          <div className="mb-2">
-                            <strong>Description:</strong>{" "}
-                            {event.EventDescription}
+                      return (
+                        <li
+                          key={event.id}
+                          className="min-w-[300px] w-[300px] bg-white shadow-2xl rounded-md flex flex-col p-4"
+                        >
+                          <div className="mb-4">
+                            <img
+                              src="https://th.bing.com/th/id/OIP.F00dCf4bXxX0J-qEEf4qIQHaD6?rs=1&pid=ImgDetMain"
+                              alt={event.Name}
+                              className="w-full h-40 object-cover rounded"
+                            />
                           </div>
-                          <div>
-                            <strong>Location:</strong> {event.Location}
+                          <div className="border-b-2 border-gray-300 mb-2">
+                            <h3 className="text-xl font-semibold text-center">
+                              {event.Name}
+                            </h3>
                           </div>
-                          <div>
-                            <strong>Start Date:</strong>{" "}
-                            {formatDate(event.StartDate)}
-                          </div>
-                          <div>
-                            <strong>End Date:</strong>{" "}
-                            {formatDate(event.EndDate)}
-                          </div>
-                        </div>
 
-                        <div className="mt-auto">
-                          <button
-                            className="fixed-button bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
-                            onClick={() => handleCommentReview(event)}
-                          >
-                            Leave a Comment & Review
-                          </button>
-                        </div>
-                      </li>
-                    ))}
+                          <div className="text-gray-600 flex-grow">
+                            <div className="mb-2">
+                              <strong>Description:</strong>{" "}
+                              {event.EventDescription}
+                            </div>
+                            <div>
+                              <strong>Location:</strong> {event.Location}
+                            </div>
+                            <div>
+                              <strong>Start Date:</strong>{" "}
+                              {formatDate(event.StartDate)}
+                            </div>
+                            <div>
+                              <strong>End Date:</strong>{" "}
+                              {formatDate(event.EndDate)}
+                            </div>
+                          </div>
+
+                          <div className="mt-4 mb-2">
+                            <div className="flex items-center justify-center space-x-2">
+                              <Rating
+                                value={averageRating}
+                                readOnly
+                                precision={0.1}
+                              />
+                              <span className="text-sm text-gray-600">
+                                ({event.Reviews?.length || 0} reviews)
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="mt-auto">
+                            <button
+                              className="fixed-button bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all w-full"
+                              onClick={() => handleCommentReview(event)}
+                            >
+                              Leave a Comment & Review
+                            </button>
+                          </div>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               ) : (
