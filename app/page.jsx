@@ -1,17 +1,19 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import LoginUser from "../database/auth/Login";
 import ManageUser from "../database/auth/ManageUser";
 import Image from "next/image";
 import Logo from "@/lib/images/Logo.jpeg";
+import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importing the icons
 
-const page = () => {
+const Page = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleEmailChange = (e) => {
@@ -22,31 +24,29 @@ const page = () => {
     setPassword(e.target.value);
   };
 
-  // useEffect(() => {
-  //   if (user) {
-  //     router.push("/Home");
-  //   }
-  // }, [user]);
-
-  // useEffect(() => {
-  //   ManageUser.manageUserState(setUser, setLoggedIn);
-  // }, []);
-
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (email.trim() === "" || password.trim() === "") {
       setErrorMessage("Please enter both email and password");
       return;
     }
 
-    LoginUser.loginUser(
-      { email, password },
-      setUser,
-      setErrorMessage,
-      router,
-      setLoggedIn
-    );
+    try {
+      await LoginUser.loginUser(
+        { email, password },
+        setUser,
+        setErrorMessage,
+        router,
+        setLoggedIn
+      );
 
-    setErrorMessage("");
+      if (!loggedIn) {
+        setErrorMessage("Invalid password or email, try again");
+      } else {
+        setErrorMessage("");
+      }
+    } catch (error) {
+      setErrorMessage("Invalid password or email, try again");
+    }
   };
 
   return (
@@ -75,14 +75,13 @@ const page = () => {
                 >
                   Email
                 </label>{" "}
-                {/* Changed text-gray-900 to text-black */}
                 <input
                   type="email"
                   id="email"
                   value={email}
                   onChange={handleEmailChange}
                   placeholder="Enter your email"
-                  className="w-full px-3 py-2 rounded-lg border-2 border-gray outline-none focus:border-indigo-500" // Changed border-gray-200 to border-gray
+                  className="w-full px-3 py-2 rounded-lg border-2 border-gray outline-none focus:border-indigo-500"
                 />
               </div>
               <div className="mb-4">
@@ -92,15 +91,22 @@ const page = () => {
                 >
                   Password
                 </label>{" "}
-                {/* Changed text-gray-900 to text-black */}
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                  placeholder="Enter your password"
-                  className="w-full px-3 py-2 rounded-lg border-2 border-gray outline-none focus:border-indigo-500" // Changed border-gray-200 to border-gray
-                />
+                <div className="relative w-full">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                    placeholder="Enter your password"
+                    className="w-full px-3 py-2 rounded-lg border-2 border-gray outline-none focus:border-indigo-500"
+                  />
+                  <div
+                    className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <FaEye /> : <FaEyeSlash />}
+                  </div>
+                </div>
                 <p className="text-left mt-1">
                   <span
                     className="text-hover-obgreen cursor-pointer"
@@ -138,4 +144,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
