@@ -395,10 +395,10 @@ const EventsHolder = ({
                     >
                       <Typography variant="caption">
                         {value.status === "rsvp"
-                          ? "RSVP"
+                          ? "RSVP Open"
                           : value.status === "active"
-                          ? "Active"
-                          : value.status}
+                            ? "Active"
+                            : value.status}
                       </Typography>
                     </Box>
                   )}
@@ -647,8 +647,8 @@ const EventsHolder = ({
             {selectedEvent?.status === "rsvp"
               ? `RSVP List for ${selectedEvent?.Name}`
               : selectedEvent?.status === "past"
-              ? `Analytics for ${selectedEvent?.Name}`
-              : `Event Details for ${selectedEvent?.Name}`}
+                ? `Analytics for ${selectedEvent?.Name}`
+                : `Event Details for ${selectedEvent?.Name}`}
           </Typography>
           <Box
             sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 2 }}
