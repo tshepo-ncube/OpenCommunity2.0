@@ -121,67 +121,28 @@ export default class EventDB {
   };
 
   static createEvent = async (eventObject, selectedImage) => {
-    if (variable instanceof File) {
+    let eventImage;
+
+    if (selectedImage instanceof File) {
       // The variable is a File
-      console.log("event imag is a file");
-      const eventImage = await EventDB.uploadEventImage(selectedImage);
-
-      const eventWithStatus = {
-        ...eventObject,
-        status: eventObject.status || "active",
-        EventImages: eventImage,
-      };
-
-      try {
-        const eventRef = await addDoc(
-          collection(DB, "events"),
-          eventWithStatus
-        );
-        console.log("Document ID: ", eventRef.id);
-
-        // eventScheduler(eventRef.id);
-        // pollScheduler(eventRef.id);
-      } catch (e) {
-        console.error("Error adding document:", e);
-        throw e;
-      }
+      console.log("event image is a file");
+      eventImage = await EventDB.uploadEventImage(selectedImage);
     } else {
       // The variable is not a File
-      console.log("Event Image is AI gen");
-
-      const eventWithStatus = {
-        ...eventObject,
-        status: eventObject.status || "active",
-        EventImages: selectedImages,
-      };
-
-      try {
-        const eventRef = await addDoc(
-          collection(DB, "events"),
-          eventWithStatus
-        );
-        console.log("Document ID: ", eventRef.id);
-
-        // eventScheduler(eventRef.id);
-        // pollScheduler(eventRef.id);
-      } catch (e) {
-        console.error("Error adding document:", e);
-        throw e;
-      }
+      console.log("Event Image is AI generated");
+      // You need to assign a value to `eventImage` or handle this case properly
+      eventImage = selectedImage; // Ensure selectedImage is defined
     }
 
     const eventWithStatus = {
       ...eventObject,
       status: eventObject.status || "active",
-      EventImages: eventImages,
+      EventImages: eventImage, // Use the defined eventImage
     };
 
     try {
       const eventRef = await addDoc(collection(DB, "events"), eventWithStatus);
       console.log("Document ID: ", eventRef.id);
-
-      // eventScheduler(eventRef.id);
-      // pollScheduler(eventRef.id);
     } catch (e) {
       console.error("Error adding document:", e);
       throw e;
