@@ -147,7 +147,10 @@ const CreateCommunity = () => {
   };
   const handleOpenUserPopup = () => setUserPopupOpen(true);
   const handleCloseUserPopup = () => setUserPopupOpen(false);
-
+  // First, filter the adminOnlyUsers to exclude the current admin
+  const availableAdmins = adminOnlyUsers.filter(
+    (user) => user.Email !== (currentAdmin?.Email || selectedCommunity?.admin)
+  );
   const handleRoleChange = (e) => {
     const { name, checked } = e.target;
     setRoles((prevRoles) => ({ ...prevRoles, [name]: checked }));
@@ -653,7 +656,7 @@ const CreateCommunity = () => {
                       <option value="">-- Select a community --</option>
                       {submittedData.map((community) => (
                         <option key={community.id} value={community.id}>
-                          {community.name} - {community.admin}
+                          {community.name}
                         </option>
                       ))}
                     </select>
@@ -684,7 +687,7 @@ const CreateCommunity = () => {
                     <select
                       value={selectedNewAdmin ? selectedNewAdmin.id : ""}
                       onChange={(e) => {
-                        const user = adminOnlyUsers.find(
+                        const user = availableAdmins.find(
                           (user) => user.id === e.target.value
                         );
                         setSelectedNewAdmin(user);
@@ -692,7 +695,7 @@ const CreateCommunity = () => {
                       className="block w-full p-2 border border-gray-300 rounded-md"
                     >
                       <option value="">-- Select a new admin --</option>
-                      {adminOnlyUsers.map((user) => (
+                      {availableAdmins.map((user) => (
                         <option key={user.id} value={user.id}>
                           {user.Name} {user.Surname} ({user.Email})
                         </option>
