@@ -562,7 +562,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               htmlFor="rsvpLimit"
               className="block text-sm font-medium text-gray-700"
             >
-              RSVP People Limit
+              RSVP Limit
             </label>
             <select
               name="rsvpLimit"
@@ -582,7 +582,8 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 htmlFor="rsvpLimitNumber"
                 className="block text-sm font-medium text-gray-700"
               >
-                RSVP Limit Number
+                Select the maximum number of people who can attend the event
+                below:
               </label>
               <input
                 type="number"
