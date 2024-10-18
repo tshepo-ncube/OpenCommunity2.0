@@ -1,25 +1,81 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import {
-  CircularProgress,
-  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  CardMedia,
   Typography,
+  Button,
+  Chip,
+  Grid,
+  CircularProgress,
   Snackbar,
   Alert,
-  IconButton,
-  Tooltip,
+  TextField,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+  Modal,
+  Box,
+  Divider,
 } from "@mui/material";
+import { FaFire } from "react-icons/fa"; // Import the fire icon from react-icons
+
+import Image from "next/image";
+import FireSvg from "@/lib/images/trace.svg";
+import {
+  CheckCircle,
+  People,
+  CalendarToday, // Calendar Icon
+  ArrowBack,
+  ArrowForward,
+  Search,
+} from "@mui/icons-material";
+import AddIcon from "@mui/icons-material/Add";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+
+import { FaFireAlt } from "react-icons/fa";
 import CommunityDB from "../database/community/community";
 import { useRouter } from "next/navigation";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Lens } from "../components/ui/lens";
 
 const DiscoverCommunity = ({ email }) => {
+  const interests = [
+    { interest: "Running", category: "Sports" },
+    { interest: "Yoga", category: "Sports" },
+    { interest: "Team Sports", category: "Sports" },
+    { interest: "Strength Training", category: "Sports" },
+    { interest: "Outdoor Adventure", category: "Sports" },
+
+    { interest: "Movies and TV", category: "General" },
+    { interest: "Reading", category: "General" },
+    { interest: "Music", category: "General" },
+    { interest: "Cooking", category: "General" },
+    { interest: "Board Games", category: "General" },
+
+    { interest: "Team-Building Activities", category: "Social" },
+    { interest: "Workshops", category: "Social" },
+    { interest: "Outdoor Activities", category: "Social" },
+    { interest: "Cultural Experiences", category: "Social" },
+    { interest: "Relaxation Sessions", category: "Social" },
+
+    { interest: "Networking", category: "Development" },
+    {
+      interest: "Workshops and Seminars",
+      category: "Development",
+    },
+    { interest: "Public Speaking", category: "Development" },
+    { interest: "Leadership Training", category: "Development" },
+    { interest: "Mentorship", category: "Development" },
+  ];
+
   const [hovering, setHovering] = useState(false);
 
   const [loading, setLoading] = useState(true);
@@ -50,6 +106,10 @@ const DiscoverCommunity = ({ email }) => {
 
     fetchCommunities();
   }, []);
+
+  useEffect(() => {
+    console.log("Submitted Data : ", submittedData);
+  }, [submittedData]);
 
   const handleViewCommunity = (data) => {
     // Redirect to the specified path format with community ID
@@ -128,10 +188,16 @@ const DiscoverCommunity = ({ email }) => {
     setDropdownOpen(false); // Close the dropdown after selecting a category
   };
 
+  const getInterestsByCategory = (category) => {
+    return interests
+      .filter((item) => item.category.toLowerCase() === category.toLowerCase())
+      .map((item) => item.interest);
+  };
+
   return (
     <>
       <div className="flex justify-center mt-4 mb-2">
-        <form className="max-w-lg mx-auto w-full z-90">
+        <form className="max-w-lg mx-auto w-full z-10">
           <div className="flex relative">
             <label
               htmlFor="search-dropdown"
@@ -315,13 +381,13 @@ const DiscoverCommunity = ({ email }) => {
                     //     </Tooltip>
                     //   </div>
                     // </Grid>
-                    <div className="w-full border relative rounded-3xl overflow-hidden max-w-md mx-auto bg-white p-8 my-10">
+                    <div className="relative">
                       {/* <div className="w-full relative rounded-3xl overflow-hidden max-w-md mx-auto bg-gradient-to-r from-[#1D2235] to-[#121318] p-8 my-10">
                        */}
                       {/* <Rays />
                       <Beams /> */}
 
-                      <div className="relative z-10">
+                      {/* <div className="relative z-10">
                         <Lens hovering={hovering} setHovering={setHovering}>
                           <Image
                             src={
@@ -355,7 +421,474 @@ const DiscoverCommunity = ({ email }) => {
                             {data.description}
                           </p>
                         </motion.div>
+                      </div> */}
+
+                      {data.isHot ? (
+                        <>
+                          <button className="flex items-center absolute mt-1 mr-1  top-0 right-0 bg-red-500 text-white px-2 py-2 rounded-full">
+                            <FaFire className="mr-2" />
+                            <span>Hot</span>
+                          </button>
+                        </>
+                      ) : (
+                        <></>
+                      )}
+
+                      <div className="">
+                        {/* <div class="flex flex-row">
+                          <FaFireAlt
+                            color="white p-2"
+                            className="m-2"
+                            size={20}
+                          />
+
+                          <p className="text-white text-sm p-1">Hot</p>
+                        </div> */}
+                        {/* <button className="flex items-center absolute   top-0 left-0 bg-red-500 text-white px-4 py-2 rounded-full">
+                          <FaFire className="mr-2" />
+                          <span>Hot</span>
+                        </button> */}
+                        {/* <Image
+                          src={FireSvg}
+                          alt="FireSvg"
+                          style={{ width: "30px" }}
+                        /> */}
                       </div>
+
+                      <Card
+                        className="flex flex-col h-full"
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          height: "350px", // Fixed card height
+                          boxShadow: 3,
+                          borderRadius: 2,
+                          // transition: "transform 0.2s, box-shadow 0.2s",
+                          // "&:hover": {
+                          //   transform: "scale(1.02)",
+                          //   boxShadow: 6,
+                          // },
+                        }}
+                      >
+                        {/* Community Image */}
+
+                        <CardMedia
+                          component="img"
+                          height="175" // Half of the card height (350px / 2)
+                          className="h-40"
+                          image={
+                            data.communityImage
+                              ? data.communityImage
+                              : "https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60"
+                          }
+                          alt={`Image of ${data.name} community`}
+                          loading="lazy" // Enables lazy loading
+                          sx={{
+                            objectFit: "cover",
+                            width: "100%",
+                          }}
+                        />
+
+                        {/* Community Content */}
+                        <CardContent
+                          sx={{ flexGrow: 1, padding: "12px !important" }}
+                        >
+                          {/* Community Name */}
+                          <Typography
+                            gutterBottom
+                            variant="h6"
+                            component="div"
+                            style={{
+                              fontFamily: "Poppins, sans-serif",
+                              fontWeight: "bold", // Bold community names
+                              textAlign: "left",
+                            }}
+                          >
+                            {data.name}
+                          </Typography>
+
+                          {/* Community Description */}
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            style={{
+                              fontFamily: "Poppins, sans-serif",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2, // Two lines for better readability
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              textAlign: "left",
+                            }}
+                          >
+                            {data.description.length > 100
+                              ? `${data.description.substring(0, 100)}... `
+                              : data.description}
+                            {data.description.length > 100 && (
+                              <Button
+                                size="small"
+                                onClick={() =>
+                                  handleOpenModal(data.description)
+                                }
+                                sx={{
+                                  textTransform: "none",
+                                  padding: 0,
+                                  minWidth: "auto",
+                                  color: "#bcd727",
+                                  "&:hover": {
+                                    backgroundColor: "transparent",
+                                    textDecoration: "underline",
+                                  },
+                                }}
+                              >
+                                Read More
+                              </Button>
+                            )}
+                          </Typography>
+
+                          {/* Interest Tags */}
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {data.selectedInterests &&
+                              data.selectedInterests.map((tag) => (
+                                <>
+                                  <Chip
+                                    key={tag}
+                                    label={tag}
+                                    variant="filled"
+                                    size="small"
+                                    sx={{
+                                      borderColor: "",
+                                      color: "black",
+                                      fontFamily: "Poppins, sans-serif",
+                                    }}
+                                    className="hover:bg-gray-200 bg-gray-300"
+                                  />
+
+                                  {/* <span className="bg-gray-400 text-black rounded px-1 py-1">
+                                      {tag}
+                                    </span> */}
+                                </>
+                              ))}
+                            {data.tags && data.tags.length > 3 && (
+                              <Chip
+                                label={`+${data.tags.length - 3}`}
+                                variant="outlined"
+                                size="small"
+                                sx={{
+                                  borderColor: "#bcd727",
+                                  color: "#bcd727",
+                                  fontFamily: "Poppins, sans-serif",
+                                }}
+                              />
+                            )}
+                          </div>
+                        </CardContent>
+
+                        {/* Community Stats and Actions */}
+                        <CardContent
+                          sx={{
+                            paddingTop: "0px !important",
+                            paddingBottom: "0px !important",
+                          }}
+                        >
+                          <Grid container alignItems="center">
+                            {/* Left-aligned: Number of Members */}
+                            <Grid item xs={6}>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                className="flex items-center"
+                                style={{
+                                  fontFamily: "Poppins, sans-serif",
+                                  textAlign: "left",
+                                }}
+                              >
+                                <People
+                                  fontSize="small"
+                                  style={{ marginRight: 4 }}
+                                />
+                                {data.users
+                                  ? data.users.length.toLocaleString()
+                                  : 0}
+                                {data.users.length > 1 ? " Members" : " Member"}
+                              </Typography>
+                            </Grid>
+
+                            {/* Right-aligned: Number of Events */}
+                            <Grid item xs={6}>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                className="flex items-center justify-end"
+                                style={{
+                                  fontFamily: "Poppins, sans-serif",
+                                  textAlign: "right",
+                                }}
+                              >
+                                <CalendarToday
+                                  fontSize="small"
+                                  style={{ marginRight: 4 }}
+                                />
+                                {data.UpcomingEventsCount
+                                  ? data.UpcomingEventsCount.toLocaleString()
+                                  : 0}
+
+                                {data.UpcomingEventsCount > 1
+                                  ? " Events"
+                                  : " Event"}
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                        </CardContent>
+
+                        {/* Join/Joined Button */}
+                        <CardActions sx={{ padding: "12px !important" }}>
+                          {data.users.includes(email) ? (
+                            <Button
+                              fullWidth
+                              variant="outlined"
+                              disabled
+                              startIcon={<CheckCircle />}
+                              sx={{
+                                borderColor: "#bcd727",
+                                color: "#bcd727",
+                                "&:disabled": {
+                                  borderColor: "#bcd727",
+                                  color: "#bcd727",
+                                },
+                                fontFamily: "Poppins, sans-serif",
+                              }}
+                            >
+                              Joined
+                            </Button>
+                          ) : (
+                            <Button
+                              fullWidth
+                              variant="contained"
+                              onClick={() => {}}
+                              startIcon={<AddCircleOutlineIcon />}
+                              sx={{
+                                backgroundColor: "#bcd727",
+                                color: "#fff",
+                                "&:hover": {
+                                  backgroundColor: "#a4b622",
+                                },
+                                fontFamily: "Poppins, sans-serif",
+                              }}
+                            >
+                              Join Community
+                            </Button>
+                          )}
+                        </CardActions>
+                      </Card>
+
+                      {/* <Card
+                        className="flex flex-col h-full"
+                        onClick={() => {
+                          handleViewCommunity(data);
+                        }}
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          height: "350px", // Fixed card height
+                          boxShadow: 3,
+                          borderRadius: 2,
+                          transition: "transform 0.2s, box-shadow 0.2s",
+                          "&:hover": {
+                            transform: "scale(1.02)",
+                            boxShadow: 6,
+                          },
+                        }}
+                      >
+                        <CardMedia
+                          component="img"
+                          height="175" // Half of the card height (350px / 2)
+                          className="h-40"
+                          image={
+                            data.communityImage
+                              ? data.communityImage
+                              : "https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60"
+                          }
+                          alt={`Image of ${data.name} community`}
+                          loading="lazy" // Enables lazy loading
+                          sx={{
+                            objectFit: "cover",
+                            width: "100%",
+                          }}
+                        />
+
+                        <CardContent
+                          sx={{ flexGrow: 1, padding: "12px !important" }}
+                        >
+                          <Typography
+                            gutterBottom
+                            variant="h6"
+                            component="div"
+                            style={{
+                              fontFamily: "Poppins, sans-serif",
+                              fontWeight: "bold", // Bold community names
+                              textAlign: "left",
+                            }}
+                          >
+                            {data.name}
+                          </Typography>
+
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            style={{
+                              fontFamily: "Poppins, sans-serif",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2, // Two lines for better readability
+                              WebkitBoxOrient: "vertical",
+                              overflow: "hidden",
+                              textAlign: "left",
+                            }}
+                          >
+                            {data.description.length > 100
+                              ? `${data.description.substring(0, 100)}... `
+                              : data.description}
+                            {data.description.length > 100 && (
+                              <Button
+                                size="small"
+                                onClick={() =>
+                                  handleOpenModal(data.description)
+                                }
+                                sx={{
+                                  textTransform: "none",
+                                  padding: 0,
+                                  minWidth: "auto",
+                                  color: "#bcd727",
+                                  "&:hover": {
+                                    backgroundColor: "transparent",
+                                    textDecoration: "underline",
+                                  },
+                                }}
+                              >
+                                Read More
+                              </Button>
+                            )}
+                          </Typography>
+
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {data.tags &&
+                              data.tags.slice(0, 3).map((tag) => (
+                                <Chip
+                                  key={tag}
+                                  label={tag}
+                                  variant="outlined"
+                                  size="small"
+                                  sx={{
+                                    borderColor: "#bcd727",
+                                    color: "#bcd727",
+                                    fontFamily: "Poppins, sans-serif",
+                                  }}
+                                />
+                              ))}
+                            {data.tags && data.tags.length > 3 && (
+                              <Chip
+                                label={`+${data.tags.length - 3}`}
+                                variant="outlined"
+                                size="small"
+                                sx={{
+                                  borderColor: "#bcd727",
+                                  color: "#bcd727",
+                                  fontFamily: "Poppins, sans-serif",
+                                }}
+                              />
+                            )}
+                          </div>
+                        </CardContent>
+
+                        <CardContent
+                          sx={{
+                            paddingTop: "0px !important",
+                            paddingBottom: "0px !important",
+                          }}
+                        >
+                          <Grid container alignItems="center">
+                            <Grid item xs={6}>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                className="flex items-center"
+                                style={{
+                                  fontFamily: "Poppins, sans-serif",
+                                  textAlign: "left",
+                                }}
+                              >
+                                <People
+                                  fontSize="small"
+                                  style={{ marginRight: 4 }}
+                                />
+                                {data.users
+                                  ? data.users.length.toLocaleString()
+                                  : 0}{" "}
+                                Members
+                              </Typography>
+                            </Grid>
+
+                            <Grid item xs={6}>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                className="flex items-center justify-end"
+                                style={{
+                                  fontFamily: "Poppins, sans-serif",
+                                  textAlign: "right",
+                                }}
+                              >
+                                <CalendarToday
+                                  fontSize="small"
+                                  style={{ marginRight: 4 }}
+                                />
+                                {data.postsCount
+                                  ? data.postsCount.toLocaleString()
+                                  : 0}{" "}
+                                Events
+                              </Typography>
+                            </Grid>
+                          </Grid>
+                        </CardContent>
+
+                        <CardActions sx={{ padding: "12px !important" }}>
+                          {data.users.includes(email) ? (
+                            <Button
+                              fullWidth
+                              variant="outlined"
+                              disabled
+                              startIcon={<CheckCircle />}
+                              sx={{
+                                borderColor: "#bcd727",
+                                color: "#bcd727",
+                                "&:disabled": {
+                                  borderColor: "#bcd727",
+                                  color: "#bcd727",
+                                },
+                                fontFamily: "Poppins, sans-serif",
+                              }}
+                            >
+                              Leave Community
+                            </Button>
+                          ) : (
+                            <Button
+                              fullWidth
+                              variant="contained"
+                              onClick={() => handleJoinCommunity(data)}
+                              startIcon={<CheckCircle />}
+                              sx={{
+                                backgroundColor: "#bcd727",
+                                color: "#fff",
+                                "&:hover": {
+                                  backgroundColor: "#a4b622",
+                                },
+                                fontFamily: "Poppins, sans-serif",
+                              }}
+                            >
+                              Join Community
+                            </Button>
+                          )}
+                        </CardActions>
+                      </Card> */}
                     </div>
                   ))}
                 </div>

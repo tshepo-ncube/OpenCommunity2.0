@@ -66,9 +66,6 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
       { sender: "AI", content: [] },
     ]);
 
-    // let threadID = "thread_Fs2VYok9YAiXZ1qHv5TpDeIZ";
-    // let runID = "run_GuV63F5sRM7OOAFTnZqhOtU3";
-    // let assistantID = "asst_EiHgeiLbxcs1r1855lryoIe8";
     let instructions = `You are an assistant designed to help 
       recommend new events for the ${communityData.name}. Your primary task is to 
       recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
@@ -77,11 +74,12 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
         please respond in a json format ONLY (no other text, only JSON)
          with fields name, description, predicted_attendance, optimal_timing, 
          start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
-          an event or just answering a question you can respond normally (NO JSON, JUST TEXT)`;
-
+          an event or just answering a question you can respond normally (less than 300 characters please) (NO JSON, JUST TEXT)`;
+    // const newMessageCopy = newMessage.slice();
     try {
       const res = await axios.post(
-        strings.server_endpoints.sendMessage,
+        "http://localhost:8080/sendMessage",
+        // strings.server_endpoints.sendMessage,
         { newMessage, threadID, runID, assistantID, instructions },
         {
           headers: {
@@ -89,6 +87,7 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
           },
         }
       );
+      setNewMessage("");
 
       console.log("Returned Messages: ", res.data.messages);
       //setMessages(res.data.messages);
@@ -497,7 +496,7 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                     key={message.id}
                     className="flex gap-3 my-4 text-gray-600 text-sm flex-1"
                   >
-                    <span className="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
+                    {/* <span className="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
                       <div className="rounded-full bg-gray-100 border p-1">
                         <svg
                           stroke="none"
@@ -519,11 +518,11 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                           />
                         </svg>
                       </div>
-                    </span>
+                    </span> */}
                     <p className="leading-relaxed">
-                      <span className="block font-bold text-gray-700">
+                      {/* <span className="block font-bold text-gray-700">
                         {message.sender}{" "}
-                      </span>
+                      </span> */}
                       {/* {message.content[0].text.value} */}
                       {message.sender === "AI" ? (
                         <>
@@ -574,9 +573,30 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                                 //console.log(error);
                                 // If JSON parsing fails, render the content as a plain string
                                 return (
-                                  <p className=" bg-white  border w-90 p-2 rounded-lg mb-2 left-0">
-                                    {message.content[0].text.value}
-                                  </p>
+                                  // <p className=" bg-white  border w-90 p-2 rounded-lg mb-2 left-0">
+                                  //   {message.content[0].text.value}
+                                  // </p>
+
+                                  <>
+                                    <div className="chat chat-start">
+                                      <div className="chat-image avatar">
+                                        <div className="w-10 rounded-full">
+                                          <img
+                                            alt="Tailwind CSS chat bubble component"
+                                            src="https://upload.wikimedia.org/wikipedia/commons/1/13/ChatGPT-Logo.png"
+                                          />
+                                        </div>
+                                      </div>
+                                      <div className="chat-header">
+                                        {/* Obi-Wan Kenobi */}
+                                        {/* <time className="text-xs opacity-50">12:45</time> */}
+                                      </div>
+                                      <div className="chat-bubble bg-openbox-green text-white">
+                                        {message.content[0].text.value}
+                                      </div>
+                                      {/* <div className="chat-footer opacity-50">Delivered</div> */}
+                                    </div>
+                                  </>
                                 );
                               }
                             })()
@@ -595,9 +615,29 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                         </>
                       ) : (
                         <>
-                          <p className=" bg-openbox-green  border w-90 p-2 rounded-lg mb-2 left-0">
+                          {/* <p className=" bg-openbox-green  border w-90 p-2 rounded-lg mb-2 left-0">
                             {message.content[0].text.value}
-                          </p>
+                          </p> */}
+
+                          <div className="chat chat-end">
+                            <div className="chat-image avatar">
+                              <div className="w-10 rounded-full">
+                                <img
+                                  alt="Tailwind CSS chat bubble component"
+                                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                                />
+                              </div>
+                            </div>
+                            <div className="chat-header">
+                              {/* Anakin */}
+                              {/* <time className="text-xs opacity-50">12:46</time> */}
+                            </div>
+                            <div className="chat-bubble">
+                              {" "}
+                              {message.content[0].text.value}
+                            </div>
+                            {/* <div className="chat-footer opacity-50">Seen at 12:46</div> */}
+                          </div>
                         </>
                       )}
                     </p>
