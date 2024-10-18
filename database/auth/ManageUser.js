@@ -135,6 +135,7 @@ export default class ManageUser {
   static editPassword = (newPassword, setError) => {
     const auth = getAuth();
     const user = auth.currentUser;
+    console.log("user, :", user);
 
     updatePassword(user, newPassword)
       .then(() => {
@@ -142,7 +143,8 @@ export default class ManageUser {
         alert("You have now updated your password");
       })
       .catch((error) => {
-        alert("Error!!!");
+        alert(error);
+        console.log(error);
         setError(error);
       });
   };

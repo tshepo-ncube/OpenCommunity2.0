@@ -14,6 +14,9 @@ import {
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 
+import Logo from "@/lib/images/teams-icon.jpg";
+import ForgotPassword from "@/_Components/NewPassword";
+
 // Import the default profile image
 // import defaultProfileImage from "../../lib/images/profile.png";
 
@@ -113,12 +116,38 @@ const Profile = () => {
     );
   }, []);
 
-  useEffect(() => {
-    console.log("Profile has changed. ", profile);
-    // console.log("Something has changed...");
+  // useEffect(() => {
+  //   console.log("Profile has changed. ", profile);
+  //   // console.log("Something has changed...");
 
-    // setProfile(data);
-    // console.log("The Data :", data);
+  //   // setProfile(data);
+  //   // console.log("The Data :", data);
+  //   if (profile.profileImage) {
+  //     setSelectedImage(profile.profileImage);
+  //     setHasCustomImage(true);
+  //   } else {
+  //     setSelectedImage(null);
+  //     setHasCustomImage(false);
+  //   }
+
+  //   if (profile.otherDiet) {
+  //     // console.log("profile has other Diet");
+  //     setOtherDiet(profile.otherDiet);
+  //     setIsOtherDietSelected(true);
+  //   }
+  //   if (profile.otherAllergy) {
+  //     // console.log("profile has other Allergy");
+  //     setIsOtherAllergySelected(true);
+  //     setOtherAllergy(profile.otherAllergy);
+  //   }
+  //   // setSelectedInterests(profile.Interests);
+
+  //   // console.log("Profile :", profile);
+  // }),
+  //   [profile];
+
+  useEffect(() => {
+    console.log("Profile Image: ", profile.profileImage);
     if (profile.profileImage) {
       setSelectedImage(profile.profileImage);
       setHasCustomImage(true);
@@ -126,22 +155,15 @@ const Profile = () => {
       setSelectedImage(null);
       setHasCustomImage(false);
     }
+  }, [profile.profileImage]);
 
+  useEffect(() => {
     if (profile.otherDiet) {
       // console.log("profile has other Diet");
       setOtherDiet(profile.otherDiet);
       setIsOtherDietSelected(true);
     }
-    if (profile.otherAllergy) {
-      // console.log("profile has other Allergy");
-      setIsOtherAllergySelected(true);
-      setOtherAllergy(profile.otherAllergy);
-    }
-    // setSelectedInterests(profile.Interests);
-
-    // console.log("Profile :", profile);
-  }),
-    [profile];
+  }, [profile.otherDiet]);
 
   useEffect(() => {
     if (profile.Interests !== selectedInterests) {
@@ -149,6 +171,14 @@ const Profile = () => {
       setSelectedInterests(profile.Interests);
     }
   }, [profile.Interests]);
+
+  useEffect(() => {
+    if (profile.otherAllergy) {
+      // console.log("profile has other Allergy");
+      setIsOtherAllergySelected(true);
+      setOtherAllergy(profile.otherAllergy);
+    }
+  }, [profile.otherAllergy]);
   // useEffect(() => {
   //   console.log(profile);
   //   if (profile.otherDiet) {
@@ -428,7 +458,13 @@ const Profile = () => {
                   <div className="flex-shrink-0 flex flex-col items-center">
                     <div className="relative">
                       <img
-                        src={selectedImage || profile.profileImage}
+                        //src={selectedImage || profile.profileImage}
+
+                        src={
+                          selectedImage ||
+                          profile.profileImage ||
+                          "https://static.vecteezy.com/system/resources/previews/002/318/271/non_2x/user-profile-icon-free-vector.jpg"
+                        }
                         alt="Profile"
                         className="w-32 h-32 rounded-full object-cover"
                       />
@@ -550,7 +586,13 @@ const Profile = () => {
                       name="otherDiet"
                       className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       value={otherDiet}
-                      onChange={(e) => setOtherDiet(e.target.value)}
+                      onChange={(e) => {
+                        setOtherDiet(e.target.value);
+                        setProfile((prevProfile) => ({
+                          ...prevProfile, // Keep the existing profile fields
+                          otherDiet: e.target.value, // Add or update the otherAllergy field
+                        }));
+                      }}
                       required
                     />
                   </div>
@@ -590,7 +632,15 @@ const Profile = () => {
                       name="otherAllergy"
                       className="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                       value={otherAllergy}
-                      onChange={(e) => setOtherAllergy(e.target.value)}
+                      //onChange={(e) => setOtherAllergy(e.target.value)}
+
+                      onChange={(e) => {
+                        setOtherAllergy(e.target.value);
+                        setProfile((prevProfile) => ({
+                          ...prevProfile, // Keep the existing profile fields
+                          otherAllergy: e.target.value, // Add or update the otherAllergy field
+                        }));
+                      }}
                       required
                     />
                   </div>
@@ -647,7 +697,7 @@ const Profile = () => {
                 onSubmit={handleNewPasswordSubmit}
                 className="space-y-6 p-8"
               >
-                <div>
+                {/* <div>
                   <label
                     htmlFor="newPassword"
                     className="block text-sm font-medium text-gray-700"
@@ -678,8 +728,10 @@ const Profile = () => {
                     onChange={handleChange}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#bcd727] focus:border-[#bcd727] sm:text-sm"
                   />
-                </div>
-                {error && (
+                </div> */}
+
+                <ForgotPassword />
+                {/* {error && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -687,8 +739,8 @@ const Profile = () => {
                   >
                     {error}
                   </motion.div>
-                )}
-                <div>
+                )} */}
+                {/* <div>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -697,7 +749,7 @@ const Profile = () => {
                   >
                     Save New Password
                   </motion.button>
-                </div>
+                </div> */}
               </motion.form>
             </Tab.Panel>
             <Tab.Panel>
