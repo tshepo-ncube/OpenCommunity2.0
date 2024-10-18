@@ -123,14 +123,6 @@ const CreateCommunity = () => {
               foundEmails.push(email);
             }
           } else if (typeof arg === "string") {
-            // Check for super admin messages
-            // console.log(arg);
-            //console.log(arg);
-            // if (arg.includes("User is a super admin")) {
-            //   setIsSuperAdmin(true);
-            // } else if (arg.includes("User is not a super admin")) {
-            //   setIsSuperAdmin(false);
-            // }
           }
         });
         originalConsoleLog.apply(console, args);
