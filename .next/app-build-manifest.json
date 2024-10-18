@@ -35,6 +35,12 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/admin/page.js"
+    ],
+    "/Home/community/[id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/Home/community/[id]/page.css",
+      "static/chunks/app/Home/community/[id]/page.js"
     ]
   }
 }
