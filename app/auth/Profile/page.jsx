@@ -11,6 +11,8 @@ import {
   LogOutIcon,
   ArrowLeftIcon,
 } from "lucide-react";
+import Button from "@mui/material/Button";
+import Snackbar from "@mui/material/Snackbar";
 
 // Import the default profile image
 // import defaultProfileImage from "../../lib/images/profile.png";
@@ -67,12 +69,28 @@ const Profile = () => {
 
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [otherDiet, setOtherDiet] = useState("");
+  const [sel, setSel] = useState([]);
   const [otherAllergy, setOtherAllergy] = useState("");
   const [error, setError] = useState(null);
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("personalDetails");
   const [userCommunities, setUserCommunities] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
+
+  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+
+  const handleClick = () => {
+    setOpenSnackbar(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpenSnackbar(false);
+  };
+
   useEffect(() => {
     console.log("Getting Profile Data...");
     // ManageUser.getProfileData(localStorage.getItem("Email"), (data) => {
@@ -96,7 +114,8 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    console.log("Something has changed...");
+    console.log("Profile has changed. ", profile);
+    // console.log("Something has changed...");
 
     // setProfile(data);
     // console.log("The Data :", data);
@@ -107,24 +126,42 @@ const Profile = () => {
       setSelectedImage(null);
       setHasCustomImage(false);
     }
-    setSelectedInterests(profile.Interests);
-    console.log("Profile :", profile);
-  }),
-    [profile];
 
-  useEffect(() => {
-    console.log(profile);
     if (profile.otherDiet) {
-      console.log("profile has other Diet");
+      // console.log("profile has other Diet");
       setOtherDiet(profile.otherDiet);
       setIsOtherDietSelected(true);
     }
     if (profile.otherAllergy) {
-      console.log("profile has other Allergy");
+      // console.log("profile has other Allergy");
       setIsOtherAllergySelected(true);
       setOtherAllergy(profile.otherAllergy);
     }
-  }, [profile]);
+    // setSelectedInterests(profile.Interests);
+
+    // console.log("Profile :", profile);
+  }),
+    [profile];
+
+  useEffect(() => {
+    if (profile.Interests !== selectedInterests) {
+      // Handle only when Interests changes
+      setSelectedInterests(profile.Interests);
+    }
+  }, [profile.Interests]);
+  // useEffect(() => {
+  //   console.log(profile);
+  //   if (profile.otherDiet) {
+  //     console.log("profile has other Diet");
+  //     setOtherDiet(profile.otherDiet);
+  //     setIsOtherDietSelected(true);
+  //   }
+  //   if (profile.otherAllergy) {
+  //     console.log("profile has other Allergy");
+  //     setIsOtherAllergySelected(true);
+  //     setOtherAllergy(profile.otherAllergy);
+  //   }
+  // }, [profile]);
 
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -145,6 +182,7 @@ const Profile = () => {
   };
 
   const handleRemoveImage = () => {
+    console.log("handleRemoveImage");
     const confirmed = window.confirm(
       "Are you sure you want to remove your profile picture?"
     );
@@ -160,7 +198,7 @@ const Profile = () => {
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
-
+    console.log("handleProfileChange");
     //new Yan added in this code
     if (name === "Diet") {
       setIsOtherDietSelected(value === "Other");
@@ -227,6 +265,7 @@ const Profile = () => {
   // };
 
   const handleEditProfileSubmit = async (e) => {
+    console.log("handleEditProfileSubmit");
     e.preventDefault();
 
     if (otherAllergy !== "") {
@@ -244,13 +283,30 @@ const Profile = () => {
         otherDiet: otherDiet, // Add or update the otherAllergy field
       }));
     }
-    const success = await ManageUser.editProfileData(profile.id, profile);
+    const success = await ManageUser.editProfileData(
+      profile.id,
+      profile,
+      selectedInterests
+    );
     if (success) {
       // If the profile update was successful, fetch the updated profile data
-      ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
+      // ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
+      setOpenSnackbar(true);
+      ManageUser.getProfileData(
+        localStorage.getItem("Email"),
+        setProfile,
+        setUserCommunities,
+        setIsAdmin
+      );
     } else {
       // Handle failure
     }
+
+    if (profileImageFile !== null) {
+      ManageUser.setProfileImage(profileImageFile);
+    }
+
+    console.log("About to make some edits......", profile);
   };
 
   const handleNewPasswordSubmit = (e) => {
@@ -539,11 +595,28 @@ const Profile = () => {
                     />
                   </div>
                 )}
+                {/* 
+                <div>
+                  {selectedInterests ? (
+                    <>
+                      <InterestSelection
+                        max={3}
+                        selectedInterests={selectedInterests}
+                        setSelectedInterests={setSelectedInterests}
+                      />
+                    </>
+                  ) : (
+                    <></>
+                  )}
+                </div> */}
+
+                <h2>Select Interests</h2>
 
                 <div>
                   {selectedInterests ? (
                     <>
                       <InterestSelection
+                        max={5}
                         selectedInterests={selectedInterests}
                         setSelectedInterests={setSelectedInterests}
                       />
@@ -552,6 +625,7 @@ const Profile = () => {
                     <></>
                   )}
                 </div>
+
                 <div>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
@@ -650,6 +724,13 @@ const Profile = () => {
           </Tab.Panels>
         </Tab.Group>
       </div>
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={5000}
+        onClose={handleClose}
+        message="The profile has been updated."
+      />
     </motion.div>
   );
 };

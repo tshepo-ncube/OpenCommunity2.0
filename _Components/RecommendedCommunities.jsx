@@ -11,7 +11,7 @@ export default function RecommendedCommunities() {
   }, []);
 
   useEffect(() => {
-    console.log(recommendedCommunities);
+    console.log("Recommended Communities : ", recommendedCommunities);
   }, [recommendedCommunities]);
   return (
     <>

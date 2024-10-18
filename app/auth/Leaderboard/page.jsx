@@ -59,6 +59,10 @@ const Page = () => {
     }
   }, [loading, skipTypewriter]);
 
+  useEffect(() => {
+    console.log("Leaderboard : ", users);
+  }, [users]);
+
   const handleSkip = () => {
     setSkipTypewriter(true);
   };
@@ -179,10 +183,20 @@ const Page = () => {
                           </div>
                         </div>
                         <div className="profile-picture mx-auto mb-4">
-                          {getInitials(user.Name, user.Surname)}
+                          {/* {getInitials(user.Name, user.Surname)} */}
                           {getIcon(user.Points) && (
-                            <span className="icon absolute -top-1 -right-1 text-2xl">
-                              {getIcon(user.Points)}
+                            <span className=" flex justify-center items-center absolute -top-1 -right-1">
+                              {/* {getIcon(user.Points)} */}
+
+                              <img
+                                src={
+                                  user.profileImage
+                                    ? user.profileImage
+                                    : "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
+                                }
+                                alt="Profile Icon"
+                                className="w-[5.5rem] h-[5.5rem] rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
+                              />
                             </span>
                           )}
                         </div>
@@ -218,16 +232,31 @@ const Page = () => {
                           {index + 4}
                         </div>
                         <div className="profile-picture-right mr-4">
-                          {getInitials(user.Name, user.Surname)}
-                          {getIcon(user.Points) && (
+                          {/* {getInitials(user.Name, user.Surname)} */}
+                          {/* {getIcon(user.Points) && (
                             <span className="icon-right absolute -top-1 -right-1 text-lg">
                               {getIcon(user.Points)}
                             </span>
-                          )}
+                          )} */}
+
+                          <span className=" flex justify-center items-center absolute -top-1 -right-1">
+                            {/* {getIcon(user.Points)} */}
+
+                            <img
+                              src={
+                                user.profileImage
+                                  ? user.profileImage
+                                  : "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
+                              }
+                              alt="Profile Icon"
+                              className="w-[3.5rem] h-[3.5rem] rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
+                            />
+                          </span>
                         </div>
                         <div>
                           <div className="text-lg font-semibold text-gray-800">
-                            {user.Name || "N/A"} {user.Surname || "N/A"}
+                            {user.Name || "N/A"} {user.Surname || "N/A"}{" "}
+                            {getIcon(user.Points)}
                           </div>
                           <div className="text-sm text-gray-600">
                             {user.Points} Points

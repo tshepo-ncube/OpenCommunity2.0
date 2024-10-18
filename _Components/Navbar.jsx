@@ -2,7 +2,10 @@
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
+import { IconButton } from "@mui/material";
 import { MdDarkMode } from "react-icons/md";
+
+import ManageUser from "@/database/auth/ManageUser";
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -26,7 +29,37 @@ const Navbar = ({ isHome }) => {
   const [color, setColor] = useState("#0096FF");
   const [textColor, setTextColor] = useState("white");
   const [signedIn, setSignedIn] = useState(null);
+  const [profile, setProfile] = useState({});
   const [user, setUser] = useState(null);
+  const [userCommunities, setUserCommunities] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    console.log("Navbar - Getting Profile Data...");
+    // ManageUser.getProfileData(localStorage.getItem("Email"), (data) => {
+    //   setProfile(data);
+    //   console.log("The Data :", data);
+    //   if (data.profileImage) {
+    //     setSelectedImage(data.profileImage);
+    //     setHasCustomImage(true);
+    //   } else {
+    //     setSelectedImage(null);
+    //     setHasCustomImage(false);
+    //   }
+    // });
+
+    ManageUser.getProfileData(
+      localStorage.getItem("Email"),
+      setProfile,
+      setUserCommunities,
+      setIsAdmin
+    );
+  }, []);
+
+  useEffect(() => {
+    console.log("Profile :", profile);
+  }, [profile]);
+
   //   const auth = getAuth();
 
   //   useEffect(() => {
@@ -136,7 +169,8 @@ const Navbar = ({ isHome }) => {
       }}
       className={` ${
         isHome
-          ? `${scrolling ? "bg-openbox-green  z-90" : "  z-90"}`
+          ? // Changed the scroll background to Black instead for NAV
+            `${scrolling ? "bg-black  z-90" : "  z-90"}`
           : `bg-openbox-green  z-90`
       }   fixed left-0 top-0 w-full z-100 ease-in duration-300 `}
     >
@@ -164,27 +198,50 @@ const Navbar = ({ isHome }) => {
             </>
           ) : (
             <>
-              <h1
+              {/* <h1
                 style={{ color: `${textColor}` }}
                 className="font-bold text-4xl"
               >
-                OpenCommunity
-              </h1>
+                Open 
+                <span
+                    className="text-white bg-green-400 px-2 py-1 rounded-tl-md rounded-tr-md rounded-bl-3xl rounded-br-md"
+                    style={{ backgroundColor: "#bcd727" }}
+                  >
+                    Community
+                  </span>
+              </h1> */}
+              <div className="relative text-center">
+                <h2 className="text-4xl font-bold flex space-x-1">
+                  <span className="text-white  px-2 py-1 ">Open </span>
+                  <span
+                    className="text-white bg-green-400 px-2 py-1 rounded-tl-md rounded-tr-md rounded-bl-3xl rounded-br-md"
+                    style={{ backgroundColor: "#bcd727" }}
+                  >
+                    Community
+                  </span>
+                </h2>
+                {/* <p className="mt-4 text-gray-600 text-2xl">
+                  Connect. Collaborate. Create.
+                </p> */}
+              </div>
             </>
           )}
         </Link>
 
         <ul style={{ color: `${textColor}` }} className="hidden sm:flex">
           <li className="p-4 text-white">
-            <Link href="/Home" className="p-4 text-white">
+            <Link
+              href="/Home"
+              className="py-2 px-4 text-white hover:bg-[#bcd727] hover:rounded-lg"
+            >
               Home
             </Link>
           </li>
-          <li className="p-4 text-white">
+          {/* <li className="p-4 text-white hover:bg-[#bcd727] hover:rounded-lg">
             <Link href="/auth/Profile" className="p-4 text-white">
               Profile
             </Link>
-          </li>
+          </li> */}
           {/* <li className="p-4">
             <Link href="/chat" target={"_blank"}>
               Chat
@@ -192,9 +249,6 @@ const Navbar = ({ isHome }) => {
           </li> */}
           {user ? (
             <>
-              {/* <li className="p-4">
-                <Link href="/goals">My Goals</Link>
-              </li> */}
               {/* <li className="p-4">
                 <Link href="/profile">Profile</Link>
               </li> */}
@@ -206,27 +260,81 @@ const Navbar = ({ isHome }) => {
               </li> */}
             </>
           )}
+          {/* ADMIN IS CURRENTLY HARD CODED, ADD Holly's Toggle Button for roles */}
           <li className="p-4">
-            <Link href="/admin">Admin</Link>
+            <Link
+              href="/admin"
+              className="py-2 px-4 hover:bg-[#bcd727] hover:rounded-lg"
+            >
+              Admin
+            </Link>
           </li>
           {/* <li className="p-4">
             <Link href="/about">About</Link>
           </li> */}
-          <li className="p-4">
-            <Link href="/auth/Leaderboard">Leaderboard</Link>
-          </li>
-          <li className="p-4">
-            <Link href="/auth/Recommend Communities">
-              Recommend Communities
+
+          <li className="p-4 text-white ">
+            <Link
+              href="/auth/Leaderboard"
+              className="py-2 px-4 hover:bg-[#bcd727] hover:rounded-lg"
+            >
+              Leaderboard
             </Link>
           </li>
 
-          <li className="p-4">
+          <li className="p-4 text-white ">
+            <Link
+              href="/auth/RecommendCommunity"
+              className="py-2 px-4 hover:bg-[#bcd727] hover:rounded-lg"
+            >
+              Recommend Community
+            </Link>
+          </li>
+
+          {/* <div className="hidden sm:flex items-center ml-4">
+            <img
+              src="https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
+              alt="Profile Icon"
+              className="w-10 h-10 rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
+            />
+          </div> */}
+
+          {/* Profile Icon */}
+          <Link href="/auth/Profile" className="p-2">
+            <div className="hidden sm:flex items-center ml-4">
+              {/* <img
+                src= "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
+                alt="Profile Icon"
+                className="w-10 h-10 rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
+              /> */}
+
+              <img
+                src={
+                  profile.profileImage
+                    ? profile.profileImage
+                    : "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
+                }
+                alt="Profile Icon"
+                className="w-12 h-12 rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
+              />
+            </div>
+          </Link>
+
+          {/* MOVED NEXT TO SEARCH BAR */}
+          {/* <li className="p-4 text-white hover:bg-[#bcd727] hover:rounded-lg">
+            <Link href="/auth/Recommend Communities">
+              Recommend Communities
+            </Link>
+          </li> */}
+
+          {/* REMOVED DARK MODE BECAUSE WHY? */}
+
+          {/* <li className="p-4">
             <div class="flex justify-center">
               <MdDarkMode size={25} />
               <p className="ml-2 mr-2">Dark Mode</p>
             </div>
-          </li>
+          </li> */}
           {/* <li className="p-4">
             {signedIn ? (
               <>
