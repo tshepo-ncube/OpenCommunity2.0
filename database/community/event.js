@@ -126,7 +126,7 @@ export default class EventDB {
     if (selectedImage instanceof File) {
       // The variable is a File
       console.log("event imag is a file");
-      const eventImage = await EventDB.uploadEventImage(selectedImage);
+      eventImage = await EventDB.uploadEventImage(selectedImage);
 
       const eventWithStatus = {
         ...eventObject,

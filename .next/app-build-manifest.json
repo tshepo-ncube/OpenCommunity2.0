@@ -11,36 +11,41 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
+    "/admin/Dashboard/[id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/Dashboard/[id]/page.js"
+    ],
+    "/auth/RecommendCommunity/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/auth/RecommendCommunity/page.js"
+    ],
+    "/admin/RecommendedCommunities/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/RecommendedCommunities/page.js"
+    ],
     "/Home/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/Home/page.js"
     ],
-<<<<<<< HEAD
     "/Home/community/[id]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/Home/community/[id]/page.css",
       "static/chunks/app/Home/community/[id]/page.js"
     ],
-=======
->>>>>>> NewEventCategories
     "/admin/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/admin/page.js"
     ],
-<<<<<<< HEAD
     "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/_not-found/page.js"
-=======
-    "/admin/Dashboard/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/Dashboard/[id]/page.js"
->>>>>>> NewEventCategories
     ]
   }
 }
