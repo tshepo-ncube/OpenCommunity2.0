@@ -158,7 +158,7 @@ const DiscoverCommunity = ({ email }) => {
     switch (category.toLowerCase()) {
       case "general":
         return "#a3c2e7"; // Pastel Blue
-      case "social":
+      case "socia":
         return "#f7b7a3"; // Pastel Orange
       case "retreat":
         return "#f7a4a4"; // Pastel Red
