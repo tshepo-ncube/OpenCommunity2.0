@@ -24,21 +24,29 @@ const Page = () => {
     setPassword(e.target.value);
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (email.trim() === "" || password.trim() === "") {
       setErrorMessage("Please enter both email and password");
       return;
     }
 
-    LoginUser.loginUser(
-      { email, password },
-      setUser,
-      setErrorMessage,
-      router,
-      setLoggedIn
-    );
+    try {
+      await LoginUser.loginUser(
+        { email, password },
+        setUser,
+        setErrorMessage,
+        router,
+        setLoggedIn
+      );
 
-    setErrorMessage("");
+      if (!loggedIn) {
+        setErrorMessage("Invalid password or email, try again");
+      } else {
+        setErrorMessage("");
+      }
+    } catch (error) {
+      setErrorMessage("Invalid password or email, try again");
+    }
   };
 
   return (
