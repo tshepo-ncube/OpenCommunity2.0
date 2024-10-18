@@ -54,6 +54,8 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     location: eventData.Location,
     description: eventData.EventDescription,
     status: "active",
+    rsvpLimit: "No Limit",
+    rsvpLimitNumber: 1,
   });
 
   const [selectedImages, setSelectedImages] = useState([]);
@@ -203,7 +205,22 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
       [name]: value,
     }));
   };
+  const handleRsvpLimitChange = (e) => {
+    const { value } = e.target;
+    setEventDetails((prevDetails) => ({
+      ...prevDetails,
+      rsvpLimit: value,
+      rsvpLimitNumber: value === "No Limit" ? 1 : prevDetails.rsvpLimitNumber,
+    }));
+  };
 
+  const handleRsvpLimitNumberChange = (e) => {
+    const { value } = e.target;
+    setEventDetails((prevDetails) => ({
+      ...prevDetails,
+      rsvpLimitNumber: Math.max(1, parseInt(value) || 1),
+    }));
+  };
   const handleSubmitEvent = (e) => {
     e.preventDefault();
     onSubmit(eventDetails, eventImage);
@@ -540,7 +557,44 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
           <div className="flex flex-col items-center ">
             <div className="mt-6 flex flex-wrap ">{renderPreviews()}</div>
           </div>
+          <div>
+            <label
+              htmlFor="rsvpLimit"
+              className="block text-sm font-medium text-gray-700"
+            >
+              RSVP People Limit
+            </label>
+            <select
+              name="rsvpLimit"
+              id="rsvpLimit"
+              value={eventDetails.rsvpLimit}
+              onChange={handleRsvpLimitChange}
+              className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
+            >
+              <option value="No Limit">No RSVP Limit</option>
+              <option value="Limit">Set an RSVP Limit</option>
+            </select>
+          </div>
 
+          {eventDetails.rsvpLimit === "Limit" && (
+            <div>
+              <label
+                htmlFor="rsvpLimitNumber"
+                className="block text-sm font-medium text-gray-700"
+              >
+                RSVP Limit Number
+              </label>
+              <input
+                type="number"
+                name="rsvpLimitNumber"
+                id="rsvpLimitNumber"
+                value={eventDetails.rsvpLimitNumber}
+                onChange={handleRsvpLimitNumberChange}
+                min="1"
+                className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
+              />
+            </div>
+          )}
           <div>
             <label
               htmlFor="description"
@@ -558,6 +612,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               required
             ></textarea>
           </div>
+
           <div className="flex justify-end">
             <button
               type="button"
