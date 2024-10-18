@@ -45,7 +45,7 @@ const AdminCommunity = () => {
   useEffect(() => {
     const fetchCommunities = async () => {
       try {
-        await CommunityDB.getAllCommunities(setSubmittedData, setLoading);
+        await CommunityDB.getAllAdminCommunities(setSubmittedData, setLoading);
       } catch (error) {
         console.error("Error fetching communities:", error);
       }

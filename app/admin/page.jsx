@@ -31,11 +31,7 @@ const CreateCommunity = () => {
   const [roles, setRoles] = useState({ user: false, admin: false });
   const fileInputRef = useRef(null);
   const userPopupRef = useRef(null);
-  const [similarityError, setSimilarityError] = useState({
-    message: "",
-    similarCommunity: "",
-  });
-  const [showErrorPopup, setShowErrorPopup] = useState(false);
+
   const [selectedInterests, setSelectedInterests] = useState([]);
 
   const [image, setImage] = useState(null);
@@ -50,6 +46,59 @@ const CreateCommunity = () => {
   const [consoleEmails, setConsoleEmails] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false); // New state for super admin check
 
+  const [isCommunityHandoverOpen, setCommunityHandoverOpen] = useState(false);
+  const [selectedCommunity, setSelectedCommunity] = useState(null);
+  const [selectedNewAdmin, setSelectedNewAdmin] = useState(null);
+  const [currentAdmin, setCurrentAdmin] = useState(null);
+  const [isHandoverConfirmationOpen, setHandoverConfirmationOpen] =
+    useState(false);
+  const communityHandoverRef = useRef(null);
+
+  // Update the community selection handler
+  const handleCommunitySelection = (e) => {
+    const communityId = e.target.value;
+    const community = submittedData.find((comm) => comm.id === communityId);
+    setSelectedCommunity(community);
+
+    if (community && community.admin) {
+      // Find the admin user details from the users array
+      const adminUser = users.find((user) => user.Email === community.admin);
+      setCurrentAdmin(
+        adminUser || {
+          Name: "Unknown",
+          Surname: "",
+          Email: community.admin,
+        }
+      );
+    } else {
+      setCurrentAdmin(null);
+    }
+  };
+
+  // Add new handler for community admin handover
+  const handleCommunityHandover = async () => {
+    if (!selectedCommunity || !selectedNewAdmin) {
+      alert("Please select both a community and a new admin.");
+      return;
+    }
+
+    try {
+      const communityRef = doc(DB, "communities", selectedCommunity.id);
+      await updateDoc(communityRef, { admin: selectedNewAdmin.Email });
+
+      alert("Community admin rights successfully transferred!");
+      setCommunityHandoverOpen(false);
+
+      // Refresh the communities list
+      CommunityDB.getAllCommunities((data) => {
+        setSubmittedData(data);
+        setLoading(false);
+      }, setLoading);
+    } catch (error) {
+      console.error("Error transferring community admin rights:", error);
+      alert("Error occurred during transfer. Please try again.");
+    }
+  };
   // Create a new function to handle the actual role handover after confirmation
   const handleConfirmHandover = async () => {
     try {
@@ -84,7 +133,8 @@ const CreateCommunity = () => {
     }
   };
   const handleCancelHandover = () => setIsConfirmationOpen(false); // Close confirmation modal
-
+  // Filter out only admin users for the dropdown
+  const adminOnlyUsers = users.filter((user) => user.Role === "admin");
   // Handle open and close for confirmation popup
   const handleOpenConfirmPopup = () => setConfirmPopupOpen(true);
   const handleCloseConfirmPopup = () => setConfirmPopupOpen(false);
@@ -104,7 +154,10 @@ const CreateCommunity = () => {
   };
   const handleOpenUserPopup = () => setUserPopupOpen(true);
   const handleCloseUserPopup = () => setUserPopupOpen(false);
-
+  // First, filter the adminOnlyUsers to exclude the current admin
+  const availableAdmins = adminOnlyUsers.filter(
+    (user) => user.Email !== (currentAdmin?.Email || selectedCommunity?.admin)
+  );
   const handleRoleChange = (e) => {
     const { name, checked } = e.target;
     setRoles((prevRoles) => ({ ...prevRoles, [name]: checked }));
@@ -123,6 +176,14 @@ const CreateCommunity = () => {
               foundEmails.push(email);
             }
           } else if (typeof arg === "string") {
+            // Check for super admin messages
+            // console.log(arg);
+            //console.log(arg);
+            // if (arg.includes("User is a super admin")) {
+            //   setIsSuperAdmin(true);
+            // } else if (arg.includes("User is not a super admin")) {
+            //   setIsSuperAdmin(false);
+            // }
           }
         });
         originalConsoleLog.apply(console, args);
@@ -173,85 +234,23 @@ const CreateCommunity = () => {
     });
   };
 
-  // Enhanced function to check name similarity
-  const checkNameSimilarity = (newName) => {
-    const cleanName = newName
-      .toLowerCase()
-      .replace(/\bcommunity\b/g, "")
-      .trim();
-
-    const similarCommunity = submittedData.find((community) => {
-      const existingName = community.name
-        .toLowerCase()
-        .replace(/\bcommunity\b/g, "")
-        .trim();
-      return (
-        existingName === cleanName ||
-        existingName.includes(cleanName) ||
-        cleanName.includes(existingName)
-      );
-    });
-
-    return similarCommunity || null;
-  };
-
-  const ErrorPopup = ({ error, onClose }) => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-[60] flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4 relative">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-red-600">
-            Similar Community Exists
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <CloseIcon />
-          </button>
-        </div>
-        <div className="mb-4">
-          <p className="text-gray-700 mb-2">{error.message}</p>
-          <p className="text-gray-900 font-medium">
-            Similar community name is:
-          </p>
-          <p className="text-gray-700 bg-gray-50 p-2 rounded mt-1">
-            {error.similarCommunity}
-          </p>
-        </div>
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-
   const handleFormSubmit = async (e, status) => {
     e.preventDefault();
 
-    // Check for similar names
-    const similarCommunity = checkNameSimilarity(name);
-    if (similarCommunity) {
-      setSimilarityError({
-        message:
-          "Cannot create this community as a similar community already exists.",
-        similarCommunity: similarCommunity.name,
-      });
-      setShowErrorPopup(true);
-      return;
-    }
+    // Get the logged-in user's email (assuming consoleEmails stores the logged-in user's email)
+    const adminEmail = consoleEmails[0]; // Assuming the first email is the logged-in user's email
+
+    // Create the community data with the admin field
     const communityData = {
       name,
       description,
       category,
       status,
+      admin: adminEmail, // Adding the admin field with the logged-in user's email
     };
 
     if (editIndex !== null) {
+      // Update existing community
       CommunityDB.updateCommunity(
         { id: submittedData[editIndex].id, ...communityData },
         (updatedData) => {
@@ -587,6 +586,7 @@ const CreateCommunity = () => {
                 </div>
 
                 {/* Add Image here */}
+
                 <div className="flex items-center space-x-4">
                   <label
                     htmlFor="image"
@@ -613,6 +613,7 @@ const CreateCommunity = () => {
                     <p className="mt-2 text-gray-600">Uploaded: {image.name}</p>
                   )}
                 </div>
+
                 <label className="block text-m text-gray-700 font-semibold">
                   Select Community Interests
                 </label>
@@ -621,6 +622,7 @@ const CreateCommunity = () => {
                   setSelectedInterests={setSelectedInterests}
                   selectedInterests={selectedInterests}
                 />
+
                 <div className="flex justify-end">
                   <button
                     type="button"
@@ -651,12 +653,6 @@ const CreateCommunity = () => {
               </form>
             </div>
           )}
-          {showErrorPopup && (
-            <ErrorPopup
-              error={similarityError}
-              onClose={() => setShowErrorPopup(false)}
-            />
-          )}
           {submittedData.length === 0 ? (
             <div className="text-center">
               <p className="text-gray-900 text-lg">
@@ -685,6 +681,156 @@ const CreateCommunity = () => {
               Role Handover
             </button>
           </div>
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => setCommunityHandoverOpen(true)}
+              className="btn bg-gray-400 hover:bg-gray-600 text-white font-medium rounded-lg px-5 py-2.5"
+            >
+              Community Admin Handover
+            </button>
+          </div>
+
+          {/* Community Admin Handover Popup */}
+          {isCommunityHandoverOpen && (
+            <>
+              <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md z-10"></div>
+              <div
+                ref={communityHandoverRef}
+                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 max-h-full overflow-auto"
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold text-gray-800">
+                    Community Admin Handover
+                  </h2>
+                  <button
+                    className="text-gray-500 hover:text-gray-700"
+                    onClick={() => setCommunityHandoverOpen(false)}
+                  >
+                    <CloseIcon />
+                  </button>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Community Selection */}
+                  {/* Community Selection */}
+                  <div>
+                    <label className="block text-left font-semibold text-gray-700 mb-2">
+                      Select Community:
+                    </label>
+                    <select
+                      value={selectedCommunity ? selectedCommunity.id : ""}
+                      onChange={handleCommunitySelection}
+                      className="block w-full p-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="">-- Select a community --</option>
+                      {submittedData.map((community) => (
+                        <option key={community.id} value={community.id}>
+                          {community.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Current Admin Display */}
+                  <div>
+                    <label className="block text-left font-semibold text-gray-700 mb-2">
+                      Current Admin:
+                    </label>
+                    <input
+                      type="text"
+                      value={
+                        currentAdmin
+                          ? `(${currentAdmin.Email})`
+                          : "No admin assigned"
+                      }
+                      className="block w-full p-2 border border-gray-300 rounded-md bg-gray-50"
+                      disabled
+                    />
+                  </div>
+
+                  {/* New Admin Selection */}
+                  <div>
+                    <label className="block text-left font-semibold text-gray-700 mb-2">
+                      Select New Admin:
+                    </label>
+                    <select
+                      value={selectedNewAdmin ? selectedNewAdmin.id : ""}
+                      onChange={(e) => {
+                        const user = availableAdmins.find(
+                          (user) => user.id === e.target.value
+                        );
+                        setSelectedNewAdmin(user);
+                      }}
+                      className="block w-full p-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="">-- Select a new admin --</option>
+                      {availableAdmins.map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.Name} {user.Surname} ({user.Email})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Submit Button */}
+                  <div className="flex justify-end space-x-4">
+                    <button
+                      onClick={() => setCommunityHandoverOpen(false)}
+                      className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => setHandoverConfirmationOpen(true)}
+                      className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
+                      disabled={!selectedCommunity || !selectedNewAdmin}
+                    >
+                      Transfer Admin Rights
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Confirmation Modal */}
+          {isHandoverConfirmationOpen && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md z-50 flex items-center justify-center">
+              <div className="bg-white p-8 rounded-md shadow-xl max-w-md w-full mx-4">
+                <h3 className="text-lg font-bold mb-4">
+                  Confirm Community Admin Transfer
+                </h3>
+                <p className="mb-6 text-gray-700">
+                  Are you sure you want to transfer admin rights for{" "}
+                  <span className="font-semibold">
+                    {selectedCommunity?.name}
+                  </span>{" "}
+                  to{" "}
+                  <span className="font-semibold">
+                    {selectedNewAdmin?.Name} {selectedNewAdmin?.Surname}
+                  </span>
+                  ?
+                </p>
+                <div className="flex justify-end space-x-4">
+                  <button
+                    onClick={() => setHandoverConfirmationOpen(false)}
+                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => {
+                      handleCommunityHandover();
+                      setHandoverConfirmationOpen(false);
+                    }}
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
+                  >
+                    Confirm Transfer
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Popup for handover role */}
           {isPopupOpen && (

@@ -221,7 +221,39 @@ export default class CommunityDB {
 
           //UpcomingEventsCount: counter,
           //Tshepo: "Tshspoe",
+          //admin: data.admin,
+          admin: data.admin ? data.admin : "no admin",
         });
+      });
+
+      setCommunities(communities);
+    } catch (e) {
+      console.error("Error fetching communities: ", e);
+    }
+    setLoading(false);
+  };
+
+  static getAllAdminCommunities = async (setCommunities, setLoading) => {
+    setLoading(true);
+    const communities = [];
+    const adminEmail = localStorage.getItem("Email"); // Get the current admin email
+
+    try {
+      const querySnapshot = await getDocs(collection(DB, "communities"));
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+
+        // Only push communities where the admin field matches the logged-in admin's email
+        if (data.admin === adminEmail) {
+          communities.push({
+            id: doc.id,
+            name: data.name,
+            description: data.description,
+            category: data.category,
+            status: data.status, // Include status in the fetched data
+            communityImage: data.communityImage,
+          });
+        }
       });
 
       setCommunities(communities);
