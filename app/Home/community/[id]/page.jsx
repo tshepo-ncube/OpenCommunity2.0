@@ -682,6 +682,12 @@ export default function CommunityPage({ params }) {
                               >
                                 UN RSVP
                               </button>
+                            ) : event.RsvpLimitNumber &&
+                              event.rsvp &&
+                              event.rsvp.length >= event.RsvpLimitNumber ? (
+                              <span className="flex-1 text-gray-700 font-bold py-2 px-4 rounded-md text-center">
+                                RSVP capacity reached
+                              </span>
                             ) : (
                               <button
                                 className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
