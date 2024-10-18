@@ -457,6 +457,7 @@ const DiscoverCommunity = ({ email }) => {
 
                       <Card
                         className="flex flex-col h-full"
+                        onClick={() => handleViewCommunity(data)} // Replace `data.id` with the appropriate property for the community identifier
                         sx={{
                           display: "flex",
                           flexDirection: "column",
