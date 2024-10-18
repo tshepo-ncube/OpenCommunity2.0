@@ -273,7 +273,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
         >
           <IoMdClose size={25} />
         </button>
-        <form className="space-y-4 h-160 max-h-110 overflow-y-auto">
+        <form className="space-y-4 h-160 max-h-110 ">
           <div>
             <label
               htmlFor="eventName"
