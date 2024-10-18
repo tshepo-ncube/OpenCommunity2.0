@@ -219,6 +219,40 @@ export default class ManageUser {
       console.error("Error getting Profile Data: ", error);
     }
   };
+
+  static setIsSuperAdmin = async (setIsSuperAdmin) => {
+    const candidatesCollectionRef = collection(DB, "users");
+    console.log(`Email : ${localStorage.getItem("Email")}`);
+    const q = query(
+      candidatesCollectionRef,
+      where("Email", "==", localStorage.getItem("Email"))
+    );
+
+    try {
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
+        console.log("No matching documents.");
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        console.log(doc.id, "=>", doc.data());
+
+        const userData = doc.data();
+
+        // Check if the user is an admin
+        if (userData.role === "super_admin") {
+          console.log("User is an admin");
+          setIsSuperAdmin(true); // Set admin status
+        } else {
+          console.log("User is not an admin");
+          setIsSuperAdmin(false); // Set non-admin status
+        }
+      });
+    } catch (error) {
+      console.error("Error getting Profile Data: ", error);
+    }
+  };
   static logoutUser = (setLoggedIn, router) => {
     const auth = getAuth();
     signOut(auth)

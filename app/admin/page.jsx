@@ -8,8 +8,10 @@ import axios from "axios";
 import strings from "../../Utils/strings.json";
 import InterestSelection from "@/_Components/InterestsSelection";
 import UserDB from "../../database/community/users"; // Make sure this import path is correct
+
 import { doc, updateDoc } from "firebase/firestore";
 import DB from "../../database/DB"; // Ensure you are importing your Firestore DB instance
+import ManageUser from "@/database/auth/ManageUser";
 
 const CreateCommunity = () => {
   const [activeTab, setActiveTab] = useState("tab1");
@@ -43,6 +45,7 @@ const CreateCommunity = () => {
   const [adminUsers, setAdminUsers] = useState([]);
   const [consoleEmails, setConsoleEmails] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false); // New state for super admin check
+
   // Create a new function to handle the actual role handover after confirmation
   const handleConfirmHandover = async () => {
     try {
@@ -117,11 +120,13 @@ const CreateCommunity = () => {
             }
           } else if (typeof arg === "string") {
             // Check for super admin messages
-            if (arg.includes("User is a super admin")) {
-              setIsSuperAdmin(true);
-            } else if (arg.includes("User is not a super admin")) {
-              setIsSuperAdmin(false);
-            }
+            // console.log(arg);
+            //console.log(arg);
+            // if (arg.includes("User is a super admin")) {
+            //   setIsSuperAdmin(true);
+            // } else if (arg.includes("User is not a super admin")) {
+            //   setIsSuperAdmin(false);
+            // }
           }
         });
         originalConsoleLog.apply(console, args);
@@ -137,6 +142,14 @@ const CreateCommunity = () => {
     };
 
     findEmailsInConsole();
+  }, []);
+
+  useEffect(() => {
+    ManageUser.setIsSuperAdmin(setIsSuperAdmin);
+  }, []);
+
+  useEffect(() => {
+    UserDB.getUser(localStorage.getItem("UserID"));
   }, []);
   // ... (keep all existing functions)
 
