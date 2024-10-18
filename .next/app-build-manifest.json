@@ -56,6 +56,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/hme/page.js"
+    ],
+    "/auth/Register/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/auth/Register/page.js"
     ]
   }
 }
