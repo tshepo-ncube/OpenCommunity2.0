@@ -406,12 +406,18 @@ const EventsHolder = ({
                         marginTop: "0px", // Adjust this value as needed
                       }}
                     >
-                      <Typography variant="caption">
-                        {value.status === "rsvp"
-                          ? "RSVP"
-                          : value.status === "active"
-                            ? "Active"
-                            : value.status}
+                      <Typography variant="caption" sx={{}}>
+                        {value.status === "rsvp open"
+                          ? "RSVP Open"
+                          : value.status === "rsvp closed"
+                            ? "RSVP Closed"
+                            : value.status === "active"
+                              ? "Active"
+                              : value.status === "draft"
+                                ? "Draft"
+                                : value.status === "past"
+                                  ? "Past"
+                                  : value.status.toUpperCase()}
                       </Typography>
                     </Box>
                   )}
