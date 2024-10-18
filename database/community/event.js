@@ -121,7 +121,7 @@ export default class EventDB {
   };
 
   static createEvent = async (eventObject, selectedImage) => {
-    if (variable instanceof File) {
+    if (selectedImage && selectedImage instanceof File) {
       // The variable is a File
       console.log("event imag is a file");
       const eventImage = await EventDB.uploadEventImage(selectedImage);
@@ -129,7 +129,6 @@ export default class EventDB {
       const eventWithStatus = {
         ...eventObject,
         status: eventObject.status || "active",
-        EventImages: eventImage,
       };
 
       try {
