@@ -24,7 +24,7 @@ const CommunityRecommendationPage = () => {
   // const [showConfetti, setShowConfetti] = useState < boolean > false;
   const [communityName, setCommunityName] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("general");
+  const [category, setCategory] = useState("Fitness & Wellness");
   const [showConfetti, setShowConfetti] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,7 +33,7 @@ const CommunityRecommendationPage = () => {
   const [formData, setFormData] = useState({
     communityName: "",
     description: "",
-    category: "general",
+    category: "Fitness & Wellness",
   });
 
   useEffect(() => {
@@ -66,7 +66,11 @@ const CommunityRecommendationPage = () => {
         { userEmail, category: formData.category }
       );
 
-      setFormData({ communityName: "", description: "", category: "general" });
+      setFormData({
+        communityName: "",
+        description: "",
+        category: "Fitness & Wellness",
+      });
       toast.success("Your community recommendation has been submitted!");
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 5000);
@@ -220,16 +224,17 @@ const CommunityRecommendationPage = () => {
                           onChange={handleInputChange}
                           className="w-full p-4 text-lg bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bcd727] focus:border-[#bcd727] appearance-none transition-all duration-300 shadow-sm"
                         >
-                          {["General", "Sports", "Social", "Development"].map(
-                            (cat) => (
-                              <option
-                                key={cat.toLowerCase()}
-                                value={cat.toLowerCase()}
-                              >
-                                {cat}
-                              </option>
-                            )
-                          )}
+                          {[
+                            "Fitness & Wellness",
+                            "Food & Drinks",
+                            "Arts & Culture",
+                            "Tech & Gaming",
+                            "Social & Networking",
+                            "Hobbies & Interests",
+                            "Travel & Adventure",
+                          ].map((cat) => (
+                            <option>{cat}</option>
+                          ))}
                         </select>
                         <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
                       </div>

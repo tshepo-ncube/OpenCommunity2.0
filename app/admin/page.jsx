@@ -31,7 +31,11 @@ const CreateCommunity = () => {
   const [roles, setRoles] = useState({ user: false, admin: false });
   const fileInputRef = useRef(null);
   const userPopupRef = useRef(null);
-
+  const [similarityError, setSimilarityError] = useState({
+    message: "",
+    similarCommunity: "",
+  });
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
   const [selectedInterests, setSelectedInterests] = useState([]);
 
   const [image, setImage] = useState(null);
@@ -177,9 +181,77 @@ const CreateCommunity = () => {
     });
   };
 
+  // Enhanced function to check name similarity
+  const checkNameSimilarity = (newName) => {
+    const cleanName = newName
+      .toLowerCase()
+      .replace(/\bcommunity\b/g, "")
+      .trim();
+
+    const similarCommunity = submittedData.find((community) => {
+      const existingName = community.name
+        .toLowerCase()
+        .replace(/\bcommunity\b/g, "")
+        .trim();
+      return (
+        existingName === cleanName ||
+        existingName.includes(cleanName) ||
+        cleanName.includes(existingName)
+      );
+    });
+
+    return similarCommunity || null;
+  };
+
+  const ErrorPopup = ({ error, onClose }) => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-[60] flex items-center justify-center">
+      <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4 relative">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold text-red-600">
+            Similar Community Exists
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <CloseIcon />
+          </button>
+        </div>
+        <div className="mb-4">
+          <p className="text-gray-700 mb-2">{error.message}</p>
+          <p className="text-gray-900 font-medium">
+            Similar community name is:
+          </p>
+          <p className="text-gray-700 bg-gray-50 p-2 rounded mt-1">
+            {error.similarCommunity}
+          </p>
+        </div>
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
   const handleFormSubmit = async (e, status) => {
     e.preventDefault();
 
+    // Check for similar names
+    const similarCommunity = checkNameSimilarity(name);
+    if (similarCommunity) {
+      setSimilarityError({
+        message:
+          "Cannot create this community as a similar community already exists.",
+        similarCommunity: similarCommunity.name,
+      });
+      setShowErrorPopup(true);
+      return;
+    }
     const communityData = {
       name,
       description,
@@ -523,7 +595,6 @@ const CreateCommunity = () => {
                 </div>
 
                 {/* Add Image here */}
-
                 <div className="flex items-center space-x-4">
                   <label
                     htmlFor="image"
@@ -550,7 +621,6 @@ const CreateCommunity = () => {
                     <p className="mt-2 text-gray-600">Uploaded: {image.name}</p>
                   )}
                 </div>
-
                 <label className="block text-m text-gray-700 font-semibold">
                   Select Community Interests
                 </label>
@@ -559,7 +629,6 @@ const CreateCommunity = () => {
                   setSelectedInterests={setSelectedInterests}
                   selectedInterests={selectedInterests}
                 />
-
                 <div className="flex justify-end">
                   <button
                     type="button"
@@ -589,6 +658,12 @@ const CreateCommunity = () => {
                 </div>
               </form>
             </div>
+          )}
+          {showErrorPopup && (
+            <ErrorPopup
+              error={similarityError}
+              onClose={() => setShowErrorPopup(false)}
+            />
           )}
           {submittedData.length === 0 ? (
             <div className="text-center">
