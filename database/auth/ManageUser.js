@@ -89,6 +89,7 @@ export default class ManageUser {
       .then(() => {
         // Password reset email sent!
         setForgotPassword(false);
+        alert("Password Reset Link Sent");
       })
       .catch((error) => {
         const errorCode = error.code;
