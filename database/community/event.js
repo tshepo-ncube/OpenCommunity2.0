@@ -125,6 +125,27 @@ export default class EventDB {
 
     if (selectedImage instanceof File) {
       // The variable is a File
+      console.log("event imag is a file");
+      const eventImage = await EventDB.uploadEventImage(selectedImage);
+
+      const eventWithStatus = {
+        ...eventObject,
+        status: eventObject.status || "active",
+      };
+
+      try {
+        const eventRef = await addDoc(
+          collection(DB, "events"),
+          eventWithStatus
+        );
+        console.log("Document ID: ", eventRef.id);
+
+        // eventScheduler(eventRef.id);
+        // pollScheduler(eventRef.id);
+      } catch (e) {
+        console.error("Error adding document:", e);
+        throw e;
+      }
       console.log("event image is a file");
       eventImage = await EventDB.uploadEventImage(selectedImage);
     } else {
