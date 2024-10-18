@@ -40,6 +40,8 @@ const createEvent = (eventDetails, communityID, selectedImages) => {
       Location: eventDetails.location,
       CommunityID: communityID,
       status: eventDetails.status,
+      RsvpLimit: eventDetails.rsvpLimit, // Add RSVP limit
+      RsvpLimitNumber: eventDetails.rsvpLimitNumber, // Add RSVP limit number
     },
     selectedImages
   );
