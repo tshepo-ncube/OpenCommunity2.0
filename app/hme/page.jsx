@@ -2,6 +2,7 @@ import React from "react";
 
 import Home from "../../_Components/Home";
 import Navbar from "../../_Components/Navbar";
+import ForgotPassword from "../../_Components/NewPassword";
 
 const HomePage = () => {
   return (
@@ -14,14 +15,16 @@ const HomePage = () => {
         <div className="mx-auto  max-w">
           {/* {header} */}
           {/* {children} */}
-          <Navbar isHome={true} />
+          {/* <Navbar isHome={true} /> */}
           <br />
           <br />
 
           {/* {children} */}
-          <Home />
+          {/* <Home /> */}
 
           {/* {footer} */}
+
+          <ForgotPassword />
         </div>
       </body>
     </>

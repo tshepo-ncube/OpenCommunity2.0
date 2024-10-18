@@ -15,6 +15,7 @@ import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 
 import Logo from "@/lib/images/teams-icon.jpg";
+import ForgotPassword from "@/_Components/NewPassword";
 
 // Import the default profile image
 // import defaultProfileImage from "../../lib/images/profile.png";
@@ -696,7 +697,7 @@ const Profile = () => {
                 onSubmit={handleNewPasswordSubmit}
                 className="space-y-6 p-8"
               >
-                <div>
+                {/* <div>
                   <label
                     htmlFor="newPassword"
                     className="block text-sm font-medium text-gray-700"
@@ -727,8 +728,10 @@ const Profile = () => {
                     onChange={handleChange}
                     className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#bcd727] focus:border-[#bcd727] sm:text-sm"
                   />
-                </div>
-                {error && (
+                </div> */}
+
+                <ForgotPassword />
+                {/* {error && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -736,8 +739,8 @@ const Profile = () => {
                   >
                     {error}
                   </motion.div>
-                )}
-                <div>
+                )} */}
+                {/* <div>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -746,7 +749,7 @@ const Profile = () => {
                   >
                     Save New Password
                   </motion.button>
-                </div>
+                </div> */}
               </motion.form>
             </Tab.Panel>
             <Tab.Panel>
