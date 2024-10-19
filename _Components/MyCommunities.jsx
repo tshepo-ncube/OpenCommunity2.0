@@ -22,7 +22,7 @@ import {
   Divider,
 } from "@mui/material";
 import { FaFire } from "react-icons/fa"; // Import the fire icon from react-icons
-
+import ExitToApp from "@mui/icons-material/ExitToApp";
 import Image from "next/image";
 import FireSvg from "@/lib/images/trace.svg";
 import {
@@ -119,7 +119,26 @@ const DiscoverCommunity = ({ email }) => {
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false);
   };
+  const handleLeaveCommunity = async (data) => {
+    const result = await CommunityDB.leaveCommunity(data.id, email);
+    if (result.success) {
+      const updatedData = submittedData.map((community) => {
+        if (community.id === data.id) {
+          return {
+            ...community,
+            users: community.users.filter((user) => user !== email),
+          };
+        }
+        return community;
+      });
+      setSubmittedData(updatedData);
 
+      setSnackbarMessage(`You have left the "${data.name}" community.`);
+      setOpenSnackbar(true);
+    } else {
+      alert(result.message);
+    }
+  };
   const filterDataByCategoryAndStatus = (data) => {
     return data
       .filter((item) => Array.isArray(item.users) && item.users.includes(email))
@@ -158,7 +177,7 @@ const DiscoverCommunity = ({ email }) => {
     switch (category.toLowerCase()) {
       case "general":
         return "#a3c2e7"; // Pastel Blue
-      case "social":
+      case "socia":
         return "#f7b7a3"; // Pastel Orange
       case "retreat":
         return "#f7a4a4"; // Pastel Red
@@ -457,7 +476,6 @@ const DiscoverCommunity = ({ email }) => {
 
                       <Card
                         className="flex flex-col h-full"
-                        onClick={() => handleViewCommunity(data)} // Replace `data.id` with the appropriate property for the community identifier
                         sx={{
                           display: "flex",
                           flexDirection: "column",
@@ -474,6 +492,7 @@ const DiscoverCommunity = ({ email }) => {
                         {/* Community Image */}
 
                         <CardMedia
+                          onClick={() => handleViewCommunity(data)} // Replace `data.id` with the appropriate property for the community identifier
                           component="img"
                           height="175" // Half of the card height (350px / 2)
                           className="h-40"
@@ -643,12 +662,13 @@ const DiscoverCommunity = ({ email }) => {
 
                         {/* Join/Joined Button */}
                         <CardActions sx={{ padding: "12px !important" }}>
-                          {data.users.includes(email) ? (
+                          {data.users.includes(email) &&
+                          data.name !== "OpenBox Community" ? (
                             <Button
                               fullWidth
                               variant="outlined"
-                              disabled
-                              startIcon={<CheckCircle />}
+                              onClick={() => handleLeaveCommunity(data)}
+                              startIcon={<ExitToApp />} // Using ExitToApp as the leave icon
                               sx={{
                                 borderColor: "#bcd727",
                                 color: "#bcd727",
@@ -659,25 +679,27 @@ const DiscoverCommunity = ({ email }) => {
                                 fontFamily: "Poppins, sans-serif",
                               }}
                             >
-                              Joined
+                              LEAVE
                             </Button>
                           ) : (
-                            <Button
-                              fullWidth
-                              variant="contained"
-                              onClick={() => {}}
-                              startIcon={<AddCircleOutlineIcon />}
-                              sx={{
-                                backgroundColor: "#bcd727",
-                                color: "#fff",
-                                "&:hover": {
-                                  backgroundColor: "#a4b622",
-                                },
-                                fontFamily: "Poppins, sans-serif",
-                              }}
-                            >
-                              Join Community
-                            </Button>
+                            data.name !== "OpenBox Community" && (
+                              <Button
+                                fullWidth
+                                variant="contained"
+                                onClick={() => {}}
+                                startIcon={<AddCircleOutlineIcon />}
+                                sx={{
+                                  backgroundColor: "#bcd727",
+                                  color: "#fff",
+                                  "&:hover": {
+                                    backgroundColor: "#a4b622",
+                                  },
+                                  fontFamily: "Poppins, sans-serif",
+                                }}
+                              >
+                                Join Community
+                              </Button>
+                            )
                           )}
                         </CardActions>
                       </Card>
