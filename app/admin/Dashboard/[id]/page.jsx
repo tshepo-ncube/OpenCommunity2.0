@@ -1101,7 +1101,7 @@ export default function CommunityPage({ params }) {
 
   return (
     <div className="bg-background_gray h-full">
-      <Navbar />
+      {/* <Navbar /> */}
       <Header />
       {/* <div className="flex flex-col fixed bottom-7 right-4">
         <button
