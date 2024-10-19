@@ -12,6 +12,7 @@ import {
   Rating,
   DialogActions,
 } from "@mui/material";
+
 import imageCompression from "browser-image-compression";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Import storage functions
 import React, { useEffect, useState } from "react";
@@ -110,6 +111,8 @@ export default function CommunityPage({ params }) {
   if (typeof window !== "undefined") {
     const [USER_ID, setUSER_ID] = useState(localStorage.getItem("UserID"));
   }
+
+  const [voting, setVoting] = useState(false);
 
   const [community, setCommunity] = useState({});
   const [openDialog, setOpenDialog] = useState(false);
@@ -291,14 +294,20 @@ export default function CommunityPage({ params }) {
   };
 
   const handlePollOptionSelection = (pollId, selectedOption) => {
+    setVoting(true);
     PollDB.voteFromPollId(params.id, pollId, selectedOption)
-      .then(() => {
+      .then(async () => {
         setPollsUpdated(false);
-        PollDB.getPollFromCommunityIDForUser(id, setAllPolls);
-        CommunityDB.incrementCommunityScore(params.id, 1);
+        await PollDB.getPollFromCommunityIDForUser(id, setAllPolls);
+        await CommunityDB.incrementCommunityScore(params.id, 1);
+        setPollsUpdated(true);
+
+        setVoting(false);
+        location.reload();
       })
       .catch((error) => {
         console.error("Error:", error);
+        setVoting(false);
       });
   };
 
@@ -926,7 +935,12 @@ export default function CommunityPage({ params }) {
                       </ul>
                     </div>
 
-                    <PollComponent pollObject={poll} communityID={params.id} />
+                    <PollComponent
+                      pollObject={poll}
+                      communityID={params.id}
+                      handlePollOptionSelection={handlePollOptionSelection}
+                      voting={voting}
+                    />
                   </>
                 ))
               ) : (

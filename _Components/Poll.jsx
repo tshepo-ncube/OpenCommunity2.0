@@ -44,7 +44,24 @@
 import React, { useState, useEffect } from "react";
 import ManageUser from "@/database/auth/ManageUser";
 
-const PollComponent = ({ pollObject, communityID }) => {
+import {
+  CircularProgress,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Button,
+  TextField,
+  Rating,
+  DialogActions,
+} from "@mui/material";
+
+const PollComponent = ({
+  pollObject,
+  communityID,
+  handlePollOptionSelection,
+  voting,
+}) => {
   const [userData, setUserData] = useState(null);
   const [userCommunities, setUserCommunities] = useState([]);
   const [isAdmin, setIsAdmin] = useState([]);
@@ -133,28 +150,44 @@ const PollComponent = ({ pollObject, communityID }) => {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-4">
-      <h2>{pollObject.Question}</h2>
-      <div className="flex flex-col items-center space-y-4">
-        {pollObject.Opt.map((poll, index) => (
-          <div
-            className={`p-2 w-80 border ${
-              isPollEngaged(poll.title) ? "bg-openbox-green" : "text-black"
-            }`}
-          >
-            <p
-              key={index}
-              className={` ${
-                isPollEngaged(poll.title) ? "text-white" : "text-black"
-              }`}
-            >
-              {poll.title}
-            </p>
+    <div>
+      {voting ? (
+        <>
+          <CircularProgress style={{ marginTop: 5, width: 40, height: 40 }} />;
+        </>
+      ) : (
+        <>
+          {" "}
+          <div className="flex flex-col items-center space-y-4">
+            <h2>{pollObject.Question}</h2>
+            <div className="flex flex-col items-center space-y-4">
+              {pollObject.Opt.map((poll, index) => (
+                <div
+                  onClick={() => {
+                    handlePollOptionSelection(pollObject.id, poll.title);
+                  }}
+                  className={`p-2 w-80 border ${
+                    isPollEngaged(poll.title)
+                      ? "bg-openbox-green"
+                      : "text-black"
+                  }`}
+                >
+                  <p
+                    key={index}
+                    className={` ${
+                      isPollEngaged(poll.title) ? "text-white" : "text-black"
+                    }`}
+                  >
+                    {poll.title}
+                  </p>
 
-            <p className="text-xs">{poll.votes} votes</p>
+                  <p className="text-xs">{poll.votes} votes</p>
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
-      </div>
+        </>
+      )}
     </div>
   );
 };

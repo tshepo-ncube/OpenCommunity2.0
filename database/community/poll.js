@@ -190,7 +190,7 @@ export default class PollDB {
         poll_id: pollId,
         selected_option: selectedOption,
       };
-      UserDB.addPoints(16);
+      // UserDB.addPoints(16);
       ManageUser.addPollToCommunity(docID, community_id, newPoll);
     } catch (error) {
       console.error("Transaction failed: ", error);
