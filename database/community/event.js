@@ -164,6 +164,8 @@ export default class EventDB {
     try {
       const eventRef = await addDoc(collection(DB, "events"), eventWithStatus);
       console.log("Document ID: ", eventRef.id);
+
+      CommunityDB.incrementUpcomingEventCount(eventObject.CommunityID);
     } catch (e) {
       console.error("Error adding document:", e);
       throw e;

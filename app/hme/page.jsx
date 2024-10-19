@@ -3,6 +3,7 @@ import React from "react";
 import Home from "../../_Components/Home";
 import Navbar from "../../_Components/Navbar";
 import ForgotPassword from "../../_Components/NewPassword";
+import Carousel from "@/_Components/Carousel";
 
 const HomePage = () => {
   return (
@@ -23,8 +24,10 @@ const HomePage = () => {
           {/* <Home /> */}
 
           {/* {footer} */}
+          {/* 
+          <ForgotPassword /> */}
 
-          <ForgotPassword />
+          <Carousel />
         </div>
       </body>
     </>

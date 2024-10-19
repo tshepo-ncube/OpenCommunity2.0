@@ -13,6 +13,11 @@ const Carousel = () => {
     setActiveIndex((prevIndex) => (prevIndex + 1) % 3); // Cycles through the slides
   };
 
+  const handleJoinCommunity = (community) => {
+    CommunityDB.joinCommunity(community.id, localStorage.getItem("Email"));
+    //console.log(community);
+  };
+
   const handlePrev = () => {
     setActiveIndex((prevIndex) => (prevIndex === 0 ? 2 : prevIndex - 1)); // Cycles backwards
   };
@@ -148,8 +153,13 @@ const Carousel = () => {
                       {community.description}
                     </h1>
                     <div className="mt-4 mb-30 flex justify-start">
-                      <button className="px-2 py-2 text-white font-bold text-xl rounded bg-[#bcd727] hover:bg-[#6e7d19]">
-                        Visit Community
+                      <button
+                        onClick={() => {
+                          handleJoinCommunity(community);
+                        }}
+                        className="px-2 py-2 text-white font-bold text-xl rounded bg-[#bcd727] hover:bg-[#6e7d19]"
+                      >
+                        Join Community
                       </button>
                     </div>
                   </div>

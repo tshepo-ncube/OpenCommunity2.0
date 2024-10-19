@@ -100,28 +100,36 @@ export default class CommunityDB {
       const querySnapshot = await getDocs(collection(DB, "communities"));
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        console.log("this is a community ", i);
+        // console.log("this is a community ", i);
         console.log(data);
 
-        console.log("data.selectedInterests : ", data.selectedInterests);
+        //console.log("data.selectedInterests : ", data.selectedInterests);
 
-        console.log(
-          "Have commont item : ",
-          this.haveCommonItem(data.selectedInterests, userDetails.Interests)
-        );
-        console.log("common.");
-        if (
-          this.haveCommonItem(data.selectedInterests, userDetails.Interests)
-        ) {
-          communities.push({
-            id: doc.id,
-            name: data.name,
-            description: data.description,
-            category: data.category,
-            status: data.status, // Include status in the fetched data
-            communityImage: data.communityImage,
-            selectedInterests: data.selectedInterests,
-          });
+        // console.log(
+        //   "Have commont item : ",
+        //   this.haveCommonItem(data.selectedInterests, userDetails.Interests)
+        // );
+
+        if (this.haveCommonItem(data.selectedInterests, userDetails.Interests))
+          console.log(
+            "Found community user might be interested in. : ",
+            data.name
+          );
+
+        {
+          if (data.users.includes(localStorage.getItem("Email"))) {
+            console.log("the user already joined the recommened communities");
+          } else {
+            communities.push({
+              id: doc.id,
+              name: data.name,
+              description: data.description,
+              category: data.category,
+              status: data.status, // Include status in the fetched data
+              communityImage: data.communityImage,
+              selectedInterests: data.selectedInterests,
+            });
+          }
         }
 
         i += 1;
@@ -322,7 +330,10 @@ export default class CommunityDB {
           });
           ManageUser.joinCommunity(CommunityData.id);
           console.log("Community Users updated successfully.");
+
           UserDB.addPoints(5);
+          alert("Community Joined");
+          window.location.href = window.location.href;
         } catch (error) {
           console.error("Error updating community status:", error);
           throw error;
@@ -430,12 +441,12 @@ export default class CommunityDB {
       const querySnapshot = await getDocs(collection(DB, "communities"));
 
       for (const doc of querySnapshot.docs) {
-        let upcomingEventsCount = await CommunityDB.getUpcomingEventsCount(
-          doc.id
-        );
-        if (upcomingEventsCount === undefined) {
-          upcomingEventsCount = 0;
-        }
+        // let upcomingEventsCount = await CommunityDB.getUpcomingEventsCount(
+        //   doc.id
+        // );
+        // if (upcomingEventsCount === undefined) {
+        //   upcomingEventsCount = 0;
+        // }
         //console.log("Upcoming events: ", upcomingEventsCount);
 
         const data = doc.data();
@@ -450,7 +461,9 @@ export default class CommunityDB {
           status: data.status, // Include status in the fetched data
           users: data.users || [], // Ensure users field is included
           communityImage: data.communityImage,
-          UpcomingEventsCount: upcomingEventsCount,
+          UpcomingEventCount: data.UpcomingEventCount
+            ? data.UpcomingEventCount
+            : 0,
           selectedInterests: data.selectedInterests,
           score: score,
         });
@@ -475,6 +488,52 @@ export default class CommunityDB {
     setLoading(false);
   };
 
+  static incrementUpcomingEventCount = async (communityID) => {
+    console.log("Community ID: ", communityID);
+    console.log("starting incrementUpcomingEventCount transaction...");
+    if (typeof window === "undefined") return;
+    try {
+      const communityRef = doc(DB, "communities", communityID); // Reference to the community document
+      console.log("CommunityRef:", communityRef);
+
+      console.log("got ref");
+
+      // Start a transaction
+      await runTransaction(DB, async (transaction) => {
+        console.log("run transaction ref");
+        // Get the current data of the document
+        const docSnapshot = await transaction.get(communityRef);
+
+        // Check if the document exists
+        if (!docSnapshot.exists()) {
+          console.log("Community not exist");
+          throw new Error("Community document does not exist!");
+        }
+
+        const CommunityData = docSnapshot.data();
+
+        // Create a copy of the current community data
+        const newCommunityData = { ...CommunityData };
+
+        // Ensure that a score field exists in the document, default to 0 if not present
+        const currentUpcomingEventCount =
+          newCommunityData.UpcomingEventCount || 0;
+
+        // Increment the community score by the provided increment value
+        newCommunityData.UpcomingEventCount = currentUpcomingEventCount + 1;
+
+        // Update the document with the new community data and incremented score
+        transaction.update(communityRef, {
+          UpcomingEventCount: newCommunityData.UpcomingEventCount,
+        });
+      });
+
+      console.log("Community Upcoming Event incremented successfully!");
+    } catch (error) {
+      console.error("Transaction failed: ", error);
+    }
+  };
+
   static joinCommunity = async (communityId, userEmail) => {
     const communityRef = doc(DB, "communities", communityId);
     const communityDoc = await getDoc(communityRef);
@@ -495,6 +554,9 @@ export default class CommunityDB {
           });
           console.log("Community Users updated successfully.");
           UserDB.addPoints(5);
+
+          alert("Community Joined");
+          window.location.href = window.location.href;
           return {
             success: true,
             message: "You have successfully joined the community!",
