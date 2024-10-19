@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 
-const InterestSelection = ({ selectedInterests, setSelectedInterests }) => {
+const InterestSelection = ({
+  max,
+  selectedInterests,
+  setSelectedInterests,
+}) => {
   // Example interest list
   // const interests = [
   //   "Politics",
@@ -44,41 +48,76 @@ const InterestSelection = ({ selectedInterests, setSelectedInterests }) => {
     { interest: "Mentorship", category: "Development" },
   ];
 
+  const new_interests = [
+    "Sports",
+    "Outdoor Activities",
+    "Foodie",
+    "Language",
+    "Drinking",
+    "Workout",
+    "Gaming",
+    "Cooking",
+    "Professional Growth",
+    "Strength Training",
+    "Movies & TV",
+    "Reading",
+    "Painting",
+    "Coding",
+    "Board Games",
+    "Team Building",
+    "Workshops & Seminar",
+    "Cultural Experiences",
+    "Public Speaking",
+    "Leadership",
+    "Endurance Training",
+    "Active Lifestyle",
+    "Baking",
+  ];
+
   // Function to toggle selection of interest
   const toggleInterest = (interest) => {
+    console.log(interest);
+    console.log(selectedInterests);
+    console.log();
     if (selectedInterests.includes(interest)) {
+      console.log("selectedInterests.includes(interest)");
       setSelectedInterests(selectedInterests.filter((i) => i !== interest));
     } else {
-      if (selectedInterests.length < 5) {
+      console.log("selectedInterests DOES NOT includes(interest)");
+      if (selectedInterests.length < max) {
+        console.log("selectedInterests.length < max");
         setSelectedInterests([...selectedInterests, interest]);
+        console.log("just set selected interests");
       }
     }
   };
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">Select your Interests</h2>
+    <div className="p-4 ">
       <div className="flex flex-wrap gap-2">
-        {interests.map((interest) => (
+        {new_interests.map((interest) => (
           <button
-            key={interest.interest}
-            onClick={() => toggleInterest(interest.interest)}
+            key={interest}
+            onClick={(e) => {
+              e.preventDefault();
+              toggleInterest(interest);
+            }}
             className={`px-4 py-2 rounded-full border ${
-              selectedInterests.includes(interest.interest)
+              selectedInterests.includes(interest)
                 ? "bg-openbox-green text-white border-white"
                 : "bg-gray-100 text-gray-800 border-gray-300 hover:bg-green-100"
             }  transition`}
           >
-            {interest.interest}
+            {interest}
           </button>
         ))}
       </div>
       <div className="mt-4">
         <button
           className={`mt-4 px-6 py-2 bg-gradient-to-r from-openbox-green to-green-900 text-white rounded-full disabled:opacity-50`}
-          disabled={selectedInterests.length !== 5}
+          disabled={selectedInterests.length !== max}
         >
-          Continue ({selectedInterests.length}/5)
+          Continue ({selectedInterests.length}/{max})
         </button>
       </div>
     </div>

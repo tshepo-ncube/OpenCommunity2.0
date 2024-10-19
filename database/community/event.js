@@ -69,10 +69,12 @@ export default class EventDB {
     EventDB.editEvent(id, eventObjectForFirebase);
   };
 
-  static deleteEvent = async (id) => {
+  static deleteEvent = async (id, communityID) => {
     try {
       await deleteDoc(doc(DB, "events", id));
       console.log(`Event ${id} deleted successfully.`);
+
+      CommunityDB.decrementUpcomingEventCount(communityID);
     } catch (e) {
       console.error("Error deleting document:", e);
       throw e;
@@ -121,15 +123,16 @@ export default class EventDB {
   };
 
   static createEvent = async (eventObject, selectedImage) => {
-    if (variable instanceof File) {
+    let eventImage;
+
+    if (selectedImage instanceof File) {
       // The variable is a File
       console.log("event imag is a file");
-      const eventImage = await EventDB.uploadEventImage(selectedImage);
+      eventImage = await EventDB.uploadEventImage(selectedImage);
 
       const eventWithStatus = {
         ...eventObject,
         status: eventObject.status || "active",
-        EventImages: eventImage,
       };
 
       try {
@@ -145,43 +148,83 @@ export default class EventDB {
         console.error("Error adding document:", e);
         throw e;
       }
+      console.log("event image is a file");
+      eventImage = await EventDB.uploadEventImage(selectedImage);
     } else {
       // The variable is not a File
-      console.log("Event Image is AI gen");
-
-      const eventWithStatus = {
-        ...eventObject,
-        status: eventObject.status || "active",
-        EventImages: selectedImages,
-      };
-
-      try {
-        const eventRef = await addDoc(
-          collection(DB, "events"),
-          eventWithStatus
-        );
-        console.log("Document ID: ", eventRef.id);
-
-        // eventScheduler(eventRef.id);
-        // pollScheduler(eventRef.id);
-      } catch (e) {
-        console.error("Error adding document:", e);
-        throw e;
-      }
+      console.log("Event Image is AI generated");
+      // You need to assign a value to `eventImage` or handle this case properly
+      eventImage = selectedImage; // Ensure selectedImage is defined
     }
 
     const eventWithStatus = {
       ...eventObject,
       status: eventObject.status || "active",
-      EventImages: eventImages,
+      EventImages: eventImage, // Use the defined eventImage
     };
 
     try {
       const eventRef = await addDoc(collection(DB, "events"), eventWithStatus);
       console.log("Document ID: ", eventRef.id);
+      CommunityDB.incrementUpcomingEventCount(eventObject.CommunityID);
+    } catch (e) {
+      console.error("Error adding document:", e);
+      throw e;
+    }
+  };
 
-      // eventScheduler(eventRef.id);
-      // pollScheduler(eventRef.id);
+  static createEventOLd = async (eventObject, selectedImage) => {
+    let eventImage;
+    if (selectedImage instanceof File) {
+      // The variable is a File
+      console.log("event imag is a file");
+      eventImage = await EventDB.uploadEventImage(selectedImage);
+      const eventWithStatus = {
+        ...eventObject,
+        status: eventObject.status || "active",
+      };
+      try {
+        const eventRef = await (0,
+        firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.addDoc)(
+          (0, firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.collection)(
+            _DB__WEBPACK_IMPORTED_MODULE_0__["default"],
+            "events"
+          ),
+          eventWithStatus
+        );
+        console.log("Document ID: ", eventRef.id);
+        // eventScheduler(eventRef.id);
+        // pollScheduler(eventRef.id);
+      } catch (e) {
+        console.error("Error adding document:", e);
+        throw e;
+      }
+      console.log("event image is a file");
+      eventImage = await EventDB.uploadEventImage(selectedImage);
+    } else {
+      // The variable is not a File
+      console.log("Event Image is AI generated");
+      // You need to assign a value to `eventImage` or handle this case properly
+      eventImage = selectedImage;
+      // Ensure selectedImage is defined
+    }
+    const eventWithStatus = {
+      ...eventObject,
+      status: eventObject.status || "active",
+      EventImages: eventImage,
+    };
+    try {
+      // const eventRef = await (0,
+      // firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.addDoc)(
+      //   (0, firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.collection)(
+      //     _DB__WEBPACK_IMPORTED_MODULE_0__["default"],
+      //     "events"
+      //   ),
+      //   eventWithStatus
+      // );
+
+      await console.log("Document ID: ", eventRef.id);
+      CommunityDB.incrementUpcomingEventCount(eventObject.CommunityID);
     } catch (e) {
       console.error("Error adding document:", e);
       throw e;

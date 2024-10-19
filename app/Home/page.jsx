@@ -159,7 +159,7 @@ function Home() {
 
         <Navbar isHome={true} />
 
-        <HotCommunity />
+        {/* <HotCommunity /> */}
 
         <Carousel />
 

@@ -54,7 +54,7 @@ const Sidebar = () => {
         <li>
           <button onClick={openOutlookApp}>
             <Image
-              src={outlookLogo}
+              srcS={outlookLogo}
               alt="Outlook"
               style={{ width: "100px", marginTop: "15px" }}
             />

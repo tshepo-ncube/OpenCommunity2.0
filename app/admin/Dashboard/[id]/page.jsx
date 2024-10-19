@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import Navbar from "@/_Components/Navbar";
 import Autocomplete from "react-google-autocomplete";
 import CommunityDB from "@/database/community/community";
 import Snackbar from "@mui/material/Snackbar";
@@ -39,6 +40,8 @@ const createEvent = (eventDetails, communityID, selectedImages) => {
       Location: eventDetails.location,
       CommunityID: communityID,
       status: eventDetails.status,
+      RsvpLimit: eventDetails.rsvpLimit, // Add RSVP limit
+      RsvpLimitNumber: eventDetails.rsvpLimitNumber, // Add RSVP limit number
     },
     selectedImages
   );
@@ -53,6 +56,8 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     location: eventData.Location,
     description: eventData.EventDescription,
     status: "active",
+    rsvpLimit: "No Limit",
+    rsvpLimitNumber: 1,
   });
 
   const [selectedImages, setSelectedImages] = useState([]);
@@ -202,7 +207,22 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
       [name]: value,
     }));
   };
+  const handleRsvpLimitChange = (e) => {
+    const { value } = e.target;
+    setEventDetails((prevDetails) => ({
+      ...prevDetails,
+      rsvpLimit: value,
+      rsvpLimitNumber: value === "No Limit" ? 1 : prevDetails.rsvpLimitNumber,
+    }));
+  };
 
+  const handleRsvpLimitNumberChange = (e) => {
+    const { value } = e.target;
+    setEventDetails((prevDetails) => ({
+      ...prevDetails,
+      rsvpLimitNumber: Math.max(1, parseInt(value) || 1),
+    }));
+  };
   const handleSubmitEvent = (e) => {
     e.preventDefault();
     onSubmit(eventDetails, eventImage);
@@ -264,7 +284,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
       <div
         className={`${
           isOpen ? "block" : "hidden"
-        } fixed top-1/4 left-1/4 transform -translate-x-1/4 -translate-y-1/4 bg-white p-10 rounded-md shadow-xl z-50 w-3/4 max-w-3xl max-h-120 overflow-y-auto`}
+        } fixed top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-3/4 bg-white p-12 rounded-md shadow-xl z-50 w-5/6 max-w-5xl max-h-[90vh] overflow-y-auto`}
       >
         <button
           onClick={onClose}
@@ -272,7 +292,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
         >
           <IoMdClose size={25} />
         </button>
-        <form className="space-y-4 h-160 max-h-110 overflow-y-auto">
+        <form className="space-y-4 h-160 max-h-110 ">
           <div>
             <label
               htmlFor="eventName"
@@ -539,7 +559,45 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
           <div className="flex flex-col items-center ">
             <div className="mt-6 flex flex-wrap ">{renderPreviews()}</div>
           </div>
+          <div>
+            <label
+              htmlFor="rsvpLimit"
+              className="block text-sm font-medium text-gray-700"
+            >
+              RSVP Limit
+            </label>
+            <select
+              name="rsvpLimit"
+              id="rsvpLimit"
+              value={eventDetails.rsvpLimit}
+              onChange={handleRsvpLimitChange}
+              className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
+            >
+              <option value="No Limit">No RSVP Limit</option>
+              <option value="Limit">Set an RSVP Limit</option>
+            </select>
+          </div>
 
+          {eventDetails.rsvpLimit === "Limit" && (
+            <div>
+              <label
+                htmlFor="rsvpLimitNumber"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Select the maximum number of people who can attend the event
+                below:
+              </label>
+              <input
+                type="number"
+                name="rsvpLimitNumber"
+                id="rsvpLimitNumber"
+                value={eventDetails.rsvpLimitNumber}
+                onChange={handleRsvpLimitNumberChange}
+                min="1"
+                className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
+              />
+            </div>
+          )}
           <div>
             <label
               htmlFor="description"
@@ -557,6 +615,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               required
             ></textarea>
           </div>
+
           <div className="flex justify-end">
             <button
               type="button"
@@ -662,166 +721,167 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-20 z-10"></div>
-      )}
-      <div
-        className={`${
-          isOpen ? "block" : "hidden"
-        } fixed top-1/4 left-1/4 transform -translate-x-1/4 -translate-y-1/4 bg-white p-10 rounded-md shadow-xl z-50 w-3/4 max-w-3xl max-h-120 overflow-y-auto`}
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-2 p- 4 right-2 text-gray-500 hover:text-gray-700"
-        >
-          <IoMdClose size={25} />
-        </button>
-        <form className="space-y-4">
-          <div>
-            <label
-              htmlFor="eventName"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Event Name
-            </label>
-            <input
-              type="text"
-              name="eventName"
-              id="eventName"
-              value={eventDetails.eventName}
-              onChange={handleChangeEvent}
-              placeholder="Enter event name"
-              className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
-              required
-            />
-          </div>
-          <div className="flex justify-between gap-4">
-            <div className="flex-1">
-              <label
-                htmlFor="startDateTime"
-                className="block text-sm font-medium text-gray-700"
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center overflow-x-hidden overflow-y-auto p-4">
+          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-3xl my-8 max-h-[80vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
+              <button
+                onClick={onClose}
+                className="text-gray-500 hover:text-gray-700"
               >
-                Start Date & Time
-              </label>
-              <input
-                type="datetime-local"
-                name="startDateTime"
-                id="startDateTime"
-                // value={"2024-09-25T14:30"}
-                value={eventDetails.startDateTime}
-                onChange={handleChangeEvent}
-                className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
-                required
-              />
-            </div>
-            <div className="flex-1">
-              <label
-                htmlFor="endDateTime"
-                className="block text-sm font-medium text-gray-700"
-              >
-                End Date & Time
-              </label>
-              <input
-                type="datetime-local"
-                name="endDateTime"
-                id="endDateTime"
-                value={eventDetails.endDateTime}
-                //value={"2024-09-27T14:30"}
-                onChange={handleChangeEvent}
-                className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
-                required
-              />
-            </div>
-          </div>
-          <div className="flex justify-between gap-4">
-            <div className="flex-1">
-              <label
-                htmlFor="rsvpEndDateTime"
-                className="block text-sm font-medium text-gray-700"
-              >
-                RSVP End Date & Time
-              </label>
-              <input
-                type="datetime-local"
-                name="rsvpEndDateTime"
-                id="rsvpEndDateTime"
-                value={eventDetails.rsvpEndDateTime}
-                onChange={handleChangeEvent}
-                className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
-                required
-              />
-            </div>
-          </div>
-          <div>
-            <label
-              htmlFor="location"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Location
-            </label>
-            <Autocomplete
-              apiKey={"AIzaSyA_nwBxUgw4RTZLvfRpt__cS1DIcYprbQ0"}
-              className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
-              name="location"
-              id="location"
-              onPlaceSelected={(place) => {
-                setEventDetails((prevDetails) => ({
-                  ...prevDetails,
-                  location: place.formatted_address,
-                }));
-              }}
-              inputAutocompleteValue={"HR VS soft devs, bring your A game"}
-              // {...(eventDetails.location
-              //   ? { defaultValue: eventDetails.location }
-              //   : {})}
+                <IoMdClose size={25} />
+              </button>
+              <form className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="eventName"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Event Name
+                  </label>
+                  <input
+                    type="text"
+                    name="eventName"
+                    id="eventName"
+                    value={eventDetails.eventName}
+                    onChange={handleChangeEvent}
+                    placeholder="Enter event name"
+                    className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
+                    required
+                  />
+                </div>
+                <div className="flex justify-between gap-4">
+                  <div className="flex-1">
+                    <label
+                      htmlFor="startDateTime"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      Start Date & Time
+                    </label>
+                    <input
+                      type="datetime-local"
+                      name="startDateTime"
+                      id="startDateTime"
+                      // value={"2024-09-25T14:30"}
+                      value={eventDetails.startDateTime}
+                      onChange={handleChangeEvent}
+                      className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
+                      required
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label
+                      htmlFor="endDateTime"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      End Date & Time
+                    </label>
+                    <input
+                      type="datetime-local"
+                      name="endDateTime"
+                      id="endDateTime"
+                      value={eventDetails.endDateTime}
+                      //value={"2024-09-27T14:30"}
+                      onChange={handleChangeEvent}
+                      className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <div className="flex-1">
+                    <label
+                      htmlFor="rsvpEndDateTime"
+                      className="block text-sm font-medium text-gray-700"
+                    >
+                      RSVP End Date & Time
+                    </label>
+                    <input
+                      type="datetime-local"
+                      name="rsvpEndDateTime"
+                      id="rsvpEndDateTime"
+                      value={eventDetails.rsvpEndDateTime}
+                      onChange={handleChangeEvent}
+                      className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
+                      required
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    htmlFor="location"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Location
+                  </label>
+                  <Autocomplete
+                    apiKey={"AIzaSyA_nwBxUgw4RTZLvfRpt__cS1DIcYprbQ0"}
+                    className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
+                    name="location"
+                    id="location"
+                    onPlaceSelected={(place) => {
+                      setEventDetails((prevDetails) => ({
+                        ...prevDetails,
+                        location: place.formatted_address,
+                      }));
+                    }}
+                    inputAutocompleteValue={
+                      "HR VS soft devs, bring your A game"
+                    }
+                    // {...(eventDetails.location
+                    //   ? { defaultValue: eventDetails.location }
+                    //   : {})}
 
-              {...(eventDetails.location !== ""
-                ? { defaultValue: eventDetails.location }
-                : {})}
-              required
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="description"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Event Description
-            </label>
-            <textarea
-              name="description"
-              id="description"
-              value={eventDetails.description}
-              onChange={handleChangeEvent}
-              placeholder="Enter event description"
-              className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
-              required
-            ></textarea>
-          </div>
-          <div className="flex justify-end">
-            <button
-              type="button"
-              onClick={generateDescription}
-              className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
-            >
-              generate description
-            </button>
-            {/* <button
+                    {...(eventDetails.location !== ""
+                      ? { defaultValue: eventDetails.location }
+                      : {})}
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="description"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Event Description
+                  </label>
+                  <textarea
+                    name="description"
+                    id="description"
+                    value={eventDetails.description}
+                    onChange={handleChangeEvent}
+                    placeholder="Enter event description"
+                    className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
+                    required
+                  ></textarea>
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={generateDescription}
+                    className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                  >
+                    generate description
+                  </button>
+                  {/* <button
               type="button"
               onClick={handleSaveDraft}
               className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
             >
               Save Draft
             </button> */}
-            <button
-              type="submit"
-              onClick={handleSubmitEvent}
-              className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
-            >
-              Edit Event
-            </button>
+                  <button
+                    type="submit"
+                    onClick={handleSubmitEvent}
+                    className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                  >
+                    Edit Event
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </form>
-      </div>
+        </div>
+      )}
     </>
   );
 };
@@ -832,7 +892,7 @@ export default function CommunityPage({ params }) {
   const [showEventForm, setShowEventForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [eventFormData, setEventForm] = useState({
-    Name: "Create New Event",
+    Name: "",
     StartDate: "",
     EndDate: "",
     StartTime: "",
@@ -1041,6 +1101,7 @@ export default function CommunityPage({ params }) {
 
   return (
     <div className="bg-background_gray h-full">
+      {/* <Navbar /> */}
       <Header />
       {/* <div className="flex flex-col fixed bottom-7 right-4">
         <button

@@ -131,6 +131,7 @@ export default class PollDB {
           // Perform your action here
         } else {
           console.log("The given date has not passed.");
+          // alert("Sorry Poll Data has closed, You Can not vite");
           console.log("User can not vote on the poll");
         }
       });

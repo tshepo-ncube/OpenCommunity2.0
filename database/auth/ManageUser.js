@@ -89,6 +89,7 @@ export default class ManageUser {
       .then(() => {
         // Password reset email sent!
         setForgotPassword(false);
+        alert("Password Reset Link Sent");
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -135,6 +136,7 @@ export default class ManageUser {
   static editPassword = (newPassword, setError) => {
     const auth = getAuth();
     const user = auth.currentUser;
+    console.log("user, :", user);
 
     updatePassword(user, newPassword)
       .then(() => {
@@ -142,7 +144,8 @@ export default class ManageUser {
         alert("You have now updated your password");
       })
       .catch((error) => {
-        alert("Error!!!");
+        alert(error);
+        console.log(error);
         setError(error);
       });
   };
@@ -173,6 +176,8 @@ export default class ManageUser {
 
     // Set the "capital" field of the city 'DC'
     await updateDoc(communityRef, object);
+
+    return true;
   };
 
   static getProfileData = async (
@@ -199,15 +204,6 @@ export default class ManageUser {
         const object2 = { id: doc.id };
 
         // Check if the user is an admin
-        if (userData.role === "super_admin") {
-          console.log("User is a super admin");
-          setIsAdmin(true); // Set admin status
-        } else {
-          console.log("User is not a a super admin");
-          setIsAdmin(false); // Set non-admin status
-        }
-
-        // Check if the user is an admin
         if (userData.Role === "admin") {
           console.log("User is an admin");
           setIsAdmin(true); // Set admin status
@@ -221,6 +217,40 @@ export default class ManageUser {
           setUserCommunities
         );
         setProfile({ ...userData, ...object2 });
+      });
+    } catch (error) {
+      console.error("Error getting Profile Data: ", error);
+    }
+  };
+
+  static setIsSuperAdmin = async (setIsSuperAdmin) => {
+    const candidatesCollectionRef = collection(DB, "users");
+    console.log(`Email : ${localStorage.getItem("Email")}`);
+    const q = query(
+      candidatesCollectionRef,
+      where("Email", "==", localStorage.getItem("Email"))
+    );
+
+    try {
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
+        console.log("No matching documents.");
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        console.log(doc.id, "=>", doc.data());
+
+        const userData = doc.data();
+
+        // Check if the user is an admin
+        if (userData.role === "super_admin") {
+          console.log("User is an admin");
+          setIsSuperAdmin(true); // Set admin status
+        } else {
+          console.log("User is not an admin");
+          setIsSuperAdmin(false); // Set non-admin status
+        }
       });
     } catch (error) {
       console.error("Error getting Profile Data: ", error);
