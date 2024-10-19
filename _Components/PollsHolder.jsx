@@ -28,6 +28,8 @@ import {
   PostAdd as PostAddIcon,
   Assessment as AssessmentIcon,
 } from "@mui/icons-material";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function PollsHolder({ communityID }) {
   const [allPolls, setAllPolls] = useState([]);
@@ -96,6 +98,9 @@ function PollsHolder({ communityID }) {
       setShowCreateForm(false);
       resetForm();
       PollDB.getPollFromCommunityID(communityID, setAllPolls);
+
+      // Show success toast notification
+      toast.success("Poll successfully created!");
     });
   };
 
@@ -131,6 +136,7 @@ function PollsHolder({ communityID }) {
 
   return (
     <div className="mt-4 h-480">
+      <ToastContainer />
       <h1 className="text-xxl relative my-4  text-black p-2">
         Active Polls
         <IconButton
