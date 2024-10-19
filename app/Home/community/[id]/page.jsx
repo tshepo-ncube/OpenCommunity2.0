@@ -937,7 +937,7 @@ export default function CommunityPage({ params }) {
                         className="bg-gray-200 p-4 mb-4 rounded flex flex-col justify-between relative"
                         key={index}
                         style={{
-                          width: "300px",
+                          width: "450px",
                           height: "auto",
                           wordWrap: "break-word",
                         }} // Set a fixed width for the block
