@@ -152,7 +152,8 @@ export default class CommunityDB {
     image,
     setCommunities,
     setLoading,
-    selectedInterests
+    selectedInterests,
+    showSnackBar
   ) => {
     setLoading(true);
     const communityURL = await CommunityDB.uploadCommunityImage(image);
@@ -170,6 +171,7 @@ export default class CommunityDB {
     try {
       const docRef = await addDoc(collection(DB, "communities"), object);
       console.log("Document ID: ", docRef.id);
+      showSnackBar(true);
     } catch (e) {
       console.log("Error adding document: ", e);
     }

@@ -62,10 +62,36 @@ const CreateCommunity = () => {
 
   const [showErrorPopup, setShowErrorPopup] = useState(false);
 
+  const [showImageError, setShowImageError] = useState(false);
+  const [showInterestsError, setShowInterestsError] = useState(false);
+  const [communityCreated, setCommunityCreated] = useState(false);
+
   const [similarityError, setSimilarityError] = useState({
     message: "",
     similarCommunity: "",
   });
+
+  const handleCreatedClick = () => {
+    setCommunityCreated(true);
+  };
+
+  const handleCreatedClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setCommunityCreated(false);
+  };
+
+  {
+    /* <Button onClick={handleCreatedClick}>Open Snackbar</Button> */
+  }
+  <Snackbar
+    open={communityCreated}
+    autoHideDuration={5000}
+    onClose={handleCreatedClose}
+    message={`${name} has been created`}
+  />;
 
   const handleClick = () => {
     setSimilarCommmunitySnackbarOpen(true);
@@ -319,6 +345,7 @@ const CreateCommunity = () => {
 
   const handleFormSubmit = async (e, status) => {
     e.preventDefault();
+    console.log("handleFormSubmit");
 
     const similarCommunity = checkNameSimilarity(name);
     if (similarCommunity) {
@@ -379,47 +406,40 @@ const CreateCommunity = () => {
         // console.log(res.data);
         // let data = res.data;
 
-        if (selectedInterests.length < 3) {
-          alert("Please add more interests");
-        } else {
-          CommunityDB.createCommunity(
-            communityData,
-            image,
-            (newCommunity) => {
-              setSubmittedData((prevData) => [...prevData, newCommunity]);
-            },
-            setLoading,
-            selectedInterests
+        console.log("About to check if image is there on create comm form");
 
-            // ,
-            // {
-            //   WebUrl: data.webUrl,
-            //   ChannelID: data.id,
-            // }
-          );
-
-          // if (checkNameSimilarity(communityData.name)) {
-          //   //alert("Similar Community Prsent");
-          //   setSimilarCommmunitySnackbarOpen(true);
-          // } else {
-          //   // alert("Similar Community NOT Prsent");
-          //   CommunityDB.createCommunity(
-          //     communityData,
-          //     image,
-          //     (newCommunity) => {
-          //       setSubmittedData((prevData) => [...prevData, newCommunity]);
-          //     },
-          //     setLoading,
-          //     selectedInterests
-
-          //     // ,
-          //     // {
-          //     //   WebUrl: data.webUrl,
-          //     //   ChannelID: data.id,
-          //     // }
-          //   );
-          // }
+        if (!image) {
+          //alert("Please have an image");
+          //setSimilarCommmunitySnackbarOpen(true);
+          setShowImageError(true);
+          console.log("THERE IS NO IMAGE< PLEASE SELECT ONE ");
+          return;
         }
+
+        if (selectedInterests.length < 3) {
+          // alert("Please add more interests");
+          // setImageError(true);
+          //  setShowImageError(true);
+          setShowInterestsError(true);
+          return;
+        }
+
+        CommunityDB.createCommunity(
+          communityData,
+          image,
+          (newCommunity) => {
+            setSubmittedData((prevData) => [...prevData, newCommunity]);
+          },
+          setLoading,
+          selectedInterests,
+          setCommunityCreated
+
+          // ,
+          // {
+          //   WebUrl: data.webUrl,
+          //   ChannelID: data.id,
+          // }
+        );
       } catch (err) {
         console.log("error");
       }
@@ -637,7 +657,7 @@ const CreateCommunity = () => {
               <h1 className="text-xl font-bold  text-gray-700 tracking-wide mb-4">
                 Create a new community
               </h1>
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleFormSubmit}>
                 <div>
                   <label
                     htmlFor="name"
@@ -704,6 +724,14 @@ const CreateCommunity = () => {
 
                 {/* Add Image here */}
 
+                {showImageError ? (
+                  <>
+                    <p className="text-red-500 p-2">please add an image</p>
+                  </>
+                ) : (
+                  <></>
+                )}
+
                 <div className="flex items-center space-x-4">
                   <label
                     htmlFor="image"
@@ -734,6 +762,16 @@ const CreateCommunity = () => {
                 <label className="block text-m text-gray-700 font-semibold">
                   Select Community Interests
                 </label>
+
+                {showInterestsError ? (
+                  <>
+                    <p className="text-red-500 p-2">
+                      please add at least 3 interests
+                    </p>
+                  </>
+                ) : (
+                  <></>
+                )}
                 <InterestSelection
                   max={3}
                   setSelectedInterests={setSelectedInterests}
@@ -756,8 +794,7 @@ const CreateCommunity = () => {
                     Save as Draft
                   </button>
                   <button
-                    type="button"
-                    onClick={(e) => handleFormSubmit(e, "active")}
+                    type="submit"
                     className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
                     {editIndex !== null ? "Save" : "Create"}
@@ -1150,6 +1187,14 @@ const CreateCommunity = () => {
         autoHideDuration={5000}
         onClose={handleClose}
         message="Sorry a similar community exists"
+      />
+
+      {/* <Button onClick={handleCreatedClick}>Open Snackbar</Button> */}
+      <Snackbar
+        open={communityCreated}
+        autoHideDuration={5000}
+        onClose={handleCreatedClose}
+        message={`Community has been created`}
       />
     </div>
   );
