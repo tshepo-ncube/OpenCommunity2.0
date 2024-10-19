@@ -50,7 +50,7 @@ const Page = () => {
       />
 
       {/* Overlay */}
-      <div className="absolute inset-0 bg-gray-500 opacity-50"></div>
+      <div className="absolute inset-0 bg-gray-500 opacity-30"></div>
 
       {/* Login Form */}
       {loggedIn ? (
