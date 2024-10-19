@@ -662,7 +662,8 @@ const DiscoverCommunity = ({ email }) => {
 
                         {/* Join/Joined Button */}
                         <CardActions sx={{ padding: "12px !important" }}>
-                          {data.users.includes(email) ? (
+                          {data.users.includes(email) &&
+                          data.name !== "OpenBox Community" ? (
                             <Button
                               fullWidth
                               variant="outlined"
@@ -681,22 +682,24 @@ const DiscoverCommunity = ({ email }) => {
                               LEAVE
                             </Button>
                           ) : (
-                            <Button
-                              fullWidth
-                              variant="contained"
-                              onClick={() => {}}
-                              startIcon={<AddCircleOutlineIcon />}
-                              sx={{
-                                backgroundColor: "#bcd727",
-                                color: "#fff",
-                                "&:hover": {
-                                  backgroundColor: "#a4b622",
-                                },
-                                fontFamily: "Poppins, sans-serif",
-                              }}
-                            >
-                              Join Community
-                            </Button>
+                            data.name !== "OpenBox Community" && (
+                              <Button
+                                fullWidth
+                                variant="contained"
+                                onClick={() => {}}
+                                startIcon={<AddCircleOutlineIcon />}
+                                sx={{
+                                  backgroundColor: "#bcd727",
+                                  color: "#fff",
+                                  "&:hover": {
+                                    backgroundColor: "#a4b622",
+                                  },
+                                  fontFamily: "Poppins, sans-serif",
+                                }}
+                              >
+                                Join Community
+                              </Button>
+                            )
                           )}
                         </CardActions>
                       </Card>
