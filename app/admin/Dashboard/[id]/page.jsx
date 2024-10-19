@@ -622,7 +622,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               onClick={generateDescription}
               className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
             >
-              generate description
+              Generate Description
             </button>
             <button
               type="button"
@@ -860,7 +860,7 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                     onClick={generateDescription}
                     className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
-                    generate description
+                    Generate Description
                   </button>
                   {/* <button
               type="button"

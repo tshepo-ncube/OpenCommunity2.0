@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import RegisterUser from "../../../database/auth/Register";
 import ManageUser from "../../../database/auth/ManageUser";
 import Image from "next/image";
-import Logo from "@/lib/images/Logo.jpeg";
+import ocLogo from "@/lib/images/ocLogo.jpg";
 
 const Login = () => {
   const router = useRouter();
@@ -68,7 +68,7 @@ const Login = () => {
               <div className="hidden md:block w-1/2 bg-openbox-green py-10 px-10">
                 <Image
                   className="object-cover object-center w-full h-full "
-                  src={Logo}
+                  src={ocLogo}
                   alt="Logo"
                 />
               </div>
@@ -163,7 +163,7 @@ const Login = () => {
               <div className="hidden md:block w-1/2 bg-openbox-green py-10 px-10">
                 <Image
                   className="object-cover object-center w-full h-full "
-                  src={Logo}
+                  src={ocLogo}
                   alt="Logo"
                 />
               </div>
