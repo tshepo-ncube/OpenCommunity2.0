@@ -710,8 +710,10 @@ const DiscoverCommunity = ({ email }) => {
 
                           {/* Join/Joined Button */}
                           {/* Only the CardActions section needs to be updated in the existing Card component */}
+
                           <CardActions sx={{ padding: "12px !important" }}>
-                            {data.users.includes(email) ? (
+                            {data.name !== "OpenBox Community" &&
+                            data.users.includes(email) ? (
                               <Button
                                 fullWidth
                                 variant="outlined"
@@ -731,22 +733,24 @@ const DiscoverCommunity = ({ email }) => {
                                 Leave
                               </Button>
                             ) : (
-                              <Button
-                                fullWidth
-                                variant="contained"
-                                onClick={() => handleJoinCommunity(data)}
-                                startIcon={<AddCircleOutlineIcon />}
-                                sx={{
-                                  backgroundColor: "#bcd727",
-                                  color: "#fff",
-                                  "&:hover": {
-                                    backgroundColor: "#a4b622",
-                                  },
-                                  fontFamily: "Poppins, sans-serif",
-                                }}
-                              >
-                                Join Community
-                              </Button>
+                              data.name !== "OpenBox Community" && (
+                                <Button
+                                  fullWidth
+                                  variant="contained"
+                                  onClick={() => handleJoinCommunity(data)}
+                                  startIcon={<AddCircleOutlineIcon />}
+                                  sx={{
+                                    backgroundColor: "#bcd727",
+                                    color: "#fff",
+                                    "&:hover": {
+                                      backgroundColor: "#a4b622",
+                                    },
+                                    fontFamily: "Poppins, sans-serif",
+                                  }}
+                                >
+                                  Join Community
+                                </Button>
+                              )
                             )}
                           </CardActions>
                         </Card>
