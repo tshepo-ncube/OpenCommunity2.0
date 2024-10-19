@@ -35,6 +35,8 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 // Import your database modules
+import ExitToApp from "@mui/icons-material/ExitToApp";
+
 import CommunityDB from "@/database/community/community";
 import UserDB from "@/database/community/users";
 
@@ -707,24 +709,26 @@ const DiscoverCommunity = ({ email }) => {
                           </CardContent>
 
                           {/* Join/Joined Button */}
+                          {/* Only the CardActions section needs to be updated in the existing Card component */}
                           <CardActions sx={{ padding: "12px !important" }}>
                             {data.users.includes(email) ? (
                               <Button
                                 fullWidth
                                 variant="outlined"
-                                disabled
-                                startIcon={<CheckCircle />}
+                                onClick={() => handleLeaveCommunity(data)}
+                                startIcon={<ExitToApp />} // Using ExitToApp as the leave icon
                                 sx={{
                                   borderColor: "#bcd727",
                                   color: "#bcd727",
-                                  "&:disabled": {
-                                    borderColor: "#bcd727",
-                                    color: "#bcd727",
+                                  "&:hover": {
+                                    borderColor: "#a4b622",
+                                    color: "#a4b622",
+                                    backgroundColor: "rgba(188, 215, 39, 0.04)",
                                   },
                                   fontFamily: "Poppins, sans-serif",
                                 }}
                               >
-                                Joined
+                                Leave
                               </Button>
                             ) : (
                               <Button
