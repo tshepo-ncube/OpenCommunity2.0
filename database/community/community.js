@@ -152,7 +152,8 @@ export default class CommunityDB {
     image,
     setCommunities,
     setLoading,
-    selectedInterests
+    selectedInterests,
+    showSnackBar
   ) => {
     setLoading(true);
     const communityURL = await CommunityDB.uploadCommunityImage(image);
@@ -165,10 +166,12 @@ export default class CommunityDB {
       communityImage: communityURL,
       selectedInterests: selectedInterests,
       createdAt: new Date(),
+      admin: localStorage.getItem("Email"),
     };
     try {
       const docRef = await addDoc(collection(DB, "communities"), object);
       console.log("Document ID: ", docRef.id);
+      showSnackBar(true);
     } catch (e) {
       console.log("Error adding document: ", e);
     }
@@ -184,6 +187,7 @@ export default class CommunityDB {
     // Update the community document
     await updateDoc(communityRef, object);
     console.log("Done editing a community.");
+    location.reload();
   };
 
   static deleteCommunity = async (id) => {

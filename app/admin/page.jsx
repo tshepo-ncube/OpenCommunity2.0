@@ -13,6 +13,9 @@ import { doc, updateDoc } from "firebase/firestore";
 import DB from "../../database/DB"; // Ensure you are importing your Firestore DB instance
 import ManageUser from "@/database/auth/ManageUser";
 
+import Button from "@mui/material/Button";
+import Snackbar from "@mui/material/Snackbar";
+
 const CreateCommunity = () => {
   const [activeTab, setActiveTab] = useState("tab1");
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -53,6 +56,54 @@ const CreateCommunity = () => {
   const [isHandoverConfirmationOpen, setHandoverConfirmationOpen] =
     useState(false);
   const communityHandoverRef = useRef(null);
+
+  const [similarCommmunitySnackbarOpen, setSimilarCommmunitySnackbarOpen] =
+    React.useState(false);
+
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+
+  const [showImageError, setShowImageError] = useState(false);
+  const [showInterestsError, setShowInterestsError] = useState(false);
+  const [communityCreated, setCommunityCreated] = useState(false);
+
+  const [similarityError, setSimilarityError] = useState({
+    message: "",
+    similarCommunity: "",
+  });
+
+  const handleCreatedClick = () => {
+    setCommunityCreated(true);
+  };
+
+  const handleCreatedClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setCommunityCreated(false);
+  };
+
+  {
+    /* <Button onClick={handleCreatedClick}>Open Snackbar</Button> */
+  }
+  <Snackbar
+    open={communityCreated}
+    autoHideDuration={5000}
+    onClose={handleCreatedClose}
+    message={`${name} has been created`}
+  />;
+
+  const handleClick = () => {
+    setSimilarCommmunitySnackbarOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSimilarCommmunitySnackbarOpen(false);
+  };
 
   // Update the community selection handler
   const handleCommunitySelection = (e) => {
@@ -189,8 +240,14 @@ const CreateCommunity = () => {
   };
 
   useEffect(() => {
-    console.log("These are USERS : ", users);
-  }, [users]);
+    // Check if the value in localStorage is "super_admin"
+    if (localStorage.getItem("SuperAdmin") === "super_admin") {
+      setIsSuperAdmin(true);
+    } else {
+      setIsSuperAdmin(false);
+    }
+  }, []);
+
   // Find emails in console and check for super admin message
   // useEffect(() => {
   //   const findEmailsInConsole = () => {
@@ -217,26 +274,90 @@ const CreateCommunity = () => {
   //       });
   //       originalConsoleLog.apply(console, args);
   //     };
-  // console.log = function (...args) {
-  //   args.forEach((arg) => {
-  //     if (typeof arg === "object" && arg !== null) {
-  //       const email = arg.Email;
-  //       if (email && typeof email === "string") {
-  //         foundEmails.push(email);
-  //       }
-  //     } else if (typeof arg === "string") {
-  //       // Check for super admin messages
-  //       // console.log(arg);
-  //       //console.log(arg);
-  //       // if (arg.includes("User is a super admin")) {
-  //       //   setIsSuperAdmin(true);
-  //       // } else if (arg.includes("User is not a super admin")) {
-  //       //   setIsSuperAdmin(false);
-  //       // }
-  //     }
-  //   });
-  //   //originalConsoleLog.apply(console, args);
-  // };
+
+  // Enhanced function to check name similarity
+  const checkNameSimilarity = (newName) => {
+    const cleanName = newName
+      .toLowerCase()
+      .replace(/\bcommunity\b/g, "")
+      .trim();
+
+    const similarCommunity = submittedData.find((community) => {
+      const existingName = community.name
+        .toLowerCase()
+        .replace(/\bcommunity\b/g, "")
+        .trim();
+      return (
+        existingName === cleanName ||
+        existingName.includes(cleanName) ||
+        cleanName.includes(existingName)
+      );
+    });
+
+    return similarCommunity || null;
+  };
+
+  const ErrorPopup = ({ error, onClose }) => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-[60] flex items-center justify-center">
+      <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4 relative">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold text-red-600">
+            Similar Community Exists
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <CloseIcon />
+          </button>
+        </div>
+        <div className="mb-4">
+          <p className="text-gray-700 mb-2">{error.message}</p>
+          <p className="text-gray-900 font-medium">
+            Similar community name is as follows, this is to test this branch,
+            pls show !!!!:
+          </p>
+          <p className="text-gray-700 bg-gray-50 p-2 rounded mt-1">
+            {error.similarCommunity}
+          </p>
+        </div>
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+  // Find emails in console and check for super admin message
+  // useEffect(() => {
+  //   const findEmailsInConsole = () => {
+  //     const originalConsoleLog = console.log;
+  //     let foundEmails = [];
+
+  //     console.log = function (...args) {
+  //       args.forEach((arg) => {
+  //         if (typeof arg === "object" && arg !== null) {
+  //           const email = arg.Email;
+  //           if (email && typeof email === "string") {
+  //             foundEmails.push(email);
+  //           }
+  //         } else if (typeof arg === "string") {
+  //           // Check for super admin messages
+  //           // console.log(arg);
+  //           //console.log(arg);
+  //           // if (arg.includes("User is a super admin")) {
+  //           //   setIsSuperAdmin(true);
+  //           // } else if (arg.includes("User is not a super admin")) {
+  //           //   setIsSuperAdmin(false);
+  //           // }
+  //         }
+  //       });
+  //       originalConsoleLog.apply(console, args);
+  //     };
 
   //     // Store found emails in state
   //     setConsoleEmails(foundEmails);
@@ -249,26 +370,7 @@ const CreateCommunity = () => {
 
   //   findEmailsInConsole();
   // }, []);
-
-  useEffect(() => {
-    // ManageUser.setIsSuperAdmin(setIsSuperAdmin);
-    console.log("hyhyhy");
-
-    setIsSuperAdmin(localStorage.getItem("SuperAdmin") === "super_admin");
-  }, []);
-
-  // useEffect(() => {
-  //   UserDB.getUser(localStorage.getItem("UserID"));
-  // }, []);
-
-  // useEffect(() => {
-  //   ManageUser.setIsSuperAdmin(setIsSuperAdmin);
-  // }, []);
-
-  // useEffect(() => {
-  //   UserDB.getUser(localStorage.getItem("UserID"));
-  // }, []);
-  // ... (keep all existing functions)
+  // // ... (keep all existing functions)
 
   // Modified table cell rendering for email
   const renderEmailCell = (email) => {
@@ -296,6 +398,19 @@ const CreateCommunity = () => {
 
   const handleFormSubmit = async (e, status) => {
     e.preventDefault();
+    console.log("handleFormSubmit");
+
+    const similarCommunity = checkNameSimilarity(name);
+    if (similarCommunity) {
+      //alert("Similar COMCOM");
+      setSimilarityError({
+        message:
+          "Cannot create this community as a similar community already exists.",
+        similarCommunity: similarCommunity.name,
+      });
+      setShowErrorPopup(true);
+      return;
+    }
 
     // Get the logged-in user's email (assuming consoleEmails stores the logged-in user's email)
     const adminEmail = localStorage.getItem("Email"); // consoleEmails[0]; // Assuming the first email is the logged-in user's email
@@ -306,7 +421,7 @@ const CreateCommunity = () => {
       description,
       category,
       status,
-      admin: adminEmail, // Adding the admin field with the logged-in user's email
+      admin: localStorage.getItem("Email"), // Adding the admin field with the logged-in user's email
     };
 
     if (editIndex !== null) {
@@ -344,25 +459,40 @@ const CreateCommunity = () => {
         // console.log(res.data);
         // let data = res.data;
 
-        if (selectedInterests.length < 3) {
-          alert("Please add more interests");
-        } else {
-          CommunityDB.createCommunity(
-            communityData,
-            image,
-            (newCommunity) => {
-              setSubmittedData((prevData) => [...prevData, newCommunity]);
-            },
-            setLoading,
-            selectedInterests
+        console.log("About to check if image is there on create comm form");
 
-            // ,
-            // {
-            //   WebUrl: data.webUrl,
-            //   ChannelID: data.id,
-            // }
-          );
+        if (!image) {
+          //alert("Please have an image");
+          //setSimilarCommmunitySnackbarOpen(true);
+          setShowImageError(true);
+          console.log("THERE IS NO IMAGE< PLEASE SELECT ONE ");
+          return;
         }
+
+        if (selectedInterests.length < 3) {
+          // alert("Please add more interests");
+          // setImageError(true);
+          //  setShowImageError(true);
+          setShowInterestsError(true);
+          return;
+        }
+
+        CommunityDB.createCommunity(
+          communityData,
+          image,
+          (newCommunity) => {
+            setSubmittedData((prevData) => [...prevData, newCommunity]);
+          },
+          setLoading,
+          selectedInterests,
+          setCommunityCreated
+
+          // ,
+          // {
+          //   WebUrl: data.webUrl,
+          //   ChannelID: data.id,
+          // }
+        );
       } catch (err) {
         console.log("error");
         console.log("error");
@@ -583,7 +713,7 @@ const CreateCommunity = () => {
               <h1 className="text-xl font-bold  text-gray-700 tracking-wide mb-4">
                 Create a new community
               </h1>
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleFormSubmit}>
                 <div>
                   <label
                     htmlFor="name"
@@ -650,6 +780,14 @@ const CreateCommunity = () => {
 
                 {/* Add Image here */}
 
+                {showImageError ? (
+                  <>
+                    <p className="text-red-500 p-2">please add an image</p>
+                  </>
+                ) : (
+                  <></>
+                )}
+
                 <div className="flex items-center space-x-4">
                   <label
                     htmlFor="image"
@@ -680,6 +818,16 @@ const CreateCommunity = () => {
                 <label className="block text-m text-gray-700 font-semibold">
                   Select Community Interests
                 </label>
+
+                {showInterestsError ? (
+                  <>
+                    <p className="text-red-500 p-2">
+                      please add at least 3 interests
+                    </p>
+                  </>
+                ) : (
+                  <></>
+                )}
                 <InterestSelection
                   max={3}
                   setSelectedInterests={setSelectedInterests}
@@ -702,8 +850,7 @@ const CreateCommunity = () => {
                     Save as Draft
                   </button>
                   <button
-                    type="button"
-                    onClick={(e) => handleFormSubmit(e, "active")}
+                    type="submit"
                     className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
                     {editIndex !== null ? "Save" : "Create"}
@@ -715,6 +862,15 @@ const CreateCommunity = () => {
                 </div>
               </form>
             </div>
+          )}
+
+          {showErrorPopup && (
+            <ErrorPopup
+              error={similarityError}
+              onClose={() => {
+                setShowErrorPopup(false);
+              }}
+            />
           )}
           {submittedData.length === 0 ? (
             <div className="text-center">
@@ -1083,6 +1239,21 @@ const CreateCommunity = () => {
           )}
         </div>
       )}
+
+      <Snackbar
+        open={similarCommmunitySnackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleClose}
+        message="Sorry a similar community exists"
+      />
+
+      {/* <Button onClick={handleCreatedClick}>Open Snackbar</Button> */}
+      <Snackbar
+        open={communityCreated}
+        autoHideDuration={5000}
+        onClose={handleCreatedClose}
+        message={`Community has been created`}
+      />
     </div>
   );
 };
