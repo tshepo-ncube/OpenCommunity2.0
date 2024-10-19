@@ -43,6 +43,8 @@ export default class PollDB {
       //   createdAt: new Date(),
       // });
 
+      //this is a comment
+
       const pollRef = await addDoc(collection(DB, "polls"), {
         ...pollObject,
         createdAt: serverTimestamp(), // This ensures the server sets the correct timestamp
