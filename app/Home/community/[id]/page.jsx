@@ -12,6 +12,7 @@ import {
   TextField,
   Rating,
   DialogActions,
+  RateReview
 } from "@mui/material";
 import imageCompression from "browser-image-compression";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Import storage functions
@@ -37,11 +38,11 @@ import Event from "@mui/icons-material/Event";
 import AccessTime from "@mui/icons-material/AccessTime";
 import PollComponent from "@/_Components/PollComponent"
 import DescriptionIcon from '@mui/icons-material/Description';
+import CalendarToolBar from '@/_Components/CalendarToolBar'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+//Logic for conditionally rendering myEvents
 
-//This sets Upcoming events as the default tab
-
-const NavigationTabs = () => {
-  const [activeTab, setActiveTab] = useState("upcomingEvents")}
 
 
 const locales = {
@@ -269,6 +270,17 @@ export default function CommunityPage({ params }) {
         console.error("Error:", error);
       });
   };
+
+   //Collapsible calendar
+
+   const [isCalendarOpen, setIsCalendarOpen] = useState(true); // State to track if calendar is open or collapsed
+   // const [currentDate, setCurrentDate] = useState(new Date());
+ 
+   // Hooks are always defined at the top, regardless of component visibility.
+ 
+   const toggleCalendar = () => {
+     setIsCalendarOpen((prev) => !prev);
+   };
 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -534,20 +546,38 @@ export default function CommunityPage({ params }) {
     ]);
   };
 
+  //THIS CODE DOES NOT WORK
+
+  const handleEventClick = (event) => {
+    if (event.status === 'upcoming') {
+      if (event.userHasRSVPed) {
+        // If the user has RSVPed, direct to "My Events"
+        router.push(`/my-events/${event.id}`);
+      } else {
+        // If not RSVPed, direct to Upcoming Events page
+        router.push(`/upcoming-events/${event.id}`);
+      }
+    } else if (event.status === 'past') {
+      // Redirect to Past Events page for past events
+      router.push(`/past-events/${event.id}`);
+    }
+  };
+
+
   return (
     <div className="">
       <Navbar isHome={true}/>
       <div
-        className="relative text-white py-4 h-60"
+        className="relative text-white py-4 h-80"
         style={{
           backgroundImage: community.communityImage
             ? `url(${community.communityImage})`
-            : `url('https://images.unsplash.com/photo-1575037614876-c38a4d44f5b8?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
+            : `url('https://images.unsplash.com/photo-1465189684280-6a8fa9b19a7a?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`,
           backgroundSize: "cover",
         }}
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="relative z-10 text-center mt-20">
+        <div className="relative z-10 text-center mt-24">
           <Typography variant="h2" className="font-bold text-6xl" gutterBottom>
             {community.name}
           </Typography>
@@ -557,23 +587,23 @@ export default function CommunityPage({ params }) {
               variant="outlined"
               startIcon={<Group />}
               sx={{
-                backgroundColor: 'white',
-                color: 'black',
+                backgroundColor: 'transparent',
+                color: 'white',
                 borderRadius: '50px',
-                padding: '8px 24px',
+                padding: '4px 10px', // Reduced padding to make the button smaller
                 mx: 1,
                 border: '1px solid #d3d3d3',
+                fontSize: '0.875rem', // Reduced font size to make the button look more compact
                 '&:hover': {
-                  backgroundColor: '#f2f2f2',
+                  backgroundColor: '#a8c31d',
                 },
               }}
               onClick={() => {
                 window.open(`${community.WebUrl}`, '_blank');
               }}
             >
-              Visit Teams Channel
+              Teams
             </Button>
-
             <RWebShare
               data={{
                 text: `Community Name - ${community.name}`,
@@ -586,10 +616,10 @@ export default function CommunityPage({ params }) {
                 variant="contained"
                 startIcon={<Share />}
                 sx={{
-                  backgroundColor: '#bcd727',
+                  backgroundColor: 'transparent',
                   color: 'white',
                   borderRadius: '50px',
-                  padding: '8px 24px',
+                  padding: '4px 10px',
                   mx: 2,
                   border: '1px solid #d3d3d3',
                   '&:hover': {
@@ -597,223 +627,320 @@ export default function CommunityPage({ params }) {
                   },
                 }}
               >
-                Share Community
+              Share
               </Button>
             </RWebShare>
+             
+            <button
+              className={`transition-all px-4 py-2 text-white font-semibold rounded-full mx-2 border border-gray-300 ${
+                isCalendarOpen ? 'bg-red-500 hover:bg-red-600' : 'bg-[#b000000] hover:bg-[#a8c31d]'
+              }`}
+              onClick={toggleCalendar}
+              style={{
+                borderRadius: '50px',
+                padding: '4px 10px',
+              }}
+            >
+              <CalendarMonthIcon className="mr-2" />
+              {isCalendarOpen ? 'Collapse' : 'Calendar'}
+            </button>
+            
           </center>
         </div>
       </div>
-      
-      {/* CALENDER EDITED OUT FOR NOW */}
       <center>
-        <div className="p-12">
-          <Calendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            date={currentDate}
-            style={{ height: 300 }}
-            onNavigate={(date) => setCurrentDate(date)}
-            onView={(view) => console.log(view)}
-            defaultView="month"
-            eventPropGetter={(event) => {
-              const backgroundColor = event.color || "#3174ad";
-              return {
-                style: {
-                  backgroundColor,
-                  color: "white",
-                  borderRadius: "5px",
-                  border: "none",
-                },
-              };
-            }}
-          />
-        </div>
-      </center>
-
-      {/* This is the new navigation bar for past events, upcoming events and polls */}
-
-      <div className="flex justify-center mt-6">
-  <div className="text-base font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
-    <ul className="flex flex-wrap -mb-px">
-      {/* Upcoming Events Tab */}
-      <li className="me-2">
-        <a
-          href="#"
-          onClick={() => setActiveTab("upcomingEvents")}
-          className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
-            activeTab === "upcomingEvents"
-              ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
-              : "border-transparent"
-          }`}
-        >
-          Upcoming Events
-        </a>
-      </li>
-
-      {/* Past Events Tab */}
-      <li className="me-2">
-        <a
-          href="#"
-          onClick={() => setActiveTab("pastEvents")}
-          className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
-            activeTab === "pastEvents"
-              ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
-              : "border-transparent"
-          }`}
-        >
-          Past Events
-        </a>
-      </li>
-
-      {/* Polls Tab */}
-      <li className="me-2">
-        <a
-          href="#"
-          onClick={() => setActiveTab("polls")}
-          className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
-            activeTab === "polls"
-              ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
-              : "border-transparent"
-          }`}
-        >
-          Polls
-        </a>
-      </li>
-    </ul>
-  </div>
-</div>
-
-
-      {/* <div className="inline-flex bg-gray-200 rounded-2xl ml-2 mt-6 mb-6">
-        <button
-          className={`px-2 py-2 text-lg font-semibold rounded-xl ${
-            activeTab === "upcomingEvents"
-              ? "bg-white text-black shadow"
-              : "text-gray-500"
-          }`}
-          onClick={() => setActiveTab("upcomingEvents")}
-        >
-          Upcoming Events
-        </button>
-        <button
-          className={`px-6 py-2 text-lg font-semibold ${
-            activeTab === "pastEvents"
-              ? "bg-white text-black shadow rounded-lg"
-              : "text-gray-500"
-          }`}
-          onClick={() => setActiveTab("pastEvents")}
-        >
-          Past Events
-        </button>
-        <button
-          className={`px-6 py-2 text-lg font-semibold rounded-lg ${
-            activeTab === "polls"
-              ? "bg-white text-black shadow"
-              : "text-gray-500"
-          }`}
-          onClick={() => setActiveTab("polls")}
-        >
-          Polls
-        </button>
-
-      </div> */}
-      
-      <div>
-        {activeTab === "pastEvents" && (
-          <div className="rounded bg-gray-50 p-4 pb-4">
-            <div className="rounded bg-gray-50 p-4 relative">
-              <h2 className="text-2xl font-semibold mb-4">Past Events</h2>
-
-              {pastEvents.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <ul className="flex space-x-6">
-                    {pastEvents.map((event) => (
-                      <li
-                        key={event.id}
-                        className="min-w-[300px] w-[300px] bg-white shadow-2xl rounded-md flex flex-col p-4"
-                      >
-                        <div className="mb-4">
-                          <img
-                            src="https://th.bing.com/th/id/OIP.F00dCf4bXxX0J-qEEf4qIQHaD6?rs=1&pid=ImgDetMain"
-                            alt={event.Name}
-                            className="w-full h-40 object-cover rounded"
-                          />
-                        </div>
-                        <div className="border-b-2 border-gray-300 mb-2">
-                          <h3 className="text-xl font-semibold text-center">
-                            {event.Name}
-                          </h3>
-                        </div>
-
-                        <div className="text-gray-600 flex-grow">
-                          <div className="mb-2">
-                            <strong>Description:</strong>{" "}
-                            {event.EventDescription}
-                          </div>
-                          <div>
-                            <strong>Location:</strong> {event.Location}
-                          </div>
-                          <div>
-                            <strong>Start Date:</strong>{" "}
-                            {formatDate(event.StartDate)}
-                          </div>
-                          <div>
-                            <strong>End Date:</strong>{" "}
-                            {formatDate(event.EndDate)}
-                          </div>
-                        </div>
-
-                        <div className="mt-auto">
-                          <button
-                            className="fixed-button bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
-                            onClick={() => handleCommentReview(event)}
-                          >
-                            Leave a Comment & Review
-                          </button>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : (
-                <div>No past events</div>
-              )}
-            </div>
-          </div>
-        )}
+      <div className={`p-12 transition-all ${isCalendarOpen ? 'block' : 'hidden'}`}>
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          date={currentDate}
+          style={{ height: 600, borderRadius: '1rem', overflow: 'hidden' }}
+          onNavigate={(date) => setCurrentDate(date)}
+          defaultView="month"
+          views={['month']}
+          components={{
+            toolbar: CalendarToolBar,
+          }}
+          eventPropGetter={(event) => {
+            const backgroundColor = event.color || "#3174ad";
+            return {
+              style: {
+                backgroundColor,
+                color: "white",
+                borderRadius: "0.25rem",
+                border: "none",
+                padding: "0.5rem",
+              },
+            };
+          }}
+          onSelectEvent={(event) => handleEventClick(event)} // Handle event click to navigate to event page
+        />
       </div>
+      </center>    
 
-        <div>
-        {activeTab === "upcomingEvents" && (
-  <div className="bg-white p-4 pb-4">
+{/* This is the navigation bar for my events, upcoming events, past events, and polls */}
+
+    <div className="flex justify-center mt-2">
+      <div className="text-base font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+        <ul className="flex flex-wrap -mb-px">
+          {/* My Events Tab */}
+            <li className="me-2">
+              <a
+                href="#"
+                onClick={() => setActiveTab("myEvents")}
+                className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+                  activeTab === "myEvents"
+                    ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                    : "border-transparent"
+                }`}
+              >
+                My Events
+              </a>
+            </li>
+          {/* Upcoming Events Tab */}
+            <li className="me-2">
+              <a
+                href="#"
+                onClick={() => setActiveTab("upcomingEvents")}
+                className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+                  activeTab === "upcomingEvents"
+                    ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                      : "border-transparent"
+                }`}
+                >
+                  Upcoming Events
+              </a>
+            </li>
+
+            {/* Past Events Tab */}
+              <li className="me-2">
+                <a
+                  href="#"
+                  onClick={() => setActiveTab("pastEvents")}
+                  className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+                    activeTab === "pastEvents"
+                      ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                      : "border-transparent"
+                  }`}
+                >
+                  Past Events
+                </a>
+              </li>
+
+          {/* Polls Tab */}
+            <li className="me-2">
+              <a
+                href="#"
+                onClick={() => setActiveTab("polls")}
+                className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+                  activeTab === "polls"
+                    ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                    : "border-transparent"
+                }`}
+              >
+                Polls
+              </a>
+            </li>
+        </ul>
+      </div>
+</div>
+      
+      {activeTab === "myEvents" && (
+  <div className="bg-gray-50 p-4 pb-4"> 
     {upcomingEvents.length > 0 ? (
-      // Change to grid layout to display three cards per row
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {upcomingEvents.map((event) => (
-          <div
-            key={event.id}
-            className="bg-white shadow-sm rounded-md overflow-hidden"
-          >
-            {/* Image section occupying the top without borders */}
-            <div className="relative">
-              {/* RSVP Status Tag */}
-              {event.status === "active" ? (
-                <span className="absolute top-2 right-2 bg-red-200 text-red-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                  RSVP Closed
-                </span>
-              ) : event.status === "rsvp" ? (
-                <span className="absolute top-2 right-2 bg-blue-200 text-blue-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                  RSVP Open
-                </span>
-              ) : null}
-              <img
-                src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                alt={event.Name}
-                className="w-full h-48 object-cover"
-              />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {upcomingEvents
+          .filter(event => isRSVPed(event.id)) // Filter to show only events the user RSVPed to
+          .map((event) => (
+            <div
+              key={event.id}
+              className="bg-white shadow-md rounded-md overflow-hidden"
+            >
+              <div className="relative">
+                {event.status === "active" ? (
+                  <span className="absolute top-2 right-2 bg-red-200 text-red-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                    RSVP Closed
+                  </span>
+                ) : event.status === "rsvp" ? (
+                  <span className="absolute top-2 right-2 bg-blue-200 text-blue-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                    RSVP Open
+                  </span>
+                ) : null}
+                <img
+                  src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  alt={event.Name}
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+
+              <div className="p-4">
+                <h3 className="text-xl font-semibold text-left mb-2">
+                  {event.Name}
+                </h3>
+                <div className="flex items-center mb-1">
+                  <LocationOn className="text-gray-600 mr-2" />
+                  <span className="text-gray-800 text-sm">{event.Location}</span>
+                </div>
+                <div className="flex items-center mb-1">
+                  <Event className="text-gray-600 mr-2" />
+                  <span className="text-gray-800 text-sm">
+                    {formatDate(event.StartDate)}
+                  </span>
+                </div>
+                <div className="flex items-center">
+                  <AccessTime className="text-gray-600 mr-2" />
+                  <span className="text-gray-800 text-sm">
+                    {new Date(event.StartDate.seconds * 1000).toLocaleTimeString()}
+                  </span>
+                </div>
+
+                <div className="mt-4">
+                  {event.status === "active" ? (
+                    <div className="flex space-x-4">
+                      {isRSVPed(event.id) ? (
+                        <button
+                          className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
+                          onClick={() => handleLeave(event)}
+                        >
+                          UN RSVP
+                        </button>
+                      ) : (
+                        <span className="flex-1 bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-md">
+                          RSVP for this event is CLOSED
+                        </span>
+                      )}
+                    </div>
+                  ) : event.status === "rsvp" ? (
+                    <div className="flex space-x-4">
+                      {isRSVPed(event.id) ? (
+                        <button
+                          className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
+                          onClick={() => handleLeave(event)}
+                        >
+                          UN RSVP
+                        </button>
+                      ) : (
+                        <button
+                          className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
+                          onClick={() => handleRSVP(event)}
+                        >
+                          RSVP
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <span className="flex-1 text-gray-700 font-bold py-2 px-4 rounded-md">
+                      Event status unknown
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
+          ))}
+      </div>
+    ) : (
+      <Typography>No upcoming events to display</Typography>
+    )}
+  </div>
+)}
+
+
+<div>
+  {activeTab === "pastEvents" && (
+    <div className="bg-white p-4 pb-4">
+      {pastEvents.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-items-center">
+          {pastEvents.map((event) => (
+            <div
+              key={event.id}
+              className="w-[400px] bg-white shadow-md rounded-md overflow-hidden"
+            >
+              <div className="relative">
+                <img
+                  src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  alt={event.Name}
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+
+              <div className="p-4">
+                <h3 className="text-xl font-semibold text-left mb-2">
+                  {event.Name}
+                </h3>
+                <div className="mb-2">
+                  <DescriptionIcon className="text-gray-600 mr-2" />
+                  <span className="text-gray-800 text-sm">
+                    {event.EventDescription}
+                  </span>
+                </div>
+                <div className="flex items-center mb-1">
+                  <LocationOn className="text-gray-600 mr-2" />
+                  <span className="text-gray-800 text-sm">
+                    {event.Location}
+                  </span>
+                </div>
+                <div className="flex items-center mb-1">
+                  <Event className="text-gray-600 mr-2" />
+                  <span className="text-gray-800 text-sm">
+                    {formatDate(event.StartDate)}
+                  </span>
+                </div>
+                <div className="flex items-center">
+                  <AccessTime className="text-gray-600 mr-2" />
+                  <span className="text-gray-800 text-sm">
+                    {new Date(event.StartDate.seconds * 1000).toLocaleTimeString()}
+                  </span>
+                </div>
+              </div>
+              <div className="mt-4 mb-2">
+                <div className="flex justify-center">
+                  <button
+                    className="bg-[#a8bf22] text-white py-2 px-4 rounded hover:bg-[#bcd727] transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
+                    onClick={() => handleCommentReview(event)}
+                  >
+                    Leave a Comment & Review
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div>No past events</div>
+      )}
+    </div>
+  )}
+</div>
+        <div>
+          {activeTab === "upcomingEvents" && (
+            <div className="bg-white p-4 pb-4">
+              {upcomingEvents.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {upcomingEvents.map((event) => (
+                    <div
+                      key={event.id}
+                      className="bg-white shadow-sm rounded-md overflow-hidden"
+                    >
+                      {/* Image section occupying the top without borders */}
+                      <div className="relative">
+                        {/* RSVP Status Tag */}
+                        {event.status === "active" ? (
+                          <span className="absolute top-2 right-2 bg-red-200 text-red-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                            RSVP Closed
+                          </span>
+                        ) : event.status === "rsvp" ? (
+                          <span className="absolute top-2 right-2 bg-blue-200 text-blue-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                            RSVP Open
+                          </span>
+                        ) : null}
+                        <img
+                          src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                          alt={event.Name}
+                          className="w-full h-48 object-cover"
+                        />
+                      </div>
 
             {/* Event details below the image */}
             <div className="p-4">
@@ -879,7 +1006,6 @@ export default function CommunityPage({ params }) {
                       >
                         RSVP
                       </button>
-
                     )}
                   </div>
                 ) : (
@@ -899,116 +1025,6 @@ export default function CommunityPage({ params }) {
 )}
 
         </div>
-
-{/* EVENTS BELOW HAVE A VERTOCAL SCROLL */}
-
-{/* <div> */}
-  {/* {activeTab === "upcomingEvents" && (
-    <div className="bg-gray-50 p-4 pb-4"> 
-      {upcomingEvents.length > 0 ? (
-        <div className="overflow-x-auto">
-          <ul className="flex space-x-6">
-            {upcomingEvents.map((event) => (
-              <li
-                key={event.id}
-                className="min-w-[300px] w-[300px] bg-white shadow-md rounded-md overflow-hidden"
-              >
-                
-                <div className="relative">
-                  
-                  {event.status === "active" ? (
-                    <span className="absolute top-2 right-2 bg-red-200 text-red-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                      RSVP Closed
-                    </span>
-                  ) : event.status === "rsvp" ? (
-                    <span className="absolute top-2 right-2 bg-blue-200 text-blue-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                      RSVP Open
-                    </span>
-                  ) : null}
-                  <img
-                    src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                    alt={event.Name}
-                    className="w-full h-48 object-cover"
-                  />
-                </div>
-
-                
-                <div className="p-4">
-                  <h3 className="text-xl font-semibold text-left mb-2">
-                    {event.Name}
-                  </h3>
-                  <Typography variant="body2" color="text.secondary" style={{ whiteSpace: "pre-wrap" }}>
-                    <div className="flex items-center mb-1">
-                      <LocationOn className="text-gray-600 mr-2" />
-                      <span className="text-gray-800 text-sm">{event.Location}</span>
-                    </div>
-                    <div className="flex items-center mb-1">
-                      <Event className="text-gray-600 mr-2" />
-                      <span className="text-gray-800 text-sm">{formatDate(event.StartDate)}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <AccessTime className="text-gray-600 mr-2" />
-                      <span className="text-gray-800 text-sm">
-                        {new Date(event.StartDate.seconds * 1000).toLocaleTimeString()}
-                      </span>
-                    </div>
-                  </Typography>
-
-                  
-                  <div className="mt-4">
-                    {event.status === "active" ? (
-                      <div className="flex space-x-4">
-                        {isRSVPed(event.id) ? (
-                          <button
-                            className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
-                            onClick={() => handleLeave(event)}
-                          >
-                            UN RSVP
-                          </button>
-                        ) : (
-                            <span className="flex-1 bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-md">
-                            RSVP for this event is CLOSED
-                            </span>
-
-                        )}
-                      </div>
-                    ) : event.status === "rsvp" ? (
-                      <div className="flex space-x-4">
-                        {isRSVPed(event.id) ? (
-                          <button
-                            className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
-                            onClick={() => handleLeave(event)}
-                          >
-                            UN RSVP
-                          </button>
-                        ) : (
-                          <button
-                            className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
-                            onClick={() => handleRSVP(event)}
-                          >
-                            RSVP
-                          </button>
-                        )}
-                      </div>
-                    ) : (
-                      <span className="flex-1 text-gray-700 font-bold py-2 px-4 rounded-md">
-                        Event status unknown
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <Typography>No upcoming events to display</Typography>
-      )}
-    </div>
-
-  )} */}
-{/* </div> */}
-
       
       <div>
         {activeTab === "polls" && (
@@ -1069,32 +1085,144 @@ export default function CommunityPage({ params }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8"></div>
 
       <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogContent>
-          <div className="flex">
-            <div className="flex-1 pr-4">
-              <Typography variant="h6" gutterBottom>
-                All Comments and Ratings
-              </Typography>
+      open={openDialog}
+      onClose={handleCloseDialog}
+      maxWidth="md"
+      fullWidth
+    >
+      <DialogContent>
+        <div>
+          {/* Leave a Review Section */}
+          <div className="mb-6 p-4 shadow-xl rounded-md">
+          <div className="flex justify-end">
+          <button
+            onClick={handleCloseDialog}
+            className="bg-red-300 text-white p-2 rounded-xl hover:bg-red-600 flex items-center justify-center"
+          >
+            <CloseOutlinedIcon />
+          </button>
+        </div>
 
-              {currentEventObject && currentEventObject.Reviews ? (
-                <ul className="list-none p-0">
-                  {currentEventObject.Reviews.map((review, index) => {
-                    // Get user initials for the profile icon
-                    const userInitials = `${review.UserName?.[0] || ""}${
-                      review.UserSurname?.[0] || ""
-                    }`.toUpperCase();
+            <h2 className="text-xl font-bold mb-4">Leave a Review</h2>
 
-                    return (
-                      <li
-                        className="bg-gray-200 p-4 mb-4 rounded flex flex-col justify-between relative" // Added relative for positioning
-                        key={index}
-                      >
-                        <div className="flex items-center mb-4">
+            {/* Added space between "Leave a Review" and the comment section */}
+            <div className="mt-4">
+              <textarea
+                className="w-full border border-gray-300 rounded-md p-2"
+                rows="4"
+                placeholder="Comment"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              />
+            </div>
+
+            <div className="mt-4">
+              <label className="font-bold">Rating</label>
+              <div className="mt-2">
+                {/* Implement a simple star rating component */}
+                <div className="flex">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      className={`text-2xl ${
+                        star <= rating ? 'text-yellow-400' : 'text-gray-300'
+                      }`}
+                      onClick={() => setRating(star)}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Image Upload Section */}
+            <div className="mt-4">
+              <label className="font-bold">Upload Images</label>
+              {/* Custom "Choose Files" Button */}
+              <div className="mt-2">
+                <label className="bg-black text-white px-4 py-2 rounded cursor-pointer inline-block">
+                  Choose Files
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                </label>
+                {/* Display "No files chosen" or number of files selected */}
+                {selectedImages.length > 0 ? (
+                  <p className="mt-2">{selectedImages.length} file(s) selected</p>
+                ) : (
+                  <p className="mt-2">No files chosen</p>
+                )}
+              </div>
+              {selectedImages.length > 0 && (
+                <div className="mt-2">
+                  <div className="flex flex-wrap mt-2">
+                    {selectedImages.map((image, index) => (
+                      <div key={index} className="relative m-1">
+                        <img
+                          src={URL.createObjectURL(image.file)}
+                          alt={image.name}
+                          className="w-20 h-20 object-cover rounded"
+                        />
+                        <p className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-center text-xs rounded-b">
+                          {image.name}
+                        </p>
+                        <button
+                          onClick={() => handleImageDeselect(index)}
+                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={handleSubmitReview}
+              className="mt-4 border border-[#bcd727] text-[#bcd727] hover:bg-[#bcd727] hover:text-white transition-colors flex items-center px-4 py-2 rounded-md"
+            >
+              {/* Review Icon Placeholder */}
+              <svg
+                className="w-5 h-5 mr-2"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path d="M2 2h16v16H2V2zm1 1v14h14V3H3zm3 11h8v1H6v-1zm0-2h8v1H6v-1zm0-2h5v1H6v-1z" />
+              </svg>
+              Submit Review
+            </button>
+          </div>
+
+          {/* All Comments and Ratings Section */}
+          <div
+            className="p-4 shadow-lg rounded-md"
+            style={{ maxHeight: '400px', overflowY: 'auto' }}
+          >
+            <h2 className="text-xl font-bold mb-4">All Comments and Ratings</h2>
+
+            {currentEventObject && currentEventObject.Reviews ? (
+              <ul className="list-none p-0">
+                {currentEventObject.Reviews.map((review, index) => {
+                  // Get user initials for the profile icon
+                  const userInitials = `${review.UserName?.[0] || ''}${
+                    review.UserSurname?.[0] || ''
+                  }`.toUpperCase();
+
+                  return (
+                    <li
+                      className="bg-gray-50 p-4 mb-4 rounded flex flex-col shadow"
+                      key={index}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center">
                           {/* Profile icon with initials */}
                           <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center mr-3">
                             <span className="text-lg font-semibold">
@@ -1103,156 +1231,84 @@ export default function CommunityPage({ params }) {
                           </div>
 
                           {/* User name and surname */}
-                          <Typography variant="body2" className="font-semibold">
+                          <p className="font-semibold">
                             {review.UserName} {review.UserSurname}
-                          </Typography>
+                          </p>
                         </div>
 
-                        <div className="flex-1">
-                          <div className="flex items-center mb-2">
-                            <Rating
-                              name={`rating-${index}`}
-                              value={review.Rating}
-                              readOnly
-                              precision={0.5}
-                            />
-                          </div>
-                          <Typography variant="body1">
-                            {review.Comment}
-                          </Typography>
+                        {/* Date */}
+                        <p className="text-gray-600 text-sm">
+                          {new Date(review.date).toLocaleDateString()}
+                        </p>
+                      </div>
 
-                          {/* Position the date in the top right corner */}
-                          <Typography
-                            variant="body2"
-                            className="text-gray-600 text-sm absolute top-0 right-0"
-                          >
-                            {new Date(review.date).toLocaleDateString()}{" "}
-                          </Typography>
+                      <div className="flex items-center mb-2">
+                        {/* Display rating stars */}
+                        <div className="flex">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <span
+                              key={star}
+                              className={`text-2xl ${
+                                star <= review.Rating
+                                  ? 'text-yellow-400'
+                                  : 'text-gray-300'
+                              }`}
+                            >
+                              ★
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <p>{review.Comment}</p>
 
-                          {/* Displaying images if available */}
-                          {review.images && review.images.length > 0 && (
-                            <div className="mt-2 flex">
-                              {review.images
-                                .slice(0, 4)
-                                .map((imageUrl, imgIndex) => (
-                                  <img
-                                    key={imgIndex}
-                                    src={imageUrl}
-                                    alt={`Review image ${imgIndex + 1}`}
-                                    className="w-24 h-24 object-cover rounded mt-2 mr-2"
-                                  />
-                                ))}
+                      {/* Displaying images if available */}
+                      {review.images && review.images.length > 0 && (
+                        <div className="mt-2 flex flex-wrap">
+                          {review.images
+                            .slice(0, 4)
+                            .map((imageUrl, imgIndex) => (
+                              <img
+                                key={imgIndex}
+                                src={imageUrl}
+                                alt={`Review image ${imgIndex + 1}`}
+                                className="w-24 h-24 object-cover rounded mt-2 mr-2"
+                              />
+                            ))}
 
-                              {review.images.length > 4 && (
-                                <div className="relative w-24 h-24 mt-2 mr-2">
-                                  <img
-                                    src={review.images[4]} // The 5th image
-                                    alt="More images"
-                                    className="w-full h-full object-cover rounded blur-sm"
-                                  />
-                                  <span className="absolute inset-0 flex items-center justify-center text-white bg-black bg-opacity-50 rounded">
-                                    + {review.images.length - 4} more
-                                  </span>
-                                </div>
-                              )}
+                          {review.images.length > 4 && (
+                            <div className="relative w-24 h-24 mt-2 mr-2">
+                              <img
+                                src={review.images[4]} // The 5th image
+                                alt="More images"
+                                className="w-full h-full object-cover rounded blur-sm"
+                              />
+                              <span className="absolute inset-0 flex items-center justify-center text-white bg-black bg-opacity-50 rounded">
+                                + {review.images.length - 4} more
+                              </span>
                             </div>
                           )}
                         </div>
+                      )}
 
-                        {/* Position the email in the bottom right corner */}
-                        <Typography
-                          variant="body2"
-                          className="text-gray-600 text-sm absolute bottom-0 right-0"
-                        >
+                      {/* Email at the bottom */}
+                      <div className="mt-2 flex justify-end">
+                        <p className="text-gray-600 text-sm">
                           {review.UserEmail}
-                        </Typography>
-                      </li>
-                    );
-                  })}
-                </ul>
-              ) : (
-                <Typography variant="body1">No reviews available.</Typography>
-              )}
-            </div>
-
-            <div className="flex-1 pl-4">
-              <Typography variant="h6" gutterBottom>
-                Leave a Comment & Rating
-              </Typography>
-              <TextField
-                fullWidth
-                label="Comment"
-                multiline
-                rows={4}
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
-              <div className="mt-2">
-                <Typography variant="body1">Rating</Typography>
-                <Rating
-                  name="rating"
-                  value={rating}
-                  onChange={(e, newValue) => setRating(newValue)}
-                />
-              </div>
-              {/* Image Upload Section */}
-              <div className="mt-4">
-                <Typography variant="body1">Upload Images</Typography>
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageUpload}
-                  className="mt-2"
-                />
-                {selectedImages.length > 0 && (
-                  <div className="mt-2">
-                    <Typography variant="body2">
-                      {selectedImages.length} image(s) selected
-                    </Typography>
-                    <div className="flex flex-wrap mt-2">
-                      {selectedImages.map((image, index) => (
-                        <div key={index} className="relative m-1">
-                          <img
-                            src={URL.createObjectURL(image.file)}
-                            alt={image.name}
-                            className="w-20 h-20 object-cover"
-                          />
-                          <Typography
-                            variant="caption"
-                            className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-center"
-                          >
-                            {image.name}
-                          </Typography>
-                          <button
-                            onClick={() => handleImageDeselect(index)}
-                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSubmitReview}
-                style={{ marginTop: "16px" }}
-              >
-                Submit Review
-              </Button>
-            </div>
+                        </p>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p>No reviews available.</p>
+            )}
           </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
+        </div>
+      </DialogContent>
+      {/* Removed DialogActions */}
+    </Dialog>
+
 
       {/* UNRSVP Confirmation Dialog */}
       <Dialog open={confirmUnRSVP} onClose={cancelLeave}>
