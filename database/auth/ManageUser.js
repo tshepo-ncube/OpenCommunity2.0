@@ -200,10 +200,13 @@ export default class ManageUser {
 
         // Check if the user is an admin
         if (userData.role === "super_admin") {
-          console.log("User is a super admin");
+          //console.log("User is a super admin");
+          localStorage.setItem("SuperAdmin", "super_admin");
           setIsAdmin(true); // Set admin status
         } else {
-          console.log("User is not a a super admin");
+          // localStorage.setItem("AdminStatus", "super_admin");
+          localStorage.setItem("SuperAdmin", "noSuper");
+          //console.log("User is not a a super admin");
           setIsAdmin(false); // Set non-admin status
         }
 

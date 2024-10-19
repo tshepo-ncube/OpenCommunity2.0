@@ -95,7 +95,7 @@ const CreateCommunity = () => {
   // Create a new function to handle the actual role handover after confirmation
   const handleConfirmHandover = async () => {
     try {
-      const loggedInUserEmail = consoleEmails[0];
+      const loggedInUserEmail = localStorage.getItem("Email"); // consoleEmails[0];
       const allUsers = await UserDB.getAllUsers();
       const loggedInUser = allUsers.find(
         (user) => user.Email === loggedInUserEmail
@@ -155,47 +155,59 @@ const CreateCommunity = () => {
     const { name, checked } = e.target;
     setRoles((prevRoles) => ({ ...prevRoles, [name]: checked }));
   };
-  // Find emails in console and check for super admin message
+
   useEffect(() => {
-    const findEmailsInConsole = () => {
-      const originalConsoleLog = console.log;
-      let foundEmails = [];
-
-      console.log = function (...args) {
-        args.forEach((arg) => {
-          if (typeof arg === "object" && arg !== null) {
-            const email = arg.Email;
-            if (email && typeof email === "string") {
-              foundEmails.push(email);
-            }
-          } else if (typeof arg === "string") {
-            // Check for super admin messages
-            if (arg.includes("User is a super admin")) {
-              setIsSuperAdmin(true);
-            } else if (arg.includes("User is not a super admin")) {
-              setIsSuperAdmin(false);
-            }
-          }
-        });
-        originalConsoleLog.apply(console, args);
-      };
-
-      // Store found emails in state
-      setConsoleEmails(foundEmails);
-
-      // Restore original console.log after component unmounts
-      return () => {
-        console.log = originalConsoleLog;
-      };
-    };
-
-    findEmailsInConsole();
+    // Check if the value in localStorage is "super_admin"
+    if (localStorage.getItem("SuperAdmin") === "super_admin") {
+      setIsSuperAdmin(true);
+    } else {
+      setIsSuperAdmin(false);
+    }
   }, []);
-  // ... (keep all existing functions)
+
+  // Find emails in console and check for super admin message
+  // useEffect(() => {
+  //   setIsSuperAdmin();
+
+  //   const findEmailsInConsole = () => {
+  //     const originalConsoleLog = console.log;
+  //     let foundEmails = [];
+
+  //     console.log = function (...args) {
+  //       args.forEach((arg) => {
+  //         if (typeof arg === "object" && arg !== null) {
+  //           const email = arg.Email;
+  //           if (email && typeof email === "string") {
+  //             foundEmails.push(email);
+  //           }
+  //         } else if (typeof arg === "string") {
+  //           // Check for super admin messages
+  //           if (arg.includes("User is a super admin")) {
+  //             setIsSuperAdmin(true);
+  //           } else if (arg.includes("User is not a super admin")) {
+  //             setIsSuperAdmin(false);
+  //           }
+  //         }
+  //       });
+  //       originalConsoleLog.apply(console, args);
+  //     };
+
+  //     // Store found emails in state
+  //     setConsoleEmails(foundEmails);
+
+  //     // Restore original console.log after component unmounts
+  //     return () => {
+  //       console.log = originalConsoleLog;
+  //     };
+  //   };
+
+  //   findEmailsInConsole();
+  // }, []);
+  // // ... (keep all existing functions)
 
   // Modified table cell rendering for email
   const renderEmailCell = (email) => {
-    const isHighlighted = consoleEmails.includes(email);
+    const isHighlighted = localStorage.getItem("Email") === email; // consoleEmails.includes(email);
     return (
       <td
         className={`px-6 py-4 text-sm ${
@@ -209,8 +221,8 @@ const CreateCommunity = () => {
   // Function to sort users, placing highlighted emails first
   const sortUsers = (users) => {
     return [...users].sort((a, b) => {
-      const isAHighlighted = consoleEmails.includes(a.Email);
-      const isBHighlighted = consoleEmails.includes(b.Email);
+      const isAHighlighted = localStorage.getItem("Email") === a.Email; //consoleEmails.includes(a.Email);
+      const isBHighlighted = localStorage.getItem("Email") === b.Email; //consoleEmails.includes(b.Email);
       if (isAHighlighted && !isBHighlighted) return -1;
       if (!isAHighlighted && isBHighlighted) return 1;
       return 0;
@@ -220,7 +232,7 @@ const CreateCommunity = () => {
     e.preventDefault();
 
     // Get the logged-in user's email (assuming consoleEmails stores the logged-in user's email)
-    const adminEmail = consoleEmails[0]; // Assuming the first email is the logged-in user's email
+    const adminEmail = localStorage.getItem("Email"); // consoleEmails[0]; // Assuming the first email is the logged-in user's email
 
     // Create the community data with the admin field
     const communityData = {
@@ -300,7 +312,7 @@ const CreateCommunity = () => {
     const fullName = `${user.Name} ${user.Surname} ${user.Email}`.toLowerCase();
     return (
       fullName.includes(searchTerm.toLowerCase()) &&
-      !consoleEmails.includes(user.Email)
+      !(localStorage.getItem("Email") === user.Email) //consoleEmails.includes(user.Email)
     );
   });
   // Function to handle role handover
@@ -898,7 +910,8 @@ const CreateCommunity = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {sortUsers(filteredUsers).map((user) => {
-                    const isHighlighted = consoleEmails.includes(user.Email);
+                    const isHighlighted =
+                      localStorage.getItem("Email") === user.Email; //consoleEmails.includes(user.Email);
                     return (
                       <tr
                         key={user.Email}
