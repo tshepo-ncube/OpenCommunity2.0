@@ -59,10 +59,35 @@ const CreateCommunity = () => {
     const communityId = e.target.value;
     const community = submittedData.find((comm) => comm.id === communityId);
     setSelectedCommunity(community);
+    console.log(
+      "--------------------------------------------------------------------------"
+    );
+
+    console.log(
+      "--------------------------------------------------------------------------"
+    );
+
+    console.log(
+      "--------------------------------------------------------------------------"
+    );
+    console.log("COMMUNITY : ", community);
+
+    console.log(
+      "--------------------------------------------------------------------------"
+    );
+
+    console.log(
+      "--------------------------------------------------------------------------"
+    );
+
+    console.log(
+      "--------------------------------------------------------------------------"
+    );
 
     if (community && community.admin) {
       // Find the admin user details from the users array
       const adminUser = users.find((user) => user.Email === community.admin);
+
       setCurrentAdmin(
         adminUser || {
           Name: "Unknown",
@@ -162,6 +187,10 @@ const CreateCommunity = () => {
     const { name, checked } = e.target;
     setRoles((prevRoles) => ({ ...prevRoles, [name]: checked }));
   };
+
+  useEffect(() => {
+    console.log("These are USERS : ", users);
+  }, [users]);
   // Find emails in console and check for super admin message
   // useEffect(() => {
   //   const findEmailsInConsole = () => {
@@ -188,26 +217,26 @@ const CreateCommunity = () => {
   //       });
   //       originalConsoleLog.apply(console, args);
   //     };
-  console.log = function (...args) {
-    args.forEach((arg) => {
-      if (typeof arg === "object" && arg !== null) {
-        const email = arg.Email;
-        if (email && typeof email === "string") {
-          foundEmails.push(email);
-        }
-      } else if (typeof arg === "string") {
-        // Check for super admin messages
-        // console.log(arg);
-        //console.log(arg);
-        // if (arg.includes("User is a super admin")) {
-        //   setIsSuperAdmin(true);
-        // } else if (arg.includes("User is not a super admin")) {
-        //   setIsSuperAdmin(false);
-        // }
-      }
-    });
-    //originalConsoleLog.apply(console, args);
-  };
+  // console.log = function (...args) {
+  //   args.forEach((arg) => {
+  //     if (typeof arg === "object" && arg !== null) {
+  //       const email = arg.Email;
+  //       if (email && typeof email === "string") {
+  //         foundEmails.push(email);
+  //       }
+  //     } else if (typeof arg === "string") {
+  //       // Check for super admin messages
+  //       // console.log(arg);
+  //       //console.log(arg);
+  //       // if (arg.includes("User is a super admin")) {
+  //       //   setIsSuperAdmin(true);
+  //       // } else if (arg.includes("User is not a super admin")) {
+  //       //   setIsSuperAdmin(false);
+  //       // }
+  //     }
+  //   });
+  //   //originalConsoleLog.apply(console, args);
+  // };
 
   //     // Store found emails in state
   //     setConsoleEmails(foundEmails);
@@ -223,6 +252,7 @@ const CreateCommunity = () => {
 
   useEffect(() => {
     // ManageUser.setIsSuperAdmin(setIsSuperAdmin);
+    console.log("hyhyhy");
 
     setIsSuperAdmin(localStorage.getItem("SuperAdmin") === "super_admin");
   }, []);
@@ -355,10 +385,12 @@ const CreateCommunity = () => {
   };
 
   useEffect(() => {
-    CommunityDB.getAllCommunities((data) => {
-      setSubmittedData(data);
-      setLoading(false);
-    }, setLoading);
+    // CommunityDB.getAllCommunities((data) => {
+    //   setSubmittedData(data);
+    //   setLoading(false);
+    // }, setLoading);
+
+    CommunityDB.getAllCommunities(setSubmittedData, setLoading);
 
     const fetchUsers = async () => {
       try {
@@ -998,6 +1030,7 @@ const CreateCommunity = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {sortUsers(filteredUsers).map((user) => {
+                    console.log("Console Log USER ", user);
                     const isHighlighted =
                       localStorage.getItem("Email") === user.Email; //consoleEmails.includes(user.Email);
                     return (
