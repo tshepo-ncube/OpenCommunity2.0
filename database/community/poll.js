@@ -34,6 +34,7 @@ import UserDB from "./users";
 export default class PollDB {
   static deletePoll = async (id) => {
     await deleteDoc(doc(DB, "polls", id));
+    location.reload();
   };
 
   static createPoll = async (pollObject) => {

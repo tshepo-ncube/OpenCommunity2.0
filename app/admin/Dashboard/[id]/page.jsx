@@ -223,10 +223,67 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
       rsvpLimitNumber: Math.max(1, parseInt(value) || 1),
     }));
   };
-  const handleSubmitEvent = (e) => {
-    e.preventDefault();
+  // Function to calculate min and max for the RSVP end date
+  const getRsvpEndDateTimeLimits = () => {
+    const now = new Date();
+    // const startDate = new Date(eventDetails.startDateTime);
+    const startDate = new Date("18 October 2024");
+    console.log("eventDetails.startDateTime : ", eventDetails.startDateTime);
+
+    console.log("StartDate : ", startDate);
+
+    const minRsvpDate = now.toISOString().slice(0, 16); // Current date and time
+    const maxRsvpDate = new Date(startDate.getTime() - 60 * 1000) // One minute before start date
+      .toISOString()
+      .slice(0, 16);
+
+    return { minRsvpDate, maxRsvpDate };
+  };
+
+  const { minRsvpDate, maxRsvpDate } = getRsvpEndDateTimeLimits();
+  const isDateValid = (startDateTime, endDateTime, rsvpEndDateTime) => {
+    const now = new Date();
+    const startDate = new Date(startDateTime);
+    const endDate = new Date(endDateTime);
+    const rsvpDate = new Date(rsvpEndDateTime);
+
+    // Check if dates are in the past
+    if (startDate < now || endDate < now || rsvpDate < now) {
+      return { isValid: false, message: "No past dates can be selected." };
+    }
+
+    // Check if RSVP date is before start date and not after it
+    if (rsvpDate >= startDate || rsvpDate < now) {
+      return {
+        isValid: false,
+        message:
+          "RSVP date must be before the start date and cannot be in the past.",
+      };
+    }
+
+    // Check if start date is after end date
+    if (startDate > endDate) {
+      return { isValid: false, message: "Start date must be before end date." };
+    }
+
+    return { isValid: true };
+  };
+
+  const handleSubmitEvent = (event) => {
+    event.preventDefault();
+
+    const { startDateTime, endDateTime, rsvpEndDateTime } = eventDetails;
+    const validation = isDateValid(startDateTime, endDateTime, rsvpEndDateTime);
+
+    if (!validation.isValid) {
+      alert(validation.message); // or use a snackbar or toast for better UX
+      return;
+    }
+
+    // Proceed with form submission
+    console.log("Form submitted successfully with:", eventDetails);
+
     onSubmit(eventDetails, eventImage);
-    onClose();
   };
 
   const handleSaveDraft = (e) => {
@@ -323,9 +380,9 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 type="datetime-local"
                 name="startDateTime"
                 id="startDateTime"
-                // value={"2024-09-25T14:30"}
                 value={eventDetails.startDateTime}
                 onChange={handleChangeEvent}
+                min={new Date().toISOString().slice(0, 16)} // Prevent past dates
                 className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
                 required
               />
@@ -343,8 +400,8 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 name="endDateTime"
                 id="endDateTime"
                 value={eventDetails.endDateTime}
-                //value={"2024-09-27T14:30"}
                 onChange={handleChangeEvent}
+                min={eventDetails.startDateTime} // Prevent end date before start date
                 className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
                 required
               />
@@ -364,6 +421,8 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 id="rsvpEndDateTime"
                 value={eventDetails.rsvpEndDateTime}
                 onChange={handleChangeEvent}
+                min={minRsvpDate} // Prevent past dates
+                max={maxRsvpDate} // Prevent RSVP after the start date
                 className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
                 required
               />
@@ -893,7 +952,7 @@ export default function CommunityPage({ params }) {
   const [showEditForm, setShowEditForm] = useState(false);
   const [eventFormData, setEventForm] = useState({
     Name: "",
-    StartDate: "",
+    StartDate: new Date(),
     EndDate: "",
     StartTime: "",
     EndTime: "",

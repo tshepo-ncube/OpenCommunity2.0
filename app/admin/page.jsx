@@ -6,9 +6,7 @@ import AdminCommunity from "../../_Components/AdminCommunities";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import strings from "../../Utils/strings.json";
-import InterestSelection from "@/_Components/InterestsSelection";
 import UserDB from "../../database/community/users"; // Make sure this import path is correct
-
 import { doc, updateDoc } from "firebase/firestore";
 import DB from "../../database/DB"; // Ensure you are importing your Firestore DB instance
 import ManageUser from "@/database/auth/ManageUser";
@@ -25,7 +23,7 @@ const CreateCommunity = () => {
   const [description, setDescription] = useState("");
   const [submittedData, setSubmittedData] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
-  const [category, setCategory] = useState("Fitness & Wellness");
+  const [category, setCategory] = useState("general");
   const [view, setView] = useState("Communities");
   const [userName, setUserName] = useState("");
   const [userSurname, setUserSurname] = useState("");
@@ -34,9 +32,6 @@ const CreateCommunity = () => {
   const [roles, setRoles] = useState({ user: false, admin: false });
   const fileInputRef = useRef(null);
   const userPopupRef = useRef(null);
-
-  const [selectedInterests, setSelectedInterests] = useState([]);
-
   const [image, setImage] = useState(null);
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState(""); // State for search query
@@ -48,7 +43,6 @@ const CreateCommunity = () => {
   const [adminUsers, setAdminUsers] = useState([]);
   const [consoleEmails, setConsoleEmails] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false); // New state for super admin check
-
   const [isCommunityHandoverOpen, setCommunityHandoverOpen] = useState(false);
   const [selectedCommunity, setSelectedCommunity] = useState(null);
   const [selectedNewAdmin, setSelectedNewAdmin] = useState(null);
@@ -254,112 +248,28 @@ const CreateCommunity = () => {
   //     const originalConsoleLog = console.log;
   //     let foundEmails = [];
 
-  //     console.log = function (...args) {
-  //       args.forEach((arg) => {
-  //         if (typeof arg === "object" && arg !== null) {
-  //           const email = arg.Email;
-  //           if (email && typeof email === "string") {
-  //             foundEmails.push(email);
-  //           }
-  //         } else if (typeof arg === "string") {
-  //           // Check for super admin messages
-  //           console.log(arg);
-  //           console.log(arg);
-  //           if (arg.includes("User is a super admin")) {
-  //             setIsSuperAdmin(true);
-  //           } else if (arg.includes("User is not a super admin")) {
-  //             setIsSuperAdmin(false);
-  //           }
-  //         }
-  //       });
-  //       originalConsoleLog.apply(console, args);
-  //     };
+  // console.log = function (...args) {
+  //   args.forEach((arg) => {
+  //     if (typeof arg === "object" && arg !== null) {
+  //       const email = arg.Email;
+  //       if (email && typeof email === "string") {
+  //         foundEmails.push(email);
+  //       }
+  //     } else if (typeof arg === "string") {
+  //       // Check for super admin messages
+  //       // console.log(arg);
+  //       //console.log(arg);
+  //       // if (arg.includes("User is a super admin")) {
+  //       //   setIsSuperAdmin(true);
+  //       // } else if (arg.includes("User is not a super admin")) {
+  //       //   setIsSuperAdmin(false);
+  //       // }
+  //     }
+  //   });
+  //   originalConsoleLog.apply(console, args);
+  // };
 
-  // Enhanced function to check name similarity
-  const checkNameSimilarity = (newName) => {
-    const cleanName = newName
-      .toLowerCase()
-      .replace(/\bcommunity\b/g, "")
-      .trim();
-
-    const similarCommunity = submittedData.find((community) => {
-      const existingName = community.name
-        .toLowerCase()
-        .replace(/\bcommunity\b/g, "")
-        .trim();
-      return (
-        existingName === cleanName ||
-        existingName.includes(cleanName) ||
-        cleanName.includes(existingName)
-      );
-    });
-
-    return similarCommunity || null;
-  };
-
-  const ErrorPopup = ({ error, onClose }) => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-[60] flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4 relative">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-red-600">
-            Similar Community Exists
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <CloseIcon />
-          </button>
-        </div>
-        <div className="mb-4">
-          <p className="text-gray-700 mb-2">{error.message}</p>
-          <p className="text-gray-900 font-medium">
-            Similar community name is as follows, this is to test this branch,
-            pls show !!!!:
-          </p>
-          <p className="text-gray-700 bg-gray-50 p-2 rounded mt-1">
-            {error.similarCommunity}
-          </p>
-        </div>
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-  // Find emails in console and check for super admin message
-  // useEffect(() => {
-  //   const findEmailsInConsole = () => {
-  //     const originalConsoleLog = console.log;
-  //     let foundEmails = [];
-
-  //     console.log = function (...args) {
-  //       args.forEach((arg) => {
-  //         if (typeof arg === "object" && arg !== null) {
-  //           const email = arg.Email;
-  //           if (email && typeof email === "string") {
-  //             foundEmails.push(email);
-  //           }
-  //         } else if (typeof arg === "string") {
-  //           // Check for super admin messages
-  //           // console.log(arg);
-  //           //console.log(arg);
-  //           // if (arg.includes("User is a super admin")) {
-  //           //   setIsSuperAdmin(true);
-  //           // } else if (arg.includes("User is not a super admin")) {
-  //           //   setIsSuperAdmin(false);
-  //           // }
-  //         }
-  //       });
-  //       originalConsoleLog.apply(console, args);
-  //     };
-
-  //     // Store found emails in state
+  // Store found emails in state
   //     setConsoleEmails(foundEmails);
 
   //     // Restore original console.log after component unmounts
@@ -370,7 +280,15 @@ const CreateCommunity = () => {
 
   //   findEmailsInConsole();
   // }, []);
-  // // ... (keep all existing functions)
+
+  useEffect(() => {
+    ManageUser.setIsSuperAdmin(setIsSuperAdmin);
+  }, []);
+
+  useEffect(() => {
+    UserDB.getUser(localStorage.getItem("UserID"));
+  }, []);
+  // ... (keep all existing functions)
 
   // Modified table cell rendering for email
   const renderEmailCell = (email) => {
@@ -395,7 +313,6 @@ const CreateCommunity = () => {
       return 0;
     });
   };
-
   const handleFormSubmit = async (e, status) => {
     e.preventDefault();
     console.log("handleFormSubmit");
@@ -436,6 +353,17 @@ const CreateCommunity = () => {
         setLoading
       );
     } else {
+      // Create a new community
+      console.log("Creating a community now...");
+      try {
+        CommunityDB.createCommunity(
+          communityData,
+          image,
+          (newCommunity) => {
+            setSubmittedData((prevData) => [...prevData, newCommunity]);
+          },
+          setLoading
+        );
       // console.log("creating a channel now...");
       // CommunityDB.createCommunity(
       //   communityData,
@@ -494,17 +422,13 @@ const CreateCommunity = () => {
           // }
         );
       } catch (err) {
-        console.log("error");
-        console.log("error");
+    
+        console.log("Error:", err);
       }
-    }
+    } 
 
-    setName("");
-    setDescription("");
-    setCategory("general");
-    setEditIndex(null);
-    setPopupOpen(false);
-  };
+  
+  
 
   const handleEdit = (index) => {
     setName(submittedData[index].name);
@@ -617,10 +541,6 @@ const CreateCommunity = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  useEffect(() => {
-    console.log("Category: ", category);
-  }, [category]);
 
   const generateDescription = async () => {
     console.log("generate Description");
@@ -744,20 +664,12 @@ const CreateCommunity = () => {
                     className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                     required
                   >
-                    <option value="Fitness & Wellness">
-                      Fitness & Wellness
-                    </option>
-                    <option value="Food & Drinks">Food & Drinks</option>
-                    <option value="Arts & Culture">Arts & Culture</option>
-                    <option value="Tech & Gaming">Tech & Gaming</option>
-                    <option value="Social & Networking">
-                      Social & Networking
-                    </option>
-                    <option value="Hobbies & Interests">
-                      Hobbies & Interests
-                    </option>
-                    <option value="Travel & Adventure">
-                      Travel & Adventure
+                    <option value="General">General</option>
+                    <option value="Sports">Sports/Fitness</option>
+                    <option value="Social">Social Activities</option>
+                    <option value="Retreat">Company Retreat</option>
+                    <option value="Development">
+                      Professional Development
                     </option>
                   </select>
                 </div>
