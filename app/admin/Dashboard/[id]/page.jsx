@@ -226,7 +226,12 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   // Function to calculate min and max for the RSVP end date
   const getRsvpEndDateTimeLimits = () => {
     const now = new Date();
-    const startDate = new Date(eventDetails.startDateTime);
+    // const startDate = new Date(eventDetails.startDateTime);
+    const startDate = new Date("18 October 2024");
+    console.log("eventDetails.startDateTime : ", eventDetails.startDateTime);
+
+    console.log("StartDate : ", startDate);
+
     const minRsvpDate = now.toISOString().slice(0, 16); // Current date and time
     const maxRsvpDate = new Date(startDate.getTime() - 60 * 1000) // One minute before start date
       .toISOString()
@@ -277,6 +282,8 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
 
     // Proceed with form submission
     console.log("Form submitted successfully with:", eventDetails);
+
+    onSubmit(eventDetails, eventImage);
   };
 
   const handleSaveDraft = (e) => {
@@ -945,7 +952,7 @@ export default function CommunityPage({ params }) {
   const [showEditForm, setShowEditForm] = useState(false);
   const [eventFormData, setEventForm] = useState({
     Name: "",
-    StartDate: "",
+    StartDate: new Date(),
     EndDate: "",
     StartTime: "",
     EndTime: "",

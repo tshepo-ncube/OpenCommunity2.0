@@ -6,12 +6,9 @@ import AdminCommunity from "../../_Components/AdminCommunities";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import strings from "../../Utils/strings.json";
-import InterestSelection from "@/_Components/InterestsSelection";
 import UserDB from "../../database/community/users"; // Make sure this import path is correct
-
 import { doc, updateDoc } from "firebase/firestore";
 import DB from "../../database/DB"; // Ensure you are importing your Firestore DB instance
-import ManageUser from "@/database/auth/ManageUser";
 
 const CreateCommunity = () => {
   const [activeTab, setActiveTab] = useState("tab1");
@@ -22,7 +19,7 @@ const CreateCommunity = () => {
   const [description, setDescription] = useState("");
   const [submittedData, setSubmittedData] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
-  const [category, setCategory] = useState("Fitness & Wellness");
+  const [category, setCategory] = useState("general");
   const [view, setView] = useState("Communities");
   const [userName, setUserName] = useState("");
   const [userSurname, setUserSurname] = useState("");
@@ -31,9 +28,6 @@ const CreateCommunity = () => {
   const [roles, setRoles] = useState({ user: false, admin: false });
   const fileInputRef = useRef(null);
   const userPopupRef = useRef(null);
-
-  const [selectedInterests, setSelectedInterests] = useState([]);
-
   const [image, setImage] = useState(null);
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState(""); // State for search query
@@ -45,7 +39,6 @@ const CreateCommunity = () => {
   const [adminUsers, setAdminUsers] = useState([]);
   const [consoleEmails, setConsoleEmails] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false); // New state for super admin check
-
   const [isCommunityHandoverOpen, setCommunityHandoverOpen] = useState(false);
   const [selectedCommunity, setSelectedCommunity] = useState(null);
   const [selectedNewAdmin, setSelectedNewAdmin] = useState(null);
@@ -177,13 +170,11 @@ const CreateCommunity = () => {
             }
           } else if (typeof arg === "string") {
             // Check for super admin messages
-            // console.log(arg);
-            //console.log(arg);
-            // if (arg.includes("User is a super admin")) {
-            //   setIsSuperAdmin(true);
-            // } else if (arg.includes("User is not a super admin")) {
-            //   setIsSuperAdmin(false);
-            // }
+            if (arg.includes("User is a super admin")) {
+              setIsSuperAdmin(true);
+            } else if (arg.includes("User is not a super admin")) {
+              setIsSuperAdmin(false);
+            }
           }
         });
         originalConsoleLog.apply(console, args);
@@ -199,14 +190,6 @@ const CreateCommunity = () => {
     };
 
     findEmailsInConsole();
-  }, []);
-
-  useEffect(() => {
-    ManageUser.setIsSuperAdmin(setIsSuperAdmin);
-  }, []);
-
-  useEffect(() => {
-    UserDB.getUser(localStorage.getItem("UserID"));
   }, []);
   // ... (keep all existing functions)
 
@@ -233,7 +216,6 @@ const CreateCommunity = () => {
       return 0;
     });
   };
-
   const handleFormSubmit = async (e, status) => {
     e.preventDefault();
 
@@ -261,53 +243,23 @@ const CreateCommunity = () => {
         setLoading
       );
     } else {
-      // console.log("creating a channel now...");
-      // CommunityDB.createCommunity(
-      //   communityData,
-      //   (newCommunity) =>
-      //     setSubmittedData((prevData) => [...prevData, newCommunity]),
-      //   setLoading
-      // );
-      //name, description, category, status
-
+      // Create a new community
+      console.log("Creating a community now...");
       try {
-        // const res = await axios.post(
-        //   strings.server_endpoints.createChannel,
-        //   { name, description, category, status },
-        //   {
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //     },
-        //   }
-        // );
-
-        // console.log(res.data);
-        // let data = res.data;
-
-        if (selectedInterests.length < 3) {
-          alert("Please add more interests");
-        } else {
-          CommunityDB.createCommunity(
-            communityData,
-            image,
-            (newCommunity) => {
-              setSubmittedData((prevData) => [...prevData, newCommunity]);
-            },
-            setLoading,
-            selectedInterests
-
-            // ,
-            // {
-            //   WebUrl: data.webUrl,
-            //   ChannelID: data.id,
-            // }
-          );
-        }
+        CommunityDB.createCommunity(
+          communityData,
+          image,
+          (newCommunity) => {
+            setSubmittedData((prevData) => [...prevData, newCommunity]);
+          },
+          setLoading
+        );
       } catch (err) {
-        console.log("error");
+        console.log("Error:", err);
       }
     }
 
+    // Clear the form fields after submission
     setName("");
     setDescription("");
     setCategory("general");
@@ -424,10 +376,6 @@ const CreateCommunity = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  useEffect(() => {
-    console.log("Category: ", category);
-  }, [category]);
 
   const generateDescription = async () => {
     console.log("generate Description");
@@ -551,20 +499,12 @@ const CreateCommunity = () => {
                     className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                     required
                   >
-                    <option value="Fitness & Wellness">
-                      Fitness & Wellness
-                    </option>
-                    <option value="Food & Drinks">Food & Drinks</option>
-                    <option value="Arts & Culture">Arts & Culture</option>
-                    <option value="Tech & Gaming">Tech & Gaming</option>
-                    <option value="Social & Networking">
-                      Social & Networking
-                    </option>
-                    <option value="Hobbies & Interests">
-                      Hobbies & Interests
-                    </option>
-                    <option value="Travel & Adventure">
-                      Travel & Adventure
+                    <option value="General">General</option>
+                    <option value="Sports">Sports/Fitness</option>
+                    <option value="Social">Social Activities</option>
+                    <option value="Retreat">Company Retreat</option>
+                    <option value="Development">
+                      Professional Development
                     </option>
                   </select>
                 </div>
@@ -613,15 +553,6 @@ const CreateCommunity = () => {
                     <p className="mt-2 text-gray-600">Uploaded: {image.name}</p>
                   )}
                 </div>
-
-                <label className="block text-m text-gray-700 font-semibold">
-                  Select Community Interests
-                </label>
-                <InterestSelection
-                  max={3}
-                  setSelectedInterests={setSelectedInterests}
-                  selectedInterests={selectedInterests}
-                />
 
                 <div className="flex justify-end">
                   <button
