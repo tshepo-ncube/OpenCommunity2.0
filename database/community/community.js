@@ -471,6 +471,7 @@ export default class CommunityDB {
             : 0,
           selectedInterests: data.selectedInterests,
           score: score,
+          admin: data.admin ? data.admin : "no admin",
         });
 
         //Check if this community has the highest score
