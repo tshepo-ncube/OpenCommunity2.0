@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogContent,
   Button,
+  Avatar,
   TextField,
   Rating,
   DialogActions,
@@ -28,6 +29,20 @@ import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import Navbar from "@/_Components/Navbar";
+import Share from "@mui/icons-material/Share";
+import { Group, Poll } from "@mui/icons-material";
+import LocationOn from "@mui/icons-material/LocationOn";
+import Event from "@mui/icons-material/Event";
+import AccessTime from "@mui/icons-material/AccessTime";
+import PollComponent from "@/_Components/PollComponent"
+import DescriptionIcon from '@mui/icons-material/Description';
+
+//This sets Upcoming events as the default tab
+
+const NavigationTabs = () => {
+  const [activeTab, setActiveTab] = useState("upcomingEvents")}
+
 
 const locales = {
   "en-US": enUS,
@@ -521,8 +536,9 @@ export default function CommunityPage({ params }) {
 
   return (
     <div className="">
+      <Navbar isHome={true}/>
       <div
-        className="relative text-white py-4 h-80"
+        className="relative text-white py-4 h-60"
         style={{
           backgroundImage: community.communityImage
             ? `url(${community.communityImage})`
@@ -531,20 +547,32 @@ export default function CommunityPage({ params }) {
         }}
       >
         <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="relative z-10 text-center py-20">
-          <Typography variant="h2" className="font-bold" gutterBottom>
+        <div className="relative z-10 text-center mt-20">
+          <Typography variant="h2" className="font-bold text-6xl" gutterBottom>
             {community.name}
           </Typography>
-          <p className="text-md text-white">{community.description}</p>
-          <center className="mt-6">
-            <button
-              onClick={() => {
-                window.open(`${community.WebUrl}`, "_blank");
+          {/* <p className="text-md text-white">{community.description}</p> */}
+          <center className="mt-1">
+            <Button
+              variant="outlined"
+              startIcon={<Group />}
+              sx={{
+                backgroundColor: 'white',
+                color: 'black',
+                borderRadius: '50px',
+                padding: '8px 24px',
+                mx: 1,
+                border: '1px solid #d3d3d3',
+                '&:hover': {
+                  backgroundColor: '#f2f2f2',
+                },
               }}
-              className="bg-white rounded text-black px-6 py-1 mx-2 border border-gray-300"
+              onClick={() => {
+                window.open(`${community.WebUrl}`, '_blank');
+              }}
             >
               Visit Teams Channel
-            </button>
+            </Button>
 
             <RWebShare
               data={{
@@ -554,14 +582,29 @@ export default function CommunityPage({ params }) {
               }}
               onClick={() => console.log("shared successfully!")}
             >
-              <button className="bg-white rounded text-black px-6 py-1 mx-2  border border-gray-300">
-                Invite
-              </button>
+              <Button
+                variant="contained"
+                startIcon={<Share />}
+                sx={{
+                  backgroundColor: '#bcd727',
+                  color: 'white',
+                  borderRadius: '50px',
+                  padding: '8px 24px',
+                  mx: 2,
+                  border: '1px solid #d3d3d3',
+                  '&:hover': {
+                    backgroundColor: '#a8c31d',
+                  },
+                }}
+              >
+                Share Community
+              </Button>
             </RWebShare>
           </center>
         </div>
       </div>
-
+      
+      {/* CALENDER EDITED OUT FOR NOW */}
       <center>
         <div className="p-12">
           <Calendar
@@ -589,204 +632,149 @@ export default function CommunityPage({ params }) {
         </div>
       </center>
 
-      <div className="flex justify-center mb-6 space-x-10 mt-4">
-        <button
-          className={`px-6 py-2 text-lg ${
-            activeTab === "events"
-              ? "border-b-4 border-[#bcd727] text-gray-900 font-semibold"
-              : "text-gray-600"
+      {/* This is the new navigation bar for past events, upcoming events and polls */}
+
+      <div className="flex justify-center mt-6">
+  <div className="text-base font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+    <ul className="flex flex-wrap -mb-px">
+      {/* Upcoming Events Tab */}
+      <li className="me-2">
+        <a
+          href="#"
+          onClick={() => setActiveTab("upcomingEvents")}
+          className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+            activeTab === "upcomingEvents"
+              ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+              : "border-transparent"
           }`}
-          onClick={() => setActiveTab("events")}
         >
-          EVENTS
+          Upcoming Events
+        </a>
+      </li>
+
+      {/* Past Events Tab */}
+      <li className="me-2">
+        <a
+          href="#"
+          onClick={() => setActiveTab("pastEvents")}
+          className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+            activeTab === "pastEvents"
+              ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+              : "border-transparent"
+          }`}
+        >
+          Past Events
+        </a>
+      </li>
+
+      {/* Polls Tab */}
+      <li className="me-2">
+        <a
+          href="#"
+          onClick={() => setActiveTab("polls")}
+          className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+            activeTab === "polls"
+              ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+              : "border-transparent"
+          }`}
+        >
+          Polls
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+      {/* <div className="inline-flex bg-gray-200 rounded-2xl ml-2 mt-6 mb-6">
+        <button
+          className={`px-2 py-2 text-lg font-semibold rounded-xl ${
+            activeTab === "upcomingEvents"
+              ? "bg-white text-black shadow"
+              : "text-gray-500"
+          }`}
+          onClick={() => setActiveTab("upcomingEvents")}
+        >
+          Upcoming Events
         </button>
         <button
-          className={`px-6 py-2 text-lg ${
+          className={`px-6 py-2 text-lg font-semibold ${
+            activeTab === "pastEvents"
+              ? "bg-white text-black shadow rounded-lg"
+              : "text-gray-500"
+          }`}
+          onClick={() => setActiveTab("pastEvents")}
+        >
+          Past Events
+        </button>
+        <button
+          className={`px-6 py-2 text-lg font-semibold rounded-lg ${
             activeTab === "polls"
-              ? "border-b-4 border-[#bcd727] text-gray-900 font-semibold"
-              : "text-gray-600"
+              ? "bg-white text-black shadow"
+              : "text-gray-500"
           }`}
           onClick={() => setActiveTab("polls")}
         >
-          POLLS
+          Polls
         </button>
-      </div>
+
+      </div> */}
+      
       <div>
-        {activeTab === "events" && (
+        {activeTab === "pastEvents" && (
           <div className="rounded bg-gray-50 p-4 pb-4">
-            <h2 className="text-2xl font-semibold mb-4">Upcoming Events</h2>
-            {upcomingEvents.length > 0 ? (
-              <div className="overflow-x-auto">
-                <ul className="flex space-x-6">
-                  {upcomingEvents.map((event) => (
-                    <li
-                      key={event.id}
-                      className="min-w-[300px] w-[300px] bg-white shadow rounded-md p-4"
-                    >
-                      <div className="mb-4">
-                        <img
-                          src="https://www.pngkey.com/png/detail/233-2332677_ega-png.png"
-                          alt={event.Name}
-                          className="w-full h-40 object-cover rounded"
-                        />
-                      </div>
-                      <div className="border-b-2 border-gray-300 mb-2">
-                        <h3 className="text-xl font-semibold text-center">
-                          {event.Name}
-                        </h3>
-                      </div>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        style={{ whiteSpace: "pre-wrap" }}
-                      >
-                        <div className="mb-2">{event.EventDescription}</div>
-                        <div>
-                          <strong>Location:</strong> {event.Location}
-                        </div>
-                        <div>
-                          <strong>Start Date:</strong>{" "}
-                          {formatDate(event.StartDate)}
-                        </div>
-                        <div>
-                          <strong>End Date:</strong> {formatDate(event.EndDate)}
-                        </div>
-                        <div>
-                          <strong>RSVP by:</strong>{" "}
-                          {formatDate(event.RsvpEndTime)}
-                        </div>
-                      </Typography>
-
-                      <div className="mt-4">
-                        {event.status === "active" ? (
-                          <div className="flex space-x-4">
-                            {isRSVPed(event.id) ? (
-                              <button
-                                className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
-                                onClick={() => handleLeave(event)}
-                              >
-                                UN RSVP
-                              </button>
-                            ) : (
-                              <span className="flex-1 text-gray-700 font-bold py-2 px-4 rounded-md">
-                                RSVP for this event is CLOSED
-                              </span>
-                            )}
-                          </div>
-                        ) : event.status === "rsvp" ? (
-                          <div className="flex space-x-4">
-                            {isRSVPed(event.id) ? (
-                              <button
-                                className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
-                                onClick={() => handleLeave(event)}
-                              >
-                                UN RSVP
-                              </button>
-                            ) : event.RsvpLimitNumber &&
-                              event.rsvp &&
-                              event.rsvp.length >= event.RsvpLimitNumber ? (
-                              <span className="flex-1 text-gray-700 font-bold py-2 px-4 rounded-md text-center">
-                                RSVP capacity reached
-                              </span>
-                            ) : (
-                              <button
-                                className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
-                                onClick={() => handleRSVP(event)}
-                              >
-                                RSVP
-                              </button>
-                            )}
-                          </div>
-                        ) : (
-                          <span className="flex-1 text-gray-700 font-bold py-2 px-4 rounded-md">
-                            Event status unknown
-                          </span>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <Typography>No upcoming events to display</Typography>
-            )}
-
             <div className="rounded bg-gray-50 p-4 relative">
               <h2 className="text-2xl font-semibold mb-4">Past Events</h2>
 
               {pastEvents.length > 0 ? (
                 <div className="overflow-x-auto">
                   <ul className="flex space-x-6">
-                    {pastEvents.map((event) => {
-                      // Calculate average rating
-                      const averageRating =
-                        event.Reviews && event.Reviews.length > 0
-                          ? event.Reviews.reduce(
-                              (sum, review) => sum + review.Rating,
-                              0
-                            ) / event.Reviews.length
-                          : 0;
+                    {pastEvents.map((event) => (
+                      <li
+                        key={event.id}
+                        className="min-w-[300px] w-[300px] bg-white shadow-2xl rounded-md flex flex-col p-4"
+                      >
+                        <div className="mb-4">
+                          <img
+                            src="https://th.bing.com/th/id/OIP.F00dCf4bXxX0J-qEEf4qIQHaD6?rs=1&pid=ImgDetMain"
+                            alt={event.Name}
+                            className="w-full h-40 object-cover rounded"
+                          />
+                        </div>
+                        <div className="border-b-2 border-gray-300 mb-2">
+                          <h3 className="text-xl font-semibold text-center">
+                            {event.Name}
+                          </h3>
+                        </div>
 
-                      return (
-                        <li
-                          key={event.id}
-                          className="min-w-[300px] w-[300px] bg-white shadow-2xl rounded-md flex flex-col p-4"
-                        >
-                          <div className="mb-4">
-                            <img
-                              src="https://th.bing.com/th/id/OIP.F00dCf4bXxX0J-qEEf4qIQHaD6?rs=1&pid=ImgDetMain"
-                              alt={event.Name}
-                              className="w-full h-40 object-cover rounded"
-                            />
+                        <div className="text-gray-600 flex-grow">
+                          <div className="mb-2">
+                            <strong>Description:</strong>{" "}
+                            {event.EventDescription}
                           </div>
-                          <div className="border-b-2 border-gray-300 mb-2">
-                            <h3 className="text-xl font-semibold text-center">
-                              {event.Name}
-                            </h3>
+                          <div>
+                            <strong>Location:</strong> {event.Location}
                           </div>
+                          <div>
+                            <strong>Start Date:</strong>{" "}
+                            {formatDate(event.StartDate)}
+                          </div>
+                          <div>
+                            <strong>End Date:</strong>{" "}
+                            {formatDate(event.EndDate)}
+                          </div>
+                        </div>
 
-                          <div className="text-gray-600 flex-grow">
-                            <div className="mb-2">
-                              <strong>Description:</strong>{" "}
-                              {event.EventDescription}
-                            </div>
-                            <div>
-                              <strong>Location:</strong> {event.Location}
-                            </div>
-                            <div>
-                              <strong>Start Date:</strong>{" "}
-                              {formatDate(event.StartDate)}
-                            </div>
-                            <div>
-                              <strong>End Date:</strong>{" "}
-                              {formatDate(event.EndDate)}
-                            </div>
-                          </div>
-
-                          <div className="mt-4 mb-2">
-                            <div className="flex items-center justify-center space-x-2">
-                              <Rating
-                                value={averageRating}
-                                readOnly
-                                precision={0.1}
-                              />
-                              <span className="text-sm text-gray-600">
-                                ({event.Reviews?.length || 0} reviews)
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="mt-auto">
-                            <button
-                              className="fixed-button bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all w-full"
-                              onClick={() => handleCommentReview(event)}
-                            >
-                              Leave a Comment & Review
-                            </button>
-                          </div>
-                        </li>
-                      );
-                    })}
+                        <div className="mt-auto">
+                          <button
+                            className="fixed-button bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
+                            onClick={() => handleCommentReview(event)}
+                          >
+                            Leave a Comment & Review
+                          </button>
+                        </div>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               ) : (
@@ -796,10 +784,237 @@ export default function CommunityPage({ params }) {
           </div>
         )}
       </div>
+
+        <div>
+        {activeTab === "upcomingEvents" && (
+  <div className="bg-white p-4 pb-4">
+    {upcomingEvents.length > 0 ? (
+      // Change to grid layout to display three cards per row
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {upcomingEvents.map((event) => (
+          <div
+            key={event.id}
+            className="bg-white shadow-sm rounded-md overflow-hidden"
+          >
+            {/* Image section occupying the top without borders */}
+            <div className="relative">
+              {/* RSVP Status Tag */}
+              {event.status === "active" ? (
+                <span className="absolute top-2 right-2 bg-red-200 text-red-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                  RSVP Closed
+                </span>
+              ) : event.status === "rsvp" ? (
+                <span className="absolute top-2 right-2 bg-blue-200 text-blue-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                  RSVP Open
+                </span>
+              ) : null}
+              <img
+                src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt={event.Name}
+                className="w-full h-48 object-cover"
+              />
+            </div>
+
+            {/* Event details below the image */}
+            <div className="p-4">
+              <h3 className="text-xl font-semibold text-left mb-2">
+                {event.Name}
+              </h3>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                style={{ whiteSpace: "pre-wrap" }}
+              >
+                <div className="mb-2">
+                  <DescriptionIcon className="text-gray-600 mr-2"/>
+                  <span className="text-gray-800 text-sm">{event.EventDescription}</span>
+                  {event.EventDescription}
+                </div>
+                <div className="flex items-center mb-1">
+                  <LocationOn className="text-gray-600 mr-2" />
+                  <span className="text-gray-800 text-sm">{event.Location}</span>
+                </div>
+                <div className="flex items-center mb-1">
+                  <Event className="text-gray-600 mr-2" />
+                  <span className="text-gray-800 text-sm">{formatDate(event.StartDate)}</span>
+                </div>
+                <div className="flex items-center">
+                  <AccessTime className="text-gray-600 mr-2" />
+                  <span className="text-gray-800 text-sm">
+                    {new Date(event.StartDate.seconds * 1000).toLocaleTimeString()}
+                  </span>
+                </div>
+              </Typography>
+
+              {/* RSVP and event status */}
+              <div className="mt-4">
+                {event.status === "active" ? (
+                  <div className="flex space-x-4">
+                    {isRSVPed(event.id) ? (
+                      <button
+                        className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
+                        onClick={() => handleLeave(event)}
+                      >
+                        UN RSVP
+                      </button>
+                    ) : (
+                      <span className="flex-1 bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-md">
+                        RSVP for this event is CLOSED
+                      </span>
+                    )}
+                  </div>
+                ) : event.status === "rsvp" ? (
+                  <div className="flex space-x-4">
+                    {isRSVPed(event.id) ? (
+                      <button
+                        className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
+                        onClick={() => handleLeave(event)}
+                      >
+                        UN RSVP
+                      </button>
+                    ) : (
+                      <button
+                        className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded hover:bg-[#bcd727] transition-all ease-in-out duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
+                        onClick={() => handleRSVP(event)}
+                      >
+                        RSVP
+                      </button>
+
+                    )}
+                  </div>
+                ) : (
+                  <span className="flex-1 text-gray-700 font-bold py-2 px-4 rounded-md">
+                    Event status unknown
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <Typography>No upcoming events to display</Typography>
+    )}
+  </div>
+)}
+
+        </div>
+
+{/* EVENTS BELOW HAVE A VERTOCAL SCROLL */}
+
+{/* <div> */}
+  {/* {activeTab === "upcomingEvents" && (
+    <div className="bg-gray-50 p-4 pb-4"> 
+      {upcomingEvents.length > 0 ? (
+        <div className="overflow-x-auto">
+          <ul className="flex space-x-6">
+            {upcomingEvents.map((event) => (
+              <li
+                key={event.id}
+                className="min-w-[300px] w-[300px] bg-white shadow-md rounded-md overflow-hidden"
+              >
+                
+                <div className="relative">
+                  
+                  {event.status === "active" ? (
+                    <span className="absolute top-2 right-2 bg-red-200 text-red-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                      RSVP Closed
+                    </span>
+                  ) : event.status === "rsvp" ? (
+                    <span className="absolute top-2 right-2 bg-blue-200 text-blue-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                      RSVP Open
+                    </span>
+                  ) : null}
+                  <img
+                    src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    alt={event.Name}
+                    className="w-full h-48 object-cover"
+                  />
+                </div>
+
+                
+                <div className="p-4">
+                  <h3 className="text-xl font-semibold text-left mb-2">
+                    {event.Name}
+                  </h3>
+                  <Typography variant="body2" color="text.secondary" style={{ whiteSpace: "pre-wrap" }}>
+                    <div className="flex items-center mb-1">
+                      <LocationOn className="text-gray-600 mr-2" />
+                      <span className="text-gray-800 text-sm">{event.Location}</span>
+                    </div>
+                    <div className="flex items-center mb-1">
+                      <Event className="text-gray-600 mr-2" />
+                      <span className="text-gray-800 text-sm">{formatDate(event.StartDate)}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <AccessTime className="text-gray-600 mr-2" />
+                      <span className="text-gray-800 text-sm">
+                        {new Date(event.StartDate.seconds * 1000).toLocaleTimeString()}
+                      </span>
+                    </div>
+                  </Typography>
+
+                  
+                  <div className="mt-4">
+                    {event.status === "active" ? (
+                      <div className="flex space-x-4">
+                        {isRSVPed(event.id) ? (
+                          <button
+                            className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
+                            onClick={() => handleLeave(event)}
+                          >
+                            UN RSVP
+                          </button>
+                        ) : (
+                            <span className="flex-1 bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-md">
+                            RSVP for this event is CLOSED
+                            </span>
+
+                        )}
+                      </div>
+                    ) : event.status === "rsvp" ? (
+                      <div className="flex space-x-4">
+                        {isRSVPed(event.id) ? (
+                          <button
+                            className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
+                            onClick={() => handleLeave(event)}
+                          >
+                            UN RSVP
+                          </button>
+                        ) : (
+                          <button
+                            className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
+                            onClick={() => handleRSVP(event)}
+                          >
+                            RSVP
+                          </button>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="flex-1 text-gray-700 font-bold py-2 px-4 rounded-md">
+                        Event status unknown
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <Typography>No upcoming events to display</Typography>
+      )}
+    </div>
+
+  )} */}
+{/* </div> */}
+
+      
       <div>
         {activeTab === "polls" && (
           <div>
-            <div className="flex flex-wrap gap-4 justify-start">
+            <PollComponent></PollComponent>
+            {/* <div className="flex flex-wrap gap-4 justify-start">
               {allPolls.length > 0 ? (
                 allPolls.map((poll, index) => (
                   <div
@@ -846,7 +1061,7 @@ export default function CommunityPage({ params }) {
               ) : (
                 <Typography>No polls available</Typography>
               )}
-            </div>
+            </div> */}
           </div>
         )}
       </div>
