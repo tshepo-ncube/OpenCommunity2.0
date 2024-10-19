@@ -341,7 +341,7 @@ const CreateCommunity = () => {
       description,
       category,
       status,
-      admin: adminEmail, // Adding the admin field with the logged-in user's email
+      admin: localStorage.getItem("Email"), // Adding the admin field with the logged-in user's email
     };
 
     if (editIndex !== null) {
@@ -382,27 +382,43 @@ const CreateCommunity = () => {
         if (selectedInterests.length < 3) {
           alert("Please add more interests");
         } else {
-          if (checkNameSimilarity(communityData.name)) {
-            //alert("Similar Community Prsent");
-            setSimilarCommmunitySnackbarOpen(true);
-          } else {
-            // alert("Similar Community NOT Prsent");
-            CommunityDB.createCommunity(
-              communityData,
-              image,
-              (newCommunity) => {
-                setSubmittedData((prevData) => [...prevData, newCommunity]);
-              },
-              setLoading,
-              selectedInterests
+          CommunityDB.createCommunity(
+            communityData,
+            image,
+            (newCommunity) => {
+              setSubmittedData((prevData) => [...prevData, newCommunity]);
+            },
+            setLoading,
+            selectedInterests
 
-              // ,
-              // {
-              //   WebUrl: data.webUrl,
-              //   ChannelID: data.id,
-              // }
-            );
-          }
+            // ,
+            // {
+            //   WebUrl: data.webUrl,
+            //   ChannelID: data.id,
+            // }
+          );
+
+          // if (checkNameSimilarity(communityData.name)) {
+          //   //alert("Similar Community Prsent");
+          //   setSimilarCommmunitySnackbarOpen(true);
+          // } else {
+          //   // alert("Similar Community NOT Prsent");
+          //   CommunityDB.createCommunity(
+          //     communityData,
+          //     image,
+          //     (newCommunity) => {
+          //       setSubmittedData((prevData) => [...prevData, newCommunity]);
+          //     },
+          //     setLoading,
+          //     selectedInterests
+
+          //     // ,
+          //     // {
+          //     //   WebUrl: data.webUrl,
+          //     //   ChannelID: data.id,
+          //     // }
+          //   );
+          // }
         }
       } catch (err) {
         console.log("error");

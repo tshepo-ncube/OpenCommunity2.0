@@ -165,6 +165,7 @@ export default class CommunityDB {
       communityImage: communityURL,
       selectedInterests: selectedInterests,
       createdAt: new Date(),
+      admin: localStorage.getItem("Email"),
     };
     try {
       const docRef = await addDoc(collection(DB, "communities"), object);
