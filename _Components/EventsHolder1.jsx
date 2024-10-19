@@ -11,6 +11,7 @@ import {
   Box,
 } from "@mui/material";
 import EventDB from "../database/community/event";
+import CommunityDB from "@/database/community/community";
 
 const EventsHolder = ({
   communityID,
@@ -124,7 +125,8 @@ const EventsHolder = ({
 
   const handleDelete = async () => {
     try {
-      await EventDB.deleteEvent(eventIdToDelete);
+      await EventDB.deleteEvent(eventIdToDelete, communityID);
+
       setAllEvents(allEvents.filter((event) => event.id !== eventIdToDelete));
       setOpenDeleteModal(false);
     } catch (error) {

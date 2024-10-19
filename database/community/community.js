@@ -488,6 +488,55 @@ export default class CommunityDB {
     setLoading(false);
   };
 
+  static decrementUpcomingEventCount = async (communityID) => {
+    console.log("Community ID: ", communityID);
+    console.log("starting incrementUpcomingEventCount transaction...");
+    if (false) {
+    }
+    try {
+      const communityRef = (0,
+      firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.doc)(
+        _DB__WEBPACK_IMPORTED_MODULE_0__["default"],
+        "communities",
+        communityID
+      );
+      // Reference to the community document
+      console.log("CommunityRef:", communityRef);
+      console.log("got ref");
+      // Start a transaction
+      await (0, firebase_firestore__WEBPACK_IMPORTED_MODULE_1__.runTransaction)(
+        _DB__WEBPACK_IMPORTED_MODULE_0__["default"],
+        async (transaction) => {
+          console.log("run transaction ref");
+          // Get the current data of the document
+          const docSnapshot = await transaction.get(communityRef);
+          // Check if the document exists
+          if (!docSnapshot.exists()) {
+            console.log("Community not exist");
+            throw new Error("Community document does not exist!");
+          }
+          const CommunityData = docSnapshot.data();
+          // Create a copy of the current community data
+          const newCommunityData = {
+            ...CommunityData,
+          };
+          // Ensure that a score field exists in the document, default to 0 if not present
+          const currentUpcomingEventCount =
+            newCommunityData.UpcomingEventCount || 0;
+          // Increment the community score by the provided increment value
+          newCommunityData.UpcomingEventCount = currentUpcomingEventCount - 1;
+          // Update the document with the new community data and incremented score
+          transaction.update(communityRef, {
+            UpcomingEventCount: newCommunityData.UpcomingEventCount,
+          });
+        }
+      );
+      console.log("Community Upcoming Event incremented successfully!");
+    } catch (error) {
+      console.error("Transaction failed: ", error);
+    }
+  };
+
   static incrementUpcomingEventCount = async (communityID) => {
     console.log("Community ID: ", communityID);
     console.log("starting incrementUpcomingEventCount transaction...");

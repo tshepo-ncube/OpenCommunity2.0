@@ -15,6 +15,7 @@ const Carousel = () => {
 
   const handleJoinCommunity = (community) => {
     CommunityDB.joinCommunity(community.id, localStorage.getItem("Email"));
+
     //console.log(community);
   };
 
