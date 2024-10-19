@@ -262,6 +262,7 @@ export default class ManageUser {
       .then(() => {
         // Sign-out successful.
         setLoggedIn(false);
+
         router.push("/");
       })
       .catch((error) => {

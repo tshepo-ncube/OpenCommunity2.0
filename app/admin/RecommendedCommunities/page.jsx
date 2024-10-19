@@ -105,6 +105,7 @@ export default function RecommendationsTable() {
       description,
       category,
       status,
+      admin: localStorage.getItem("Email"), // Use the logged in  email
     };
 
     try {

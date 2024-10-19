@@ -114,7 +114,6 @@ const CreateCommunity = () => {
 
         const selectedUserRef = doc(DB, "users", selectedUser.id);
         await updateDoc(selectedUserRef, { role: "super_admin" });
-
         console.log(`Super admin role handed over to: ${selectedUser.Email}`);
         setIsConfirmationOpen(false);
         setPopupOpen(false);
