@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PollDB from "../database/community/poll";
-
+import dayjs from "dayjs";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -293,6 +293,7 @@ function PollsHolder({ communityID }) {
               onChange={(newValue) => {
                 setDateValue(newValue);
               }}
+              minDate={dayjs().add(1, "day")} // Only allows selecting from the next day onwards
               renderInput={(params) => <TextField {...params} />}
             />
           </LocalizationProvider>
@@ -351,7 +352,7 @@ function PollsHolder({ communityID }) {
             Cancel
           </Button>
           <Button onClick={handleSavePoll} color="primary">
-            Save Poll
+            Create Poll
           </Button>
         </DialogActions>
       </Dialog>
