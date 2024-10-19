@@ -289,7 +289,7 @@ const DiscoverCommunity = ({ email }) => {
     <>
       {/* SEARCH AND FILTER BAR */}
       <div className="flex justify-center mt-4 mb-2">
-        <div className="max-w-4xl w-full px-4">
+        <div className="max-w-xl w-full px-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="relative w-full">
               <button
@@ -330,55 +330,58 @@ const DiscoverCommunity = ({ email }) => {
             >
               Category
             </label>
-            <button
-              id="dropdown-button"
-              onClick={toggleDropdown}
-              type="button"
-              className="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-e-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600"
-            >
-              {selectedCategory}
-              <svg
-                className="w-2.5 h-2.5 ms-2.5"
-                aria-hidden="true"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 10 6"
+            <div className="relative">
+              <button
+                id="dropdown-button"
+                onClick={toggleDropdown}
+                type="button"
+                className="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 min-w-[120px] h-10 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-e-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600 whitespace-nowrap"
               >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="m1 1 4 4 4-4"
-                />
-              </svg>
-            </button>
-            {dropdownOpen && (
-              <div
-                id="dropdown"
-                className="absolute right-0 mt-12 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
-              >
-                <ul
-                  className="py-2 text-sm text-gray-700 dark:text-gray-200 z-99"
-                  aria-labelledby="dropdown-button"
+                {selectedCategory}
+                <svg
+                  className="w-2.5 h-2.5 ms-2.5"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 10 6"
                 >
-                  {uniqueCategories.map((category) => (
-                    <li key={category}>
-                      <button
-                        type="button"
-                        className="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                        onClick={() => selectCategory(category)}
-                      >
-                        {category}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="m1 1 4 4 4-4"
+                  />
+                </svg>
+              </button>
+              {dropdownOpen && (
+                <div
+                  id="dropdown"
+                  className="absolute left-0 mt-1 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
+                >
+                  <ul
+                    className="py-2 text-sm text-gray-700 dark:text-gray-200 z-99"
+                    aria-labelledby="dropdown-button"
+                  >
+                    {uniqueCategories.map((category) => (
+                      <li key={category}>
+                        <button
+                          type="button"
+                          className="inline-flex w-full px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                          onClick={() => selectCategory(category)}
+                        >
+                          {category}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
+
       {/* <div className="flex justify-center mt-4 mb-2">
         <form className="max-w-lg mx-auto w-full z-10">
           <div className="flex relative">
