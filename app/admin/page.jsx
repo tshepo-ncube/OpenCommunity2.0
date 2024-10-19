@@ -7,12 +7,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import strings from "../../Utils/strings.json";
 import InterestSelection from "@/_Components/InterestsSelection";
-import InterestSelection from "@/_Components/InterestsSelection";
 import UserDB from "../../database/community/users"; // Make sure this import path is correct
 
 import { doc, updateDoc } from "firebase/firestore";
 import DB from "../../database/DB"; // Ensure you are importing your Firestore DB instance
-import ManageUser from "@/database/auth/ManageUser";
 import ManageUser from "@/database/auth/ManageUser";
 
 const CreateCommunity = () => {
@@ -25,7 +23,6 @@ const CreateCommunity = () => {
   const [submittedData, setSubmittedData] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [category, setCategory] = useState("Fitness & Wellness");
-  const [category, setCategory] = useState("Fitness & Wellness");
   const [view, setView] = useState("Communities");
   const [userName, setUserName] = useState("");
   const [userSurname, setUserSurname] = useState("");
@@ -34,8 +31,6 @@ const CreateCommunity = () => {
   const [roles, setRoles] = useState({ user: false, admin: false });
   const fileInputRef = useRef(null);
   const userPopupRef = useRef(null);
-
-  const [selectedInterests, setSelectedInterests] = useState([]);
 
   const [selectedInterests, setSelectedInterests] = useState([]);
 
@@ -211,7 +206,7 @@ const CreateCommunity = () => {
         // }
       }
     });
-    originalConsoleLog.apply(console, args);
+    //originalConsoleLog.apply(console, args);
   };
 
   //     // Store found emails in state
