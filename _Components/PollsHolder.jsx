@@ -80,7 +80,51 @@ function PollsHolder({ communityID }) {
     setNewPollOptions(["", ""]);
   };
 
+  // Add state variables for validation
+  const [errors, setErrors] = useState({
+    dateError: false,
+    questionError: false,
+    optionError: false,
+  });
+
   const handleSavePoll = () => {
+    // Reset errors initially
+    let hasError = false;
+    const newErrors = {
+      dateError: false,
+      questionError: false,
+      optionError: false,
+    };
+
+    // Check if the date is selected
+    if (!dateValue) {
+      newErrors.dateError = true;
+      hasError = true;
+    }
+
+    // Check if the poll question is filled
+    if (!newPollQuestion.trim()) {
+      newErrors.questionError = true;
+      hasError = true;
+    }
+
+    // Check if there are at least 2 options and none of them are empty
+    if (
+      newPollOptions.length < 2 ||
+      newPollOptions.some((option) => !option.trim())
+    ) {
+      newErrors.optionError = true;
+      hasError = true;
+    }
+
+    // If any field is invalid, show an error and return without saving
+    if (hasError) {
+      setErrors(newErrors);
+      toast.error("Please fill all required fields.");
+      return;
+    }
+
+    // If validation passes, proceed with poll creation
     const newArray = newPollOptions.map((option) => ({
       votes: 0,
       title: option,
@@ -299,8 +343,14 @@ function PollsHolder({ communityID }) {
               onChange={(newValue) => {
                 setDateValue(newValue);
               }}
-              minDate={dayjs().add(1, "day")} // Only allows selecting from the next day onwards
-              renderInput={(params) => <TextField {...params} />}
+              minDate={dayjs().add(1, "day")}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  error={errors.dateError}
+                  helperText={errors.dateError ? "Please select a date" : ""}
+                />
+              )}
             />
           </LocalizationProvider>
           <DialogContentText>
@@ -315,7 +365,10 @@ function PollsHolder({ communityID }) {
             fullWidth
             value={newPollQuestion}
             onChange={(e) => setNewPollQuestion(e.target.value)}
+            error={errors.questionError}
+            helperText={errors.questionError ? "Poll question is required" : ""}
           />
+
           {newPollOptions.map((option, index) => (
             <div
               key={index}
@@ -332,6 +385,12 @@ function PollsHolder({ communityID }) {
                 fullWidth
                 value={option}
                 onChange={(e) => handleChangeOption(index, e.target.value)}
+                error={errors.optionError && !option.trim()}
+                helperText={
+                  errors.optionError && !option.trim()
+                    ? "Option is required"
+                    : ""
+                }
               />
               {index > 1 && (
                 <IconButton
