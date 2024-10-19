@@ -1047,11 +1047,11 @@ export default function CommunityPage({ params }) {
                 rows={4}
                 value={comment}
                 onChange={(e) => {
-                  if (e.target.value.length <= 1000) {
+                  if (e.target.value.length <= 500) {
                     setComment(e.target.value);
                   }
                 }}
-                helperText={`${comment.length}/1000 characters`}
+                helperText={`${comment.length}/500 characters`}
               />
               <div className="mt-2">
                 <Typography variant="body1">Rating</Typography>
