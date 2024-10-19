@@ -13,8 +13,19 @@ const Carousel = () => {
     setActiveIndex((prevIndex) => (prevIndex + 1) % 3); // Cycles through the slides
   };
 
-  const handleJoinCommunity = (community) => {
-    CommunityDB.joinCommunity(community.id, localStorage.getItem("Email"));
+  const removeCommunityById = (idToRemove) => {
+    setRecommendedCommunities((prevCommunities) =>
+      prevCommunities.filter((community) => community.id !== idToRemove)
+    );
+  };
+
+  const handleJoinCommunity = async (community) => {
+    await CommunityDB.joinCommunity(
+      community.id,
+      localStorage.getItem("Email")
+    );
+
+    removeCommunityById(community.id);
 
     //console.log(community);
   };

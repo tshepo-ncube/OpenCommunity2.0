@@ -332,10 +332,12 @@ export default class CommunityDB {
           console.log("Community Users updated successfully.");
 
           UserDB.addPoints(5);
-          alert("Community Joined");
+          //alert("Community Joined");
           window.location.href = window.location.href;
+          return true;
         } catch (error) {
           console.error("Error updating community status:", error);
+          return false;
           throw error;
         }
       }
@@ -344,7 +346,10 @@ export default class CommunityDB {
     } else {
       // docSnap.data() will be undefined in this case
       console.log("No such document!");
+      return false;
     }
+
+    return false;
   };
 
   static getAllUserCommunities = async (
@@ -604,8 +609,8 @@ export default class CommunityDB {
           console.log("Community Users updated successfully.");
           UserDB.addPoints(5);
 
-          alert("Community Joined");
-          window.location.href = window.location.href;
+          // alert("Community Joined");
+          // window.location.href = window.location.href;
           return {
             success: true,
             message: "You have successfully joined the community!",
