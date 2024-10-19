@@ -28,7 +28,7 @@ import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-
+import ImageGallery from "@/_Components/ImageGallery";
 const locales = {
   "en-US": enUS,
 };
@@ -103,6 +103,9 @@ export default function CommunityPage({ params }) {
   const [allPolls, setAllPolls] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [pollsUpdated, setPollsUpdated] = useState(false);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [initialImageIndex, setInitialImageIndex] = useState(0);
   if (typeof window !== "undefined") {
     const [USER_ID, setUSER_ID] = useState(localStorage.getItem("UserID"));
   }
@@ -145,7 +148,15 @@ export default function CommunityPage({ params }) {
       EventDB.getEventFromCommunityID(id, setAllEvents);
     }
   }, [id]);
+  const handleOpenGallery = (images, index = 0) => {
+    setGalleryImages(images);
+    setInitialImageIndex(index);
+    setGalleryOpen(true);
+  };
 
+  const handleCloseGallery = () => {
+    setGalleryOpen(false);
+  };
   useEffect(() => {
     console.log(selectedImages);
   }, [selectedImages]);
@@ -916,22 +927,34 @@ export default function CommunityPage({ params }) {
 
                           {/* Displaying images if available */}
                           {review.images && review.images.length > 0 && (
-                            <div className="mt-2 flex">
+                            <div className="mt-2 flex flex-wrap">
                               {review.images
                                 .slice(0, 4)
                                 .map((imageUrl, imgIndex) => (
-                                  <img
+                                  <div
                                     key={imgIndex}
-                                    src={imageUrl}
-                                    alt={`Review image ${imgIndex + 1}`}
-                                    className="w-24 h-24 object-cover rounded mt-2 mr-2"
-                                  />
+                                    className="w-24 h-24 m-1 cursor-pointer"
+                                    onClick={() =>
+                                      handleOpenGallery(review.images, imgIndex)
+                                    }
+                                  >
+                                    <img
+                                      src={imageUrl}
+                                      alt={`Review image ${imgIndex + 1}`}
+                                      className="w-full h-full object-cover rounded"
+                                    />
+                                  </div>
                                 ))}
 
                               {review.images.length > 4 && (
-                                <div className="relative w-24 h-24 mt-2 mr-2">
+                                <div
+                                  className="relative w-24 h-24 mt-2 mr-2 cursor-pointer"
+                                  onClick={() =>
+                                    handleOpenGallery(review.images)
+                                  }
+                                >
                                   <img
-                                    src={review.images[4]} // The 5th image
+                                    src={review.images[4]}
                                     alt="More images"
                                     className="w-full h-full object-cover rounded blur-sm"
                                   />
@@ -1038,6 +1061,12 @@ export default function CommunityPage({ params }) {
           </Button>
         </DialogActions>
       </Dialog>
+      {/* Image Gallery Dialog */}
+      <ImageGallery
+        images={galleryImages}
+        open={galleryOpen}
+        onClose={handleCloseGallery}
+      />
 
       {/* UNRSVP Confirmation Dialog */}
       <Dialog open={confirmUnRSVP} onClose={cancelLeave}>
