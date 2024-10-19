@@ -22,13 +22,14 @@ import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
 import CommunityDB from "@/database/community/community";
-
+import PollComponent from "../../../../_Components/Poll";
 import strings from "../../../../Utils/strings.json";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import ImageGallery from "@/_Components/ImageGallery";
+import ManageUser from "@/database/auth/ManageUser";
 const locales = {
   "en-US": enUS,
 };
@@ -124,6 +125,8 @@ export default function CommunityPage({ params }) {
   const [events, setEvents] = useState([]);
   const [confirmUnRSVP, setConfirmUnRSVP] = useState(false);
   const [currentEventToUnRSVP, setCurrentEventToUnRSVP] = useState(null);
+  const [userCommunities, setUserCommunities] = useState([]);
+  const [isAdmin, setIsAdmin] = useState([]);
 
   useEffect(() => {
     if (id) {
@@ -143,11 +146,25 @@ export default function CommunityPage({ params }) {
           setLoading(false);
         }
       };
+
+      ManageUser.getProfileData(
+        localStorage.getItem("Email"),
+        setUserData,
+        setUserCommunities,
+        setIsAdmin
+      );
       fetchCommunity();
       PollDB.getPollFromCommunityIDForUser(id, setAllPolls);
       EventDB.getEventFromCommunityID(id, setAllEvents);
     }
   }, [id]);
+
+  const isPollEngaged = (pollIdToCheck, myCommunities) => {
+    return myCommunities.some((community) =>
+      community.polls_engaged.some((poll) => poll.poll_id === pollIdToCheck)
+    );
+  };
+
   const handleOpenGallery = (images, index = 0) => {
     setGalleryImages(images);
     setInitialImageIndex(index);
@@ -196,6 +213,10 @@ export default function CommunityPage({ params }) {
   const [rsvpCounts, setRsvpCounts] = useState({});
 
   useEffect(() => {
+    console.log("User Data : ", userData);
+  }, [userData]);
+
+  useEffect(() => {
     const countRSVPs = () => {
       const counts = {};
       allEvents.forEach((event) => {
@@ -208,6 +229,7 @@ export default function CommunityPage({ params }) {
       countRSVPs();
     }
   }, [allEvents]);
+
   useEffect(() => {
     console.log("All Polls Changed: ", allPolls);
     if (allPolls.length > 0 && !pollsUpdated) {
@@ -859,49 +881,53 @@ export default function CommunityPage({ params }) {
       <div>
         {activeTab === "polls" && (
           <div>
-            <div className="flex flex-wrap gap-4 justify-start">
+            <div className="flex flex-wrap gap-4 justify-center">
               {allPolls.length > 0 ? (
                 allPolls.map((poll, index) => (
-                  <div
-                    key={index}
-                    className="p-4 bg-white shadow-lg rounded-md max-w-xs w-full"
-                    style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)" }}
-                  >
-                    <h3 className="text-xl font-semibold border-b-2 border-gray-300 mb-2">
-                      {poll.Question}
-                    </h3>
-                    <ul>
-                      {poll.Opt.map((poll_option, poll_option_index) => (
-                        <div
-                          key={poll_option_index}
-                          className="mt-2 flex items-center"
-                        >
-                          <input
-                            type="radio"
-                            name={`poll-${poll.id}`}
-                            id={`poll-${poll.id}-opt-${poll_option_index}`}
-                            className="mr-2"
-                            onChange={() =>
-                              handlePollOptionSelection(
-                                poll.id,
-                                poll_option.title
-                              )
-                            }
-                            disabled={poll.selected}
-                            checked={
-                              poll.selected &&
-                              poll.selected_option === poll_option.title
-                            }
-                          />
-                          <label
-                            htmlFor={`poll-${poll.id}-opt-${poll_option_index}`}
+                  <>
+                    <div
+                      key={index}
+                      className="p-4 bg-white shadow-lg rounded-md max-w-xs w-full"
+                      style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)" }}
+                    >
+                      <h3 className="text-xl font-semibold border-b-2 border-gray-300 mb-2">
+                        {poll.Question}
+                      </h3>
+                      <ul>
+                        {poll.Opt.map((poll_option, poll_option_index) => (
+                          <div
+                            key={poll_option_index}
+                            className="mt-2 flex items-center"
                           >
-                            {poll_option.title}
-                          </label>
-                        </div>
-                      ))}
-                    </ul>
-                  </div>
+                            <input
+                              type="radio"
+                              name={`poll-${poll.id}`}
+                              id={`poll-${poll.id}-opt-${poll_option_index}`}
+                              className="mr-2"
+                              onChange={() =>
+                                handlePollOptionSelection(
+                                  poll.id,
+                                  poll_option.title
+                                )
+                              }
+                              disabled={poll.selected}
+                              checked={
+                                poll.selected &&
+                                poll.selected_option === poll_option.title
+                              }
+                            />
+                            <label
+                              htmlFor={`poll-${poll.id}-opt-${poll_option_index}`}
+                            >
+                              {poll_option.title}
+                            </label>
+                          </div>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <PollComponent pollObject={poll} communityID={params.id} />
+                  </>
                 ))
               ) : (
                 <Typography>No polls available</Typography>
