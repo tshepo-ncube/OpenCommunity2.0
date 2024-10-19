@@ -163,7 +163,7 @@ const EventsHolder = ({
 
   const handleDelete = async () => {
     try {
-      await EventDB.deleteEvent(eventIdToDelete);
+      await EventDB.deleteEvent(eventIdToDelete, communityID);
       setAllEvents(allEvents.filter((event) => event.id !== eventIdToDelete));
       setOpenDeleteModal(false);
     } catch (error) {
