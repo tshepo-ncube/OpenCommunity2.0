@@ -193,7 +193,21 @@ export default function CommunityPage({ params }) {
       };
     });
   }, [allEvents]);
+  const [rsvpCounts, setRsvpCounts] = useState({});
 
+  useEffect(() => {
+    const countRSVPs = () => {
+      const counts = {};
+      allEvents.forEach((event) => {
+        counts[event.id] = event.rsvp ? event.rsvp.length : 0;
+      });
+      setRsvpCounts(counts);
+    };
+
+    if (allEvents.length > 0) {
+      countRSVPs();
+    }
+  }, [allEvents]);
   useEffect(() => {
     console.log("All Polls Changed: ", allPolls);
     if (allPolls.length > 0 && !pollsUpdated) {
@@ -320,7 +334,19 @@ export default function CommunityPage({ params }) {
       await CommunityDB.incrementCommunityScore(id, 1);
 
       setRsvpState((prev) => ({ ...prev, [event.id]: true }));
+      setRsvpCounts((prev) => ({
+        ...prev,
+        [event.id]: (prev[event.id] || 0) + 1,
+      }));
 
+      // Update the allEvents state to reflect the new RSVP
+      setAllEvents((prevEvents) =>
+        prevEvents.map((e) =>
+          e.id === event.id
+            ? { ...e, rsvp: [...(e.rsvp || []), localStorage.getItem("Email")] }
+            : e
+        )
+      );
       let subject = `${event.Name} Meeting Invite`;
       let location = event.Location;
       let start = new Date(event.StartDate.seconds * 1000).toISOString();
@@ -362,12 +388,32 @@ export default function CommunityPage({ params }) {
         localStorage.getItem("Email")
       );
       setRsvpState((prev) => ({ ...prev, [currentEventToUnRSVP.id]: false }));
+      setRsvpCounts((prev) => ({
+        ...prev,
+        [currentEventToUnRSVP.id]: Math.max(
+          (prev[currentEventToUnRSVP.id] || 0) - 1,
+          0
+        ),
+      }));
+
+      // Update the allEvents state to reflect the removed RSVP
+      setAllEvents((prevEvents) =>
+        prevEvents.map((e) =>
+          e.id === currentEventToUnRSVP.id
+            ? {
+                ...e,
+                rsvp: (e.rsvp || []).filter(
+                  (email) => email !== localStorage.getItem("Email")
+                ),
+              }
+            : e
+        )
+      );
     } catch (error) {
       console.error("Error removing RSVP:", error);
     }
     setConfirmUnRSVP(false);
   };
-
   const cancelLeave = () => {
     setConfirmUnRSVP(false);
     setCurrentEventToUnRSVP(null);
@@ -667,7 +713,10 @@ export default function CommunityPage({ params }) {
                           {formatDate(event.RsvpEndTime)}
                         </div>
                       </Typography>
-
+                      <div className="mt-2 text-sm text-gray-600">
+                        <strong>Number of RSVPs:</strong>{" "}
+                        {rsvpCounts[event.id] || 0}
+                      </div>
                       <div className="mt-4">
                         {event.status === "active" ? (
                           <div className="flex space-x-4">
