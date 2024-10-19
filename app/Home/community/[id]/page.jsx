@@ -28,7 +28,7 @@ import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import enUS from "date-fns/locale/en-US";
 import "react-big-calendar/lib/css/react-big-calendar.css";
-
+import ImageGallery from "@/_Components/ImageGallery";
 const locales = {
   "en-US": enUS,
 };
@@ -103,6 +103,9 @@ export default function CommunityPage({ params }) {
   const [allPolls, setAllPolls] = useState([]);
   const [allEvents, setAllEvents] = useState([]);
   const [pollsUpdated, setPollsUpdated] = useState(false);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [initialImageIndex, setInitialImageIndex] = useState(0);
   if (typeof window !== "undefined") {
     const [USER_ID, setUSER_ID] = useState(localStorage.getItem("UserID"));
   }
@@ -145,7 +148,15 @@ export default function CommunityPage({ params }) {
       EventDB.getEventFromCommunityID(id, setAllEvents);
     }
   }, [id]);
+  const handleOpenGallery = (images, index = 0) => {
+    setGalleryImages(images);
+    setInitialImageIndex(index);
+    setGalleryOpen(true);
+  };
 
+  const handleCloseGallery = () => {
+    setGalleryOpen(false);
+  };
   useEffect(() => {
     console.log(selectedImages);
   }, [selectedImages]);
@@ -182,7 +193,21 @@ export default function CommunityPage({ params }) {
       };
     });
   }, [allEvents]);
+  const [rsvpCounts, setRsvpCounts] = useState({});
 
+  useEffect(() => {
+    const countRSVPs = () => {
+      const counts = {};
+      allEvents.forEach((event) => {
+        counts[event.id] = event.rsvp ? event.rsvp.length : 0;
+      });
+      setRsvpCounts(counts);
+    };
+
+    if (allEvents.length > 0) {
+      countRSVPs();
+    }
+  }, [allEvents]);
   useEffect(() => {
     console.log("All Polls Changed: ", allPolls);
     if (allPolls.length > 0 && !pollsUpdated) {
@@ -309,7 +334,19 @@ export default function CommunityPage({ params }) {
       await CommunityDB.incrementCommunityScore(id, 1);
 
       setRsvpState((prev) => ({ ...prev, [event.id]: true }));
+      setRsvpCounts((prev) => ({
+        ...prev,
+        [event.id]: (prev[event.id] || 0) + 1,
+      }));
 
+      // Update the allEvents state to reflect the new RSVP
+      setAllEvents((prevEvents) =>
+        prevEvents.map((e) =>
+          e.id === event.id
+            ? { ...e, rsvp: [...(e.rsvp || []), localStorage.getItem("Email")] }
+            : e
+        )
+      );
       let subject = `${event.Name} Meeting Invite`;
       let location = event.Location;
       let start = new Date(event.StartDate.seconds * 1000).toISOString();
@@ -351,12 +388,32 @@ export default function CommunityPage({ params }) {
         localStorage.getItem("Email")
       );
       setRsvpState((prev) => ({ ...prev, [currentEventToUnRSVP.id]: false }));
+      setRsvpCounts((prev) => ({
+        ...prev,
+        [currentEventToUnRSVP.id]: Math.max(
+          (prev[currentEventToUnRSVP.id] || 0) - 1,
+          0
+        ),
+      }));
+
+      // Update the allEvents state to reflect the removed RSVP
+      setAllEvents((prevEvents) =>
+        prevEvents.map((e) =>
+          e.id === currentEventToUnRSVP.id
+            ? {
+                ...e,
+                rsvp: (e.rsvp || []).filter(
+                  (email) => email !== localStorage.getItem("Email")
+                ),
+              }
+            : e
+        )
+      );
     } catch (error) {
       console.error("Error removing RSVP:", error);
     }
     setConfirmUnRSVP(false);
   };
-
   const cancelLeave = () => {
     setConfirmUnRSVP(false);
     setCurrentEventToUnRSVP(null);
@@ -656,7 +713,10 @@ export default function CommunityPage({ params }) {
                           {formatDate(event.RsvpEndTime)}
                         </div>
                       </Typography>
-
+                      <div className="mt-2 text-sm text-gray-600">
+                        <strong>Number of RSVPs:</strong>{" "}
+                        {rsvpCounts[event.id] || 0}
+                      </div>
                       <div className="mt-4">
                         {event.status === "active" ? (
                           <div className="flex space-x-4">
@@ -866,28 +926,28 @@ export default function CommunityPage({ params }) {
                 All Comments and Ratings
               </Typography>
 
-              {currentEventObject && currentEventObject.Reviews ? (
-                <ul className="list-none p-0">
-                  {currentEventObject.Reviews.map((review, index) => {
-                    // Get user initials for the profile icon
-                    const userInitials = `${review.UserName?.[0] || ""}${
-                      review.UserSurname?.[0] || ""
-                    }`.toUpperCase();
+              <ul className="list-none p-0">
+                {currentEventObject && currentEventObject.Reviews ? (
+                  currentEventObject.Reviews.map((review, index) => {
+                    const userInitials =
+                      `${review.UserName?.[0] || ""}${review.UserSurname?.[0] || ""}`.toUpperCase();
 
                     return (
                       <li
-                        className="bg-gray-200 p-4 mb-4 rounded flex flex-col justify-between relative" // Added relative for positioning
+                        className="bg-gray-200 p-4 mb-4 rounded flex flex-col justify-between relative"
                         key={index}
+                        style={{
+                          width: "450px",
+                          height: "auto",
+                          wordWrap: "break-word",
+                        }} // Set a fixed width for the block
                       >
                         <div className="flex items-center mb-4">
-                          {/* Profile icon with initials */}
                           <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center mr-3">
                             <span className="text-lg font-semibold">
                               {userInitials}
                             </span>
                           </div>
-
-                          {/* User name and surname */}
                           <Typography variant="body2" className="font-semibold">
                             {review.UserName} {review.UserSurname}
                           </Typography>
@@ -902,36 +962,53 @@ export default function CommunityPage({ params }) {
                               precision={0.5}
                             />
                           </div>
-                          <Typography variant="body1">
+                          <Typography
+                            variant="body1"
+                            className="whitespace-normal break-words" // Ensure the text wraps correctly
+                            style={{
+                              whiteSpace: "normal",
+                              wordWrap: "break-word",
+                            }} // For ensuring line breaks
+                          >
                             {review.Comment}
                           </Typography>
 
-                          {/* Position the date in the top right corner */}
                           <Typography
                             variant="body2"
                             className="text-gray-600 text-sm absolute top-0 right-0"
                           >
-                            {new Date(review.date).toLocaleDateString()}{" "}
+                            {new Date(review.date).toLocaleDateString()}
                           </Typography>
 
-                          {/* Displaying images if available */}
                           {review.images && review.images.length > 0 && (
-                            <div className="mt-2 flex">
+                            <div className="mt-2 flex flex-wrap">
                               {review.images
                                 .slice(0, 4)
                                 .map((imageUrl, imgIndex) => (
-                                  <img
+                                  <div
                                     key={imgIndex}
-                                    src={imageUrl}
-                                    alt={`Review image ${imgIndex + 1}`}
-                                    className="w-24 h-24 object-cover rounded mt-2 mr-2"
-                                  />
+                                    className="w-24 h-24 m-1 cursor-pointer"
+                                    onClick={() =>
+                                      handleOpenGallery(review.images, imgIndex)
+                                    }
+                                  >
+                                    <img
+                                      src={imageUrl}
+                                      alt={`Review image ${imgIndex + 1}`}
+                                      className="w-full h-full object-cover rounded"
+                                    />
+                                  </div>
                                 ))}
 
                               {review.images.length > 4 && (
-                                <div className="relative w-24 h-24 mt-2 mr-2">
+                                <div
+                                  className="relative w-24 h-24 mt-2 mr-2 cursor-pointer"
+                                  onClick={() =>
+                                    handleOpenGallery(review.images)
+                                  }
+                                >
                                   <img
-                                    src={review.images[4]} // The 5th image
+                                    src={review.images[4]}
                                     alt="More images"
                                     className="w-full h-full object-cover rounded blur-sm"
                                   />
@@ -944,7 +1021,6 @@ export default function CommunityPage({ params }) {
                           )}
                         </div>
 
-                        {/* Position the email in the bottom right corner */}
                         <Typography
                           variant="body2"
                           className="text-gray-600 text-sm absolute bottom-0 right-0"
@@ -953,11 +1029,11 @@ export default function CommunityPage({ params }) {
                         </Typography>
                       </li>
                     );
-                  })}
-                </ul>
-              ) : (
-                <Typography variant="body1">No reviews available.</Typography>
-              )}
+                  })
+                ) : (
+                  <Typography variant="body1">No reviews available.</Typography>
+                )}
+              </ul>
             </div>
 
             <div className="flex-1 pl-4">
@@ -970,7 +1046,12 @@ export default function CommunityPage({ params }) {
                 multiline
                 rows={4}
                 value={comment}
-                onChange={(e) => setComment(e.target.value)}
+                onChange={(e) => {
+                  if (e.target.value.length <= 500) {
+                    setComment(e.target.value);
+                  }
+                }}
+                helperText={`${comment.length}/500 characters`}
               />
               <div className="mt-2">
                 <Typography variant="body1">Rating</Typography>
@@ -980,7 +1061,7 @@ export default function CommunityPage({ params }) {
                   onChange={(e, newValue) => setRating(newValue)}
                 />
               </div>
-              {/* Image Upload Section */}
+
               <div className="mt-4">
                 <Typography variant="body1">Upload Images</Typography>
                 <input
@@ -1039,7 +1120,12 @@ export default function CommunityPage({ params }) {
         </DialogActions>
       </Dialog>
 
-      {/* UNRSVP Confirmation Dialog */}
+      <ImageGallery
+        images={galleryImages}
+        open={galleryOpen}
+        onClose={handleCloseGallery}
+      />
+
       <Dialog open={confirmUnRSVP} onClose={cancelLeave}>
         <DialogTitle>Confirm Un-RSVP</DialogTitle>
         <DialogContent>
