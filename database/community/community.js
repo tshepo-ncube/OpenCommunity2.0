@@ -187,6 +187,7 @@ export default class CommunityDB {
     // Update the community document
     await updateDoc(communityRef, object);
     console.log("Done editing a community.");
+    location.reload();
   };
 
   static deleteCommunity = async (id) => {
