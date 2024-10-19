@@ -1042,8 +1042,16 @@ export default function CommunityPage({ params }) {
                 multiline
                 rows={4}
                 value={comment}
-                onChange={(e) => setComment(e.target.value)}
+                onChange={(e) => {
+                  if (e.target.value.length <= 1000) {
+                    setComment(e.target.value);
+                  }
+                }}
               />
+              <Typography variant="body2" color="textSecondary">
+                {comment.length}/1000 characters
+              </Typography>
+
               <div className="mt-2">
                 <Typography variant="body1">Rating</Typography>
                 <Rating
@@ -1052,6 +1060,7 @@ export default function CommunityPage({ params }) {
                   onChange={(e, newValue) => setRating(newValue)}
                 />
               </div>
+
               {/* Image Upload Section */}
               <div className="mt-4">
                 <Typography variant="body1">Upload Images</Typography>
@@ -1093,6 +1102,7 @@ export default function CommunityPage({ params }) {
                   </div>
                 )}
               </div>
+
               <Button
                 variant="contained"
                 color="primary"
