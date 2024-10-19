@@ -162,6 +162,64 @@ const CreateCommunity = () => {
     const { name, checked } = e.target;
     setRoles((prevRoles) => ({ ...prevRoles, [name]: checked }));
   };
+
+  // Enhanced function to check name similarity
+  const checkNameSimilarity = (newName) => {
+    const cleanName = newName
+      .toLowerCase()
+      .replace(/\bcommunity\b/g, "")
+      .trim();
+
+    const similarCommunity = submittedData.find((community) => {
+      const existingName = community.name
+        .toLowerCase()
+        .replace(/\bcommunity\b/g, "")
+        .trim();
+      return (
+        existingName === cleanName ||
+        existingName.includes(cleanName) ||
+        cleanName.includes(existingName)
+      );
+    });
+
+    return similarCommunity || null;
+  };
+
+  const ErrorPopup = ({ error, onClose }) => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-[60] flex items-center justify-center">
+      <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4 relative">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold text-red-600">
+            Similar Community Exists
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <CloseIcon />
+          </button>
+        </div>
+        <div className="mb-4">
+          <p className="text-gray-700 mb-2">{error.message}</p>
+          <p className="text-gray-900 font-medium">
+            Similar community name is as follows, this is to test this branch,
+            pls show !!!!:
+          </p>
+          <p className="text-gray-700 bg-gray-50 p-2 rounded mt-1">
+            {error.similarCommunity}
+          </p>
+        </div>
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
   // Find emails in console and check for super admin message
   useEffect(() => {
     const findEmailsInConsole = () => {
