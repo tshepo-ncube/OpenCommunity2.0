@@ -13,6 +13,9 @@ import { doc, updateDoc } from "firebase/firestore";
 import DB from "../../database/DB"; // Ensure you are importing your Firestore DB instance
 import ManageUser from "@/database/auth/ManageUser";
 
+import Button from "@mui/material/Button";
+import Snackbar from "@mui/material/Snackbar";
+
 const CreateCommunity = () => {
   const [activeTab, setActiveTab] = useState("tab1");
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -53,6 +56,21 @@ const CreateCommunity = () => {
   const [isHandoverConfirmationOpen, setHandoverConfirmationOpen] =
     useState(false);
   const communityHandoverRef = useRef(null);
+
+  const [similarCommmunitySnackbarOpen, setSimilarCommmunitySnackbarOpen] =
+    React.useState(false);
+
+  const handleClick = () => {
+    setSimilarCommmunitySnackbarOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSimilarCommmunitySnackbarOpen(false);
+  };
 
   // Update the community selection handler
   const handleCommunitySelection = (e) => {
@@ -345,21 +363,27 @@ const CreateCommunity = () => {
         if (selectedInterests.length < 3) {
           alert("Please add more interests");
         } else {
-          CommunityDB.createCommunity(
-            communityData,
-            image,
-            (newCommunity) => {
-              setSubmittedData((prevData) => [...prevData, newCommunity]);
-            },
-            setLoading,
-            selectedInterests
+          if (checkNameSimilarity(communityData.name)) {
+            //alert("Similar Community Prsent");
+            setSimilarCommmunitySnackbarOpen(true);
+          } else {
+            // alert("Similar Community NOT Prsent");
+            CommunityDB.createCommunity(
+              communityData,
+              image,
+              (newCommunity) => {
+                setSubmittedData((prevData) => [...prevData, newCommunity]);
+              },
+              setLoading,
+              selectedInterests
 
-            // ,
-            // {
-            //   WebUrl: data.webUrl,
-            //   ChannelID: data.id,
-            // }
-          );
+              // ,
+              // {
+              //   WebUrl: data.webUrl,
+              //   ChannelID: data.id,
+              // }
+            );
+          }
         }
       } catch (err) {
         console.log("error");
@@ -1076,6 +1100,13 @@ const CreateCommunity = () => {
           )}
         </div>
       )}
+
+      <Snackbar
+        open={similarCommmunitySnackbarOpen}
+        autoHideDuration={5000}
+        onClose={handleClose}
+        message="Sorry a similar community exists"
+      />
     </div>
   );
 };
