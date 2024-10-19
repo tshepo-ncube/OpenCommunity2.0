@@ -223,7 +223,19 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
       rsvpLimitNumber: Math.max(1, parseInt(value) || 1),
     }));
   };
+  // Function to calculate min and max for the RSVP end date
+  const getRsvpEndDateTimeLimits = () => {
+    const now = new Date();
+    const startDate = new Date(eventDetails.startDateTime);
+    const minRsvpDate = now.toISOString().slice(0, 16); // Current date and time
+    const maxRsvpDate = new Date(startDate.getTime() - 60 * 1000) // One minute before start date
+      .toISOString()
+      .slice(0, 16);
 
+    return { minRsvpDate, maxRsvpDate };
+  };
+
+  const { minRsvpDate, maxRsvpDate } = getRsvpEndDateTimeLimits();
   const isDateValid = (startDateTime, endDateTime, rsvpEndDateTime) => {
     const now = new Date();
     const startDate = new Date(startDateTime);
@@ -235,11 +247,12 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
       return { isValid: false, message: "No past dates can be selected." };
     }
 
-    // Check if RSVP date is after start or end date
-    if (rsvpDate > endDate || rsvpDate < startDate) {
+    // Check if RSVP date is before start date and not after it
+    if (rsvpDate >= startDate || rsvpDate < now) {
       return {
         isValid: false,
-        message: "RSVP date must be between start and end dates.",
+        message:
+          "RSVP date must be before the start date and cannot be in the past.",
       };
     }
 
@@ -401,8 +414,8 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 id="rsvpEndDateTime"
                 value={eventDetails.rsvpEndDateTime}
                 onChange={handleChangeEvent}
-                min={new Date().toISOString().slice(0, 16)} // Prevent past dates
-                max={eventDetails.endDateTime} // Prevent RSVP after the end date
+                min={minRsvpDate} // Prevent past dates
+                max={maxRsvpDate} // Prevent RSVP after the start date
                 className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
                 required
               />
