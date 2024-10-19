@@ -364,71 +364,71 @@ const CreateCommunity = () => {
           },
           setLoading
         );
-      // console.log("creating a channel now...");
-      // CommunityDB.createCommunity(
-      //   communityData,
-      //   (newCommunity) =>
-      //     setSubmittedData((prevData) => [...prevData, newCommunity]),
-      //   setLoading
-      // );
-      //name, description, category, status
-
-      try {
-        // const res = await axios.post(
-        //   strings.server_endpoints.createChannel,
-        //   { name, description, category, status },
-        //   {
-        //     headers: {
-        //       "Content-Type": "application/json",
-        //     },
-        //   }
+        // console.log("creating a channel now...");
+        // CommunityDB.createCommunity(
+        //   communityData,
+        //   (newCommunity) =>
+        //     setSubmittedData((prevData) => [...prevData, newCommunity]),
+        //   setLoading
         // );
+        //name, description, category, status
 
-        // console.log(res.data);
-        // let data = res.data;
+        try {
+          // const res = await axios.post(
+          //   strings.server_endpoints.createChannel,
+          //   { name, description, category, status },
+          //   {
+          //     headers: {
+          //       "Content-Type": "application/json",
+          //     },
+          //   }
+          // );
 
-        console.log("About to check if image is there on create comm form");
+          // console.log(res.data);
+          // let data = res.data;
 
-        if (!image) {
-          //alert("Please have an image");
-          //setSimilarCommmunitySnackbarOpen(true);
-          setShowImageError(true);
-          console.log("THERE IS NO IMAGE< PLEASE SELECT ONE ");
-          return;
+          console.log("About to check if image is there on create comm form");
+
+          if (!image) {
+            //alert("Please have an image");
+            //setSimilarCommmunitySnackbarOpen(true);
+            setShowImageError(true);
+            console.log("THERE IS NO IMAGE< PLEASE SELECT ONE ");
+            return;
+          }
+
+          if (selectedInterests.length < 3) {
+            // alert("Please add more interests");
+            // setImageError(true);
+            //  setShowImageError(true);
+            setShowInterestsError(true);
+            return;
+          }
+
+          CommunityDB.createCommunity(
+            communityData,
+            image,
+            (newCommunity) => {
+              setSubmittedData((prevData) => [...prevData, newCommunity]);
+            },
+            setLoading,
+            selectedInterests,
+            setCommunityCreated
+
+            // ,
+            // {
+            //   WebUrl: data.webUrl,
+            //   ChannelID: data.id,
+            // }
+          );
+        } catch (err) {
+          console.log("Error:", err);
         }
-
-        if (selectedInterests.length < 3) {
-          // alert("Please add more interests");
-          // setImageError(true);
-          //  setShowImageError(true);
-          setShowInterestsError(true);
-          return;
-        }
-
-        CommunityDB.createCommunity(
-          communityData,
-          image,
-          (newCommunity) => {
-            setSubmittedData((prevData) => [...prevData, newCommunity]);
-          },
-          setLoading,
-          selectedInterests,
-          setCommunityCreated
-
-          // ,
-          // {
-          //   WebUrl: data.webUrl,
-          //   ChannelID: data.id,
-          // }
-        );
       } catch (err) {
-    
-        console.log("Error:", err);
+        console.log("error : ", err);
       }
-    } 
-
-  
-  
+    }
+  };
 
   const handleEdit = (index) => {
     setName(submittedData[index].name);
