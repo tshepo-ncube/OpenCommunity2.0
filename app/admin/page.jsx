@@ -60,6 +60,13 @@ const CreateCommunity = () => {
   const [similarCommmunitySnackbarOpen, setSimilarCommmunitySnackbarOpen] =
     React.useState(false);
 
+  const [showErrorPopup, setShowErrorPopup] = useState(false);
+
+  const [similarityError, setSimilarityError] = useState({
+    message: "",
+    similarCommunity: "",
+  });
+
   const handleClick = () => {
     setSimilarCommmunitySnackbarOpen(true);
   };
@@ -312,6 +319,18 @@ const CreateCommunity = () => {
 
   const handleFormSubmit = async (e, status) => {
     e.preventDefault();
+
+    const similarCommunity = checkNameSimilarity(name);
+    if (similarCommunity) {
+      //alert("Similar COMCOM");
+      setSimilarityError({
+        message:
+          "Cannot create this community as a similar community already exists.",
+        similarCommunity: similarCommunity.name,
+      });
+      setShowErrorPopup(true);
+      return;
+    }
 
     // Get the logged-in user's email (assuming consoleEmails stores the logged-in user's email)
     const adminEmail = consoleEmails[0]; // Assuming the first email is the logged-in user's email
@@ -734,6 +753,15 @@ const CreateCommunity = () => {
                 </div>
               </form>
             </div>
+          )}
+
+          {showErrorPopup && (
+            <ErrorPopup
+              error={similarityError}
+              onClose={() => {
+                setShowErrorPopup(false);
+              }}
+            />
           )}
           {submittedData.length === 0 ? (
             <div className="text-center">
