@@ -25,7 +25,7 @@ import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
 import CommunityDB from "@/database/community/community";
-import PollComponent from "../../../../_Components/Poll";
+import PollComp from "../../../../_Components/Poll";
 import strings from "../../../../Utils/strings.json";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
@@ -43,8 +43,8 @@ import CalendarToolBar from '@/_Components/CalendarToolBar'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 //Logic for conditionally rendering myEvents
-
-
+import ImageGallery from "@/_Components/ImageGallery"
+import ManageUser from "@/database/auth/ManageUser";
 
 const locales = {
   "en-US": enUS,
