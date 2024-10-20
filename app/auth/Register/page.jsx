@@ -24,6 +24,9 @@ const Register = () => {
   useEffect(() => {
     if (user) {
       router.push("/Home");
+
+      setTimeout(() => {}, 1000);
+    } else {
     }
   }, [user]);
 
@@ -264,9 +267,6 @@ const Register = () => {
 };
 
 export default Register;
-
-
-
 
 // "use client";
 // import { useState, useEffect } from "react";
@@ -529,11 +529,6 @@ export default Register;
 // };
 
 // export default Register;
-
-
-
-
-
 
 //ORIGINAL
 //   return (
