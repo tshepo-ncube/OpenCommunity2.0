@@ -1,17 +1,18 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Header from "../../_Components/header";
-import Navbar2 from "@/_Components/Navbar2";
 import CommunityDB from "../../database/community/community";
 import AdminCommunity from "../../_Components/AdminCommunities";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import strings from "../../Utils/strings.json";
+import InterestSelection from "@/_Components/InterestsSelection";
 import UserDB from "../../database/community/users"; // Make sure this import path is correct
+
 import { doc, updateDoc } from "firebase/firestore";
 import DB from "../../database/DB"; // Ensure you are importing your Firestore DB instance
 import ManageUser from "@/database/auth/ManageUser";
-import InterestSelection from "@/_Components/InterestsSelection";
+
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 
@@ -20,12 +21,11 @@ const CreateCommunity = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [isUserPopupOpen, setUserPopupOpen] = useState(false);
   const [name, setName] = useState("");
-  const [selectedInterests, setSelectedInterests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [description, setDescription] = useState("");
   const [submittedData, setSubmittedData] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
-  const [category, setCategory] = useState("general");
+  const [category, setCategory] = useState("Fitness & Wellness");
   const [view, setView] = useState("Communities");
   const [userName, setUserName] = useState("");
   const [userSurname, setUserSurname] = useState("");
@@ -34,8 +34,10 @@ const CreateCommunity = () => {
   const [roles, setRoles] = useState({ user: false, admin: false });
   const fileInputRef = useRef(null);
   const userPopupRef = useRef(null);
-  const [image, setImage] = useState(null);
 
+  const [selectedInterests, setSelectedInterests] = useState([]);
+
+  const [image, setImage] = useState(null);
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState(""); // State for search query
   const [searchTerm, setSearchTerm] = useState("");
@@ -46,6 +48,7 @@ const CreateCommunity = () => {
   const [adminUsers, setAdminUsers] = useState([]);
   const [consoleEmails, setConsoleEmails] = useState([]);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false); // New state for super admin check
+
   const [isCommunityHandoverOpen, setCommunityHandoverOpen] = useState(false);
   const [selectedCommunity, setSelectedCommunity] = useState(null);
   const [selectedNewAdmin, setSelectedNewAdmin] = useState(null);
@@ -68,26 +71,6 @@ const CreateCommunity = () => {
     similarCommunity: "",
   });
 
-  const checkNameSimilarity = (newName) => {
-    const cleanName = newName
-      .toLowerCase()
-      .replace(/\bcommunity\b/g, "")
-      .trim();
-
-    const similarCommunity = submittedData.find((community) => {
-      const existingName = community.name
-        .toLowerCase()
-        .replace(/\bcommunity\b/g, "")
-        .trim();
-      return (
-        existingName === cleanName ||
-        existingName.includes(cleanName) ||
-        cleanName.includes(existingName)
-      );
-    });
-
-    return similarCommunity || null;
-  };
   const handleCreatedClick = () => {
     setCommunityCreated(true);
   };
@@ -127,35 +110,10 @@ const CreateCommunity = () => {
     const communityId = e.target.value;
     const community = submittedData.find((comm) => comm.id === communityId);
     setSelectedCommunity(community);
-    console.log(
-      "--------------------------------------------------------------------------"
-    );
-
-    console.log(
-      "--------------------------------------------------------------------------"
-    );
-
-    console.log(
-      "--------------------------------------------------------------------------"
-    );
-    console.log("COMMUNITY : ", community);
-
-    console.log(
-      "--------------------------------------------------------------------------"
-    );
-
-    console.log(
-      "--------------------------------------------------------------------------"
-    );
-
-    console.log(
-      "--------------------------------------------------------------------------"
-    );
 
     if (community && community.admin) {
       // Find the admin user details from the users array
       const adminUser = users.find((user) => user.Email === community.admin);
-
       setCurrentAdmin(
         adminUser || {
           Name: "Unknown",
@@ -195,7 +153,7 @@ const CreateCommunity = () => {
   // Create a new function to handle the actual role handover after confirmation
   const handleConfirmHandover = async () => {
     try {
-      const loggedInUserEmail = localStorage.getItem("Email"); //consoleEmails[0];
+      const loggedInUserEmail = localStorage.getItem("Email"); // consoleEmails[0];
       const allUsers = await UserDB.getAllUsers();
       const loggedInUser = allUsers.find(
         (user) => user.Email === loggedInUserEmail
@@ -267,32 +225,116 @@ const CreateCommunity = () => {
 
   // Find emails in console and check for super admin message
   // useEffect(() => {
+  //   setIsSuperAdmin();
+
   //   const findEmailsInConsole = () => {
   //     const originalConsoleLog = console.log;
   //     let foundEmails = [];
 
-  // console.log = function (...args) {
-  //   args.forEach((arg) => {
-  //     if (typeof arg === "object" && arg !== null) {
-  //       const email = arg.Email;
-  //       if (email && typeof email === "string") {
-  //         foundEmails.push(email);
-  //       }
-  //     } else if (typeof arg === "string") {
-  //       // Check for super admin messages
-  //       // console.log(arg);
-  //       //console.log(arg);
-  //       // if (arg.includes("User is a super admin")) {
-  //       //   setIsSuperAdmin(true);
-  //       // } else if (arg.includes("User is not a super admin")) {
-  //       //   setIsSuperAdmin(false);
-  //       // }
-  //     }
-  //   });
-  //   originalConsoleLog.apply(console, args);
-  // };
+  //     console.log = function (...args) {
+  //       args.forEach((arg) => {
+  //         if (typeof arg === "object" && arg !== null) {
+  //           const email = arg.Email;
+  //           if (email && typeof email === "string") {
+  //             foundEmails.push(email);
+  //           }
+  //         } else if (typeof arg === "string") {
+  //           // Check for super admin messages
+  //           if (arg.includes("User is a super admin")) {
+  //             setIsSuperAdmin(true);
+  //           } else if (arg.includes("User is not a super admin")) {
+  //             setIsSuperAdmin(false);
+  //           }
+  //         }
+  //       });
+  //       originalConsoleLog.apply(console, args);
+  //     };
 
-  // Store found emails in state
+  // Enhanced function to check name similarity
+  const checkNameSimilarity = (newName) => {
+    const cleanName = newName
+      .toLowerCase()
+      .replace(/\bcommunity\b/g, "")
+      .trim();
+
+    const similarCommunity = submittedData.find((community) => {
+      const existingName = community.name
+        .toLowerCase()
+        .replace(/\bcommunity\b/g, "")
+        .trim();
+      return (
+        existingName === cleanName ||
+        existingName.includes(cleanName) ||
+        cleanName.includes(existingName)
+      );
+    });
+
+    return similarCommunity || null;
+  };
+
+  const ErrorPopup = ({ error, onClose }) => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-[60] flex items-center justify-center">
+      <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4 relative">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold text-red-600">
+            Similar Community Exists
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <CloseIcon />
+          </button>
+        </div>
+        <div className="mb-4">
+          <p className="text-gray-700 mb-2">{error.message}</p>
+          <p className="text-gray-900 font-medium">
+            Similar community name is as follows, this is to test this branch,
+            pls show !!!!:
+          </p>
+          <p className="text-gray-700 bg-gray-50 p-2 rounded mt-1">
+            {error.similarCommunity}
+          </p>
+        </div>
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={onClose}
+            className="bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+  // Find emails in console and check for super admin message
+  // useEffect(() => {
+  //   const findEmailsInConsole = () => {
+  //     const originalConsoleLog = console.log;
+  //     let foundEmails = [];
+
+  //     console.log = function (...args) {
+  //       args.forEach((arg) => {
+  //         if (typeof arg === "object" && arg !== null) {
+  //           const email = arg.Email;
+  //           if (email && typeof email === "string") {
+  //             foundEmails.push(email);
+  //           }
+  //         } else if (typeof arg === "string") {
+  //           // Check for super admin messages
+  //           // console.log(arg);
+  //           //console.log(arg);
+  //           // if (arg.includes("User is a super admin")) {
+  //           //   setIsSuperAdmin(true);
+  //           // } else if (arg.includes("User is not a super admin")) {
+  //           //   setIsSuperAdmin(false);
+  //           // }
+  //         }
+  //       });
+  //       originalConsoleLog.apply(console, args);
+  //     };
+
+  //     // Store found emails in state
   //     setConsoleEmails(foundEmails);
 
   //     // Restore original console.log after component unmounts
@@ -303,19 +345,11 @@ const CreateCommunity = () => {
 
   //   findEmailsInConsole();
   // }, []);
-
-  useEffect(() => {
-    ManageUser.setIsSuperAdmin(setIsSuperAdmin);
-  }, []);
-
-  useEffect(() => {
-    UserDB.getUser(localStorage.getItem("UserID"));
-  }, []);
   // ... (keep all existing functions)
 
   // Modified table cell rendering for email
   const renderEmailCell = (email) => {
-    const isHighlighted = localStorage.getItem("Email") === email; //consoleEmails.includes(email);
+    const isHighlighted = localStorage.getItem("Email") === email; // consoleEmails.includes(email);
     return (
       <td
         className={`px-6 py-4 text-sm ${
@@ -336,6 +370,7 @@ const CreateCommunity = () => {
       return 0;
     });
   };
+
   const handleFormSubmit = async (e, status) => {
     e.preventDefault();
     console.log("handleFormSubmit");
@@ -376,81 +411,73 @@ const CreateCommunity = () => {
         setLoading
       );
     } else {
-      // Create a new community
-      console.log("Creating a community now...");
+      // console.log("creating a channel now...");
+      // CommunityDB.createCommunity(
+      //   communityData,
+      //   (newCommunity) =>
+      //     setSubmittedData((prevData) => [...prevData, newCommunity]),
+      //   setLoading
+      // );
+      //name, description, category, status
+
       try {
+        // const res = await axios.post(
+        //   strings.server_endpoints.createChannel,
+        //   { name, description, category, status },
+        //   {
+        //     headers: {
+        //       "Content-Type": "application/json",
+        //     },
+        //   }
+        // );
+
+        // console.log(res.data);
+        // let data = res.data;
+
+        console.log("About to check if image is there on create comm form");
+
+        if (!image) {
+          //alert("Please have an image");
+          //setSimilarCommmunitySnackbarOpen(true);
+          setShowImageError(true);
+          console.log("THERE IS NO IMAGE< PLEASE SELECT ONE ");
+          return;
+        }
+
+        if (selectedInterests.length < 3) {
+          // alert("Please add more interests");
+          // setImageError(true);
+          //  setShowImageError(true);
+          setShowInterestsError(true);
+          return;
+        }
+
         CommunityDB.createCommunity(
           communityData,
           image,
           (newCommunity) => {
             setSubmittedData((prevData) => [...prevData, newCommunity]);
           },
-          setLoading
+          setLoading,
+          selectedInterests,
+          setCommunityCreated
+
+          // ,
+          // {
+          //   WebUrl: data.webUrl,
+          //   ChannelID: data.id,
+          // }
         );
-        // console.log("creating a channel now...");
-        // CommunityDB.createCommunity(
-        //   communityData,
-        //   (newCommunity) =>
-        //     setSubmittedData((prevData) => [...prevData, newCommunity]),
-        //   setLoading
-        // );
-        //name, description, category, status
-
-        try {
-          // const res = await axios.post(
-          //   strings.server_endpoints.createChannel,
-          //   { name, description, category, status },
-          //   {
-          //     headers: {
-          //       "Content-Type": "application/json",
-          //     },
-          //   }
-          // );
-
-          // console.log(res.data);
-          // let data = res.data;
-
-          console.log("About to check if image is there on create comm form");
-
-          if (!image) {
-            //alert("Please have an image");
-            //setSimilarCommmunitySnackbarOpen(true);
-            setShowImageError(true);
-            console.log("THERE IS NO IMAGE< PLEASE SELECT ONE ");
-            return;
-          }
-
-          if (selectedInterests.length < 3) {
-            // alert("Please add more interests");
-            // setImageError(true);
-            //  setShowImageError(true);
-            setShowInterestsError(true);
-            return;
-          }
-
-          CommunityDB.createCommunity(
-            communityData,
-            image,
-            (newCommunity) => {
-              setSubmittedData((prevData) => [...prevData, newCommunity]);
-            },
-            setLoading,
-            selectedInterests,
-            setCommunityCreated
-
-            // ,
-            // {
-            //   WebUrl: data.webUrl,
-            //   ChannelID: data.id,
-            // }
-          );
-        } catch (err) {
-          console.log("Error:", err);
-        }
       } catch (err) {
-        console.log("error : ", err);
+        console.log("error");
       }
     }
+
+    setName("");
+    setDescription("");
+    setCategory("general");
+    setEditIndex(null);
+    setPopupOpen(false);
   };
 
   const handleEdit = (index) => {
@@ -462,12 +489,10 @@ const CreateCommunity = () => {
   };
 
   useEffect(() => {
-    // CommunityDB.getAllCommunities((data) => {
-    //   setSubmittedData(data);
-    //   setLoading(false);
-    // }, setLoading);
-
-    CommunityDB.getAllCommunities(setSubmittedData, setLoading);
+    CommunityDB.getAllCommunities((data) => {
+      setSubmittedData(data);
+      setLoading(false);
+    }, setLoading);
 
     const fetchUsers = async () => {
       try {
@@ -565,41 +590,9 @@ const CreateCommunity = () => {
     };
   }, []);
 
-  const ErrorPopup = ({ error, onClose }) => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-[60] flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4 relative">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-red-600">
-            Similar Community Exists
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <CloseIcon />
-          </button>
-        </div>
-        <div className="mb-4">
-          <p className="text-gray-700 mb-2">{error.message}</p>
-          <p className="text-gray-900 font-medium">
-            Similar community name is as follows, this is to test this branch,
-            pls show !!!!:
-          </p>
-          <p className="text-gray-700 bg-gray-50 p-2 rounded mt-1">
-            {error.similarCommunity}
-          </p>
-        </div>
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+  useEffect(() => {
+    console.log("Category: ", category);
+  }, [category]);
 
   const generateDescription = async () => {
     console.log("generate Description");
@@ -638,12 +631,11 @@ const CreateCommunity = () => {
     return fullName.includes(searchTerm.toLowerCase());
   });
   return (
-    <div className="flex-col items-center min-h-screen relative text-center pt-24 bg-gray-100">
-      <Navbar2 isHome={true} />
-      {/* <Header /> */}
+    <div className="flex-col items-center min-h-screen relative text-center">
+      <Header />
 
       {/* Tab Navigation */}
-      <div className="flex justify-center mt-4 mb-2 ">
+      <div className="flex justify-center mt-4 mb-8">
         <button
           className={`px-4 py-2 mr-2 ${
             activeTab === "tab1"
@@ -688,11 +680,10 @@ const CreateCommunity = () => {
           {isPopupOpen && (
             <div
               ref={popupRef}
-              className="fixed top-[15%] left-1/2 transform -translate-x-1/2 bg-white p-8 mb-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 max-h-[85vh] overflow-y-auto"
-              // className="fixed top-[15%] left-1/2 transform -translate-x-1/2 bg-white p-8 pb-16 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-auto max-h-full overflow-auto"
+              className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-auto max-h-full overflow-auto"
             >
-              <h1 className="text-xl font-bold text-gray-700 tracking-wide mb-4">
-                Create a New Community
+              <h1 className="text-xl font-bold  text-gray-700 tracking-wide mb-4">
+                Create a new community
               </h1>
               <form className="space-y-4" onSubmit={handleFormSubmit}>
                 <div>
@@ -725,12 +716,20 @@ const CreateCommunity = () => {
                     className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                     required
                   >
-                    <option value="General">General</option>
-                    <option value="Sports">Sports/Fitness</option>
-                    <option value="Social">Social Activities</option>
-                    <option value="Retreat">Company Retreat</option>
-                    <option value="Development">
-                      Professional Development
+                    <option value="Fitness & Wellness">
+                      Fitness & Wellness
+                    </option>
+                    <option value="Food & Drinks">Food & Drinks</option>
+                    <option value="Arts & Culture">Arts & Culture</option>
+                    <option value="Tech & Gaming">Tech & Gaming</option>
+                    <option value="Social & Networking">
+                      Social & Networking
+                    </option>
+                    <option value="Hobbies & Interests">
+                      Hobbies & Interests
+                    </option>
+                    <option value="Travel & Adventure">
+                      Travel & Adventure
                     </option>
                   </select>
                 </div>
@@ -811,11 +810,10 @@ const CreateCommunity = () => {
                   <button
                     type="button"
                     onClick={generateDescription}
-                    className="btn bg-[#B07AA1] hover:bg-[#925C84] text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-[#B07AA1]"
+                    className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
-                    Generate Description
+                    generate description
                   </button>
-
                   <button
                     type="button"
                     onClick={(e) => handleFormSubmit(e, "draft")}
@@ -852,7 +850,7 @@ const CreateCommunity = () => {
                 You have created no communities yet.
               </p>
               <p className="text-gray-900 text-lg">
-                Click on <span className="font-bold">Create Community</span> to
+                Click on <span className="font-bold">create community</span> to
                 get started.
               </p>
             </div>
@@ -1160,7 +1158,6 @@ const CreateCommunity = () => {
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {sortUsers(filteredUsers).map((user) => {
-                    console.log("Console Log USER ", user);
                     const isHighlighted =
                       localStorage.getItem("Email") === user.Email; //consoleEmails.includes(user.Email);
                     return (
