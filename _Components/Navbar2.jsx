@@ -269,14 +269,14 @@ const Navbar = ({ isHome }) => {
             </Link>
           </li>
 
-          <li className="p-4 text-white ">
+          {/* <li className="p-4 text-white ">
             <Link
               href="/auth/RecommendCommunity"
               className="py-2 px-4 hover:bg-[#bcd727] hover:rounded-lg"
             >
               Recommend Community
             </Link>
-          </li>
+          </li> */}
 
           {/* <div className="hidden sm:flex items-center ml-4">
             <img
@@ -302,7 +302,7 @@ const Navbar = ({ isHome }) => {
                     : "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
                 }
                 alt="Profile Icon"
-                className="w-12 h-12 rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
+                className="w-12 h-12 rounded-full cursor-pointer bg-[#bcd727] hover:bg-[#bcd727] hover:scale-110 p-1"
               />
             </div>
           </Link>
@@ -359,20 +359,20 @@ const Navbar = ({ isHome }) => {
               </>
             )}
 
-            <li
+            {/* <li
               onClick={handleNav}
               className="p-4 text-4xl hover:text-gray-500"
             >
               <Link href="/blog">Blog</Link>
-            </li>
+            </li> */}
             <hr style={{ marginTop: 8 }} />
 
-            <li
+            {/* <li
               onClick={handleNav}
               className="p-4 text-4xl hover:text-gray-500"
             >
               <Link href="/pricing">Pricing</Link>
-            </li>
+            </li> */}
             <hr style={{ marginTop: 8 }} />
 
             <hr style={{ marginTop: 8 }} />
