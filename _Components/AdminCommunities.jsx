@@ -27,6 +27,7 @@ import {
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
   Delete as DeleteIcon,
+  Search as SearchIcon,
 } from "@mui/icons-material";
 import CommunityDB from "../database/community/community";
 import { useRouter } from "next/navigation";
@@ -68,6 +69,8 @@ const AdminCommunity = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [status, setStatus] = useState("");
@@ -226,12 +229,23 @@ const AdminCommunity = () => {
     return Array.from(new Set(statuses));
   };
 
-  const filterDataByStatus = (data) => {
-    if (selectedStatus === "All") return data;
-    return data.filter((item) => item.status === selectedStatus);
+  const filterDataByStatusAndSearch = (data) => {
+    let filteredData = data;
+    if (selectedStatus !== "All") {
+      filteredData = filteredData.filter(
+        (item) => item.status === selectedStatus
+      );
+    }
+    if (searchTerm) {
+      filteredData = filteredData.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.description.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    return filteredData;
   };
-
-  const filteredData = filterDataByStatus(submittedData);
+  const filteredData = filterDataByStatusAndSearch(submittedData);
   const uniqueStatuses = getUniqueStatuses(submittedData);
 
   const renderEventsByStatus = (status) => {
@@ -781,15 +795,9 @@ const AdminCommunity = () => {
         </div>
       )}
 
-      <div className="w-full px-6 py-4 ">
-        <div className="justify-center flex items-center ">
-          <div className="mb-4 w-full md:w-1/4 ">
-            <label
-              className="block text-gray-700 text-sm font-medium mb-2"
-              htmlFor="status"
-            >
-              Filter By Status
-            </label>
+      <div className="w-full px-6 py-4">
+        <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
+          <div className="w-full md:w-1/4">
             <select
               id="status"
               value={selectedStatus}
@@ -802,21 +810,22 @@ const AdminCommunity = () => {
               <option value="archived">Archived</option>
             </select>
           </div>
+          <div className="w-full md:w-1/4">
+            <div className="relative">
+              <input
+                type="text"
+                id="search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search community by name"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <SearchIcon className="h-5 w-5 text-gray-400" />
+              </div>
+            </div>
+          </div>
         </div>
-
-        {/* <FormControl variant="outlined" className="mb-4 w-full md:w-1/4">
-          <InputLabel>Filter By Status</InputLabel>
-          <Select
-            value={selectedStatus}
-            onChange={handleStatusChange}
-            label="Status"
-          >
-            <MenuItem value="All">All</MenuItem>
-            <MenuItem value="draft">Draft</MenuItem>
-            <MenuItem value="active">Active</MenuItem>
-            <MenuItem value="archived">Archived</MenuItem>
-          </Select>
-        </FormControl> */}
         {loading ? (
           <div className="flex justify-center">
             <CircularProgress />
