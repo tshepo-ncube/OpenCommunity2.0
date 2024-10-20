@@ -153,7 +153,7 @@ const PollComponent = ({
     <div>
       {voting ? (
         <>
-          <CircularProgress style={{ marginTop: 5, width: 40, height: 40 }} />;
+          <CircularProgress style={{ color: "#bcd727", marginTop: 5, width: 40, height: 40 }} />;
         </>
       ) : (
         <>

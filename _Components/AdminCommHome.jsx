@@ -22,7 +22,7 @@ import {
   Divider,
 } from "@mui/material";
 import CommunityDB from "../database/community/community";
-const Carousel = () => {
+const AdminCommHome = ({community}) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [recommendedCommunities, setRecommendedCommunities] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -38,40 +38,16 @@ const Carousel = () => {
     setOpenSnackbar(false);
   };
 
-  const removeCommunityById = (idToRemove) => {
-    setRecommendedCommunities((prevCommunities) =>
-      prevCommunities.filter((community) => community.id !== idToRemove)
-    );
-  };
+ 
 
-  const handleJoinCommunity = async (community) => {
-    await CommunityDB.joinCommunity(
-      community.id,
-      localStorage.getItem("Email")
-    );
-
-    removeCommunityById(community.id);
-
-    //console.log(community);
-
-    setSnackbarMessage(
-      `Congrats! You have now joined the "${community.name}" community.`
-    );
-    setOpenSnackbar(true);
-  };
+  
 
   const handlePrev = () => {
     setActiveIndex((prevIndex) => (prevIndex === 0 ? 2 : prevIndex - 1)); // Cycles backwards
   };
 
-  useEffect(() => {
-    CommunityDB.RecommendedCommunities(setRecommendedCommunities, setLoading);
-  }, []);
-
-  useEffect(() => {
-    console.log("Recommended Communities : ", recommendedCommunities);
-  }, [recommendedCommunities]);
-
+   
+ 
   return (
     <>
       {/* <h1 className="text-black font-bold text-4xl text-center mt-6 mb-4 ">
@@ -86,7 +62,7 @@ const Carousel = () => {
         <>
           <div
             id="carouselExampleCaptions"
-            className="relative w-screen h-[600px] overflow-hidden"
+            className="relative w-screen h-[300px] overflow-hidden"
             data-twe-carousel-init
             data-twe-ride="carousel"
           >
@@ -95,7 +71,7 @@ const Carousel = () => {
               className="absolute bottom-0 left-0 right-0 z-[2] mx-[15%] mb-4 flex list-none justify-center p-0"
               data-twe-carousel-indicators
             >
-              {[0, 1, 2].map((index) => (
+              {[0].map((index) => (
                 <button
                   key={index}
                   type="button"
@@ -172,116 +148,50 @@ const Carousel = () => {
 
               {/* Third item */}
 
-              {recommendedCommunities.map((community, index) => (
-                <div
-                  className={`relative float-left w-full h-full transition-transform duration-[600ms] ease-in-out ${
-                    activeIndex === index ? "block" : "hidden"
-                  }`}
+              <div
+                  className={`relative float-left w-full h-full transition-transform duration-[600ms] ease-in-out block`}
                   style={{ backfaceVisibility: "hidden" }}
                 >
                   <img
-                    src={community.communityImage}
+                    src={community && community.communityImage  ?  community.communityImage : "https://images.unsplash.com/photo-1553073520-80b5ad5ec870?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"}
                     className="block w-full h-full object-cover"
                     alt="Third slide"
-                    loading="lazy"
                   />
 
                   {/* Black overlay */}
                   <div className="absolute inset-0 bg-black opacity-40"></div>
                   <div className="absolute left-[6%] bottom-5 pt-0 pb-5 text-white z-10">
                     <h1 className="font-bold text-6xl text-left mt-0 mb-1 ">
-                      {community.name}
+                    {community && community.name  ?  community.name : "Default Name"}
                     </h1>
                     <h1 className="text-2xl text-left mt-4 mb-6">
-                      {community.description}
+                       
+                      {community && community.description  ?  community.description : "Default description"}
                     </h1>
                     <div className="mt-4 mb-30 flex justify-start">
-                      <button
+                      {/* <button
                         onClick={() => {
                           handleJoinCommunity(community);
                         }}
                         className="px-2 py-2 text-white font-bold text-xl rounded bg-[#bcd727] hover:bg-[#6e7d19]"
                       >
                         Join Community
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 </div>
-              ))}
             </div>
 
             {/* Carousel controls */}
-            <button
-              className="absolute bottom-0 left-0 top-0 z-[1] flex w-[15%] items-center justify-center border-0 bg-none p-0 text-center text-white opacity-50 transition-opacity duration-150 ease-[cubic-bezier(0.25,0.1,0.25,1.0)] hover:text-white hover:no-underline hover:opacity-90 hover:outline-none focus:text-white focus:no-underline focus:opacity-90 focus:outline-none motion-reduce:transition-none"
-              type="button"
-              onClick={handlePrev}
-            >
-              <span className="inline-block h-8 w-8">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="h-6 w-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15.75 19.5L8.25 12l7.5-7.5"
-                  />
-                </svg>
-              </span>
-              <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-                Previous
-              </span>
-            </button>
-
-            <button
-              className="absolute bottom-0 right-0 top-0 z-[1] flex w-[15%] items-center justify-center border-0 bg-none p-0 text-center text-white opacity-50 transition-opacity duration-150 ease-[cubic-bezier(0.25,0.1,0.25,1.0)] hover:text-white hover:no-underline hover:opacity-90 hover:outline-none focus:text-white focus:no-underline focus:opacity-90 focus:outline-none motion-reduce:transition-none"
-              type="button"
-              onClick={handleNext}
-            >
-              <span className="inline-block h-8 w-8">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="h-6 w-6"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoinround
-                    d="M8.25 4.5l7.5 7.5-7.5 7.5"
-                  />
-                </svg>
-              </span>
-              <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-                Next
-              </span>
-            </button>
+      
+          
           </div>
         </>
       )}
 
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity="success"
-          sx={{ width: "100%" }}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+ 
     </>
   );
 };
 
-export default Carousel;
+export default AdminCommHome;

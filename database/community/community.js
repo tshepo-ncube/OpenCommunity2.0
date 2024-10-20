@@ -725,6 +725,9 @@ export default class CommunityDB {
           success: true,
           users: communityData.users || [],
           message: "Users retrieved successfully.",
+          name : communityData.name,
+          description : communityData.description,
+          communityImage:communityData.communityImage,
         };
       } else {
         console.log("No such community!");
