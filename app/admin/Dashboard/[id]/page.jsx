@@ -6,6 +6,8 @@ import CommunityDB from "@/database/community/community";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import { IoMdClose } from "react-icons/io";
+import { RiAiGenerate } from "react-icons/ri";
+
 import Chatbot from "../../../../_Components/Chatbot";
 import strings from "../../../../Utils/strings.json";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
@@ -676,13 +678,20 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
           </div>
 
           <div className="flex justify-end">
-            <button
+            {/* <button
               type="button"
               onClick={generateDescription}
               className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+            ></button> */}
+
+            <button
+              onClick={generateDescription}
+              className="flex items-center px-4 py-2 bg-purple-400 text-white rounded-md hover:bg-blue-600"
             >
+              <RiAiGenerate className="mr-2 w-5 h-5" />
               Generate Description
             </button>
+
             <button
               type="button"
               onClick={handleSaveDraft}
@@ -914,11 +923,19 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                   ></textarea>
                 </div>
                 <div className="flex justify-end">
-                  <button
+                  {/* <button
                     type="button"
                     onClick={generateDescription}
                     className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
+                    Generate Description
+                  </button> */}
+
+                  <button
+                    onClick={generateDescription}
+                    className="flex items-center px-4 py-2 bg-purple-400 text-white rounded-md"
+                  >
+                    <RiAiGenerate className="mr-2 w-5 h-5" />
                     Generate Description
                   </button>
                   {/* <button

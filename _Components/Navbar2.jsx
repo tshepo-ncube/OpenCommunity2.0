@@ -160,9 +160,7 @@ const Navbar = ({ isHome }) => {
     };
   }, []);
   return (
-    <div
-      className="bg-black fixed left-0 top-0 w-full z-100 ease-in duration-300"
-    >
+    <div className="bg-black fixed left-0 top-0 w-full z-100 ease-in duration-300">
       <div
         className="max-w-[1240px] m-auto flex justify-between items-center p-4 text-white"
         style={{}}
@@ -251,7 +249,7 @@ const Navbar = ({ isHome }) => {
           )}
           {/* ADMIN IS CURRENTLY HARD CODED, ADD Holly's Toggle Button for roles */}
           <li className="p-4">
-            <Link 
+            <Link
               href="/admin"
               className="py-2 px-4 hover:bg-[#bcd727] hover:rounded-lg"
             >
@@ -271,14 +269,14 @@ const Navbar = ({ isHome }) => {
             </Link>
           </li>
 
-          <li className="p-4 text-white ">
+          {/* <li className="p-4 text-white ">
             <Link
               href="/auth/RecommendCommunity"
               className="py-2 px-4 hover:bg-[#bcd727] hover:rounded-lg"
             >
               Recommend Community
             </Link>
-          </li>
+          </li> */}
 
           {/* <div className="hidden sm:flex items-center ml-4">
             <img
@@ -376,14 +374,13 @@ const Navbar = ({ isHome }) => {
               <Link href="/pricing">Pricing</Link>
             </li>
             <hr style={{ marginTop: 8 }} />
-           
+
             <hr style={{ marginTop: 8 }} />
           </ul>
         </div>
       </div>
     </div>
   );
-
 };
 
 export default Navbar;

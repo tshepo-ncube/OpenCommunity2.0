@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { RiAiGenerate } from "react-icons/ri";
+import { MdRecommend } from "react-icons/md";
 import {
   Card,
   CardContent,
@@ -314,6 +316,18 @@ const DiscoverCommunity = ({ email }) => {
           </div>
         </form>
       </div>
+
+      {/* <button>hey</button> */}
+
+      <button
+        onClick={() => {
+          router.push("/auth/RecommendCommunity");
+        }}
+        className="flex items-center px-4 py-2 bg-openbox-green text-white rounded-md hover:bg-openbox-green"
+      >
+        <MdRecommend className="mr-2 w-5 h-5" />
+        Recommend Community
+      </button>
 
       <div className="flex justify-center flex-wrap mt-2">
         {!loading ? (
