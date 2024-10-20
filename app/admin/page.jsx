@@ -342,7 +342,6 @@ const CreateCommunity = () => {
 
     const similarCommunity = checkNameSimilarity(name);
     if (similarCommunity) {
-      //alert("Similar COMCOM");
       setSimilarityError({
         message:
           "Cannot create this community as a similar community already exists.",
@@ -352,16 +351,25 @@ const CreateCommunity = () => {
       return;
     }
 
-    // Get the logged-in user's email (assuming consoleEmails stores the logged-in user's email)
-    const adminEmail = localStorage.getItem("Email"); // consoleEmails[0]; // Assuming the first email is the logged-in user's email
+    const adminEmail = localStorage.getItem("Email");
 
-    // Create the community data with the admin field
     const communityData = {
       name,
       description,
       category,
       status,
-      admin: localStorage.getItem("Email"), // Adding the admin field with the logged-in user's email
+      admin: adminEmail,
+    };
+
+    const clearForm = () => {
+      setName("");
+      setDescription("");
+      setCategory("");
+      setStatus("");
+      setImage(null); // Clear the image file
+      setSelectedInterests([]); // Clear selected interests
+      setShowImageError(false); // Reset image error
+      setShowInterestsError(false); // Reset interests error
     };
 
     if (editIndex !== null) {
@@ -373,6 +381,7 @@ const CreateCommunity = () => {
           updatedSubmittedData[editIndex] = updatedData;
           setSubmittedData(updatedSubmittedData);
           setPopupOpen(false); // Close the form after update
+          clearForm(); // Clear the form fields
         },
         setLoading
       );
@@ -380,80 +389,34 @@ const CreateCommunity = () => {
       // Create a new community
       console.log("Creating a community now...");
       try {
+        if (!image) {
+          setShowImageError(true);
+          console.log("THERE IS NO IMAGE, PLEASE SELECT ONE ");
+          return;
+        }
+
+        if (selectedInterests.length < 3) {
+          setShowInterestsError(true);
+          return;
+        }
+
         CommunityDB.createCommunity(
           communityData,
           image,
           (newCommunity) => {
             setSubmittedData((prevData) => [...prevData, newCommunity]);
+            setPopupOpen(false); // Close the form after successful creation
+            clearForm(); // Clear the form fields
           },
-          setLoading
+          setLoading,
+          selectedInterests,
+          setCommunityCreated
         );
-        // console.log("creating a channel now...");
-        // CommunityDB.createCommunity(
-        //   communityData,
-        //   (newCommunity) =>
-        //     setSubmittedData((prevData) => [...prevData, newCommunity]),
-        //   setLoading
-        // );
-        //name, description, category, status
-
-        try {
-          // const res = await axios.post(
-          //   strings.server_endpoints.createChannel,
-          //   { name, description, category, status },
-          //   {
-          //     headers: {
-          //       "Content-Type": "application/json",
-          //     },
-          //   }
-          // );
-
-          // console.log(res.data);
-          // let data = res.data;
-
-          console.log("About to check if image is there on create comm form");
-
-          if (!image) {
-            //alert("Please have an image");
-            //setSimilarCommmunitySnackbarOpen(true);
-            setShowImageError(true);
-            console.log("THERE IS NO IMAGE< PLEASE SELECT ONE ");
-            return;
-          }
-
-          if (selectedInterests.length < 3) {
-            // alert("Please add more interests");
-            // setImageError(true);
-            //  setShowImageError(true);
-            setShowInterestsError(true);
-            return;
-          }
-
-          CommunityDB.createCommunity(
-            communityData,
-            image,
-            (newCommunity) => {
-              setSubmittedData((prevData) => [...prevData, newCommunity]);
-            },
-            setLoading,
-            selectedInterests,
-            setCommunityCreated
-
-            // ,
-            // {
-            //   WebUrl: data.webUrl,
-            //   ChannelID: data.id,
-            // }
-          );
-        } catch (err) {
-          console.log("Error:", err);
-        }
       } catch (err) {
-        console.log("error : ", err);
+        console.log("Error:", err);
       }
     }
   };
-
   const handleEdit = (index) => {
     setName(submittedData[index].name);
     setDescription(submittedData[index].description);

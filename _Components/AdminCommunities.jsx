@@ -1,65 +1,31 @@
 import React, { useEffect, useState } from "react";
+import CircularProgress from "@mui/material/CircularProgress";
+import Grid from "@mui/material/Grid";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import InputLabel from "@mui/material/InputLabel";
+import CommunityDB from "../database/community/community";
+import { useRouter } from "next/navigation";
 import {
-  Card,
-  CardContent,
-  CardActions,
-  CardMedia,
-  Typography,
-  Button,
-  Chip,
-  Grid,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  FormControl,
-  Select,
-  MenuItem,
-  InputLabel,
-} from "@mui/material";
-import {
-  People,
-  CalendarToday,
   Edit as EditIcon,
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
   Delete as DeleteIcon,
   PostAdd as PostAddIcon,
+  OpenInNew as OpenInNewIcon, // Add this line for the open icon
 } from "@mui/icons-material";
-import CommunityDB from "../database/community/community";
-import { useRouter } from "next/navigation";
-
-// PUT BACK
-// import React, { useEffect, useState } from "react";
-// import CircularProgress from "@mui/material/CircularProgress";
-// import Grid from "@mui/material/Grid";
-// // import Card from "@mui/material/Card";
-// // import CardActions from "@mui/material/CardActions";
-// // import CardContent from "@mui/material/CardContent";
-// import Button from "@mui/material/Button";
-// import Typography from "@mui/material/Typography";
-
-// import Dialog from "@mui/material/Dialog";
-// import DialogActions from "@mui/material/DialogActions";
-// import DialogContent from "@mui/material/DialogContent";
-// import DialogContentText from "@mui/material/DialogContentText";
-// import DialogTitle from "@mui/material/DialogTitle";
-// import FormControl from "@mui/material/FormControl";
-// import Select from "@mui/material/Select";
-// import MenuItem from "@mui/material/MenuItem";
-// import InputLabel from "@mui/material/InputLabel";
-// import CommunityDB from "../database/community/community";
-// import { useRouter } from "next/navigation";
-// import {
-//   Edit as EditIcon,
-//   Visibility as VisibilityIcon,
-//   VisibilityOff as VisibilityOffIcon,
-//   Delete as DeleteIcon,
-//   PostAdd as PostAddIcon,
-//   OpenInNew as OpenInNewIcon, // Add this line for the open icon
-// } from "@mui/icons-material";
 
 const AdminCommunity = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -95,12 +61,7 @@ const AdminCommunity = () => {
   const handleClosePopup = () => {
     setPopupOpen(false);
   };
-  const getUnarchiveButtonText = (status) => {
-    return status === "draft" ? "Post" : "Unarchive";
-  };
-  const getUnarchiveButtonIcon = (status) => {
-    return status === "draft" ? <PostAddIcon /> : <VisibilityOffIcon />;
-  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -241,251 +202,344 @@ const AdminCommunity = () => {
               <p>No communities currently exist with the status: {status}</p>
             ) : (
               <Grid container spacing={2} className="p-4">
-                {events.map((data) => (
-                  <Grid item xs={12} sm={6} md={4} lg={3} key={data.id}>
-                    <Card
-                      className="flex flex-col h-120"
-                      onClick={() => {
-                        console.log(data);
-                        //router.push(`/admin/Dashboard/${data.id}`);
-                      }} // Navigate to community detail page
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        height: "400px", // Fixed height for consistency
-                        boxShadow: 3,
-                        borderRadius: 2,
-                        cursor: "pointer", // Change cursor to indicate clickability
-                        "&:hover": {
-                          boxShadow: 6, // Slightly elevate the card on hover for better UX
-                        },
-                      }}
-                    >
-                      <CardMedia
-                        component="img"
-                        height="175"
-                        className="h-40"
-                        image={
-                          data.communityImage
-                            ? data.communityImage
-                            : "https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60"
-                        }
-                        alt={`Image of ${data.name} community`}
-                        sx={{ objectFit: "cover", width: "100%" }}
-                      />
+                {events.map((data, index) => (
+                  <Grid item xs={6} md={4} lg={4} key={index}>
+                    <div className="w-full max-w-sm bg-white border border-gray_og rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 relative">
+                      <a href="#">
+                        <img
+                          className="h-40 w-full rounded-t-lg object-cover"
+                          alt="product image"
+                          src={
+                            data.communityImage
+                              ? data.communityImage
+                              : "https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGRyaW5rc3xlbnwwfHwwfHx8MA%3D%3D"
+                          }
+                        />
+                      </a>
 
-                      <CardContent
-                        sx={{
-                          flexGrow: 1,
-                          padding: "12px",
-                          overflow: "hidden",
-                          display: "flex",
-                          flexDirection: "column",
-                        }}
-                      >
-                        <Typography
-                          gutterBottom
-                          variant="h6"
-                          component="div"
-                          style={{
-                            fontFamily: "Poppins, sans-serif",
-                            fontWeight: "bold",
-                            textAlign: "left",
-                          }}
+                      {data.status === "archived" && (
+                        <div
+                          style={{ position: "absolute", top: 12, left: 10 }}
+                          className="absolute bg-orange-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10"
                         >
-                          {data.name}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          style={{
-                            fontFamily: "Poppins, sans-serif",
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                            textAlign: "left",
-                          }}
-                        >
-                          {data.description.length > 100
-                            ? `${data.description.substring(0, 100)}...`
-                            : data.description}
-                        </Typography>
-                        <div className="flex flex-wrap gap-1 mt-2">
-                          {data.selectedInterests &&
-                            data.selectedInterests.map((tag) => (
-                              <Chip
-                                key={tag}
-                                label={tag}
-                                variant="filled"
-                                size="small"
-                                className="hover:bg-gray-200 bg-gray-300"
-                                sx={{
-                                  color: "black",
-                                  fontFamily: "Poppins, sans-serif",
-                                }}
-                              />
-                            ))}
+                          Archived
                         </div>
-                      </CardContent>
-
-                      <CardContent
-                        sx={{ paddingTop: "0px", paddingBottom: "0px" }}
-                      >
-                        <Grid container alignItems="center">
-                          <Grid item xs={6}>
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              className="flex items-center"
-                              style={{
-                                fontFamily: "Poppins, sans-serif",
-                                textAlign: "left",
-                              }}
-                            >
-                              <People
-                                fontSize="small"
-                                style={{ marginRight: 4 }}
-                              />
-                              {data.users ? data.users.length : 0} Members
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              className="flex items-center justify-end"
-                              style={{
-                                fontFamily: "Poppins, sans-serif",
-                                textAlign: "right",
-                              }}
-                            >
-                              <CalendarToday
-                                fontSize="small"
-                                style={{ marginRight: 4 }}
-                              />
-                              {data.UpcomingEventsCount || 0}{" "}
-                              {data.UpcomingEventsCount > 1
-                                ? "Events"
-                                : "Event"}
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </CardContent>
-
-                      <CardActions
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-around",
-                          padding: "8px 12px",
-                          gap: "8px",
-                        }}
-                      >
-                        <Button
-                          size="small"
-                          startIcon={<EditIcon />}
-                          onClick={(e) => {
-                            e.stopPropagation(); // Prevent card click when editing
-                            handleEdit(data.id);
-                          }}
-                          sx={{
-                            color: "#bcd727",
-                            fontFamily: "Poppins, sans-serif",
-                            backgroundColor: "transparent",
-                            border: "1px solid #bcd727",
-                            "&:hover": {
-                              backgroundColor: "rgba(188, 215, 39, 0.2)",
-                            },
-                            borderRadius: 1,
-                            textTransform: "none",
-                            flex: 1,
-                            maxWidth: "100px",
-                          }}
-                        >
-                          Edit
-                        </Button>
-
-                        {data.status === "active" ? (
-                          <Button
-                            size="small"
-                            startIcon={<VisibilityIcon />}
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent card click when archiving
-                              handleArchive(data.id);
+                      )}
+                      {data.status === "active" && (
+                        <>
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: 8,
+                              right: 4,
+                              color: "white",
+                              backgroundColor: "rgba(0, 0, 0, 0.5)",
+                              borderRadius: "50%", // Makes the button circular
+                              width: 30, // Adjust width as needed
+                              height: 30, // Adjust height as needed
+                              padding: 0, // Remove default padding
+                              minWidth: 0, // Remove default min-width
+                              display: "flex", // Center the icon
+                              alignItems: "center",
+                              justifyContent: "center",
                             }}
-                            sx={{
-                              color: "#FF9800",
-                              fontFamily: "Poppins, sans-serif",
-                              backgroundColor: "transparent",
-                              border: "1px solid #FF9800",
-                              "&:hover": {
-                                backgroundColor: "rgba(255, 152, 0, 0.2)",
-                              },
-                              borderRadius: 1,
-                              textTransform: "none",
-                              flex: 1,
-                              maxWidth: "100px",
-                            }}
+                            className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
+                            onClick={() => handleArchive(data.id)}
+                            title="Archive" // Tooltip text
                           >
-                            Archive
-                          </Button>
-                        ) : (
-                          <Button
-                            size="small"
-                            startIcon={getUnarchiveButtonIcon(data.status)}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleUnarchive(data.id);
-                            }}
-                            sx={{
-                              color: "#4CAF50",
-                              fontFamily: "Poppins, sans-serif",
-                              backgroundColor: "transparent",
-                              border: "1px solid #4CAF50",
-                              "&:hover": {
-                                backgroundColor: "rgba(76, 175, 80, 0.2)",
-                              },
-                              borderRadius: 1,
-                              textTransform: "none",
-                              flex: 1,
-                              maxWidth: "100px",
-                              minWidth: "80px",
-                              padding: "4px 8px",
-                              fontSize: "0.8125rem",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
-                            }}
+                            <VisibilityIcon />
+                          </div>
+                          <div
+                            style={{ position: "absolute", top: 12, left: 10 }}
+                            className="absolute bg-green-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10"
                           >
-                            {getUnarchiveButtonText(data.status)}
-                          </Button>
-                        )}
+                            Active
+                          </div>
 
-                        <Button
-                          size="small"
-                          startIcon={<DeleteIcon />}
-                          onClick={(e) => {
-                            e.stopPropagation(); // Prevent card click when deleting
-                            handleOpenDeleteDialog(data.id);
-                          }}
-                          sx={{
-                            color: "#f44336",
-                            fontFamily: "Poppins, sans-serif",
-                            backgroundColor: "transparent",
-                            border: "1px solid #f44336",
-                            "&:hover": {
-                              backgroundColor: "rgba(244, 67, 54, 0.2)",
-                            },
-                            borderRadius: 1,
-                            textTransform: "none",
-                            flex: 1,
-                            maxWidth: "100px",
-                          }}
+                          <Button
+                            style={{
+                              position: "absolute",
+                              top: 8,
+                              right: 115,
+                              color: "white",
+                              backgroundColor: "rgba(0, 0, 0, 0.5)",
+                              borderRadius: "50%", // Makes the button circular
+                              width: 30, // Adjust width as needed
+                              height: 30, // Adjust height as needed
+                              padding: 0, // Remove default padding
+                              minWidth: 0, // Remove default min-width
+                              display: "flex", // Center the icon
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                            size="small"
+                            onClick={() => {
+                              localStorage.setItem("CurrentCommunity", data.id);
+                              router.push(`/admin/Dashboard/${data.id}`);
+                            }}
+                            title="View" // Tooltip text
+                          >
+                            <OpenInNewIcon />
+                          </Button>
+                        </>
+                      )}
+                      {data.status === "draft" && (
+                        <div
+                          style={{ position: "absolute", top: 12, left: 10 }}
+                          className="absolute bg-blue-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10"
                         >
-                          Delete
-                        </Button>
-                      </CardActions>
-                    </Card>
+                          Draft
+                        </div>
+                      )}
+
+                      <div className="mt-4 px-5 pb-5 text-left">
+                        <a href="#">
+                          <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                            {data.name}
+                          </h5>
+                        </a>
+                        <div className="flex items-center mt-2.5 mb-5">
+                          <div className="flex items-center space-x-1 rtl:space-x-reverse"></div>
+                          <div className="text-sm text-black py-1  font-semibold">
+                            {data.description}
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          {/* <>
+              <Button size="small" onClick={() => {}}>
+                Edit
+              </Button>
+              <Button
+                size="small"
+                onClick={() => {
+                  // localStorage.setItem(
+                  //   "CurrentCommunity",
+                  //   data.id
+                  // );
+                }}
+              >
+                View
+              </Button>
+              <Button size="small" color="error" onClick={() => {}}>
+                Archive
+              </Button>
+              <Button size="small" color="error" onClick={() => {}}>
+                Delete
+              </Button>
+            </> */}
+
+                          <CardActions>
+                            {data.status === "archived" ? (
+                              <>
+                                <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 46,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
+                                  size="small"
+                                  onClick={() => handleEdit(data.id)}
+                                  title="Edit" // Tooltip text
+                                >
+                                  <EditIcon />
+                                </Button>
+
+                                <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 84,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
+                                  size="small"
+                                  color="error"
+                                  // className="absolute top-2 right-2 text-white hover:text-white"
+                                  onClick={() =>
+                                    handleOpenDeleteDialog(data.id)
+                                  }
+                                  title="Delete" // Tooltip text
+                                >
+                                  <DeleteIcon />
+                                </Button>
+                                <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 7,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                  size="small"
+                                  onClick={() => handleUnarchive(data.id)}
+                                  title="Unarchive" // Tooltip text
+                                  className="absolute top-2 right-2 text-white hover:text-white"
+                                >
+                                  <VisibilityOffIcon />
+                                </Button>
+                              </>
+                            ) : data.status === "active" ? (
+                              <>
+                                <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 38,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
+                                  size="small"
+                                  onClick={() => handleEdit(data.id)}
+                                  title="Edit" // Tooltip text
+                                >
+                                  <EditIcon />
+                                </Button>
+
+                                <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 78,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
+                                  size="small"
+                                  color="error"
+                                  onClick={() =>
+                                    handleOpenDeleteDialog(data.id)
+                                  }
+                                  title="Delete" // Tooltip text
+                                >
+                                  <DeleteIcon />
+                                </Button>
+                              </>
+                            ) : (
+                              // Draft status actions
+                              <>
+                                <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 4,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                  className="absolute top-2 right-2 text-white hover:text-white"
+                                  size="small"
+                                  onClick={() => handleEdit(data.id)}
+                                  title="Edit" // Tooltip text
+                                >
+                                  <EditIcon />
+                                </Button>
+                                <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 40,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
+                                  size="small"
+                                  onClick={() => handlePost(data.id)}
+                                  title="Post" // Tooltip text
+                                >
+                                  <PostAddIcon />
+                                </Button>
+                                <Button
+                                  style={{
+                                    position: "absolute",
+                                    top: 8,
+                                    right: 78,
+                                    color: "white",
+                                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                    borderRadius: "50%", // Makes the button circular
+                                    width: 30, // Adjust width as needed
+                                    height: 30, // Adjust height as needed
+                                    padding: 0, // Remove default padding
+                                    minWidth: 0, // Remove default min-width
+                                    display: "flex", // Center the icon
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                  }}
+                                  className="absolute bg-white-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10 cursor-pointer"
+                                  size="small"
+                                  color="error"
+                                  onClick={() =>
+                                    handleOpenDeleteDialog(data.id)
+                                  }
+                                  title="Delete" // Tooltip text
+                                >
+                                  <DeleteIcon />
+                                </Button>
+                              </>
+                            )}
+                          </CardActions>
+                        </div>
+                      </div>
+                    </div>
                   </Grid>
                 ))}
               </Grid>
@@ -499,172 +553,167 @@ const AdminCommunity = () => {
       }
       return (
         <Grid container spacing={2} className="p-4">
-          {eventsByStatus.map((data) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={data.id}>
-              <Card
-                className="flex flex-col h-full"
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  height: "350px",
-                  boxShadow: 3,
-                  borderRadius: 2,
+          {eventsByStatus.map((data, index) => (
+            <Grid item xs={6} md={4} lg={4} key={index}>
+              <div className="w-full max-w-sm bg-white border border-gray_og rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 relative">
+                <a href="#">
+                  <img
+                    className="h-40 w-full rounded-t-lg object-cover"
+                    // src="https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGRyaW5rc3xlbnwwfHwwfHx8MA%3D%3D"
+
+                    alt="product image"
+                    src={
+                      data.communityImage
+                        ? `url(${data.communityImage})`
+                        : "https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGRyaW5rc3xlbnwwfHwwfHx8MA%3D%3D"
+                    }
+                  />
+                </a>
+
+                {data.status === "archived" && (
+                  <div
+                    style={{ position: "absolutehall", top: 5, left: 5 }}
+                    className="absolute bg-orange-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10"
+                  >
+                    Archived
+                  </div>
+                )}
+                {data.status === "active" && (
+                  <div
+                    style={{ position: "absolute", top: 12, left: 10 }}
+                    className="absolute bg-green-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10"
+                  >
+                    Active
+                  </div>
+                )}
+                {data.status === "draft" && (
+                  <div
+                    style={{ position: "absolute", top: 12, left: 10 }}
+                    className="absolute bg-blue-500 text-white px-2 py-1 rounded-md text-xs font-bold z-10"
+                  >
+                    Draft
+                  </div>
+                )}
+
+                <div className="mt-4 px-5 pb-5">
+                  <a href="#">
+                    <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                      {data.name}
+                    </h5>
+                  </a>
+                  <div className="flex items-center mt-2.5 mb-5">
+                    <div className="flex items-center space-x-1 rtl:space-x-reverse"></div>
+                    <div className="text-sm text-black py-1  font-semibold">
+                      {data.description}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    {/* <>
+              <Button size="small" onClick={() => {}}>
+                Edit
+              </Button>
+              <Button
+                size="small"
+                onClick={() => {
+                  // localStorage.setItem(
+                  //   "CurrentCommunity",
+                  //   data.id
+                  // );
                 }}
               >
-                <CardMedia
-                  component="img"
-                  height="175"
-                  image={
-                    data.communityImage
-                      ? data.communityImage
-                      : "https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60"
-                  }
-                  alt={`Image of ${data.name} community`}
-                  sx={{ objectFit: "cover", width: "100%" }}
-                />
+                View
+              </Button>
+              <Button size="small" color="error" onClick={() => {}}>
+                Archive
+              </Button>
+              <Button size="small" color="error" onClick={() => {}}>
+                Delete
+              </Button>
+            </> */}
 
-                <CardContent sx={{ flexGrow: 1, padding: "12px" }}>
-                  <Typography
-                    gutterBottom
-                    variant="h6"
-                    component="div"
-                    style={{
-                      fontFamily: "Poppins, sans-serif",
-                      fontWeight: "bold",
-                      textAlign: "left",
-                    }}
-                  >
-                    {data.name}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    style={{
-                      fontFamily: "Poppins, sans-serif",
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                      textAlign: "left",
-                    }}
-                  >
-                    {data.description.length > 100
-                      ? `${data.description.substring(0, 100)}...`
-                      : data.description}
-                  </Typography>
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {data.selectedInterests &&
-                      data.selectedInterests.map((tag) => (
-                        <Chip
-                          key={tag}
-                          label={tag}
-                          variant="filled"
-                          size="small"
-                          className="hover:bg-gray-200 bg-gray-300"
-                          sx={{
-                            color: "black",
-                            fontFamily: "Poppins, sans-serif",
-                          }}
-                        />
-                      ))}
+                    <CardActions>
+                      {data.status === "archived" ? (
+                        <>
+                          <Button
+                            size="small"
+                            onClick={() => handleEdit(data.id)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            size="small"
+                            color="error"
+                            onClick={() => handleOpenDeleteDialog(data.id)}
+                          >
+                            Delete
+                          </Button>
+                          <Button
+                            size="small"
+                            onClick={() => handleUnarchive(data.id)}
+                          >
+                            Unarchive
+                          </Button>
+                        </>
+                      ) : data.status === "active" ? (
+                        <>
+                          <Button
+                            size="small"
+                            onClick={() => handleEdit(data.id)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            size="small"
+                            onClick={() => {
+                              // localStorage.setItem("CurrentCommunity", data.id);
+
+                              router.push(`/admin/Dashboard/${data.id}`);
+                            }}
+                          >
+                            View
+                          </Button>
+                          <Button
+                            size="small"
+                            color="error"
+                            onClick={() => handleArchive(data.id)}
+                          >
+                            Archive.
+                          </Button>
+                          <Button
+                            size="small"
+                            color="error"
+                            onClick={() => handleOpenDeleteDialog(data.id)}
+                          >
+                            Delete
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <Button
+                            size="small"
+                            onClick={() => handleEdit(data.id)}
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            size="small"
+                            onClick={() => handlePost(data.id)}
+                          >
+                            Post
+                          </Button>
+                          <Button
+                            size="small"
+                            color="error"
+                            onClick={() => handleOpenDeleteDialog(data.id)}
+                          >
+                            Delete
+                          </Button>
+                        </>
+                      )}
+                    </CardActions>
                   </div>
-                </CardContent>
-
-                <CardContent sx={{ paddingTop: "0px", paddingBottom: "0px" }}>
-                  <Grid container alignItems="center">
-                    <Grid item xs={6}>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        className="flex items-center"
-                        style={{
-                          fontFamily: "Poppins, sans-serif",
-                          textAlign: "left",
-                        }}
-                      >
-                        <People fontSize="small" style={{ marginRight: 4 }} />
-                        {data.users ? data.users.length : 0} Members
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        className="flex items-center justify-end"
-                        style={{
-                          fontFamily: "Poppins, sans-serif",
-                          textAlign: "right",
-                        }}
-                      >
-                        <CalendarToday
-                          fontSize="small"
-                          style={{ marginRight: 4 }}
-                        />
-                        {data.UpcomingEventsCount || 0}{" "}
-                        {data.UpcomingEventsCount > 1 ? "Events" : "Event"}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </CardContent>
-
-                <CardActions sx={{ padding: "12px" }}>
-                  <Button
-                    size="small"
-                    onClick={() => handleEdit(data.id)}
-                    sx={{
-                      color: "#bcd727",
-                      "&:hover": {
-                        backgroundColor: "transparent",
-                        textDecoration: "underline",
-                      },
-                      fontFamily: "Poppins, sans-serif",
-                    }}
-                  >
-                    <EditIcon /> Edit
-                  </Button>
-                  <Button
-                    size="small"
-                    onClick={() => handleOpenDeleteDialog(data.id)}
-                    color="error"
-                    sx={{
-                      fontFamily: "Poppins, sans-serif",
-                    }}
-                  >
-                    <DeleteIcon /> Delete
-                  </Button>
-                  {data.status === "active" ? (
-                    <Button
-                      size="small"
-                      onClick={() => handleArchive(data.id)}
-                      sx={{
-                        color: "#FF9800",
-                        "&:hover": {
-                          backgroundColor: "transparent",
-                          textDecoration: "underline",
-                        },
-                        fontFamily: "Poppins, sans-serif",
-                      }}
-                    >
-                      <VisibilityIcon /> Archive
-                    </Button>
-                  ) : (
-                    <Button
-                      size="small"
-                      onClick={() => handleUnarchive(data.id)}
-                      sx={{
-                        color: "#4CAF50",
-                        "&:hover": {
-                          backgroundColor: "transparent",
-                          textDecoration: "underline",
-                        },
-                        fontFamily: "Poppins, sans-serif",
-                      }}
-                    >
-                      <VisibilityOffIcon /> Unarchive
-                    </Button>
-                  )}
-                </CardActions>
-              </Card>
+                </div>
+              </div>
             </Grid>
           ))}
         </Grid>
@@ -729,30 +778,8 @@ const AdminCommunity = () => {
         </div>
       )}
 
-      <div className="w-full px-6 py-4 ">
-        <div className="justify-center flex items-center ">
-          <div className="mb-4 w-full md:w-1/4 ">
-            <label
-              className="block text-gray-700 text-sm font-medium mb-2"
-              htmlFor="status"
-            >
-              Filter By Status
-            </label>
-            <select
-              id="status"
-              value={selectedStatus}
-              onChange={handleStatusChange}
-              className="block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            >
-              <option value="All">All</option>
-              <option value="draft">Draft</option>
-              <option value="active">Active</option>
-              <option value="archived">Archived</option>
-            </select>
-          </div>
-        </div>
-
-        {/* <FormControl variant="outlined" className="mb-4 w-full md:w-1/4">
+      <div className="w-full px-6 py-4">
+        <FormControl variant="outlined" className="mb-4 w-full md:w-1/4">
           <InputLabel>Filter By Status</InputLabel>
           <Select
             value={selectedStatus}
@@ -764,7 +791,7 @@ const AdminCommunity = () => {
             <MenuItem value="active">Active</MenuItem>
             <MenuItem value="archived">Archived</MenuItem>
           </Select>
-        </FormControl> */}
+        </FormControl>
         {loading ? (
           <div className="flex justify-center">
             <CircularProgress />
