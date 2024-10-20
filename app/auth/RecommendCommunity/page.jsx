@@ -25,7 +25,7 @@ const CommunityRecommendationPage = () => {
   const [communityName, setCommunityName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Fitness & Wellness");
-  const [showConfetti, setShowConfetti] = useState(false);
+
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showTip, setShowTip] = useState(false);
@@ -72,8 +72,6 @@ const CommunityRecommendationPage = () => {
         category: "Fitness & Wellness",
       });
       toast.success("Your community recommendation has been submitted!");
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 5000);
     } catch (error) {
       console.error("Error submitting recommendation:", error);
       toast.error("Failed to submit recommendation. Please try again.");
@@ -112,10 +110,6 @@ const CommunityRecommendationPage = () => {
       <div className="flex min-h-screen bg-gray-100">
         <div className="flex-grow ">
           <Toaster position="bottom-right" reverseOrder={false} />
-
-          {showConfetti && (
-            <Confetti width={windowSize.width} height={windowSize.height} />
-          )}
 
           <motion.div
             initial="hidden"

@@ -326,7 +326,7 @@ const DiscoverCommunity = ({ email }) => {
         className="flex items-center px-4 py-2 bg-openbox-green text-white rounded-md hover:bg-openbox-green"
       >
         <MdRecommend className="mr-2 w-5 h-5" />
-        Recommend Community
+        Recommend a Community
       </button>
 
       <div className="flex justify-center flex-wrap mt-2">
