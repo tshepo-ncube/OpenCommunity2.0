@@ -11,7 +11,7 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import Navbar from "@/_Components/Navbar2";
+import Navbar from "@/_Components/Navbar";
 import Header from "../../../_Components/header";
 import { useTable } from "react-table";
 import Swal from "sweetalert2"; // Import SweetAlert2
@@ -338,7 +338,7 @@ export default function RecommendationsTable() {
   return (
     <>
       {/* <Header /> */}
-      <Navbar isHome={false} />
+      <Navbar />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

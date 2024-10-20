@@ -656,7 +656,7 @@ const CreateCommunity = () => {
   });
   return (
     <div className="flex-col items-center min-h-screen relative text-center pt-24 bg-gray-100">
-      <Navbar2 isHome={true} />
+      <Navbar2 />
       {/* <Header /> */}
 
       {/* Tab Navigation */}

@@ -89,9 +89,7 @@ const Navbar = ({ isHome }) => {
   return (
     <div
       className={`${
-        isHome
-          ? `${scrolling ? "bg-black z-90" : "z-90"}`
-          : `bg-openbox-green z-90`
+        isHome ? `${scrolling ? "bg-black z-90" : "z-90"}` : "bg-black z-90" // Change this line to always be black
       } fixed left-0 top-0 w-full z-100 ease-in duration-300`}
     >
       <div className="max-w-[1240px] m-auto flex justify-between items-center p-4 text-white">
@@ -113,30 +111,53 @@ const Navbar = ({ isHome }) => {
           style={{ color: `${textColor}` }}
           className="hidden sm:flex items-center"
         >
-          <li className="p-4 text-white">
-            <Link
-              href="/Home"
-              className="py-2 px-4 text-white hover:bg-[#bcd727] hover:rounded-lg"
-            >
-              Home
-            </Link>
-          </li>
-          <li className="p-4 text-white">
-            <Link
-              href="/auth/Leaderboard"
-              className="py-2 px-4 text-white hover:bg-[#bcd727] hover:rounded-lg"
-            >
-              Leaderboard
-            </Link>
-          </li>
-          <li className="p-4 text-white">
-            <Link
-              href="/auth/RecommendCommunity"
-              className="py-2 px-4 text-white hover:bg-[#bcd727] hover:rounded-lg"
-            >
-              Recommend Community
-            </Link>
-          </li>
+          {!isAdmin ? (
+            <>
+              <li className="p-4 text-white">
+                <Link
+                  href="/Home"
+                  className="py-2 px-4 text-white hover:bg-[#bcd727] hover:rounded-lg"
+                >
+                  Home
+                </Link>
+              </li>
+              <li className="p-4 text-white">
+                <Link
+                  href="/auth/Leaderboard"
+                  className="py-2 px-4 text-white hover:bg-[#bcd727] hover:rounded-lg"
+                >
+                  Leaderboard
+                </Link>
+              </li>
+              <li className="p-4 text-white">
+                <Link
+                  href="/auth/RecommendCommunity"
+                  className="py-2 px-4 text-white hover:bg-[#bcd727] hover:rounded-lg"
+                >
+                  Recommend Community
+                </Link>
+              </li>
+            </>
+          ) : (
+            <>
+              <li className="p-4 text-white">
+                <Link
+                  href="/Home"
+                  className="py-2 px-4 text-white hover:bg-[#bcd727] hover:rounded-lg"
+                >
+                  Home
+                </Link>
+              </li>
+              <li className="p-4 text-white">
+                <Link
+                  href="/admin/ViewRecommendations"
+                  className="py-2 px-4 text-white hover:bg-[#bcd727] hover:rounded-lg"
+                >
+                  View Recommendations
+                </Link>
+              </li>
+            </>
+          )}
           {showAdminToggle && (
             <li className="p-4 flex items-center">
               <Switch
@@ -188,24 +209,39 @@ const Navbar = ({ isHome }) => {
           }
         >
           <ul>
-            <li
-              onClick={handleNav}
-              className="p-4 text-4xl hover:text-gray-500"
-            >
-              <Link href="/Home">Home</Link>
-            </li>
-            <li
-              onClick={handleNav}
-              className="p-4 text-4xl hover:text-gray-500"
-            >
-              <Link href="/auth/Leaderboard">Leaderboard</Link>
-            </li>
-            <li
-              onClick={handleNav}
-              className="p-4 text-4xl hover:text-gray-500"
-            >
-              <Link href="/auth/RecommendCommunity">Recommend Community</Link>
-            </li>
+            {!isAdmin ? (
+              <>
+                <li
+                  onClick={handleNav}
+                  className="p-4 text-4xl hover:text-gray-500"
+                >
+                  <Link href="/Home">Home</Link>
+                </li>
+                <li
+                  onClick={handleNav}
+                  className="p-4 text-4xl hover:text-gray-500"
+                >
+                  <Link href="/auth/Leaderboard">Leaderboard</Link>
+                </li>
+                <li
+                  onClick={handleNav}
+                  className="p-4 text-4xl hover:text-gray-500"
+                >
+                  <Link href="/auth/RecommendCommunity">
+                    Recommend Community
+                  </Link>
+                </li>
+              </>
+            ) : (
+              <li
+                onClick={handleNav}
+                className="p-4 text-4xl hover:text-gray-500"
+              >
+                <Link href="/admin/ViewRecommendations">
+                  View Recommendations
+                </Link>
+              </li>
+            )}
             <li
               onClick={handleNav}
               className="p-4 text-4xl hover:text-gray-500"

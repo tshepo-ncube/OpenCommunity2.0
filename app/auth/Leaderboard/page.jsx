@@ -6,7 +6,7 @@ import Header from "../../../_Components/header";
 import CollapsableSidebar from "@/_Components/CollapsableSidebar";
 import { motion } from "framer-motion";
 import { AiOutlineInfoCircle } from "react-icons/ai";
-import Navbar2 from "@/_Components/NavBar2";
+import Navbar2 from "@/_Components/NavBar";
 import Confetti from "react-confetti"; // Corrected import statement
 
 const Page = () => {
@@ -132,7 +132,7 @@ const Page = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-[#f0f0f0] to-[#bcd727]">
-      <Navbar2 isHome={true} />
+      <Navbar2 />
       <div className="flex min-h-screen bg-gray-50 mt-4">
         <div className="flex-grow mt-16 p-6">
           <main className="container mx-auto px-4 py-12">
