@@ -449,6 +449,12 @@ const AdminCommunity = () => {
                               textTransform: "none",
                               flex: 1,
                               maxWidth: "100px",
+                              minWidth: "80px",
+                              padding: "4px 8px",
+                              fontSize: "0.8125rem",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
                             }}
                           >
                             {getUnarchiveButtonText(data.status)}
