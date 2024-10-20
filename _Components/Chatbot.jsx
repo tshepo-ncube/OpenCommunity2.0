@@ -453,9 +453,10 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
       {isOpen && (
         <div
           style={{
+            zIndex: 150,
             boxShadow: "0 0 #0000, 0 0 #0000, 0 1px 2px 0 rgb(0 0 0 / 0.05)",
           }}
-          className="  fixed bottom-[calc(4rem+1.5rem)] right-0 mr-4 bg-white p-6 rounded-lg border border-[#e5e7eb] w-[440px] h-[634px]"
+          className=" mt-30 fixed bottom-[calc(4rem+1.5rem)] right-0 mr-4 bg-white p-6 rounded-lg border border-[#e5e7eb] w-[440px] h-[634px]"
         >
           {/* Heading */}
           <div
@@ -573,12 +574,11 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                                 //console.log(error);
                                 // If JSON parsing fails, render the content as a plain string
                                 return (
-                                  // <p className=" bg-white  border w-90 p-2 rounded-lg mb-2 left-0">
-                                  //   {message.content[0].text.value}
-                                  // </p>
-
                                   <>
-                                    <div className="chat chat-start">
+                                    <p className=" bg-white  border w-90 p-2 rounded-lg mb-2 left-0">
+                                      {message.content[0].text.value}
+                                    </p>
+                                    {/* <div className="chat chat-start">
                                       <div className="chat-image avatar">
                                         <div className="w-10 rounded-full">
                                           <img
@@ -587,15 +587,11 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                                           />
                                         </div>
                                       </div>
-                                      <div className="chat-header">
-                                        {/* Obi-Wan Kenobi */}
-                                        {/* <time className="text-xs opacity-50">12:45</time> */}
-                                      </div>
+                                      <div className="chat-header"></div>
                                       <div className="chat-bubble bg-openbox-green text-white">
                                         {message.content[0].text.value}
                                       </div>
-                                      {/* <div className="chat-footer opacity-50">Delivered</div> */}
-                                    </div>
+                                    </div> */}
                                   </>
                                 );
                               }
@@ -615,11 +611,11 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                         </>
                       ) : (
                         <>
-                          {/* <p className=" bg-openbox-green  border w-90 p-2 rounded-lg mb-2 left-0">
+                          <p className=" bg-openbox-green  border w-90 p-2 rounded-lg mb-2 left-0">
                             {message.content[0].text.value}
-                          </p> */}
+                          </p>
 
-                          <div className="chat chat-end">
+                          {/* <div className="chat chat-end">
                             <div className="chat-image avatar">
                               <div className="w-10 rounded-full">
                                 <img
@@ -629,15 +625,16 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                               </div>
                             </div>
                             <div className="chat-header">
-                              {/* Anakin */}
-                              {/* <time className="text-xs opacity-50">12:46</time> */}
+                              <time className="text-xs opacity-50">12:46</time>
                             </div>
                             <div className="chat-bubble">
                               {" "}
                               {message.content[0].text.value}
                             </div>
-                            {/* <div className="chat-footer opacity-50">Seen at 12:46</div> */}
-                          </div>
+                            <div className="chat-footer opacity-50">
+                              Seen at 12:46
+                            </div>
+                          </div> */}
                         </>
                       )}
                     </p>

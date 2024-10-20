@@ -179,16 +179,17 @@ function PollsHolder({ communityID }) {
   };
 
   return (
-    <div className="mt-4 h-480">
+    <div className="mt-4 h-480  z-90">
       <ToastContainer />
       <h1 className="text-xxl relative my-4  text-black p-2">
         Active Polls
         <IconButton
-          className="bg-openbox-green text-openbox-green"
+          className="bg-openbox-green text-openbox-green z-90"
           sx={{
             borderRadius: "50%",
             backgroundColor: "#bcd727",
             color: "white",
+            zIndex: 90,
             marginLeft: 2,
             "&:hover": {
               backgroundColor: "#819417",
@@ -197,7 +198,7 @@ function PollsHolder({ communityID }) {
           onClick={handleCreatePoll}
           aria-label="create poll"
         >
-          <AddIcon style={{ color: "white" }} />
+          {/* <AddIcon style={{ color: "white" }} /> */}
         </IconButton>
       </h1>
 

@@ -338,7 +338,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   return (
     <div className="">
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-20 z-10"></div>
+        <div className="fixed inset-0  backdrop-blur-md bg-opacity-20 z-10"></div>
       )}
       <div
         className={`${
@@ -351,7 +351,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
         >
           <IoMdClose size={25} />
         </button>
-        <form className="space-y-4 h-160 max-h-110 ">
+        <form className="space-y-4 h-160 max-h-110 z-100">
           <div>
             <label
               htmlFor="eventName"
@@ -686,23 +686,23 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
 
             <button
               onClick={generateDescription}
-              className="flex items-center px-4 py-2 bg-purple-400 text-white rounded-md hover:bg-blue-600"
+              className="flex mb-4 bg-hover-obgreen items-center px-4 py-2 bg-open text-white rounded-md "
             >
-              <RiAiGenerate className="mr-2 w-5 h-5" />
+              <RiAiGenerate className="mr-2 mx-2 w-5 h-5" />
               Generate Description
             </button>
 
             <button
               type="button"
               onClick={handleSaveDraft}
-              className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+              className=" mb-4 bg-white  mx-2 border text-black font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
             >
               Save Draft
             </button>
             <button
               type="submit"
               onClick={handleSubmitEvent}
-              className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+              className=" mb-4 bg-openbox-green mx-2 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5  focus:outline-none focus:ring-2 focus:ring-primary-300"
             >
               Post Event
             </button>
@@ -789,16 +789,16 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center overflow-x-hidden overflow-y-auto p-4">
-          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-3xl my-8 max-h-[80vh] overflow-y-auto">
+        <div className="fixed mt-18 inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center overflow-x-hidden overflow-y-auto p-4">
+          <div className="relative bg-red-500 rounded-lg shadow-xl w-full max-w-3xl my-8 max-h-[80vh] overflow-y-auto">
             <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
-              <button
+              {/* <button
                 onClick={onClose}
                 className="text-gray-500 hover:text-gray-700"
               >
                 <IoMdClose size={25} />
-              </button>
-              <form className="space-y-4">
+              </button> */}
+              <form className="space-y-4 w-full">
                 <div>
                   <label
                     htmlFor="eventName"
@@ -933,7 +933,7 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
 
                   <button
                     onClick={generateDescription}
-                    className="flex items-center px-4 py-2 bg-purple-400 text-white rounded-md"
+                    className="flex items-center px-4 mx-2 py-2 bg-purple-400 text-white rounded-md"
                   >
                     <RiAiGenerate className="mr-2 w-5 h-5" />
                     Generate Description
@@ -945,6 +945,8 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             >
               Save Draft
             </button> */}
+
+                  <button onClick={onClose}>Cancel </button>
                   <button
                     type="submit"
                     onClick={handleSubmitEvent}
@@ -1187,7 +1189,7 @@ export default function CommunityPage({ params }) {
           + EVENT
         </button>
       </div> */}
-      <div className="bg-background_gray mt-[98px] p-4 h-full">
+      <div className="bg-background_gray mt-[100px] p-4 h-full">
         <div className="flex justify-center mb-4">
           <button
             onClick={() => setCurrentView("infoManagement")}
