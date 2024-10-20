@@ -26,6 +26,7 @@ import {
   Visibility as VisibilityIcon,
   VisibilityOff as VisibilityOffIcon,
   Delete as DeleteIcon,
+  PostAdd as PostAddIcon,
 } from "@mui/icons-material";
 import CommunityDB from "../database/community/community";
 import { useRouter } from "next/navigation";
@@ -94,7 +95,12 @@ const AdminCommunity = () => {
   const handleClosePopup = () => {
     setPopupOpen(false);
   };
-
+  const getUnarchiveButtonText = (status) => {
+    return status === "draft" ? "Post" : "Unarchive";
+  };
+  const getUnarchiveButtonIcon = (status) => {
+    return status === "draft" ? <PostAddIcon /> : <VisibilityOffIcon />;
+  };
   const handleFormSubmit = async (e) => {
     e.preventDefault();
 
@@ -426,9 +432,9 @@ const AdminCommunity = () => {
                         ) : (
                           <Button
                             size="small"
-                            startIcon={<VisibilityOffIcon />}
+                            startIcon={getUnarchiveButtonIcon(data.status)}
                             onClick={(e) => {
-                              e.stopPropagation(); // Prevent card click when unarchiving
+                              e.stopPropagation();
                               handleUnarchive(data.id);
                             }}
                             sx={{
@@ -445,7 +451,7 @@ const AdminCommunity = () => {
                               maxWidth: "100px",
                             }}
                           >
-                            Unarchive
+                            {getUnarchiveButtonText(data.status)}
                           </Button>
                         )}
 
