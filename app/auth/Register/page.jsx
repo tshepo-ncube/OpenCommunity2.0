@@ -24,7 +24,13 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
+      // First navigate to /Home
       router.push("/Home");
+
+      // Then navigate to /auth/Profile after a brief delay
+      setTimeout(() => {
+        router.push("/auth/Profile");
+      }, 1000); // 1-second delay
     }
   }, [user]);
 
