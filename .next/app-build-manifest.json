@@ -46,6 +46,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/auth/RecommendCommunity/page.js"
+    ],
+    "/auth/ForgotPassword/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/auth/ForgotPassword/page.js"
     ]
   }
 }
