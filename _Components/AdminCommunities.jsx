@@ -238,8 +238,11 @@ const AdminCommunity = () => {
                 {events.map((data) => (
                   <Grid item xs={12} sm={6} md={4} lg={3} key={data.id}>
                     <Card
-                      className="flex flex-col h-150"
-                      onClick={() => router.push(`/admin/Dashboard/${data.id}`)} // Navigate to community detail page
+                      className="flex flex-col h-100"
+                      onClick={() => {
+                        console.log(data);
+                        //router.push(`/admin/Dashboard/${data.id}`);
+                      }} // Navigate to community detail page
                       sx={{
                         display: "flex",
                         flexDirection: "column",
@@ -255,7 +258,7 @@ const AdminCommunity = () => {
                       <CardMedia
                         component="img"
                         height="175"
-                        className="h-60"
+                        className="h-40"
                         image={
                           data.communityImage
                             ? data.communityImage

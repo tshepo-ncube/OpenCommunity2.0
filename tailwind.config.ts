@@ -94,6 +94,7 @@ const config: Config = {
         "19": "5rem", // Equivalent to 72px
         "20": "10rem",
         "25": "12rem",
+        "80": "18rem",
         "100": "25rem",
         "105": "25.5rem", // Custom width
         "110": "27.5rem", // Custom width
