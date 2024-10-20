@@ -319,16 +319,6 @@ const DiscoverCommunity = ({ email }) => {
 
       {/* <button>hey</button> */}
 
-      <button
-        onClick={() => {
-          router.push("/auth/RecommendCommunity");
-        }}
-        className="flex items-center px-4 py-2 bg-openbox-green text-white rounded-md hover:bg-openbox-green"
-      >
-        <MdRecommend className="mr-2 w-5 h-5" />
-        Recommend a Community
-      </button>
-
       <div className="flex justify-center flex-wrap mt-2">
         {!loading ? (
           <>
