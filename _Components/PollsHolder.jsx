@@ -339,82 +339,123 @@ function PollsHolder({ communityID }) {
         </>
       )}
 
-      <Dialog open={showCreateForm} onClose={handleCloseForm} maxWidth="sm" fullWidth>
-        <DialogTitle>Create a New Poll</DialogTitle>
-        <DialogContent>
-          <DialogContentText style={{ marginBottom: 20 }}>
-            Enter your poll end date.
-          </DialogContentText>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label="Select Date"
-              value={dateValue}
-              onChange={(newValue) => {
-                setDateValue(newValue);
-              }}
-              minDate={dayjs().add(1, "day")}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  error={errors.dateError}
-                  helperText={errors.dateError ? "Please select a date" : ""}
-                  fullWidth
-                  style={{ marginBottom: 20 }}
-                />
-              )}
-            />
-          </LocalizationProvider>
-
-          <DialogContentText style={{ marginBottom: 20 }}>
-            Enter your poll question and options:
-          </DialogContentText>
-
+<Dialog 
+  open={showCreateForm} 
+  onClose={handleCloseForm} 
+  maxWidth="xs" 
+  fullWidth={false} 
+  sx={{ '& .MuiDialog-paper': { width: '90%', maxWidth: '400px' } }}
+>
+  <DialogTitle className="font-bold text-center">Create a New Poll</DialogTitle>
+  <DialogContent>
+    <DialogContentText style={{ marginBottom: 10 }}>
+      Enter your poll end date.
+    </DialogContentText>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <DatePicker
+        label="Select Date"
+        value={dateValue}
+        onChange={(newValue) => {
+          setDateValue(newValue);
+        }}
+        minDate={dayjs().add(1, "day")}
+        renderInput={(params) => (
           <TextField
-            autoFocus
-            margin="dense"
-            id="pollQuestion"
-            label="Poll Question"
+            {...params}
+            error={errors.dateError}
+            helperText={errors.dateError ? "Please select a date" : ""}
             fullWidth
-            multiline
-            minRows={4}
-            value={newPollQuestion}
-            onChange={(e) => setNewPollQuestion(e.target.value)}
-            error={errors.questionError}
-            helperText={errors.questionError ? "Poll question is required" : ""}
+            style={{ marginBottom: 10 }}
           />
+        )}
+      />
+    </LocalizationProvider>
 
-          {newPollOptions.map((option, index) => (
-            <div key={index} style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
-              <TextField
-                margin="dense"
-                label={`Option ${index + 1}`}
-                fullWidth
-                value={option}
-                onChange={(e) => handleChangeOption(index, e.target.value)}
-                error={errors.optionError && !option.trim()}
-                helperText={errors.optionError && !option.trim() ? "Option is required" : ""}
-              />
-              {index > 1 && (
-                <IconButton onClick={() => handleRemoveOption(index)}>
-                  <RemoveIcon />
-                </IconButton>
-              )}
-            </div>
-          ))}
+    <DialogContentText style={{ marginBottom: 10 }}>
+      Enter your poll question and options:
+    </DialogContentText>
 
-          <Button onClick={handleAddOption} style={{ marginBottom: 20 }}>
-            Add Option
-          </Button>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseForm} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleSavePoll} color="primary">
-            Create Poll
-          </Button>
-        </DialogActions>
-      </Dialog>
+    <TextField
+      autoFocus
+      // margin="dense"
+      id="pollQuestion"
+      label="Poll Question"
+      fullWidth
+      multiline
+      minRows={2}
+      value={newPollQuestion}
+      onChange={(e) => setNewPollQuestion(e.target.value)}
+      error={errors.questionError}
+      helperText={errors.questionError ? "Poll question is required" : ""}
+      sx={{ maxWidth: '350px', mx: 'auto', marginBottom: 2 }}
+    />
+
+    {newPollOptions.map((option, index) => (
+      <div key={index} style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
+        <TextField
+          margin="dense"
+          label={`Option ${index + 1}`}
+          fullWidth
+          value={option}
+          onChange={(e) => handleChangeOption(index, e.target.value)}
+          error={errors.optionError && !option.trim()}
+          helperText={errors.optionError && !option.trim() ? "Option is required" : ""}
+        />
+        {index > 1 && (
+          <IconButton onClick={() => handleRemoveOption(index)}>
+            <RemoveIcon />
+          </IconButton>
+        )}
+      </div>
+    ))}
+
+    <Button
+      onClick={handleAddOption}
+      variant="contained"
+      sx={{
+        border: "ActiveBorder",
+        backgroundColor: "#999999",
+        color: "white",
+        '&:hover': {
+          backgroundColor: "#d4cfcf",
+        },
+        marginBottom: 10,
+      }}
+    >
+      Add Option
+    </Button>
+  </DialogContent>
+  <DialogActions>
+    <Button
+      onClick={handleCloseForm}
+      variant="contained"
+      sx={{
+        backgroundColor: "red",
+        color: "white",
+        '&:hover': {
+          backgroundColor: "#d32f2f",
+        },
+      }}
+    >
+      Cancel
+    </Button>
+    <Button
+      onClick={handleSavePoll}
+      variant="contained"
+      sx={{
+        backgroundColor: "#BCD727",
+        color: "white",
+        '&:hover': {
+          backgroundColor: "#A6B320",
+        },
+      }}
+    >
+      Create Poll
+    </Button>
+  </DialogActions>
+</Dialog>
+
+
 
       <Dialog open={showAnalyticsForm} onClose={handleAnalyticsCloseForm} maxWidth="lg" fullWidth>
         <DialogContent>

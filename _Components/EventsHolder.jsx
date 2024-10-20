@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import {
+  Grid,
   Card,
   CardContent,
   Typography,
+  CardActions,
   Button,
-  IconButton,
-  Box,
   Modal,
+  Box,
   Table,
   TableBody,
   TableCell,
@@ -14,23 +15,25 @@ import {
   TableHead,
   TableRow,
   Paper,
- InsertChartOutlinedIcon
+  IconButton,
 } from "@mui/material";
 import * as XLSX from "xlsx";
+import { IoMdClose } from "react-icons/io";
+import AnalyticsDB from "../database/community/analytics";
+import EventDB from "../database/community/event";
+import { green, red, blue, yellow } from "@mui/material/colors";
+import AddIcon from "@mui/icons-material/Add";
 import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Assessment as AssessmentIcon,
-  ExpandMore as ExpandMoreIcon,
-  ExpandLess as ExpandLessIcon,
   LocationOn,
   Event,
   AccessTime,
   Description as DescriptionIcon,
-  AnalyticsOutlined,
+  ExpandLess as ExpandLessIcon,
+  ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
-import AddIcon from "@mui/icons-material/Add";
-import EventDB from "../database/community/event";
 
 const EventsHolder = ({
   communityID,
@@ -54,6 +57,63 @@ const EventsHolder = ({
     setLoading(false);
   }, [communityID]);
 
+  useEffect(() => {
+    const updateEventsStatus = async () => {
+      const currentDate = new Date();
+      const updatedEvents = await Promise.all(
+        allEvents.map(async (event) => {
+          let updatedEvent = { ...event };
+          let newStatus = event.status;
+
+          if (event.status === "draft") {
+            return updatedEvent;
+          }
+
+          if (event.RsvpEndTime && event.RsvpEndTime.toDate() > currentDate) {
+            if (event.status !== "rsvp") {
+              newStatus = "rsvp";
+            }
+          } else if (event.EndDate && event.EndDate.toDate() < currentDate) {
+            if (event.status !== "past") {
+              newStatus = "past";
+            }
+          } else {
+            if (
+              event.RsvpEndTime &&
+              event.RsvpEndTime.toDate() <= currentDate
+            ) {
+              if (event.status !== "active") {
+                newStatus = "active";
+              }
+            }
+          }
+
+          if (newStatus !== event.status) {
+            try {
+              await EventDB.updateEventStatus(event.id, newStatus);
+              updatedEvent.status = newStatus;
+            } catch (error) {
+              console.error(
+                `Error updating event status for ${event.id}:`,
+                error
+              );
+            }
+          }
+
+          return updatedEvent;
+        })
+      );
+
+      if (JSON.stringify(updatedEvents) !== JSON.stringify(allEvents)) {
+        setAllEvents(updatedEvents);
+      }
+    };
+
+    updateEventsStatus();
+    const interval = setInterval(updateEventsStatus, 60000);
+    return () => clearInterval(interval);
+  }, [allEvents]);
+
   const formatDate = (timestamp) => {
     if (!timestamp) return "No Date";
     const date = timestamp.toDate();
@@ -66,30 +126,19 @@ const EventsHolder = ({
     return time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
-  const handleViewAnalytics = (event) => {
-    setSelectedEvent(event);
-    setOpenAnalyticsModal(true);
-  };
-
-  const handleCloseAnalyticsModal = () => {
-    setOpenAnalyticsModal(false);
-    setSelectedEvent(null);
-  };
-
-  const handleEdit = (eventId) => {
-    console.log("Edit event with ID:", eventId);
-  };
-
-  const handleDelete = (eventId) => {
-    setEventIdToDelete(eventId);
+  const handleDeleteConfirmation = (id) => {
+    setEventIdToDelete(id);
     setOpenDeleteModal(true);
   };
 
-  const handleConfirmDelete = () => {
-    console.log("Delete confirmed for event ID:", eventIdToDelete);
-    setOpenDeleteModal(false);
-    setEventIdToDelete(null);
-    // Logic to delete the event goes here
+  const handleDelete = async () => {
+    try {
+      await EventDB.deleteEvent(eventIdToDelete);
+      setAllEvents(allEvents.filter((event) => event.id !== eventIdToDelete));
+      setOpenDeleteModal(false);
+    } catch (error) {
+      console.error("Error deleting event:", error);
+    }
   };
 
   const handleCloseDeleteModal = () => {
@@ -97,26 +146,54 @@ const EventsHolder = ({
     setEventIdToDelete(null);
   };
 
-  const exportToExcel = (context, eventName) => {
-    const ws = XLSX.utils.json_to_sheet(
-      analyticsData.map((data) => ({
-        Email: data.Email,
-        Name: data.Name,
-        Surname: data.Surname,
-        Telephone: data.Telephone,
-        Allergy: data.Allergies,
-        Diet: data.Diet,
-      }))
-    );
-
-    const fileName = `Analytics_${eventName.replace(/\s+/g, "_")}.xlsx`;
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, `Analytics_${eventName}`.substring(0, 31));
-    XLSX.writeFile(wb, fileName);
+  const handleViewAnalytics = async (event) => {
+    setSelectedEvent(event);
+    try {
+      const rsvpData = await EventDB.getEventRsvpEmails(event.id);
+      setRsvpEmails(rsvpData || []);
+    } catch (error) {
+      console.error("Error fetching RSVP data:", error);
+      setRsvpEmails([]);
+    }
+    setOpenAnalyticsModal(true);
   };
 
-  const upcomingEvents = allEvents.filter((event) => event.status !== "past");
-  const pastEvents = allEvents.filter((event) => event.status === "past");
+  const handleCloseAnalyticsModal = () => {
+    setOpenAnalyticsModal(false);
+    setSelectedEvent(null);
+    setRsvpEmails([]);
+  };
+
+  const handleEdit = (id) => {
+    const eventObject = getEventById(id);
+    setEventForm((prevState) => ({
+      ...prevState,
+      Name: eventObject.Name,
+      startDate: convertTimestamp(eventObject.StartDate).date_string,
+      startTime: convertTimestamp(eventObject.StartDate).time_string,
+      endDate: convertTimestamp(eventObject.EndDate).date_string,
+      EventID: id,
+      endTime: convertTimestamp(eventObject.EndDate).time_string,
+      Location: eventObject.Location,
+      EventDescription: eventObject.EventDescription,
+      rsvpEndDateTime: `${convertTimestamp(eventObject.RsvpEndTime).date_string}T${convertTimestamp(eventObject.RsvpEndTime).time_string}`,
+    }));
+    setShowEditForm(true);
+  };
+
+  const getEventById = (id) => {
+    return allEvents.find((event) => event.id === id);
+  };
+
+  const convertTimestamp = (timestamp) => {
+    const date = new Date(timestamp.seconds * 1000);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return { date_string: `${year}-${month}-${day}`, time_string: `${hours}:${minutes}` };
+  };
 
   const toggleCollapse = () => {
     setIsCollapsed(!isCollapsed);
@@ -124,32 +201,43 @@ const EventsHolder = ({
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "rsvp open":
-        return "#FFD700"; // Gold color for RSVP open
-      case "rsvp closed":
-        return "#FF4500"; // Red color for RSVP closed
       case "active":
-        return "#4CAF50"; // Green color for active events
+        return green[500];
+      case "archived":
+        return red[500];
       case "draft":
-        return "#1E90FF"; // Blue for draft
+        return blue[500];
+      case "rsvp":
+        return yellow[500];
       default:
-        return "#808080"; // Grey for other statuses
+        return "#000";
     }
   };
 
+  const upcomingEvents = allEvents.filter((event) => event.status !== "past");
+  const pastEvents = allEvents.filter((event) => event.status === "past");
+
   return (
-    <div
-      style={{
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-        padding: "20px",
-        marginTop: "20px",
-        backgroundColor: "#fff",
-      }}
-    >
+    <div style={{ border: "1px solid #ddd", borderRadius: "8px", padding: "20px", backgroundColor: "#fff", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)", marginTop: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <h1 className="text-xxl relative mb-2 text-black">Events</h1>
+        <h1 className="text-xxl relative mb-2 text-black p-2">
+          Upcoming Events
+          <IconButton
+            sx={{
+              borderRadius: "50%",
+              backgroundColor: "#bcd717",
+              color: "white",
+              marginLeft: 2,
+              "&:hover": {
+                backgroundColor: "#9aaf2e",
+              },
+            }}
+            onClick={handleCreateNewEvent}
+            aria-label="create event"
+          >
+            <AddIcon />
+          </IconButton>
+        </h1>
         <IconButton onClick={toggleCollapse} aria-label="collapse">
           {isCollapsed ? <ExpandMoreIcon /> : <ExpandLessIcon />}
         </IconButton>
@@ -158,34 +246,16 @@ const EventsHolder = ({
 
       {!isCollapsed && (
         <>
-          <h2 className="text-xl font-bold relative my-4 text-black p-2">
-            Upcoming Events
-            <IconButton
-              sx={{
-                borderRadius: "50%",
-                backgroundColor: "#bcd717",
-                color: "white",
-                marginLeft: 2,
-                "&:hover": {
-                  backgroundColor: "#9aaf2e",
-                },
-              }}
-              onClick={handleCreateNewEvent}
-              aria-label="create event"
-            >
-              <AddIcon />
-            </IconButton>
-          </h2>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "15px" }}>
+          <h2 className="text-xl relative my-4 text-black p-2">Upcoming Events</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "15px" }}>
             {loading ? (
               <center>Loading...</center>
             ) : upcomingEvents.length === 0 ? (
               <center>No upcoming events</center>
             ) : (
-              upcomingEvents.map((event) => (
+              upcomingEvents.map((value) => (
                 <Card
-                  key={event.id}
+                  key={value.id}
                   sx={{
                     maxWidth: 400,
                     backgroundColor: "white",
@@ -198,85 +268,68 @@ const EventsHolder = ({
                   <div className="relative">
                     <img
                       src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                      alt={event.Name}
+                      alt={value.Name}
                       className="w-full h-48 object-cover"
                     />
-                    {event.status !== "past" && (
+                    {value.status !== "past" && (
                       <Box
                         sx={{
                           position: "absolute",
                           top: 10,
                           left: 10,
-                          backgroundColor: getStatusColor(event.status),
+                          backgroundColor: getStatusColor(value.status),
                           color: "#fff",
                           padding: "4px 8px",
                           borderRadius: "4px",
                         }}
                       >
-                        {event.status.toUpperCase()}
+                        {value.status.toUpperCase()}
                       </Box>
                     )}
                   </div>
 
                   <CardContent>
                     <Typography variant="h6" className="text-left mb-2 font-semibold">
-                      {event.Name}
+                      {value.Name}
                     </Typography>
                     <div className="mb-2">
                       <DescriptionIcon className="text-gray-600 mr-2" />
-                      <span className="text-gray-800 text-sm">
-                        {event.EventDescription}
-                      </span>
+                      <span className="text-gray-800 text-sm">{value.EventDescription}</span>
                     </div>
                     <div className="flex items-center mb-1">
                       <LocationOn className="text-gray-600 mr-2" />
-                      <span className="text-gray-800 text-sm">
-                        {event.Location}
-                      </span>
+                      <span className="text-gray-800 text-sm">{value.Location}</span>
                     </div>
                     <div className="flex items-center mb-1">
                       <Event className="text-gray-600 mr-2" />
                       <span className="text-gray-800 text-sm">
-                        {formatDate(event.StartDate)} {formatTime(event.StartDate)}  - {formatDate(event.EndDate)} {formatTime(event.EndDate)}
+                        {formatDate(value.StartDate)} - {formatDate(value.EndDate)}
                       </span>
                     </div>
-                    {/* NEED TO CHANGE THIS TO RSVP end time */}
                     <div className="flex items-center">
                       <AccessTime className="text-gray-600 mr-2" />
                       <span className="text-gray-800 text-sm">
-                        {formatTime(event.StartDate)} - {formatTime(event.EndDate)}
+                        {formatTime(value.StartDate)} - {formatTime(value.EndDate)}
                       </span>
                     </div>
                   </CardContent>
 
-                  <Box sx={{ padding: 2, display: "flex", justifyContent: "space-between", gap: 1 }}>
+                  <Box sx={{ padding: 2, display: "flex", justifyContent: "space-between" }}>
                     <Button
                       variant="contained"
-                      color="primary"
                       sx={{ backgroundColor: "#a8bf22", "&:hover": { backgroundColor: "#bcd727" } }}
-                      onClick={() => handleViewAnalytics(event)}
+                      onClick={() => handleViewAnalytics(value)}
                     >
-                      <AnalyticsOutlined/>
-                       Analytics
+                      View Analytics
                     </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      sx={{ backgroundColor: "#999999", "&:hover": { backgroundColor: "#d4cfcf" } }}
-                      onClick={() => handleEdit(event.id)}
-                    >
-                      <EditIcon/>
-                       Edit
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      sx={{ backgroundColor: "#999999", "&:hover": { backgroundColor: "#d4cfcf" } }}
-                      onClick={() => handleDelete(event.id)} 
-                    >
-                      <DeleteIcon/>
-                       Delete
-                    </Button>
+                    <Box sx={{ display: "flex", gap: 1 }}>
+                      <IconButton size="small" onClick={() => handleEdit(value.id)} title="Edit">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton size="small" onClick={() => handleDeleteConfirmation(value.id)} title="Delete">
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
                   </Box>
                 </Card>
               ))
@@ -290,9 +343,9 @@ const EventsHolder = ({
             ) : pastEvents.length === 0 ? (
               <center>No past events</center>
             ) : (
-              pastEvents.map((event) => (
+              pastEvents.map((value) => (
                 <Card
-                  key={event.id}
+                  key={value.id}
                   sx={{
                     maxWidth: 400,
                     backgroundColor: "white",
@@ -302,40 +355,28 @@ const EventsHolder = ({
                     margin: "16px 0",
                   }}
                 >
-                  <div className="relative">
-                    <img
-                      src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                      alt={event.Name}
-                      className="w-full h-48 object-cover"
-                    />
-                  </div>
-
                   <CardContent>
                     <Typography variant="h6" className="text-left mb-2 font-semibold">
-                      {event.Name}
+                      {value.Name}
                     </Typography>
                     <div className="mb-2">
                       <DescriptionIcon className="text-gray-600 mr-2" />
-                      <span className="text-gray-800 text-sm">
-                        {event.EventDescription}
-                      </span>
+                      <span className="text-gray-800 text-sm">{value.EventDescription}</span>
                     </div>
                     <div className="flex items-center mb-1">
                       <LocationOn className="text-gray-600 mr-2" />
-                      <span className="text-gray-800 text-sm">
-                        {event.Location}
-                      </span>
+                      <span className="text-gray-800 text-sm">{value.Location}</span>
                     </div>
                     <div className="flex items-center mb-1">
                       <Event className="text-gray-600 mr-2" />
                       <span className="text-gray-800 text-sm">
-                        {formatDate(event.StartDate)} - {formatDate(event.EndDate)}
+                        {formatDate(value.StartDate)} - {formatDate(value.EndDate)}
                       </span>
                     </div>
                     <div className="flex items-center">
                       <AccessTime className="text-gray-600 mr-2" />
                       <span className="text-gray-800 text-sm">
-                        {formatTime(event.StartDate)} - {formatTime(event.EndDate)}
+                        {formatTime(value.StartDate)} - {formatTime(value.EndDate)}
                       </span>
                     </div>
                   </CardContent>
@@ -343,9 +384,8 @@ const EventsHolder = ({
                   <Box sx={{ padding: 2, display: "flex", justifyContent: "center" }}>
                     <Button
                       variant="contained"
-                      color="primary"
                       sx={{ backgroundColor: "#a8bf22", "&:hover": { backgroundColor: "#bcd727" } }}
-                      onClick={() => handleViewAnalytics(event)}
+                      onClick={() => handleViewAnalytics(value)}
                     >
                       View Analytics
                     </Button>
@@ -376,25 +416,15 @@ const EventsHolder = ({
             p: 4,
           }}
         >
-          <Typography
-            id="delete-confirmation-title"
-            variant="h6"
-            component="h2"
-          >
+          <Typography id="delete-confirmation-title" variant="h6" component="h2">
             <DeleteIcon />
           </Typography>
           <Typography id="delete-confirmation-description" sx={{ mt: 2 }}>
             Are you sure you want to delete this event?
           </Typography>
-          <Box
-            sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 2 }}
-          >
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 2 }}>
             <Button onClick={handleCloseDeleteModal}>Cancel</Button>
-            <Button
-              variant="contained"
-              color="error"
-              onClick={handleConfirmDelete}
-            >
+            <Button variant="contained" color="error" onClick={handleDelete}>
               Delete
             </Button>
           </Box>
@@ -421,16 +451,24 @@ const EventsHolder = ({
           }}
         >
           <Typography id="analytics-modal-title" variant="h6" component="h2">
-            Analytics for {selectedEvent?.Name}
+            {selectedEvent?.status === "rsvp"
+              ? `RSVP List for ${selectedEvent?.Name}`
+              : selectedEvent?.status === "past"
+              ? `Analytics for ${selectedEvent?.Name}`
+              : `Event Details for ${selectedEvent?.Name}`}
           </Typography>
-          <Button
-            size="small"
-            onClick={() =>
-              exportToExcel("analytics", selectedEvent?.Name)
-            }
-          >
-            Export Analytics to Excel
-          </Button>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 2 }}>
+            {selectedEvent?.status === "rsvp" && (
+              <Button size="small" onClick={() => handleExportRSVP(selectedEvent)}>
+                Export RSVP to Excel
+              </Button>
+            )}
+            {selectedEvent?.status === "past" && (
+              <Button size="small" onClick={() => handleExportAnalytics(selectedEvent)}>
+                Export Analytics to Excel
+              </Button>
+            )}
+          </Box>
           <TableContainer component={Paper} sx={{ mt: 2 }}>
             <Table>
               <TableHead>
