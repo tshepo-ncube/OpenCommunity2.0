@@ -319,7 +319,7 @@ const CreateCommunity = () => {
     return (
       <td
         className={`px-6 py-4 text-sm ${
-          isHighlighted ? "text-red-600" : "text-gray-900"
+          isHighlighted ? "text-red-600 font-bold" : "text-gray-900"
         }`}
       >
         {email}

@@ -678,9 +678,9 @@ const AdminCommunity = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-gray-100">
+    <div className="relative min-h-screen  ">
       {isPopupOpen && (
-        <div className="fixed bg-gray-100 inset-0 left-0 w-full h-full flex justify-center items-center z-20">
+        <div className="fixed  backdrop-blur-lg inset-0 left-0 w-full h-full flex justify-center items-center z-20">
           <div className="relative w-full max-w-lg p-6 bg-white rounded-lg shadow-md">
             <button
               className="absolute top-2 p-2 right-2 text-gray-600 hover:text-black"
