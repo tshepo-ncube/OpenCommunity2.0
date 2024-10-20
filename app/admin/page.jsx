@@ -336,13 +336,13 @@ const CreateCommunity = () => {
       return 0;
     });
   };
+
   const handleFormSubmit = async (e, status) => {
     e.preventDefault();
     console.log("handleFormSubmit");
 
     const similarCommunity = checkNameSimilarity(name);
     if (similarCommunity) {
-      //alert("Similar COMCOM");
       setSimilarityError({
         message:
           "Cannot create this community as a similar community already exists.",
@@ -352,16 +352,14 @@ const CreateCommunity = () => {
       return;
     }
 
-    // Get the logged-in user's email (assuming consoleEmails stores the logged-in user's email)
-    const adminEmail = localStorage.getItem("Email"); // consoleEmails[0]; // Assuming the first email is the logged-in user's email
+    const adminEmail = localStorage.getItem("Email");
 
-    // Create the community data with the admin field
     const communityData = {
       name,
       description,
       category,
       status,
-      admin: localStorage.getItem("Email"), // Adding the admin field with the logged-in user's email
+      admin: adminEmail,
     };
 
     if (editIndex !== null) {
@@ -372,6 +370,7 @@ const CreateCommunity = () => {
           const updatedSubmittedData = [...submittedData];
           updatedSubmittedData[editIndex] = updatedData;
           setSubmittedData(updatedSubmittedData);
+          setPopupOpen(false); // Close the form after update
         },
         setLoading
       );
@@ -379,76 +378,30 @@ const CreateCommunity = () => {
       // Create a new community
       console.log("Creating a community now...");
       try {
+        if (!image) {
+          setShowImageError(true);
+          console.log("THERE IS NO IMAGE< PLEASE SELECT ONE ");
+          return;
+        }
+
+        if (selectedInterests.length < 3) {
+          setShowInterestsError(true);
+          return;
+        }
+
         CommunityDB.createCommunity(
           communityData,
           image,
           (newCommunity) => {
             setSubmittedData((prevData) => [...prevData, newCommunity]);
+            setPopupOpen(false); // Close the form after successful creation
           },
-          setLoading
+          setLoading,
+          selectedInterests,
+          setCommunityCreated
         );
-        // console.log("creating a channel now...");
-        // CommunityDB.createCommunity(
-        //   communityData,
-        //   (newCommunity) =>
-        //     setSubmittedData((prevData) => [...prevData, newCommunity]),
-        //   setLoading
-        // );
-        //name, description, category, status
-
-        try {
-          // const res = await axios.post(
-          //   strings.server_endpoints.createChannel,
-          //   { name, description, category, status },
-          //   {
-          //     headers: {
-          //       "Content-Type": "application/json",
-          //     },
-          //   }
-          // );
-
-          // console.log(res.data);
-          // let data = res.data;
-
-          console.log("About to check if image is there on create comm form");
-
-          if (!image) {
-            //alert("Please have an image");
-            //setSimilarCommmunitySnackbarOpen(true);
-            setShowImageError(true);
-            console.log("THERE IS NO IMAGE< PLEASE SELECT ONE ");
-            return;
-          }
-
-          if (selectedInterests.length < 3) {
-            // alert("Please add more interests");
-            // setImageError(true);
-            //  setShowImageError(true);
-            setShowInterestsError(true);
-            return;
-          }
-
-          CommunityDB.createCommunity(
-            communityData,
-            image,
-            (newCommunity) => {
-              setSubmittedData((prevData) => [...prevData, newCommunity]);
-            },
-            setLoading,
-            selectedInterests,
-            setCommunityCreated
-
-            // ,
-            // {
-            //   WebUrl: data.webUrl,
-            //   ChannelID: data.id,
-            // }
-          );
-        } catch (err) {
-          console.log("Error:", err);
-        }
       } catch (err) {
-        console.log("error : ", err);
+        console.log("Error:", err);
       }
     }
   };
@@ -725,12 +678,20 @@ const CreateCommunity = () => {
                     className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                     required
                   >
-                    <option value="General">General</option>
-                    <option value="Sports">Sports/Fitness</option>
-                    <option value="Social">Social Activities</option>
-                    <option value="Retreat">Company Retreat</option>
-                    <option value="Development">
-                      Professional Development
+                    <option value="Fitness & Wellness">
+                      Fitness & Wellness
+                    </option>
+                    <option value="Food & Drinks">Food & Drinks</option>
+                    <option value="Arts & Culture">Arts & Culture</option>
+                    <option value="Tech & Gaming">Tech & Gaming</option>
+                    <option value="Social & Networking">
+                      Social & Networking
+                    </option>
+                    <option value="Hobbies & Interests">
+                      Hobbies & Interests
+                    </option>
+                    <option value="Travel & Adventure">
+                      Travel & Adventure
                     </option>
                   </select>
                 </div>
@@ -827,7 +788,7 @@ const CreateCommunity = () => {
                     type="submit"
                     className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
-                    {editIndex !== null ? "Save" : "Create"}
+                    {editIndex !== null ? "Save" : "Create Community"}
                   </button>
                   <CloseIcon
                     className="absolute top-4 right-4 text-black-500 cursor-pointer"
