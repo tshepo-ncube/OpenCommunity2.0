@@ -164,11 +164,17 @@ const Navbar = ({ isHome }) => {
                 checked={isAdmin}
                 onChange={handleToggleChange}
                 sx={{
+                  "& .MuiSwitch-switchBase": {
+                    color: "#ffffff",
+                  },
                   "& .MuiSwitch-switchBase.Mui-checked": {
                     color: "#bcd727",
                   },
                   "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
                     backgroundColor: "#bcd727",
+                  },
+                  "& .MuiSwitch-track": {
+                    backgroundColor: "#ffffff",
                   },
                 }}
               />
