@@ -514,12 +514,14 @@ const CreateCommunity = () => {
   }, []);
 
   const handleAdminRoleChange = async (email, newRole) => {
+    console.log("handleAdminRoleChange");
     try {
       const updatedRole = newRole === "admin" ? "user" : "admin"; // Toggle between roles
-
+      console.log("email , ", email);
+      console.log("newRole , ", newRole);
       const allUsers = await UserDB.getAllUsers(); // Get all users
       const userToUpdate = allUsers.find((user) => user.Email === email); // Find the user by email
-
+      console.log("userToUpdate ", userToUpdate);
       if (userToUpdate) {
         const userRef = doc(DB, "users", userToUpdate.id); // Get the document reference for the user
         await updateDoc(userRef, { Role: updatedRole }); // Update the user's role

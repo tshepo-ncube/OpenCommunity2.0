@@ -75,8 +75,11 @@ export default class UserDB {
     try {
       const usersCollection = collection(DB, "users");
       const usersSnapshot = await getDocs(usersCollection);
-      const usersList = usersSnapshot.docs.map((doc) => doc.data());
-
+      //const usersList = usersSnapshot.docs.map((doc) => doc.data());
+      const usersList = usersSnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
       // Extract only Name, Surname, and Points
       return usersList.map((user) => ({
         Name: user.Name,
@@ -85,6 +88,7 @@ export default class UserDB {
         profileImage: user.profileImage,
         Email: user.Email,
         Role: user.Role ? user.Role : "user",
+        id: user.id,
       }));
     } catch (e) {
       console.error("Error getting users: ", e);

@@ -317,7 +317,9 @@ const AdminManagement = ({
                           className="form-checkbox h-5 w-5 text-blue-600"
                           checked={user.Role === "admin"}
                           onChange={(e) => {
+                            console.log("checked");
                             if (!isHighlighted) {
+                              console.log("!isHighlighted ");
                               const isChecked = e.target.checked;
                               const confirmationMessage = isChecked
                                 ? `Are you sure you want to give admin rights to ${user.Email}?`
@@ -325,6 +327,7 @@ const AdminManagement = ({
                               const confirmation =
                                 window.confirm(confirmationMessage);
                               if (confirmation) {
+                                console.log("confirmatation ");
                                 handleAdminRoleChange(user.Email, user.Role);
                               }
                             }
