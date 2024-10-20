@@ -61,7 +61,7 @@ const nextConfig = {
   //   ];
   // },
 
-  output: "export",
+  // output: "export",
   images: {
     domains: [
       "assets.aceternity.com",
