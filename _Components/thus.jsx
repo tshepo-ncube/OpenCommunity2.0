@@ -8,13 +8,11 @@ import axios from "axios";
 import strings from "../../Utils/strings.json";
 import InterestSelection from "@/_Components/InterestsSelection";
 import UserDB from "../../database/community/users"; // Make sure this import path is correct
-
+import AdminManagement from "../../_Components/AdminManagement";
+import AdminMan from "../../_Components/AdminMan";
 import { doc, updateDoc } from "firebase/firestore";
 import DB from "../../database/DB"; // Ensure you are importing your Firestore DB instance
 import ManageUser from "@/database/auth/ManageUser";
-
-import Button from "@mui/material/Button";
-import Snackbar from "@mui/material/Snackbar";
 
 const CreateCommunity = () => {
   const [activeTab, setActiveTab] = useState("tab1");
@@ -56,54 +54,6 @@ const CreateCommunity = () => {
   const [isHandoverConfirmationOpen, setHandoverConfirmationOpen] =
     useState(false);
   const communityHandoverRef = useRef(null);
-
-  const [similarCommmunitySnackbarOpen, setSimilarCommmunitySnackbarOpen] =
-    React.useState(false);
-
-  const [showErrorPopup, setShowErrorPopup] = useState(false);
-
-  const [showImageError, setShowImageError] = useState(false);
-  const [showInterestsError, setShowInterestsError] = useState(false);
-  const [communityCreated, setCommunityCreated] = useState(false);
-
-  const [similarityError, setSimilarityError] = useState({
-    message: "",
-    similarCommunity: "",
-  });
-
-  const handleCreatedClick = () => {
-    setCommunityCreated(true);
-  };
-
-  const handleCreatedClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setCommunityCreated(false);
-  };
-
-  {
-    /* <Button onClick={handleCreatedClick}>Open Snackbar</Button> */
-  }
-  <Snackbar
-    open={communityCreated}
-    autoHideDuration={5000}
-    onClose={handleCreatedClose}
-    message={`${name} has been created`}
-  />;
-
-  const handleClick = () => {
-    setSimilarCommmunitySnackbarOpen(true);
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setSimilarCommmunitySnackbarOpen(false);
-  };
 
   // Update the community selection handler
   const handleCommunitySelection = (e) => {
@@ -153,7 +103,7 @@ const CreateCommunity = () => {
   // Create a new function to handle the actual role handover after confirmation
   const handleConfirmHandover = async () => {
     try {
-      const loggedInUserEmail = localStorage.getItem("Email"); // consoleEmails[0];
+      const loggedInUserEmail = localStorage.getItem("Email"); //consoleEmails[0];
       const allUsers = await UserDB.getAllUsers();
       const loggedInUser = allUsers.find(
         (user) => user.Email === loggedInUserEmail
@@ -213,20 +163,8 @@ const CreateCommunity = () => {
     const { name, checked } = e.target;
     setRoles((prevRoles) => ({ ...prevRoles, [name]: checked }));
   };
-
-  useEffect(() => {
-    // Check if the value in localStorage is "super_admin"
-    if (localStorage.getItem("SuperAdmin") === "super_admin") {
-      setIsSuperAdmin(true);
-    } else {
-      setIsSuperAdmin(false);
-    }
-  }, []);
-
   // Find emails in console and check for super admin message
   // useEffect(() => {
-  //   setIsSuperAdmin();
-
   //   const findEmailsInConsole = () => {
   //     const originalConsoleLog = console.log;
   //     let foundEmails = [];
@@ -240,95 +178,13 @@ const CreateCommunity = () => {
   //           }
   //         } else if (typeof arg === "string") {
   //           // Check for super admin messages
+  //           console.log(arg);
+  //           console.log(arg);
   //           if (arg.includes("User is a super admin")) {
   //             setIsSuperAdmin(true);
   //           } else if (arg.includes("User is not a super admin")) {
   //             setIsSuperAdmin(false);
   //           }
-  //         }
-  //       });
-  //       originalConsoleLog.apply(console, args);
-  //     };
-
-  // Enhanced function to check name similarity
-  const checkNameSimilarity = (newName) => {
-    const cleanName = newName
-      .toLowerCase()
-      .replace(/\bcommunity\b/g, "")
-      .trim();
-
-    const similarCommunity = submittedData.find((community) => {
-      const existingName = community.name
-        .toLowerCase()
-        .replace(/\bcommunity\b/g, "")
-        .trim();
-      return (
-        existingName === cleanName ||
-        existingName.includes(cleanName) ||
-        cleanName.includes(existingName)
-      );
-    });
-
-    return similarCommunity || null;
-  };
-
-  const ErrorPopup = ({ error, onClose }) => (
-    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-[60] flex items-center justify-center">
-      <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4 relative">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-red-600">
-            Similar Community Exists
-          </h3>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            <CloseIcon />
-          </button>
-        </div>
-        <div className="mb-4">
-          <p className="text-gray-700 mb-2">{error.message}</p>
-          <p className="text-gray-900 font-medium">
-            Similar community name is as follows, this is to test this branch,
-            pls show !!!!:
-          </p>
-          <p className="text-gray-700 bg-gray-50 p-2 rounded mt-1">
-            {error.similarCommunity}
-          </p>
-        </div>
-        <div className="flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-  // Find emails in console and check for super admin message
-  // useEffect(() => {
-  //   const findEmailsInConsole = () => {
-  //     const originalConsoleLog = console.log;
-  //     let foundEmails = [];
-
-  //     console.log = function (...args) {
-  //       args.forEach((arg) => {
-  //         if (typeof arg === "object" && arg !== null) {
-  //           const email = arg.Email;
-  //           if (email && typeof email === "string") {
-  //             foundEmails.push(email);
-  //           }
-  //         } else if (typeof arg === "string") {
-  //           // Check for super admin messages
-  //           // console.log(arg);
-  //           //console.log(arg);
-  //           // if (arg.includes("User is a super admin")) {
-  //           //   setIsSuperAdmin(true);
-  //           // } else if (arg.includes("User is not a super admin")) {
-  //           //   setIsSuperAdmin(false);
-  //           // }
   //         }
   //       });
   //       originalConsoleLog.apply(console, args);
@@ -345,11 +201,21 @@ const CreateCommunity = () => {
 
   //   findEmailsInConsole();
   // }, []);
+
+  useEffect(() => {
+    // ManageUser.setIsSuperAdmin(setIsSuperAdmin);
+
+    setIsSuperAdmin(localStorage.getItem("SuperAdmin") === "super_admin");
+  }, []);
+
+  // useEffect(() => {
+  //   UserDB.getUser(localStorage.getItem("UserID"));
+  // }, []);
   // ... (keep all existing functions)
 
   // Modified table cell rendering for email
   const renderEmailCell = (email) => {
-    const isHighlighted = localStorage.getItem("Email") === email; // consoleEmails.includes(email);
+    const isHighlighted = localStorage.getItem("Email") === email; //consoleEmails.includes(email);
     return (
       <td
         className={`px-6 py-4 text-sm ${
@@ -373,19 +239,6 @@ const CreateCommunity = () => {
 
   const handleFormSubmit = async (e, status) => {
     e.preventDefault();
-    console.log("handleFormSubmit");
-
-    const similarCommunity = checkNameSimilarity(name);
-    if (similarCommunity) {
-      //alert("Similar COMCOM");
-      setSimilarityError({
-        message:
-          "Cannot create this community as a similar community already exists.",
-        similarCommunity: similarCommunity.name,
-      });
-      setShowErrorPopup(true);
-      return;
-    }
 
     // Get the logged-in user's email (assuming consoleEmails stores the logged-in user's email)
     const adminEmail = localStorage.getItem("Email"); // consoleEmails[0]; // Assuming the first email is the logged-in user's email
@@ -396,7 +249,7 @@ const CreateCommunity = () => {
       description,
       category,
       status,
-      admin: localStorage.getItem("Email"), // Adding the admin field with the logged-in user's email
+      admin: adminEmail, // Adding the admin field with the logged-in user's email
     };
 
     if (editIndex !== null) {
@@ -434,40 +287,25 @@ const CreateCommunity = () => {
         // console.log(res.data);
         // let data = res.data;
 
-        console.log("About to check if image is there on create comm form");
-
-        if (!image) {
-          //alert("Please have an image");
-          //setSimilarCommmunitySnackbarOpen(true);
-          setShowImageError(true);
-          console.log("THERE IS NO IMAGE< PLEASE SELECT ONE ");
-          return;
-        }
-
         if (selectedInterests.length < 3) {
-          // alert("Please add more interests");
-          // setImageError(true);
-          //  setShowImageError(true);
-          setShowInterestsError(true);
-          return;
+          alert("Please add more interests");
+        } else {
+          CommunityDB.createCommunity(
+            communityData,
+            image,
+            (newCommunity) => {
+              setSubmittedData((prevData) => [...prevData, newCommunity]);
+            },
+            setLoading,
+            selectedInterests
+
+            // ,
+            // {
+            //   WebUrl: data.webUrl,
+            //   ChannelID: data.id,
+            // }
+          );
         }
-
-        CommunityDB.createCommunity(
-          communityData,
-          image,
-          (newCommunity) => {
-            setSubmittedData((prevData) => [...prevData, newCommunity]);
-          },
-          setLoading,
-          selectedInterests,
-          setCommunityCreated
-
-          // ,
-          // {
-          //   WebUrl: data.webUrl,
-          //   ChannelID: data.id,
-          // }
-        );
       } catch (err) {
         console.log("error");
       }
@@ -685,7 +523,7 @@ const CreateCommunity = () => {
               <h1 className="text-xl font-bold  text-gray-700 tracking-wide mb-4">
                 Create a new community
               </h1>
-              <form className="space-y-4" onSubmit={handleFormSubmit}>
+              <form className="space-y-4">
                 <div>
                   <label
                     htmlFor="name"
@@ -752,14 +590,6 @@ const CreateCommunity = () => {
 
                 {/* Add Image here */}
 
-                {showImageError ? (
-                  <>
-                    <p className="text-red-500 p-2">please add an image</p>
-                  </>
-                ) : (
-                  <></>
-                )}
-
                 <div className="flex items-center space-x-4">
                   <label
                     htmlFor="image"
@@ -790,16 +620,6 @@ const CreateCommunity = () => {
                 <label className="block text-m text-gray-700 font-semibold">
                   Select Community Interests
                 </label>
-
-                {showInterestsError ? (
-                  <>
-                    <p className="text-red-500 p-2">
-                      please add at least 3 interests
-                    </p>
-                  </>
-                ) : (
-                  <></>
-                )}
                 <InterestSelection
                   max={3}
                   setSelectedInterests={setSelectedInterests}
@@ -822,7 +642,8 @@ const CreateCommunity = () => {
                     Save as Draft
                   </button>
                   <button
-                    type="submit"
+                    type="button"
+                    onClick={(e) => handleFormSubmit(e, "active")}
                     className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
                     {editIndex !== null ? "Save" : "Create"}
@@ -834,15 +655,6 @@ const CreateCommunity = () => {
                 </div>
               </form>
             </div>
-          )}
-
-          {showErrorPopup && (
-            <ErrorPopup
-              error={similarityError}
-              onClose={() => {
-                setShowErrorPopup(false);
-              }}
-            />
           )}
           {submittedData.length === 0 ? (
             <div className="text-center">
@@ -862,369 +674,393 @@ const CreateCommunity = () => {
           )}
         </>
       ) : (
-        <div className="mt-8 max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg relative">
-          {/* Button to open the Handover Role popup */}
-          <div className="flex justify-end mb-4">
-            <button
-              onClick={handleOpenPopup}
-              className="btn bg-gray-400 hover:bg-gray-600 text-white font-medium rounded-lg px-5 py-2.5"
-            >
-              Role Handover
-            </button>
-          </div>
-          <div className="flex justify-end mb-4">
-            <button
-              onClick={() => setCommunityHandoverOpen(true)}
-              className="btn bg-gray-400 hover:bg-gray-600 text-white font-medium rounded-lg px-5 py-2.5"
-            >
-              Community Admin Handover
-            </button>
-          </div>
+        // <div className="mt-8 max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg relative">
+        //   {/* Button to open the Handover Role popup */}
+        //   <div className="flex justify-end mb-4">
+        //     <button
+        //       onClick={handleOpenPopup}
+        //       className="btn bg-gray-400 hover:bg-gray-600 text-white font-medium rounded-lg px-5 py-2.5"
+        //     >
+        //       Role Handover
+        //     </button>
+        //   </div>
+        //   <div className="flex justify-end mb-4">
+        //     <button
+        //       onClick={() => setCommunityHandoverOpen(true)}
+        //       className="btn bg-gray-400 hover:bg-gray-600 text-white font-medium rounded-lg px-5 py-2.5"
+        //     >
+        //       Community Admin Handover
+        //     </button>
+        //   </div>
 
-          {/* Community Admin Handover Popup */}
-          {isCommunityHandoverOpen && (
-            <>
-              <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md z-10"></div>
-              <div
-                ref={communityHandoverRef}
-                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 max-h-full overflow-auto"
-              >
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-bold text-gray-800">
-                    Community Admin Handover
-                  </h2>
-                  <button
-                    className="text-gray-500 hover:text-gray-700"
-                    onClick={() => setCommunityHandoverOpen(false)}
-                  >
-                    <CloseIcon />
-                  </button>
-                </div>
+        //   {/* Community Admin Handover Popup */}
+        //   {isCommunityHandoverOpen && (
+        //     <>
+        //       <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md z-10"></div>
+        //       <div
+        //         ref={communityHandoverRef}
+        //         className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 max-h-full overflow-auto"
+        //       >
+        //         <div className="flex justify-between items-center mb-4">
+        //           <h2 className="text-xl font-bold text-gray-800">
+        //             Community Admin Handover
+        //           </h2>
+        //           <button
+        //             className="text-gray-500 hover:text-gray-700"
+        //             onClick={() => setCommunityHandoverOpen(false)}
+        //           >
+        //             <CloseIcon />
+        //           </button>
+        //         </div>
 
-                <div className="space-y-6">
-                  {/* Community Selection */}
-                  {/* Community Selection */}
-                  <div>
-                    <label className="block text-left font-semibold text-gray-700 mb-2">
-                      Select Community:
-                    </label>
-                    <select
-                      value={selectedCommunity ? selectedCommunity.id : ""}
-                      onChange={handleCommunitySelection}
-                      className="block w-full p-2 border border-gray-300 rounded-md"
-                    >
-                      <option value="">-- Select a community --</option>
-                      {submittedData.map((community) => (
-                        <option key={community.id} value={community.id}>
-                          {community.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+        //         <div className="space-y-6">
+        //           {/* Community Selection */}
+        //           {/* Community Selection */}
+        //           <div>
+        //             <label className="block text-left font-semibold text-gray-700 mb-2">
+        //               Select Community:
+        //             </label>
+        //             <select
+        //               value={selectedCommunity ? selectedCommunity.id : ""}
+        //               onChange={handleCommunitySelection}
+        //               className="block w-full p-2 border border-gray-300 rounded-md"
+        //             >
+        //               <option value="">-- Select a community --</option>
+        //               {submittedData.map((community) => (
+        //                 <option key={community.id} value={community.id}>
+        //                   {community.name}
+        //                 </option>
+        //               ))}
+        //             </select>
+        //           </div>
 
-                  {/* Current Admin Display */}
-                  <div>
-                    <label className="block text-left font-semibold text-gray-700 mb-2">
-                      Current Admin:
-                    </label>
-                    <input
-                      type="text"
-                      value={
-                        currentAdmin
-                          ? `(${currentAdmin.Email})`
-                          : "No admin assigned"
-                      }
-                      className="block w-full p-2 border border-gray-300 rounded-md bg-gray-50"
-                      disabled
-                    />
-                  </div>
+        //           {/* Current Admin Display */}
+        //           <div>
+        //             <label className="block text-left font-semibold text-gray-700 mb-2">
+        //               Current Admin:
+        //             </label>
+        //             <input
+        //               type="text"
+        //               value={
+        //                 currentAdmin
+        //                   ? `(${currentAdmin.Email})`
+        //                   : "No admin assigned"
+        //               }
+        //               className="block w-full p-2 border border-gray-300 rounded-md bg-gray-50"
+        //               disabled
+        //             />
+        //           </div>
 
-                  {/* New Admin Selection */}
-                  <div>
-                    <label className="block text-left font-semibold text-gray-700 mb-2">
-                      Select New Admin:
-                    </label>
-                    <select
-                      value={selectedNewAdmin ? selectedNewAdmin.id : ""}
-                      onChange={(e) => {
-                        const user = availableAdmins.find(
-                          (user) => user.id === e.target.value
-                        );
-                        setSelectedNewAdmin(user);
-                      }}
-                      className="block w-full p-2 border border-gray-300 rounded-md"
-                    >
-                      <option value="">-- Select a new admin --</option>
-                      {availableAdmins.map((user) => (
-                        <option key={user.id} value={user.id}>
-                          {user.Name} {user.Surname} ({user.Email})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+        //           {/* New Admin Selection */}
+        //           <div>
+        //             <label className="block text-left font-semibold text-gray-700 mb-2">
+        //               Select New Admin:
+        //             </label>
+        //             <select
+        //               value={selectedNewAdmin ? selectedNewAdmin.id : ""}
+        //               onChange={(e) => {
+        //                 const user = availableAdmins.find(
+        //                   (user) => user.id === e.target.value
+        //                 );
+        //                 setSelectedNewAdmin(user);
+        //               }}
+        //               className="block w-full p-2 border border-gray-300 rounded-md"
+        //             >
+        //               <option value="">-- Select a new admin --</option>
+        //               {availableAdmins.map((user) => (
+        //                 <option key={user.id} value={user.id}>
+        //                   {user.Name} {user.Surname} ({user.Email})
+        //                 </option>
+        //               ))}
+        //             </select>
+        //           </div>
 
-                  {/* Submit Button */}
-                  <div className="flex justify-end space-x-4">
-                    <button
-                      onClick={() => setCommunityHandoverOpen(false)}
-                      className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={() => setHandoverConfirmationOpen(true)}
-                      className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
-                      disabled={!selectedCommunity || !selectedNewAdmin}
-                    >
-                      Transfer Admin Rights
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
+        //           {/* Submit Button */}
+        //           <div className="flex justify-end space-x-4">
+        //             <button
+        //               onClick={() => setCommunityHandoverOpen(false)}
+        //               className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg"
+        //             >
+        //               Cancel
+        //             </button>
+        //             <button
+        //               onClick={() => setHandoverConfirmationOpen(true)}
+        //               className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
+        //               disabled={!selectedCommunity || !selectedNewAdmin}
+        //             >
+        //               Transfer Admin Rights
+        //             </button>
+        //           </div>
+        //         </div>
+        //       </div>
+        //     </>
+        //   )}
 
-          {/* Confirmation Modal */}
-          {isHandoverConfirmationOpen && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md z-50 flex items-center justify-center">
-              <div className="bg-white p-8 rounded-md shadow-xl max-w-md w-full mx-4">
-                <h3 className="text-lg font-bold mb-4">
-                  Confirm Community Admin Transfer
-                </h3>
-                <p className="mb-6 text-gray-700">
-                  Are you sure you want to transfer admin rights for{" "}
-                  <span className="font-semibold">
-                    {selectedCommunity?.name}
-                  </span>{" "}
-                  to{" "}
-                  <span className="font-semibold">
-                    {selectedNewAdmin?.Name} {selectedNewAdmin?.Surname}
-                  </span>
-                  ?
-                </p>
-                <div className="flex justify-end space-x-4">
-                  <button
-                    onClick={() => setHandoverConfirmationOpen(false)}
-                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={() => {
-                      handleCommunityHandover();
-                      setHandoverConfirmationOpen(false);
-                    }}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
-                  >
-                    Confirm Transfer
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+        //   {/* Confirmation Modal */}
+        //   {isHandoverConfirmationOpen && (
+        //     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md z-50 flex items-center justify-center">
+        //       <div className="bg-white p-8 rounded-md shadow-xl max-w-md w-full mx-4">
+        //         <h3 className="text-lg font-bold mb-4">
+        //           Confirm Community Admin Transfer
+        //         </h3>
+        //         <p className="mb-6 text-gray-700">
+        //           Are you sure you want to transfer admin rights for{" "}
+        //           <span className="font-semibold">
+        //             {selectedCommunity?.name}
+        //           </span>{" "}
+        //           to{" "}
+        //           <span className="font-semibold">
+        //             {selectedNewAdmin?.Name} {selectedNewAdmin?.Surname}
+        //           </span>
+        //           ?
+        //         </p>
+        //         <div className="flex justify-end space-x-4">
+        //           <button
+        //             onClick={() => setHandoverConfirmationOpen(false)}
+        //             className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg"
+        //           >
+        //             Cancel
+        //           </button>
+        //           <button
+        //             onClick={() => {
+        //               handleCommunityHandover();
+        //               setHandoverConfirmationOpen(false);
+        //             }}
+        //             className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
+        //           >
+        //             Confirm Transfer
+        //           </button>
+        //         </div>
+        //       </div>
+        //     </div>
+        //   )}
 
-          {/* Popup for handover role */}
-          {isPopupOpen && (
-            <>
-              <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md z-10"></div>
-              <div
-                ref={popupRef}
-                className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 max-h-full overflow-auto"
-              >
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-bold text-gray-800">
-                    Handover of Super Admin Role
-                  </h2>
-                  <button
-                    className="text-gray-500 hover:text-gray-700"
-                    onClick={handleClosePopup}
-                  >
-                    <CloseIcon />
-                  </button>
-                </div>
-                <p className="mb-4 text-gray-700">
-                  Please select an admin from the below list of users that you
-                  would like to pass your super admin role to. Please note that
-                  by doing this, you will no longer have super admin
-                  capabilities to assign and take away admin rights from the
-                  users of the system.
-                </p>
+        //   {/* Popup for handover role */}
+        //   {isPopupOpen && (
+        //     <>
+        //       <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md z-10"></div>
+        //       <div
+        //         ref={popupRef}
+        //         className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 max-h-full overflow-auto"
+        //       >
+        //         <div className="flex justify-between items-center mb-4">
+        //           <h2 className="text-xl font-bold text-gray-800">
+        //             Handover of Super Admin Role
+        //           </h2>
+        //           <button
+        //             className="text-gray-500 hover:text-gray-700"
+        //             onClick={handleClosePopup}
+        //           >
+        //             <CloseIcon />
+        //           </button>
+        //         </div>
+        //         <p className="mb-4 text-gray-700">
+        //           Please select an admin from the below list of users that you
+        //           would like to pass your super admin role to. Please note that
+        //           by doing this, you will no longer have super admin
+        //           capabilities to assign and take away admin rights from the
+        //           users of the system.
+        //         </p>
 
-                {/* User list to select for role handover */}
-                <div className="mb-6">
-                  <label className="block text-left font-semibold text-gray-700 mb-2">
-                    Select Admin User:
-                  </label>
-                  <select
-                    value={selectedUser ? selectedUser.id : ""}
-                    onChange={(e) => {
-                      const user = filteredAdminUsers.find(
-                        (user) => user.id === e.target.value
-                      );
-                      setSelectedUser(user);
-                    }}
-                    className="block w-full p-2 border border-gray-300 rounded-md"
-                  >
-                    <option value="">-- Select an admin --</option>
-                    {filteredAdminUsers.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.Name} {user.Surname} ({user.Email})
-                      </option>
-                    ))}
-                  </select>
-                </div>
+        //         {/* User list to select for role handover */}
+        //         <div className="mb-6">
+        //           <label className="block text-left font-semibold text-gray-700 mb-2">
+        //             Select Admin User:
+        //           </label>
+        //           <select
+        //             value={selectedUser ? selectedUser.id : ""}
+        //             onChange={(e) => {
+        //               const user = filteredAdminUsers.find(
+        //                 (user) => user.id === e.target.value
+        //               );
+        //               setSelectedUser(user);
+        //             }}
+        //             className="block w-full p-2 border border-gray-300 rounded-md"
+        //           >
+        //             <option value="">-- Select an admin --</option>
+        //             {filteredAdminUsers.map((user) => (
+        //               <option key={user.id} value={user.id}>
+        //                 {user.Name} {user.Surname} ({user.Email})
+        //               </option>
+        //             ))}
+        //           </select>
+        //         </div>
 
-                {/* Submit button to confirm role handover */}
-                <div className="flex justify-end">
-                  <button
-                    onClick={handleHandoverRole}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
-                  >
-                    Handover my role
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
+        //         {/* Submit button to confirm role handover */}
+        //         <div className="flex justify-end">
+        //           <button
+        //             onClick={handleHandoverRole}
+        //             className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
+        //           >
+        //             Handover my role
+        //           </button>
+        //         </div>
+        //       </div>
+        //     </>
+        //   )}
 
-          {/* Confirmation Modal */}
-          {isConfirmationOpen && (
-            <>
-              <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md z-50"></div>
-              <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-96">
-                <h3 className="text-lg font-bold mb-4">
-                  Confirm Role Handover
-                </h3>
-                <p className="mb-6 text-gray-700">
-                  Are you sure you want to hand over your super admin role to{" "}
-                  <span className="font-semibold">{selectedUser?.Email}</span>?
-                  <br />
-                  <br />
-                  This action cannot be undone.
-                </p>
-                <div className="flex justify-end space-x-4">
-                  <button
-                    onClick={() => setIsConfirmationOpen(false)}
-                    className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleConfirmHandover}
-                    className="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg"
-                  >
-                    Confirm Handover
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
+        //   {/* Confirmation Modal */}
+        //   {isConfirmationOpen && (
+        //     <>
+        //       <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-md z-50"></div>
+        //       <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-96">
+        //         <h3 className="text-lg font-bold mb-4">
+        //           Confirm Role Handover
+        //         </h3>
+        //         <p className="mb-6 text-gray-700">
+        //           Are you sure you want to hand over your super admin role to{" "}
+        //           <span className="font-semibold">{selectedUser?.Email}</span>?
+        //           <br />
+        //           <br />
+        //           This action cannot be undone.
+        //         </p>
+        //         <div className="flex justify-end space-x-4">
+        //           <button
+        //             onClick={() => setIsConfirmationOpen(false)}
+        //             className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg"
+        //           >
+        //             Cancel
+        //           </button>
+        //           <button
+        //             onClick={handleConfirmHandover}
+        //             className="bg-red-500 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg"
+        //           >
+        //             Confirm Handover
+        //           </button>
+        //         </div>
+        //       </div>
+        //     </>
+        //   )}
 
-          {/* Admin Management Header */}
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">
-            Admin Management
-          </h2>
+        //   {/* Admin Management Header */}
+        //   <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">
+        //     Admin Management
+        //   </h2>
 
-          {/* Search Bar */}
-          <div className="mb-6">
-            <input
-              type="text"
-              placeholder="Search by name, surname, or email"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+        //   {/* Search Bar */}
+        //   <div className="mb-6">
+        //     <input
+        //       type="text"
+        //       placeholder="Search by name, surname, or email"
+        //       value={searchTerm}
+        //       onChange={(e) => setSearchTerm(e.target.value)}
+        //       className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        //     />
+        //   </div>
 
-          {/* User List */}
-          {filteredUsers.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white shadow-md rounded-lg divide-y divide-gray-200">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Name
-                    </th>
-                    <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Surname
-                    </th>
-                    <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Admin Role
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {sortUsers(filteredUsers).map((user) => {
-                    const isHighlighted =
-                      localStorage.getItem("Email") === user.Email; //consoleEmails.includes(user.Email);
-                    return (
-                      <tr
-                        key={user.Email}
-                        className={`hover:bg-gray-50 ${isHighlighted ? "bg-gray-200" : ""}`}
-                      >
-                        <td className="px-6 py-4 text-sm text-gray-900">
-                          {user.Name}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-900">
-                          {user.Surname}
-                        </td>
-                        {renderEmailCell(user.Email)}
-                        <td className="px-6 py-4 text-center">
-                          <label className="flex items-center justify-center">
-                            <input
-                              type="checkbox"
-                              className="form-checkbox h-5 w-5 text-blue-600"
-                              checked={user.Role === "admin"}
-                              onChange={(e) => {
-                                if (!isHighlighted) {
-                                  const isChecked = e.target.checked;
-                                  const confirmationMessage = isChecked
-                                    ? `Are you sure you want to give admin rights to ${user.Email}?`
-                                    : `Are you sure you want to revoke admin rights from ${user.Email}?`;
+        //   {/* User List */}
+        //   {filteredUsers.length > 0 ? (
+        //     <div className="overflow-x-auto">
+        //       <table className="min-w-full bg-white shadow-md rounded-lg divide-y divide-gray-200">
+        //         <thead className="bg-gray-100">
+        //           <tr>
+        //             <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+        //               Name
+        //             </th>
+        //             <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+        //               Surname
+        //             </th>
+        //             <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+        //               Email
+        //             </th>
+        //             <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+        //               Admin Role
+        //             </th>
+        //           </tr>
+        //         </thead>
+        //         <tbody className="divide-y divide-gray-200">
+        //           {sortUsers(filteredUsers).map((user) => {
+        //             const isHighlighted =
+        //               localStorage.getItem("Email") === user.Email; //consoleEmails.includes(user.Email);
+        //             return (
+        //               <tr
+        //                 key={user.Email}
+        //                 className={`hover:bg-gray-50 ${isHighlighted ? "bg-gray-200" : ""}`}
+        //               >
+        //                 <td className="px-6 py-4 text-sm text-gray-900">
+        //                   {user.Name}
+        //                 </td>
+        //                 <td className="px-6 py-4 text-sm text-gray-900">
+        //                   {user.Surname}
+        //                 </td>
+        //                 {renderEmailCell(user.Email)}
+        //                 <td className="px-6 py-4 text-center">
+        //                   <label className="flex items-center justify-center">
+        //                     <input
+        //                       type="checkbox"
+        //                       className="form-checkbox h-5 w-5 text-blue-600"
+        //                       checked={user.Role === "admin"}
+        //                       onChange={(e) => {
+        //                         if (!isHighlighted) {
+        //                           const isChecked = e.target.checked;
+        //                           const confirmationMessage = isChecked
+        //                             ? `Are you sure you want to give admin rights to ${user.Email}?`
+        //                             : `Are you sure you want to revoke admin rights from ${user.Email}?`;
 
-                                  const confirmation =
-                                    window.confirm(confirmationMessage);
-                                  if (confirmation) {
-                                    handleAdminRoleChange(
-                                      user.Email,
-                                      user.Role
-                                    );
-                                  }
-                                }
-                              }}
-                              disabled={isHighlighted}
-                            />
-                          </label>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p className="text-center text-gray-500 mt-4">No results found</p>
-          )}
-        </div>
+        //                           const confirmation =
+        //                             window.confirm(confirmationMessage);
+        //                           if (confirmation) {
+        //                             handleAdminRoleChange(
+        //                               user.Email,
+        //                               user.Role
+        //                             );
+        //                           }
+        //                         }
+        //                       }}
+        //                       disabled={isHighlighted}
+        //                     />
+        //                   </label>
+        //                 </td>
+        //               </tr>
+        //             );
+        //           })}
+        //         </tbody>
+        //       </table>
+        //     </div>
+        //   ) : (
+        //     <p className="text-center text-gray-500 mt-4">No results found</p>
+        //   )}
+        // </div>
+        <>
+          <AdminManagement
+            handleCommunitySelection={handleCommunitySelection}
+            handleCommunityHandover={handleCommunityHandover}
+            handleConfirmHandover={handleConfirmHandover}
+            handleAdminRoleChange={handleAdminRoleChange}
+            sortUsers={sortUsers}
+            renderEmailCell={renderEmailCell}
+            filteredUsers={filteredUsers}
+            filteredAdminUsers={filteredAdminUsers}
+            availableAdmins={availableAdmins}
+            submittedData={submittedData}
+            currentAdmin={currentAdmin}
+            selectedCommunity={selectedCommunity}
+            selectedNewAdmin={selectedNewAdmin}
+            setCommunityHandoverOpen={setCommunityHandoverOpen}
+            setSelectedNewAdmin={setSelectedNewAdmin}
+            isCommunityHandoverOpen={isCommunityHandoverOpen}
+            isHandoverConfirmationOpen={isHandoverConfirmationOpen}
+            setHandoverConfirmationOpen={setHandoverConfirmationOpen}
+            isPopupOpen={isPopupOpen}
+            setPopupOpen={setPopupOpen}
+            handleHandoverRole={handleHandoverRole}
+            selectedUser={selectedUser}
+            setSelectedUser={setSelectedUser}
+            setIsConfirmationOpen={setIsConfirmationOpen}
+            isConfirmationOpen={isConfirmationOpen}
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+          />
+          {/* 
+          <AdminMan
+            submittedData={submittedData}
+            setUsers={setUsers}
+            users={users}
+            availableAdmins={availableAdmins}
+            setLoading={setLoading}
+          /> */}
+        </>
       )}
-
-      <Snackbar
-        open={similarCommmunitySnackbarOpen}
-        autoHideDuration={5000}
-        onClose={handleClose}
-        message="Sorry a similar community exists"
-      />
-
-      {/* <Button onClick={handleCreatedClick}>Open Snackbar</Button> */}
-      <Snackbar
-        open={communityCreated}
-        autoHideDuration={5000}
-        onClose={handleCreatedClose}
-        message={`Community has been created`}
-      />
     </div>
   );
 };
