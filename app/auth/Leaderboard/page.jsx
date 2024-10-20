@@ -300,10 +300,10 @@ const Page = () => {
                                 {user.Name || "N/A"} {user.Surname || "N/A"}{" "}
                                 {getIcon(user.Points)}
                               </div>
-                              <div className="text-sm text-gray-600">
-                                {user.Points} Points
-                              </div>
                             </div>
+                          </div>
+                          <div className="text-lg font-bold text-gray-600">
+                            {user.Points} Points
                           </div>
                         </motion.div>
                       )
