@@ -23,10 +23,13 @@ const Register = () => {
 
   useEffect(() => {
     if (user) {
+      // First navigate to /Home
       router.push("/Home");
 
-      setTimeout(() => {}, 1000);
-    } else {
+      // Then navigate to /auth/Profile after a brief delay
+      setTimeout(() => {
+        router.push("/auth/Profile");
+      }, 1000); // 1-second delay
     }
   }, [user]);
 
