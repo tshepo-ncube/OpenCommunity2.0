@@ -11,7 +11,7 @@ import UserDB from "../../database/community/users"; // Make sure this import pa
 import { doc, updateDoc } from "firebase/firestore";
 import DB from "../../database/DB"; // Ensure you are importing your Firestore DB instance
 import ManageUser from "@/database/auth/ManageUser";
-
+import InterestSelection from "../../_Components/InterestsSelection";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 
@@ -60,7 +60,7 @@ const CreateCommunity = () => {
   const [showImageError, setShowImageError] = useState(false);
   const [showInterestsError, setShowInterestsError] = useState(false);
   const [communityCreated, setCommunityCreated] = useState(false);
-
+  const [selectedInterests, setSelectedInterests] = useState([]);
   const [similarityError, setSimilarityError] = useState({
     message: "",
     similarCommunity: "",
