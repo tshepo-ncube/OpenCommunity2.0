@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Header from "../../_Components/header";
+import Navbar2 from "@/_Components/Navbar2";
 import CommunityDB from "../../database/community/community";
 import AdminCommunity from "../../_Components/AdminCommunities";
 import CloseIcon from "@mui/icons-material/Close";
@@ -579,8 +580,9 @@ const CreateCommunity = () => {
     return fullName.includes(searchTerm.toLowerCase());
   });
   return (
-    <div className="flex-col items-center min-h-screen relative text-center">
-      <Header />
+    <div className="flex-col items-center min-h-screen relative text-center pt-24">
+      <Navbar2 isHome={true} />
+      {/* <Header /> */}
 
       {/* Tab Navigation */}
       <div className="flex justify-center mt-4 mb-8">
@@ -628,10 +630,11 @@ const CreateCommunity = () => {
           {isPopupOpen && (
             <div
               ref={popupRef}
-              className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-auto max-h-full overflow-auto"
+              className="fixed top-[15%] left-1/2 transform -translate-x-1/2 bg-white p-8 mb-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 max-h-[85vh] overflow-y-auto"
+              // className="fixed top-[15%] left-1/2 transform -translate-x-1/2 bg-white p-8 pb-16 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2 h-auto max-h-full overflow-auto"
             >
-              <h1 className="text-xl font-bold  text-gray-700 tracking-wide mb-4">
-                Create a new community
+              <h1 className="text-xl font-bold text-gray-700 tracking-wide mb-4">
+                Create a New Community
               </h1>
               <form className="space-y-4" onSubmit={handleFormSubmit}>
                 <div>
@@ -750,10 +753,11 @@ const CreateCommunity = () => {
                   <button
                     type="button"
                     onClick={generateDescription}
-                    className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                    className="btn bg-[#B07AA1] hover:bg-[#925C84] text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-[#B07AA1]"
                   >
-                    generate description
+                    Generate Description
                   </button>
+
                   <button
                     type="button"
                     onClick={(e) => handleFormSubmit(e, "draft")}
@@ -790,7 +794,7 @@ const CreateCommunity = () => {
                 You have created no communities yet.
               </p>
               <p className="text-gray-900 text-lg">
-                Click on <span className="font-bold">create community</span> to
+                Click on <span className="font-bold">Create Community</span> to
                 get started.
               </p>
             </div>

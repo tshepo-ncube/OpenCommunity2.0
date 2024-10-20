@@ -2,8 +2,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import LoginUser from "../database/auth/Login";
-import ManageUser from "../database/auth/ManageUser";
 import Image from "next/image";
+import ocLogo from "@/lib/images/ocLogo.jpg";
+import Sky from "@/lib/images/sky.jpeg";
 import Logo from "@/lib/images/Logo.jpeg";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Importing the icons
 
@@ -50,93 +51,95 @@ const Page = () => {
   };
 
   return (
-    <div className="min-w-screen min-h-screen bg-white flex items-center justify-center px-5 py-5">
+    <div className="min-h-screen flex items-center justify-center p-4 relative">
+      {/* Background Image */}
+      <img
+        src={Sky.src}
+        alt="Sky"
+        className="absolute inset-x-0 bottom-0 h-1/3 w-full object-cover"
+        style={{ position: "fixed", bottom: 0, height: "55vh" }} // Adjust height here
+      />
+
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-gray-500 opacity-30"></div>
+
+      {/* Login Form */}
       {loggedIn ? (
         <div className="middle"></div>
       ) : (
-        <div
-          className="bg-white text-black rounded-3xl shadow-xl w-full overflow-hidden"
-          style={{ maxWidth: "1300px" }}
-        >
-          <div className="md:flex w-full">
-            <div className="hidden md:block w-1/2 bg-openbox-green py-10 px-10">
-              <Image
-                className="object-cover object-center w-full h-full "
-                src={Logo}
-                alt="Logo"
-              />
-            </div>
-            <div className="w-full md:w-1/2 py-10 px-10">
-              <h2 className="text-2xl font-bold text-center mb-4">Log in</h2>
-              <div className="mb-4">
-                <label
-                  htmlFor="email"
-                  className="block mb-2 text-sm font-medium text-black"
-                >
-                  Email
-                </label>{" "}
-                <input
-                  type="email"
-                  id="email"
-                  value={email}
-                  onChange={handleEmailChange}
-                  placeholder="Enter your email"
-                  className="w-full px-3 py-2 rounded-lg border-2 border-gray outline-none focus:border-indigo-500"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-black"
-                >
-                  Password
-                </label>{" "}
-                <div className="relative w-full">
+        <div className="w-full max-w-md bg-white rounded-lg shadow-xl relative z-10">
+          <div className="hidden md:block">
+            <Image
+              className="w-full h-48 object-contain rounded-t-lg"
+              src={ocLogo}
+              alt="Logo"
+            />
+          </div>
+          <div className="p-6 pt-4">
+            <h2 className="text-3xl text-center font-medium mb-2">
+              Welcome back
+            </h2>
+            <p className="text-center text-gray-600 mb-4">
+              Log in to your Open Community account
+            </p>
+            <form onSubmit={(e) => e.preventDefault()}>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-medium">
+                    Email
+                  </label>
                   <input
-                    type={showPassword ? "text" : "password"}
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={handleEmailChange}
+                    placeholder="Enter your email address"
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <label htmlFor="password" className="text-sm font-medium">
+                      Password
+                    </label>
+                    <span
+                      onClick={() => router.push("/auth/ForgotPassword")}
+                      className="text-sm text-[#bcd727] hover:text-[#8c9a20] cursor-pointer"
+                    >
+                      Forgot password?
+                    </span>
+                  </div>
+                  <input
+                    type="password"
                     id="password"
                     value={password}
                     onChange={handlePasswordChange}
                     placeholder="Enter your password"
-                    className="w-full px-3 py-2 rounded-lg border-2 border-gray outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
+                    required
                   />
-                  <div
-                    className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <FaEye /> : <FaEyeSlash />}
-                  </div>
                 </div>
-                <p className="text-left mt-1">
+                {errorMessage && (
+                  <p className="text-center text-red-500">{errorMessage}</p>
+                )}
+                <button
+                  onClick={handleLogin}
+                  className="w-full bg-openbox-green hover:bg-hover-obgreen text-white py-3 rounded-lg font-medium"
+                >
+                  Log In
+                </button>
+                <p className="text-sm text-center text-gray-500 mt-4">
+                  Don't have an account?{" "}
                   <span
-                    className="text-hover-obgreen cursor-pointer"
-                    onClick={() => router.push("/auth/ForgotPassword")}
+                    className="text-[#bcd727] hover:text-[#8c9a20] cursor-pointer"
+                    onClick={() => router.push("/auth/Register")}
                   >
-                    Forgot Password?
+                    Register now
                   </span>
                 </p>
               </div>
-              {errorMessage && (
-                <p className="error-message text-red text-center">
-                  {errorMessage}
-                </p>
-              )}
-              <button
-                onClick={handleLogin}
-                className="block w-full bg-openbox-green hover:bg-hover-obgreen focus:bg-hover-obgreen text-white rounded-lg px-3 py-3 font-semibold"
-              >
-                Login
-              </button>
-              <p className="text-center mt-3">
-                Don't have an account?{" "}
-                <span
-                  className="text-hover-obgreen cursor-pointer"
-                  onClick={() => router.push("/auth/Register")}
-                >
-                  Sign up now
-                </span>
-              </p>
-            </div>
+            </form>
           </div>
         </div>
       )}

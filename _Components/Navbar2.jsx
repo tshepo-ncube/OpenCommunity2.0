@@ -160,19 +160,23 @@ const Navbar = ({ isHome }) => {
     };
   }, []);
   return (
+    // <div
+    //   style={{
+    //     //   backgroundColor: `${color}`,
+    //     borderBottom: 10,
+    //     borderBottomColor: "black",
+    //     borderColor: "black",
+    //   }}
+    //   className={` ${
+    //     isHome
+    //       ? // Changed the scroll background to Black instead for NAV
+    //         `${scrolling ? "bg-black  z-90" : "  z-90"}`
+    //       : `bg-openbox-green  z-90`
+    //   }   fixed left-0 top-0 w-full z-100 ease-in duration-300 `}
+    // >
+
     <div
-      style={{
-        //   backgroundColor: `${color}`,
-        borderBottom: 10,
-        borderBottomColor: "black",
-        borderColor: "black",
-      }}
-      className={` ${
-        isHome
-          ? // Changed the scroll background to Black instead for NAV
-            `${scrolling ? "bg-black  z-90" : "  z-90"}`
-          : `bg-openbox-green  z-90`
-      }   fixed left-0 top-0 w-full z-100 ease-in duration-300 `}
+      className="bg-black fixed left-0 top-0 w-full z-100 ease-in duration-300"
     >
       <div
         className="max-w-[1240px] m-auto flex justify-between items-center p-4 text-white"
