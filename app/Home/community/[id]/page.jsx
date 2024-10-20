@@ -12,7 +12,7 @@ import {
   TextField,
   Rating,
   DialogActions,
-  RateReview
+  RateReview,
 } from "@mui/material";
 
 import imageCompression from "browser-image-compression";
@@ -25,7 +25,7 @@ import db from "../../../../database/DB";
 import PollDB from "@/database/community/poll";
 import EventDB from "@/database/community/event";
 import CommunityDB from "@/database/community/community";
-import PollComponent from "../../../../_Components/Poll";
+import PollComp from "../../../../_Components/Poll";
 import strings from "../../../../Utils/strings.json";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import { format, parse, startOfWeek, getDay } from "date-fns";
@@ -39,14 +39,12 @@ import { Group, Poll } from "@mui/icons-material";
 import LocationOn from "@mui/icons-material/LocationOn";
 import Event from "@mui/icons-material/Event";
 import AccessTime from "@mui/icons-material/AccessTime";
-import PollComponent from "@/_Components/PollComponent"
-import DescriptionIcon from '@mui/icons-material/Description';
-import CalendarToolBar from '@/_Components/CalendarToolBar'
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import PollComponent from "@/_Components/PollComponent";
+import DescriptionIcon from "@mui/icons-material/Description";
+import CalendarToolBar from "@/_Components/CalendarToolBar";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 //Logic for conditionally rendering myEvents
-
-
 
 const locales = {
   "en-US": enUS,
@@ -328,16 +326,16 @@ export default function CommunityPage({ params }) {
       });
   };
 
-   //Collapsible calendar
+  //Collapsible calendar
 
-   const [isCalendarOpen, setIsCalendarOpen] = useState(true); // State to track if calendar is open or collapsed
-   // const [currentDate, setCurrentDate] = useState(new Date());
- 
-   // Hooks are always defined at the top, regardless of component visibility.
- 
-   const toggleCalendar = () => {
-     setIsCalendarOpen((prev) => !prev);
-   };
+  const [isCalendarOpen, setIsCalendarOpen] = useState(true); // State to track if calendar is open or collapsed
+  // const [currentDate, setCurrentDate] = useState(new Date());
+
+  // Hooks are always defined at the top, regardless of component visibility.
+
+  const toggleCalendar = () => {
+    setIsCalendarOpen((prev) => !prev);
+  };
 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -638,7 +636,7 @@ export default function CommunityPage({ params }) {
   //THIS CODE DOES NOT WORK
 
   const handleEventClick = (event) => {
-    if (event.status === 'upcoming') {
+    if (event.status === "upcoming") {
       if (event.userHasRSVPed) {
         // If the user has RSVPed, direct to "My Events"
         router.push(`/my-events/${event.id}`);
@@ -646,16 +644,15 @@ export default function CommunityPage({ params }) {
         // If not RSVPed, direct to Upcoming Events page
         router.push(`/upcoming-events/${event.id}`);
       }
-    } else if (event.status === 'past') {
+    } else if (event.status === "past") {
       // Redirect to Past Events page for past events
       router.push(`/past-events/${event.id}`);
     }
   };
 
-
   return (
     <div className="">
-      <Navbar isHome={true}/>
+      <Navbar isHome={true} />
       <div
         className="relative text-white py-4 h-80"
         style={{
@@ -676,19 +673,19 @@ export default function CommunityPage({ params }) {
               variant="outlined"
               startIcon={<Group />}
               sx={{
-                backgroundColor: 'transparent',
-                color: 'white',
-                borderRadius: '50px',
-                padding: '4px 10px', // Reduced padding to make the button smaller
+                backgroundColor: "transparent",
+                color: "white",
+                borderRadius: "50px",
+                padding: "4px 10px", // Reduced padding to make the button smaller
                 mx: 1,
-                border: '1px solid #d3d3d3',
-                fontSize: '0.875rem', // Reduced font size to make the button look more compact
-                '&:hover': {
-                  backgroundColor: '#a8c31d',
+                border: "1px solid #d3d3d3",
+                fontSize: "0.875rem", // Reduced font size to make the button look more compact
+                "&:hover": {
+                  backgroundColor: "#a8c31d",
                 },
               }}
               onClick={() => {
-                window.open(`${community.WebUrl}`, '_blank');
+                window.open(`${community.WebUrl}`, "_blank");
               }}
             >
               Teams
@@ -705,76 +702,79 @@ export default function CommunityPage({ params }) {
                 variant="contained"
                 startIcon={<Share />}
                 sx={{
-                  backgroundColor: 'transparent',
-                  color: 'white',
-                  borderRadius: '50px',
-                  padding: '4px 10px',
+                  backgroundColor: "transparent",
+                  color: "white",
+                  borderRadius: "50px",
+                  padding: "4px 10px",
                   mx: 2,
-                  border: '1px solid #d3d3d3',
-                  '&:hover': {
-                    backgroundColor: '#a8c31d',
+                  border: "1px solid #d3d3d3",
+                  "&:hover": {
+                    backgroundColor: "#a8c31d",
                   },
                 }}
               >
-              Share
+                Share
               </Button>
             </RWebShare>
-             
+
             <button
               className={`transition-all px-4 py-2 text-white font-semibold rounded-full mx-2 border border-gray-300 ${
-                isCalendarOpen ? 'bg-red-500 hover:bg-red-600' : 'bg-[#b000000] hover:bg-[#a8c31d]'
+                isCalendarOpen
+                  ? "bg-red-500 hover:bg-red-600"
+                  : "bg-[#b000000] hover:bg-[#a8c31d]"
               }`}
               onClick={toggleCalendar}
               style={{
-                borderRadius: '50px',
-                padding: '4px 10px',
+                borderRadius: "50px",
+                padding: "4px 10px",
               }}
             >
               <CalendarMonthIcon className="mr-2" />
-              {isCalendarOpen ? 'Collapse' : 'Calendar'}
+              {isCalendarOpen ? "Collapse" : "Calendar"}
             </button>
-            
           </center>
         </div>
       </div>
       <center>
-      <div className={`p-12 transition-all ${isCalendarOpen ? 'block' : 'hidden'}`}>
-        <Calendar
-          localizer={localizer}
-          events={events}
-          startAccessor="start"
-          endAccessor="end"
-          date={currentDate}
-          style={{ height: 600, borderRadius: '1rem', overflow: 'hidden' }}
-          onNavigate={(date) => setCurrentDate(date)}
-          defaultView="month"
-          views={['month']}
-          components={{
-            toolbar: CalendarToolBar,
-          }}
-          eventPropGetter={(event) => {
-            const backgroundColor = event.color || "#3174ad";
-            return {
-              style: {
-                backgroundColor,
-                color: "white",
-                borderRadius: "0.25rem",
-                border: "none",
-                padding: "0.5rem",
-              },
-            };
-          }}
-          onSelectEvent={(event) => handleEventClick(event)} // Handle event click to navigate to event page
-        />
-      </div>
-      </center>    
+        <div
+          className={`p-12 transition-all ${isCalendarOpen ? "block" : "hidden"}`}
+        >
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            date={currentDate}
+            style={{ height: 600, borderRadius: "1rem", overflow: "hidden" }}
+            onNavigate={(date) => setCurrentDate(date)}
+            defaultView="month"
+            views={["month"]}
+            components={{
+              toolbar: CalendarToolBar,
+            }}
+            eventPropGetter={(event) => {
+              const backgroundColor = event.color || "#3174ad";
+              return {
+                style: {
+                  backgroundColor,
+                  color: "white",
+                  borderRadius: "0.25rem",
+                  border: "none",
+                  padding: "0.5rem",
+                },
+              };
+            }}
+            onSelectEvent={(event) => handleEventClick(event)} // Handle event click to navigate to event page
+          />
+        </div>
+      </center>
 
-{/* This is the navigation bar for my events, upcoming events, past events, and polls */}
+      {/* This is the navigation bar for my events, upcoming events, past events, and polls */}
 
-    <div className="flex justify-center mt-2">
-      <div className="text-base font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
-        <ul className="flex flex-wrap -mb-px">
-          {/* My Events Tab */}
+      <div className="flex justify-center mt-2">
+        <div className="text-base font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+          <ul className="flex flex-wrap -mb-px">
+            {/* My Events Tab */}
             <li className="me-2">
               <a
                 href="#"
@@ -788,7 +788,7 @@ export default function CommunityPage({ params }) {
                 My Events
               </a>
             </li>
-          {/* Upcoming Events Tab */}
+            {/* Upcoming Events Tab */}
             <li className="me-2">
               <a
                 href="#"
@@ -796,29 +796,29 @@ export default function CommunityPage({ params }) {
                 className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
                   activeTab === "upcomingEvents"
                     ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
-                      : "border-transparent"
+                    : "border-transparent"
                 }`}
-                >
-                  Upcoming Events
+              >
+                Upcoming Events
               </a>
             </li>
 
             {/* Past Events Tab */}
-              <li className="me-2">
-                <a
-                  href="#"
-                  onClick={() => setActiveTab("pastEvents")}
-                  className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
-                    activeTab === "pastEvents"
-                      ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
-                      : "border-transparent"
-                  }`}
-                >
-                  Past Events
-                </a>
-              </li>
+            <li className="me-2">
+              <a
+                href="#"
+                onClick={() => setActiveTab("pastEvents")}
+                className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+                  activeTab === "pastEvents"
+                    ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                    : "border-transparent"
+                }`}
+              >
+                Past Events
+              </a>
+            </li>
 
-          {/* Polls Tab */}
+            {/* Polls Tab */}
             <li className="me-2">
               <a
                 href="#"
@@ -832,292 +832,304 @@ export default function CommunityPage({ params }) {
                 Polls
               </a>
             </li>
-        </ul>
+          </ul>
+        </div>
       </div>
-</div>
-      
-      {activeTab === "myEvents" && (
-  <div className="bg-gray-50 p-4 pb-4"> 
-    {upcomingEvents.length > 0 ? (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {upcomingEvents
-          .filter(event => isRSVPed(event.id)) // Filter to show only events the user RSVPed to
-          .map((event) => (
-            <div
-              key={event.id}
-              className="bg-white shadow-md rounded-md overflow-hidden"
-            >
-              <div className="relative">
-                {event.status === "active" ? (
-                  <span className="absolute top-2 right-2 bg-red-200 text-red-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                    RSVP Closed
-                  </span>
-                ) : event.status === "rsvp" ? (
-                  <span className="absolute top-2 right-2 bg-blue-200 text-blue-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                    RSVP Open
-                  </span>
-                ) : null}
-                <img
-                  src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                  alt={event.Name}
-                  className="w-full h-48 object-cover"
-                />
-              </div>
 
-              <div className="p-4">
-                <h3 className="text-xl font-semibold text-left mb-2">
-                  {event.Name}
-                </h3>
-                <div className="flex items-center mb-1">
-                  <LocationOn className="text-gray-600 mr-2" />
-                  <span className="text-gray-800 text-sm">{event.Location}</span>
-                </div>
-                <div className="flex items-center mb-1">
-                  <Event className="text-gray-600 mr-2" />
-                  <span className="text-gray-800 text-sm">
-                    {formatDate(event.StartDate)}
-                  </span>
-                </div>
-                <div className="flex items-center">
-                  <AccessTime className="text-gray-600 mr-2" />
-                  <span className="text-gray-800 text-sm">
-                    {new Date(event.StartDate.seconds * 1000).toLocaleTimeString()}
-                  </span>
-                </div>
+      {activeTab === "myEvents" && (
+        <div className="bg-gray-50 p-4 pb-4">
+          {upcomingEvents.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {upcomingEvents
+                .filter((event) => isRSVPed(event.id)) // Filter to show only events the user RSVPed to
+                .map((event) => (
+                  <div
+                    key={event.id}
+                    className="bg-white shadow-md rounded-md overflow-hidden"
+                  >
+                    <div className="relative">
+                      {event.status === "active" ? (
+                        <span className="absolute top-2 right-2 bg-red-200 text-red-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                          RSVP Closed
+                        </span>
+                      ) : event.status === "rsvp" ? (
+                        <span className="absolute top-2 right-2 bg-blue-200 text-blue-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                          RSVP Open
+                        </span>
+                      ) : null}
+                      <img
+                        src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        alt={event.Name}
+                        className="w-full h-48 object-cover"
+                      />
+                    </div>
+
+                    <div className="p-4">
+                      <h3 className="text-xl font-semibold text-left mb-2">
+                        {event.Name}
+                      </h3>
+                      <div className="flex items-center mb-1">
+                        <LocationOn className="text-gray-600 mr-2" />
+                        <span className="text-gray-800 text-sm">
+                          {event.Location}
+                        </span>
+                      </div>
+                      <div className="flex items-center mb-1">
+                        <Event className="text-gray-600 mr-2" />
+                        <span className="text-gray-800 text-sm">
+                          {formatDate(event.StartDate)}
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <AccessTime className="text-gray-600 mr-2" />
+                        <span className="text-gray-800 text-sm">
+                          {new Date(
+                            event.StartDate.seconds * 1000
+                          ).toLocaleTimeString()}
+                        </span>
+                      </div>
                       <div className="mt-2 text-sm text-gray-600">
                         <strong>Number of RSVPs:</strong>{" "}
                         {rsvpCounts[event.id] || 0}
                       </div>
-                <div className="mt-4">
-                  {event.status === "active" ? (
-                    <div className="flex space-x-4">
-                      {isRSVPed(event.id) ? (
-                        <button
-                          className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
-                          onClick={() => handleLeave(event)}
-                        >
-                          UN RSVP
-                        </button>
-                      ) : (
-                        <span className="flex-1 bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-md">
-                          RSVP for this event is CLOSED
-                        </span>
-                      )}
-                    </div>
-                  ) : event.status === "rsvp" ? (
-                    <div className="flex space-x-4">
-                      {isRSVPed(event.id) ? (
-                        <button
-                          className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
-                          onClick={() => handleLeave(event)}
-                        >
-                          UN RSVP
-                        </button>
-                      ) : (
-                        <button
-                          className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
-                          onClick={() => handleRSVP(event)}
-                        >
-                          RSVP
-                        </button>
-                      )}
-                    </div>
-                  ) : (
-                    <span className="flex-1 text-gray-700 font-bold py-2 px-4 rounded-md">
-                      Event status unknown
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-      </div>
-    ) : (
-      <Typography>No upcoming events to display</Typography>
-    )}
-  </div>
-)}
-
-
-<div>
-  {activeTab === "pastEvents" && (
-    <div className="bg-white p-4 pb-4">
-      {pastEvents.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-items-center">
-          {pastEvents.map((event) => (
-            <div
-              key={event.id}
-              className="w-[400px] bg-white shadow-md rounded-md overflow-hidden"
-            >
-              <div className="relative">
-                <img
-                  src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                  alt={event.Name}
-                  className="w-full h-48 object-cover"
-                />
-              </div>
-
-              <div className="p-4">
-                <h3 className="text-xl font-semibold text-left mb-2">
-                  {event.Name}
-                </h3>
-                <div className="mb-2">
-                  <DescriptionIcon className="text-gray-600 mr-2" />
-                  <span className="text-gray-800 text-sm">
-                    {event.EventDescription}
-                  </span>
-                </div>
-                <div className="flex items-center mb-1">
-                  <LocationOn className="text-gray-600 mr-2" />
-                  <span className="text-gray-800 text-sm">
-                    {event.Location}
-                  </span>
-                </div>
-                <div className="flex items-center mb-1">
-                  <Event className="text-gray-600 mr-2" />
-                  <span className="text-gray-800 text-sm">
-                    {formatDate(event.StartDate)}
-                  </span>
-                </div>
-                <div className="flex items-center">
-                  <AccessTime className="text-gray-600 mr-2" />
-                  <span className="text-gray-800 text-sm">
-                    {new Date(event.StartDate.seconds * 1000).toLocaleTimeString()}
-                  </span>
-                </div>
-              </div>
-              <div className="mt-4 mb-2">
-                <div className="flex justify-center">
-                  <button
-                    className="bg-[#a8bf22] text-white py-2 px-4 rounded hover:bg-[#bcd727] transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
-                    onClick={() => handleCommentReview(event)}
-                  >
-                    Leave a Comment & Review
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div>No past events</div>
-      )}
-    </div>
-  )}
-</div>
-        <div>
-          {activeTab === "upcomingEvents" && (
-            <div className="bg-white p-4 pb-4">
-              {upcomingEvents.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {upcomingEvents.map((event) => (
-                    <div
-                      key={event.id}
-                      className="bg-white shadow-sm rounded-md overflow-hidden"
-                    >
-                      {/* Image section occupying the top without borders */}
-                      <div className="relative">
-                        {/* RSVP Status Tag */}
+                      <div className="mt-4">
                         {event.status === "active" ? (
-                          <span className="absolute top-2 right-2 bg-red-200 text-red-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                            RSVP Closed
-                          </span>
+                          <div className="flex space-x-4">
+                            {isRSVPed(event.id) ? (
+                              <button
+                                className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
+                                onClick={() => handleLeave(event)}
+                              >
+                                UN RSVP
+                              </button>
+                            ) : (
+                              <span className="flex-1 bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-md">
+                                RSVP for this event is CLOSED
+                              </span>
+                            )}
+                          </div>
                         ) : event.status === "rsvp" ? (
-                          <span className="absolute top-2 right-2 bg-blue-200 text-blue-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
-                            RSVP Open
+                          <div className="flex space-x-4">
+                            {isRSVPed(event.id) ? (
+                              <button
+                                className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
+                                onClick={() => handleLeave(event)}
+                              >
+                                UN RSVP
+                              </button>
+                            ) : (
+                              <button
+                                className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded-md hover:bg-[#bcd727] transition-all"
+                                onClick={() => handleRSVP(event)}
+                              >
+                                RSVP
+                              </button>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="flex-1 text-gray-700 font-bold py-2 px-4 rounded-md">
+                            Event status unknown
                           </span>
-                        ) : null}
-                        <img
-                          src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                          alt={event.Name}
-                          className="w-full h-48 object-cover"
-                        />
+                        )}
                       </div>
-
-            {/* Event details below the image */}
-            <div className="p-4">
-              <h3 className="text-xl font-semibold text-left mb-2">
-                {event.Name}
-              </h3>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                style={{ whiteSpace: "pre-wrap" }}
-              >
-                <div className="mb-2">
-                  <DescriptionIcon className="text-gray-600 mr-2"/>
-                  <span className="text-gray-800 text-sm">{event.EventDescription}</span>
-                  {event.EventDescription}
-                </div>
-                <div className="flex items-center mb-1">
-                  <LocationOn className="text-gray-600 mr-2" />
-                  <span className="text-gray-800 text-sm">{event.Location}</span>
-                </div>
-                <div className="flex items-center mb-1">
-                  <Event className="text-gray-600 mr-2" />
-                  <span className="text-gray-800 text-sm">{formatDate(event.StartDate)}</span>
-                </div>
-                <div className="flex items-center">
-                  <AccessTime className="text-gray-600 mr-2" />
-                  <span className="text-gray-800 text-sm">
-                    {new Date(event.StartDate.seconds * 1000).toLocaleTimeString()}
-                  </span>
-                </div>
-              </Typography>
-
-              {/* RSVP and event status */}
-              <div className="mt-4">
-                {event.status === "active" ? (
-                  <div className="flex space-x-4">
-                    {isRSVPed(event.id) ? (
-                      <button
-                        className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
-                        onClick={() => handleLeave(event)}
-                      >
-                        UN RSVP
-                      </button>
-                    ) : (
-                      <span className="flex-1 bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-md">
-                        RSVP for this event is CLOSED
-                      </span>
-                    )}
+                    </div>
                   </div>
-                ) : event.status === "rsvp" ? (
-                  <div className="flex space-x-4">
-                    {isRSVPed(event.id) ? (
-                      <button
-                        className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
-                        onClick={() => handleLeave(event)}
-                      >
-                        UN RSVP
-                      </button>
-                    ) : (
-                      <button
-                        className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded hover:bg-[#bcd727] transition-all ease-in-out duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
-                        onClick={() => handleRSVP(event)}
-                      >
-                        RSVP
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  <span className="flex-1 text-gray-700 font-bold py-2 px-4 rounded-md">
-                    Event status unknown
-                  </span>
-                )}
-              </div>
+                ))}
             </div>
-          </div>
-        ))}
-      </div>
-    ) : (
-      <Typography>No upcoming events to display</Typography>
-    )}
-  </div>
-)}
-
+          ) : (
+            <Typography>No upcoming events to display</Typography>
+          )}
         </div>
-      
+      )}
+
+      <div>
+        {activeTab === "pastEvents" && (
+          <div className="bg-white p-4 pb-4">
+            {pastEvents.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 justify-items-center">
+                {pastEvents.map((event) => (
+                  <div
+                    key={event.id}
+                    className="w-[400px] bg-white shadow-md rounded-md overflow-hidden"
+                  >
+                    <div className="relative">
+                      <img
+                        src="https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        alt={event.Name}
+                        className="w-full h-48 object-cover"
+                      />
+                    </div>
+
+                    <div className="p-4">
+                      <h3 className="text-xl font-semibold text-left mb-2">
+                        {event.Name}
+                      </h3>
+                      <div className="mb-2">
+                        <DescriptionIcon className="text-gray-600 mr-2" />
+                        <span className="text-gray-800 text-sm">
+                          {event.EventDescription}
+                        </span>
+                      </div>
+                      <div className="flex items-center mb-1">
+                        <LocationOn className="text-gray-600 mr-2" />
+                        <span className="text-gray-800 text-sm">
+                          {event.Location}
+                        </span>
+                      </div>
+                      <div className="flex items-center mb-1">
+                        <Event className="text-gray-600 mr-2" />
+                        <span className="text-gray-800 text-sm">
+                          {formatDate(event.StartDate)}
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <AccessTime className="text-gray-600 mr-2" />
+                        <span className="text-gray-800 text-sm">
+                          {new Date(
+                            event.StartDate.seconds * 1000
+                          ).toLocaleTimeString()}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-4 mb-2">
+                      <div className="flex justify-center">
+                        <button
+                          className="bg-[#a8bf22] text-white py-2 px-4 rounded hover:bg-[#bcd727] transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
+                          onClick={() => handleCommentReview(event)}
+                        >
+                          Leave a Comment & Review
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div>No past events</div>
+            )}
+          </div>
+        )}
+      </div>
+      <div>
+        {activeTab === "upcomingEvents" && (
+          <div className="bg-white p-4 pb-4">
+            {upcomingEvents.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {upcomingEvents.map((event) => (
+                  <div
+                    key={event.id}
+                    className="bg-white shadow-sm rounded-md overflow-hidden"
+                  >
+                    {/* Image section occupying the top without borders */}
+                    <div className="relative">
+                      {/* RSVP Status Tag */}
+                      {event.status === "active" ? (
+                        <span className="absolute top-2 right-2 bg-red-200 text-red-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                          RSVP Closed
+                        </span>
+                      ) : event.status === "rsvp" ? (
+                        <span className="absolute top-2 right-2 bg-blue-200 text-blue-800 text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                          RSVP Open
+                        </span>
+                      ) : null}
+                      <img
+                        src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        alt={event.Name}
+                        className="w-full h-48 object-cover"
+                      />
+                    </div>
+
+                    {/* Event details below the image */}
+                    <div className="p-4">
+                      <h3 className="text-xl font-semibold text-left mb-2">
+                        {event.Name}
+                      </h3>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        style={{ whiteSpace: "pre-wrap" }}
+                      >
+                        <div className="mb-2">
+                          <DescriptionIcon className="text-gray-600 mr-2" />
+                          <span className="text-gray-800 text-sm">
+                            {event.EventDescription}
+                          </span>
+                          {event.EventDescription}
+                        </div>
+                        <div className="flex items-center mb-1">
+                          <LocationOn className="text-gray-600 mr-2" />
+                          <span className="text-gray-800 text-sm">
+                            {event.Location}
+                          </span>
+                        </div>
+                        <div className="flex items-center mb-1">
+                          <Event className="text-gray-600 mr-2" />
+                          <span className="text-gray-800 text-sm">
+                            {formatDate(event.StartDate)}
+                          </span>
+                        </div>
+                        <div className="flex items-center">
+                          <AccessTime className="text-gray-600 mr-2" />
+                          <span className="text-gray-800 text-sm">
+                            {new Date(
+                              event.StartDate.seconds * 1000
+                            ).toLocaleTimeString()}
+                          </span>
+                        </div>
+                      </Typography>
+
+                      {/* RSVP and event status */}
+                      <div className="mt-4">
+                        {event.status === "active" ? (
+                          <div className="flex space-x-4">
+                            {isRSVPed(event.id) ? (
+                              <button
+                                className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
+                                onClick={() => handleLeave(event)}
+                              >
+                                UN RSVP
+                              </button>
+                            ) : (
+                              <span className="flex-1 bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-md">
+                                RSVP for this event is CLOSED
+                              </span>
+                            )}
+                          </div>
+                        ) : event.status === "rsvp" ? (
+                          <div className="flex space-x-4">
+                            {isRSVPed(event.id) ? (
+                              <button
+                                className="flex-1 bg-[#808080] text-white py-2 px-4 rounded-md hover:bg-[#A0A0A0] transition-all"
+                                onClick={() => handleLeave(event)}
+                              >
+                                UN RSVP
+                              </button>
+                            ) : (
+                              <button
+                                className="flex-1 bg-[#a8bf22] text-white py-2 px-4 rounded hover:bg-[#bcd727] transition-all ease-in-out duration-300 shadow-md hover:shadow-lg transform hover:scale-105"
+                                onClick={() => handleRSVP(event)}
+                              >
+                                RSVP
+                              </button>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="flex-1 text-gray-700 font-bold py-2 px-4 rounded-md">
+                            Event status unknown
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <Typography>No upcoming events to display</Typography>
+            )}
+          </div>
+        )}
+      </div>
+
       <div>
         {activeTab === "polls" && (
           <div>
@@ -1186,198 +1198,203 @@ export default function CommunityPage({ params }) {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8"></div>
 
       <Dialog
-      open={openDialog}
-      onClose={handleCloseDialog}
-      maxWidth="md"
-      fullWidth
-    >
-      <DialogContent>
-        <div>
-          {/* Leave a Review Section */}
-          <div className="mb-6 p-4 shadow-xl rounded-md">
-          <div className="flex justify-end">
-          <button
-            onClick={handleCloseDialog}
-            className="bg-red-300 text-white p-2 rounded-xl hover:bg-red-600 flex items-center justify-center"
-          >
-            <CloseOutlinedIcon />
-          </button>
-        </div>
-
-            <h2 className="text-xl font-bold mb-4">Leave a Review</h2>
-
-            {/* Added space between "Leave a Review" and the comment section */}
-            <div className="mt-4">
-              <textarea
-                className="w-full border border-gray-300 rounded-md p-2"
-                rows="4"
-                placeholder="Comment"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              />
-            </div>
-
-            <div className="mt-4">
-              <label className="font-bold">Rating</label>
-              <div className="mt-2">
-                {/* Implement a simple star rating component */}
-                <div className="flex">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      className={`text-2xl ${
-                        star <= rating ? 'text-yellow-400' : 'text-gray-300'
-                      }`}
-                      onClick={() => setRating(star)}
-                    >
-                      ★
-                    </button>
-                  ))}
-                </div>
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogContent>
+          <div>
+            {/* Leave a Review Section */}
+            <div className="mb-6 p-4 shadow-xl rounded-md">
+              <div className="flex justify-end">
+                <button
+                  onClick={handleCloseDialog}
+                  className="bg-red-300 text-white p-2 rounded-xl hover:bg-red-600 flex items-center justify-center"
+                >
+                  <CloseOutlinedIcon />
+                </button>
               </div>
-            </div>
 
-            {/* Image Upload Section */}
-            <div className="mt-4">
-              <label className="font-bold">Upload Images</label>
-              {/* Custom "Choose Files" Button */}
-              <div className="mt-2">
-                <label className="bg-black text-white px-4 py-2 rounded cursor-pointer inline-block">
-                  Choose Files
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                </label>
-                {/* Display "No files chosen" or number of files selected */}
-                {selectedImages.length > 0 ? (
-                  <p className="mt-2">{selectedImages.length} file(s) selected</p>
-                ) : (
-                  <p className="mt-2">No files chosen</p>
-                )}
+              <h2 className="text-xl font-bold mb-4">Leave a Review</h2>
+
+              {/* Added space between "Leave a Review" and the comment section */}
+              <div className="mt-4">
+                <textarea
+                  className="w-full border border-gray-300 rounded-md p-2"
+                  rows="4"
+                  placeholder="Comment"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                />
               </div>
-              {selectedImages.length > 0 && (
+
+              <div className="mt-4">
+                <label className="font-bold">Rating</label>
                 <div className="mt-2">
-                  <div className="flex flex-wrap mt-2">
-                    {selectedImages.map((image, index) => (
-                      <div key={index} className="relative m-1">
-                        <img
-                          src={URL.createObjectURL(image.file)}
-                          alt={image.name}
-                          className="w-20 h-20 object-cover rounded"
-                        />
-                        <p className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-center text-xs rounded-b">
-                          {image.name}
-                        </p>
-                        <button
-                          onClick={() => handleImageDeselect(index)}
-                          className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
-                        >
-                          ×
-                        </button>
-                      </div>
+                  {/* Implement a simple star rating component */}
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        className={`text-2xl ${
+                          star <= rating ? "text-yellow-400" : "text-gray-300"
+                        }`}
+                        onClick={() => setRating(star)}
+                      >
+                        ★
+                      </button>
                     ))}
                   </div>
                 </div>
-              )}
+              </div>
+
+              {/* Image Upload Section */}
+              <div className="mt-4">
+                <label className="font-bold">Upload Images</label>
+                {/* Custom "Choose Files" Button */}
+                <div className="mt-2">
+                  <label className="bg-black text-white px-4 py-2 rounded cursor-pointer inline-block">
+                    Choose Files
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                  </label>
+                  {/* Display "No files chosen" or number of files selected */}
+                  {selectedImages.length > 0 ? (
+                    <p className="mt-2">
+                      {selectedImages.length} file(s) selected
+                    </p>
+                  ) : (
+                    <p className="mt-2">No files chosen</p>
+                  )}
+                </div>
+                {selectedImages.length > 0 && (
+                  <div className="mt-2">
+                    <div className="flex flex-wrap mt-2">
+                      {selectedImages.map((image, index) => (
+                        <div key={index} className="relative m-1">
+                          <img
+                            src={URL.createObjectURL(image.file)}
+                            alt={image.name}
+                            className="w-20 h-20 object-cover rounded"
+                          />
+                          <p className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-center text-xs rounded-b">
+                            {image.name}
+                          </p>
+                          <button
+                            onClick={() => handleImageDeselect(index)}
+                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={handleSubmitReview}
+                className="mt-4 border border-[#bcd727] text-[#bcd727] hover:bg-[#bcd727] hover:text-white transition-colors flex items-center px-4 py-2 rounded-md"
+              >
+                {/* Review Icon Placeholder */}
+                <svg
+                  className="w-5 h-5 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M2 2h16v16H2V2zm1 1v14h14V3H3zm3 11h8v1H6v-1zm0-2h8v1H6v-1zm0-2h5v1H6v-1z" />
+                </svg>
+                Submit Review
+              </button>
             </div>
 
-            <button
-              onClick={handleSubmitReview}
-              className="mt-4 border border-[#bcd727] text-[#bcd727] hover:bg-[#bcd727] hover:text-white transition-colors flex items-center px-4 py-2 rounded-md"
+            {/* All Comments and Ratings Section */}
+            <div
+              className="p-4 shadow-lg rounded-md"
+              style={{ maxHeight: "400px", overflowY: "auto" }}
             >
-              {/* Review Icon Placeholder */}
-              <svg
-                className="w-5 h-5 mr-2"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path d="M2 2h16v16H2V2zm1 1v14h14V3H3zm3 11h8v1H6v-1zm0-2h8v1H6v-1zm0-2h5v1H6v-1z" />
-              </svg>
-              Submit Review
-            </button>
-          </div>
+              <h2 className="text-xl font-bold mb-4">
+                All Comments and Ratings
+              </h2>
 
-          {/* All Comments and Ratings Section */}
-          <div
-            className="p-4 shadow-lg rounded-md"
-            style={{ maxHeight: '400px', overflowY: 'auto' }}
-          >
-            <h2 className="text-xl font-bold mb-4">All Comments and Ratings</h2>
-
-              <ul className="list-none p-0">
+              {/* <ul className="list-none p-0">
                 {currentEventObject && currentEventObject.Reviews ? (
                   currentEventObject.Reviews.map((review, index) => {
                     const userInitials =
                       `${review.UserName?.[0] || ""}${review.UserSurname?.[0] || ""}`.toUpperCase();
-            {currentEventObject && currentEventObject.Reviews ? (
-              <ul className="list-none p-0">
-                {currentEventObject.Reviews.map((review, index) => {
-                  // Get user initials for the profile icon
-                  const userInitials = `${review.UserName?.[0] || ''}${
-                    review.UserSurname?.[0] || ''
-                  }`.toUpperCase();
+                       */}
+              {currentEventObject && currentEventObject.Reviews ? (
+                <ul className="list-none p-0">
+                  {currentEventObject.Reviews.map((review, index) => {
+                    // Get user initials for the profile icon
+                    const userInitials = `${review.UserName?.[0] || ""}${
+                      review.UserSurname?.[0] || ""
+                    }`.toUpperCase();
 
+                    // return (
+                    //   <li
+                    //     className="bg-gray-200 p-4 mb-4 rounded flex flex-col justify-between relative"
+                    //     key={index}
+                    //     style={{
+                    //       width: "450px",
+                    //       height: "auto",
+                    //       wordWrap: "break-word",
+                    //     }} // Set a fixed width for the block
+                    //   >
+                    //     <div className="flex items-center mb-4">
                     return (
                       <li
-                        className="bg-gray-200 p-4 mb-4 rounded flex flex-col justify-between relative"
+                        className="bg-gray-50 p-4 mb-4 rounded flex flex-col shadow"
                         key={index}
-                        style={{
-                          width: "450px",
-                          height: "auto",
-                          wordWrap: "break-word",
-                        }} // Set a fixed width for the block
                       >
-                        <div className="flex items-center mb-4">
-                  return (
-                    <li
-                      className="bg-gray-50 p-4 mb-4 rounded flex flex-col shadow"
-                      key={index}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center">
-                          {/* Profile icon with initials */}
-                          <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center mr-3">
-                            <span className="text-lg font-semibold">
-                              {userInitials}
-                            </span>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center">
+                            {/* Profile icon with initials */}
+                            <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center mr-3">
+                              <span className="text-lg font-semibold">
+                                {userInitials}
+                              </span>
+                            </div>
+
+                            {/* User name and surname */}
+                            <p className="font-semibold">
+                              {review.UserName} {review.UserSurname}
+                            </p>
                           </div>
 
-                          {/* User name and surname */}
-                          <p className="font-semibold">
-                            {review.UserName} {review.UserSurname}
+                          {/* Date */}
+                          <p className="text-gray-600 text-sm">
+                            {new Date(review.date).toLocaleDateString()}
                           </p>
                         </div>
 
-                        {/* Date */}
-                        <p className="text-gray-600 text-sm">
-                          {new Date(review.date).toLocaleDateString()}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center mb-2">
-                        {/* Display rating stars */}
-                        <div className="flex">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <span
-                              key={star}
-                              className={`text-2xl ${
-                                star <= review.Rating
-                                  ? 'text-yellow-400'
-                                  : 'text-gray-300'
-                              }`}
-                            >
-                              ★
-                            </span>
-                          ))}
+                        <div className="flex items-center mb-2">
+                          {/* Display rating stars */}
+                          <div className="flex">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <span
+                                key={star}
+                                className={`text-2xl ${
+                                  star <= review.Rating
+                                    ? "text-yellow-400"
+                                    : "text-gray-300"
+                                }`}
+                              >
+                                ★
+                              </span>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                      <p>{review.Comment}</p>
-                        <div className="flex-1">
+                        <p>{review.Comment}</p>
+                        {/* <div className="flex-1">
                           <div className="flex items-center mb-2">
                             <Rating
                               name={`rating-${index}`}
@@ -1385,9 +1402,10 @@ export default function CommunityPage({ params }) {
                               readOnly
                               precision={0.5}
                             />
-                          </div>
-                          <Typography
-                            variant="body1"
+                          </div> */}
+
+                        {/* <p
+                           
                             className="whitespace-normal break-words" // Ensure the text wraps correctly
                             style={{
                               whiteSpace: "normal",
@@ -1395,76 +1413,75 @@ export default function CommunityPage({ params }) {
                             }} // For ensuring line breaks
                           >
                             {review.Comment}
-                          </Typography>
+                          </p> */}
 
-                          <Typography
+                        {/* <Typography
                             variant="body2"
                             className="text-gray-600 text-sm absolute top-0 right-0"
                           >
                             {new Date(review.date).toLocaleDateString()}
-                          </Typography>
+                          </Typography> */}
 
-                          {review.images && review.images.length > 0 && (
-                            <div className="mt-2 flex flex-wrap">
-                              {review.images
-                                .slice(0, 4)
-                                .map((imageUrl, imgIndex) => (
-                                  <div
-                                    key={imgIndex}
-                                    className="w-24 h-24 m-1 cursor-pointer"
-                                    onClick={() =>
-                                      handleOpenGallery(review.images, imgIndex)
-                                    }
-                                  >
-                                    <img
-                                      src={imageUrl}
-                                      alt={`Review image ${imgIndex + 1}`}
-                                      className="w-full h-full object-cover rounded"
-                                    />
-                                  </div>
-                                ))}
-
-                              {review.images.length > 4 && (
+                        {review.images && review.images.length > 0 && (
+                          <div className="mt-2 flex flex-wrap">
+                            {review.images
+                              .slice(0, 4)
+                              .map((imageUrl, imgIndex) => (
                                 <div
-                                  className="relative w-24 h-24 mt-2 mr-2 cursor-pointer"
+                                  key={imgIndex}
+                                  className="w-24 h-24 m-1 cursor-pointer"
                                   onClick={() =>
-                                    handleOpenGallery(review.images)
+                                    handleOpenGallery(review.images, imgIndex)
                                   }
                                 >
                                   <img
-                                    src={review.images[4]}
-                                    alt="More images"
-                                    className="w-full h-full object-cover rounded blur-sm"
+                                    src={imageUrl}
+                                    alt={`Review image ${imgIndex + 1}`}
+                                    className="w-full h-full object-cover rounded"
                                   />
-                                  <span className="absolute inset-0 flex items-center justify-center text-white bg-black bg-opacity-50 rounded">
-                                    + {review.images.length - 4} more
-                                  </span>
                                 </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
+                              ))}
 
-                        <Typography
+                            {review.images.length > 4 && (
+                              <div
+                                className="relative w-24 h-24 mt-2 mr-2 cursor-pointer"
+                                onClick={() => handleOpenGallery(review.images)}
+                              >
+                                <img
+                                  src={review.images[4]}
+                                  alt="More images"
+                                  className="w-full h-full object-cover rounded blur-sm"
+                                />
+                                <span className="absolute inset-0 flex items-center justify-center text-white bg-black bg-opacity-50 rounded">
+                                  + {review.images.length - 4} more
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {/* <Typography
                           variant="body2"
                           className="text-gray-600 text-sm absolute bottom-0 right-0"
-                        >
-                          {review.UserEmail}
-                        </p>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            ) : (
-              <p>No reviews available.</p>
-            )}
-          </div>
-        </div>
-      </DialogContent>
-      {/* Removed DialogActions */}
-    </Dialog>
+                        > */}
 
+                        <div>
+                          <p className="text-gray-600 text-sm">
+                            {review.UserEmail}
+                          </p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <p>No reviews available.</p>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+        {/* Removed DialogActions */}
+      </Dialog>
 
       <ImageGallery
         images={galleryImages}

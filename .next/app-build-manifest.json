@@ -24,12 +24,28 @@
     "/Home/community/[id]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
+      "static/css/app/Home/community/[id]/page.css",
       "static/chunks/app/Home/community/[id]/page.js"
     ],
-    "/_not-found/page": [
+    "/auth/Profile/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+      "static/chunks/app/auth/Profile/page.js"
+    ],
+    "/admin/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/page.js"
+    ],
+    "/auth/Leaderboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/auth/Leaderboard/page.js"
+    ],
+    "/auth/RecommendCommunity/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/auth/RecommendCommunity/page.js"
     ]
   }
 }
