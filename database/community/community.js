@@ -332,6 +332,7 @@ export default class CommunityDB {
           await updateDoc(communityRef, {
             users: users,
           });
+          UserDB.addCommunityToUserArray(CommunityData.id);
           ManageUser.joinCommunity(CommunityData.id);
           console.log("Community Users updated successfully.");
 
@@ -613,6 +614,7 @@ export default class CommunityDB {
           });
           console.log("Community Users updated successfully.");
           UserDB.addPoints(5);
+          UserDB.addCommunityToUserArray(communityId);
 
           // alert("Community Joined");
           // window.location.href = window.location.href;
@@ -653,7 +655,8 @@ export default class CommunityDB {
             users: users,
           });
           console.log("User removed from community successfully.");
-          UserDB.removePoints(5);
+          //await UserDB.removePoints(5);
+          UserDB.removeCommunityFromUserArray(communityId);
           return {
             success: true,
             message: "You have successfully left the community.",

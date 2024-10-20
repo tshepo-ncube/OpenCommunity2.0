@@ -7,6 +7,8 @@ import {
   setDoc,
   deleteDoc,
   runTransaction,
+  arrayRemove,
+  arrayUnion,
   updateDoc,
   getDocs,
 } from "firebase/firestore";
@@ -127,6 +129,51 @@ export default class UserDB {
       });
     } else {
       console.log(`${localStorage.getItem("UserID")} does not exist!`);
+    }
+  };
+
+  static addCommunityToUserArray = async (communityID) => {
+    // try {
+    //   const userRef = doc(DB, "users", localStorage.getItem("UserID"));
+    //   await updateDoc(userRef, userObject);
+    //   console.log("User updated successfully.");
+    // } catch (e) {
+    //   console.error("Error updating user: ", e);
+    //   alert("Error updating user.");
+    // }
+    console.log("addCommunityToUserArray");
+    try {
+      const userRef = doc(DB, "users", localStorage.getItem("UserID"));
+      await updateDoc(userRef, {
+        CommunitiesJoined: arrayUnion(communityID),
+      });
+      console.log(
+        "Community added successfully to the user's CommunitiesJoined array."
+      );
+    } catch (e) {
+      console.error("Error updating user: ", e);
+      alert("Error updating user.");
+    }
+  };
+
+  static removeCommunityFromUserArray = async (communityID) => {
+    try {
+      const userID = localStorage.getItem("UserID");
+      console.log(
+        `Attempting to remove communityID: ${communityID} for user: ${userID}`
+      );
+      const userRef = doc(DB, "users", userID);
+
+      await updateDoc(userRef, {
+        CommunitiesJoined: arrayRemove(communityID),
+      });
+
+      console.log(
+        "Community removed successfully from the user's CommunitiesJoined array."
+      );
+    } catch (e) {
+      console.error("Error removing community from user: ", e);
+      alert("Error removing community.");
     }
   };
 
