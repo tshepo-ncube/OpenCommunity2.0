@@ -269,14 +269,14 @@ const Navbar = ({ isHome }) => {
             </Link>
           </li>
 
-          {/* <li className="p-4 text-white ">
+          <li className="p-4 text-white ">
             <Link
               href="/auth/RecommendCommunity"
               className="py-2 px-4 hover:bg-[#bcd727] hover:rounded-lg"
             >
               Recommend Community
             </Link>
-          </li> */}
+          </li>
 
           {/* <div className="hidden sm:flex items-center ml-4">
             <img
