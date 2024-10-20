@@ -336,7 +336,6 @@ const CreateCommunity = () => {
       return 0;
     });
   };
-
   const handleFormSubmit = async (e, status) => {
     e.preventDefault();
     console.log("handleFormSubmit");
@@ -362,6 +361,17 @@ const CreateCommunity = () => {
       admin: adminEmail,
     };
 
+    const clearForm = () => {
+      setName("");
+      setDescription("");
+      setCategory("");
+      setStatus("");
+      setImage(null); // Clear the image file
+      setSelectedInterests([]); // Clear selected interests
+      setShowImageError(false); // Reset image error
+      setShowInterestsError(false); // Reset interests error
+    };
+
     if (editIndex !== null) {
       // Update existing community
       CommunityDB.updateCommunity(
@@ -371,6 +381,7 @@ const CreateCommunity = () => {
           updatedSubmittedData[editIndex] = updatedData;
           setSubmittedData(updatedSubmittedData);
           setPopupOpen(false); // Close the form after update
+          clearForm(); // Clear the form fields
         },
         setLoading
       );
@@ -380,7 +391,7 @@ const CreateCommunity = () => {
       try {
         if (!image) {
           setShowImageError(true);
-          console.log("THERE IS NO IMAGE< PLEASE SELECT ONE ");
+          console.log("THERE IS NO IMAGE, PLEASE SELECT ONE ");
           return;
         }
 
@@ -395,6 +406,7 @@ const CreateCommunity = () => {
           (newCommunity) => {
             setSubmittedData((prevData) => [...prevData, newCommunity]);
             setPopupOpen(false); // Close the form after successful creation
+            clearForm(); // Clear the form fields
           },
           setLoading,
           selectedInterests,
@@ -535,8 +547,7 @@ const CreateCommunity = () => {
         <div className="mb-4">
           <p className="text-gray-700 mb-2">{error.message}</p>
           <p className="text-gray-900 font-medium">
-            Similar community name is as follows, this is to test this branch,
-            pls show !!!!:
+            Similar community name is as follows:
           </p>
           <p className="text-gray-700 bg-gray-50 p-2 rounded mt-1">
             {error.similarCommunity}
