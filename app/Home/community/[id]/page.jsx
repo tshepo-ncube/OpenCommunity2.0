@@ -903,7 +903,7 @@ export default function CommunityPage({ params }) {
                                 UN RSVP
                               </button>
                             ) : (
-                              <span className="flex-1 bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-md">
+                              <span className="flex-1 justify-center bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-md">
                                 RSVP for this event is CLOSED
                               </span>
                             )}
@@ -1090,7 +1090,7 @@ export default function CommunityPage({ params }) {
                                 UN RSVP
                               </button>
                             ) : (
-                              <span className="flex-1 bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-md">
+                              <span className="flex-1 justify-center bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-md">
                                 RSVP for this event is CLOSED
                               </span>
                             )}
