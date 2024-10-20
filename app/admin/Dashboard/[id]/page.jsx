@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import Navbar from "@/_Components/Navbar";
+import Navbar from "@/_Components/Navbar2";
 import Autocomplete from "react-google-autocomplete";
 import CommunityDB from "@/database/community/community";
 import Snackbar from "@mui/material/Snackbar";
@@ -1160,8 +1160,8 @@ export default function CommunityPage({ params }) {
 
   return (
     <div className="bg-background_gray h-full">
-      {/* <Navbar /> */}
-      <Header />
+      <Navbar isHome={false} />
+      {/* <Header /> */}
       {/* <div className="flex flex-col fixed bottom-7 right-4">
         <button
           onClick={handleCreateNewEvent}
@@ -1170,7 +1170,7 @@ export default function CommunityPage({ params }) {
           + EVENT
         </button>
       </div> */}
-      <div className="bg-background_gray p-4 h-full">
+      <div className="bg-background_gray mt-[98px] p-4 h-full">
         <div className="flex justify-center mb-4">
           <button
             onClick={() => setCurrentView("infoManagement")}
