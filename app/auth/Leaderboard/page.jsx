@@ -6,6 +6,8 @@ import Header from "../../../_Components/header";
 import CollapsableSidebar from "@/_Components/CollapsableSidebar";
 import { motion } from "framer-motion";
 import { AiOutlineInfoCircle } from "react-icons/ai";
+import Navbar2 from "@/_Components/NavBar2";
+import Confetti from "react-confetti"; // Corrected import statement
 
 const Page = () => {
   const [users, setUsers] = useState([]);
@@ -15,8 +17,15 @@ const Page = () => {
   const [typewriterText, setTypewriterText] = useState("");
   const [skipTypewriter, setSkipTypewriter] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
+
+  // Added state to track window size for Confetti component
+  const [windowSize, setWindowSize] = useState({
+    width: 0,
+    height: 0,
+  });
+
   const fullMessage =
-    "Congratulations to everyone who made the leaderboard! The results are as follows .....";
+    "Congratulations to everyone who made the leaderboard! The results are as follows ...";
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -39,6 +48,27 @@ const Page = () => {
     fetchUsers();
   }, []);
 
+  // Effect to set window size for Confetti component
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setWindowSize({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+
+      const handleResize = () => {
+        setWindowSize({
+          width: window.innerWidth,
+          height: window.innerHeight,
+        });
+      };
+
+      window.addEventListener("resize", handleResize);
+
+      return () => window.removeEventListener("resize", handleResize);
+    }
+  }, []);
+
   useEffect(() => {
     if (!loading) {
       if (skipTypewriter) {
@@ -59,10 +89,6 @@ const Page = () => {
     }
   }, [loading, skipTypewriter]);
 
-  useEffect(() => {
-    console.log("Leaderboard : ", users);
-  }, [users]);
-
   const handleSkip = () => {
     setSkipTypewriter(true);
   };
@@ -73,18 +99,25 @@ const Page = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-white via-[#f0f0f0] to-[#bcd727]">
+      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-white via-[#f0f0f0] to-white">
         <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500"></div>
       </div>
     );
   }
 
-  const topUsers = [...users.slice(0, 3)];
-  topUsers[0] = users[1];
-  topUsers[1] = users[0];
-  topUsers[2] = users[2];
+  // Limit users to top 10
+  const topTenUsers = users.slice(0, 10);
 
-  const otherUsers = users.slice(3);
+  // Prepare top users for the podium
+  const firstPlaceUser = topTenUsers[0];
+  const secondPlaceUser = topTenUsers[1];
+  const thirdPlaceUser = topTenUsers[2];
+
+  // Arrange users for display: [Second Place, First Place, Third Place]
+  const displayTopUsers = [secondPlaceUser, firstPlaceUser, thirdPlaceUser];
+
+  // Other users (positions 4 to 10)
+  const otherUsers = topTenUsers.slice(3);
 
   const getInitials = (name, surname) => {
     return `${name.charAt(0)}${surname.charAt(0)}`.toUpperCase();
@@ -99,11 +132,9 @@ const Page = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-[#f0f0f0] to-[#bcd727]">
-      {/* <Header /> */}
-
-      <div className="flex min-h-screen bg-gray-100">
-        <CollapsableSidebar />
-        <div className="flex-grow p-6">
+      <Navbar2 isHome={true} />
+      <div className="flex min-h-screen bg-gray-50 mt-4">
+        <div className="flex-grow mt-16 p-6">
           <main className="container mx-auto px-4 py-12">
             {/* Information Icon */}
             <div className="relative">
@@ -113,30 +144,42 @@ const Page = () => {
               />
               {showInfo && (
                 <div className="absolute top-12 right-4 bg-white text-black p-4 rounded shadow-lg w-64 z-50">
-                  <h3 className="text-lg font-bold">Leaderboard Point Rules</h3>
-                  <p className="mt-2">First Class 👑: 1000 points +</p>
-                  <p>Second Class🏆: 500 points +</p>
-                  <p>Third Class 💎: 150 points +</p>
+                  <h3 className="text-lg font-bold">
+                    Leaderboard Point Rules
+                  </h3>
+                  <p className="mt-2">1st Class 👑: 1000 points +</p>
+                  <p>2nd Class🏆: 500 points +</p>
+                  <p>3rd Class 💎: 150 points +</p>
                   <p></p>
-                  <p>
-                    Earn points by Joining a community (+5), RSVP & attend an
-                    event (+15),
-                  </p>
-                  <p>vote on a poll (+10), comment & rate a past event (+10)</p>
+                  <p className="font-bold">Earn points by:</p>
+                  <ul>
+                    <li>• Joining a community (+5)</li>
+                    <li>• RSVP to an event (+15)</li>
+                    <li>• Voting on a poll (+10)</li>
+                    <li>• Rating a past event (+10)</li>
+                  </ul>
                 </div>
               )}
             </div>
 
             {!showLeaderboard ? (
-              <div className="relative flex items-start justify-center min-h-screen pt-20">
+              <div className="relative flex items-start justify-center min-h-screen">
+                {/* Confetti Animation */}
+                <Confetti
+                  width={windowSize.width}
+                  height={windowSize.height}
+                  style={{ position: "fixed", top: 0, left: 0, zIndex: 50 }}
+                />
+
                 <button
                   onClick={handleSkip}
-                  className="absolute top-3 left-3 px-8 py-3 bg-white text-black border border-gray-300 rounded-lg shadow-lg"
+                  className="absolute top-3 left-3 px-8 py-3 bg-white text-black border border-[#bcd727] rounded-xl shadow-lg hover:bg-[#bcd727] hover:text-white hover:shadow-xl transition-all duration-300"
                 >
                   Skip
                 </button>
+
                 <div className="text-center flex flex-col">
-                  <div className="typewriter-container">
+                  <div className="typewriter-container mt-20">
                     <span className="typewriter-text">{typewriterText}</span>
                   </div>
                 </div>
@@ -144,126 +187,121 @@ const Page = () => {
             ) : (
               <>
                 <div className="flex justify-center items-end space-x-8 mb-16">
-                  {topUsers.map((user, index) => (
-                    <motion.div
-                      key={index}
-                      className={`bg-white rounded-2xl shadow-lg overflow-hidden ${
-                        index === 1
-                          ? "h-[24rem] w-[18rem]"
-                          : "h-[22rem] w-[16rem]"
-                      } ${
-                        index === 0
-                          ? "order-1 hover:scale-105"
-                          : index === 1
-                            ? "order-2 hover:scale-105"
-                            : "order-3 hover:scale-105"
-                      } transition-transform duration-300 transform`}
-                      initial={{ opacity: 0, y: 50 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.2, duration: 0.5 }}
-                    >
-                      <div
-                        className={`h-2 ${
+                  {displayTopUsers.map((user, index) => (
+                    user && (
+                      <motion.div
+                        key={index}
+                        className={`bg-white rounded-2xl shadow-lg overflow-hidden ${
                           index === 1
-                            ? "bg-[#FFD700]"
+                            ? "h-[24rem] w-[18rem]"
+                            : "h-[22rem] w-[16rem]"
+                        } ${
+                          index === 1
+                            ? "order-2 hover:scale-105"
                             : index === 0
+                            ? "order-1 hover:scale-105"
+                            : "order-3 hover:scale-105"
+                        } transition-transform duration-300 transform`}
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.2, duration: 0.5 }}
+                      >
+                        <div
+                          className={`h-2 ${
+                            index === 1
+                              ? "bg-[#FFD700]"
+                              : index === 0
                               ? "bg-[#C0C0C0]"
                               : "bg-[#CD7F32]"
-                        }`}
-                      ></div>
-                      <div className="p-6">
-                        <div className="podium-medal text-6xl mb-4 text-center relative">
-                          <div className="medal-container relative">
-                            <span className="medal relative z-10">
-                              {index === 1 ? "🥇" : index === 0 ? "🥈" : "🥉"}
-                            </span>
-                            <div
-                              className={`sparkle sparkle-${index + 1}`}
-                            ></div>
-                          </div>
-                        </div>
-                        <div className="profile-picture mx-auto mb-4">
-                          {/* {getInitials(user.Name, user.Surname)} */}
-                          {getIcon(user.Points) && (
-                            <span className=" flex justify-center items-center absolute -top-1 -right-1">
-                              {/* {getIcon(user.Points)} */}
-
-                              <img
-                                src={
-                                  user.profileImage
-                                    ? user.profileImage
-                                    : "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
-                                }
-                                alt="Profile Icon"
-                                className="w-[5.5rem] h-[5.5rem] rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
-                              />
-                            </span>
-                          )}
-                        </div>
-                        <h2
-                          className={`text-xl font-semibold mb-1 text-center podium-name-${
-                            index + 1
                           }`}
-                        >
-                          {user.Name || "N/A"}
-                        </h2>
-                        <p className="text-lg mb-2 text-center text-gray-600">
-                          {user.Surname || "N/A"}
-                        </p>
-                        <p className="text-xl font-bold text-center">
-                          {user.Points} Points
-                        </p>
-                      </div>
-                    </motion.div>
+                        ></div>
+                        <div className="p-6">
+                          <div className="podium-medal text-6xl mb-4 text-center relative">
+                            <div className="medal-container relative">
+                              <span className="medal relative z-10">
+                                {index === 1
+                                  ? "🥇"
+                                  : index === 0
+                                  ? "🥈"
+                                  : "🥉"}
+                              </span>
+                              <div
+                                className={`sparkle sparkle-${index + 1}`}
+                              ></div>
+                            </div>
+                          </div>
+                          <div className="profile-picture mx-auto mb-4">
+                            <img
+                              src={
+                                user.profileImage ||
+                                "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
+                              }
+                              alt="Profile Icon"
+                              className="w-[5.5rem] h-[5.5rem] rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
+                            />
+                          </div>
+                          <h2
+                            className={`text-xl font-semibold mb-1 text-center ${
+                              index === 1
+                                ? "podium-name-1"
+                                : index === 0
+                                ? "podium-name-2"
+                                : "podium-name-3"
+                            }`}
+                          >
+                            {user.Name || "N/A"}
+                          </h2>
+                          <p className="text-lg mb-2 text-center text-gray-600">
+                            {user.Surname || "N/A"}
+                          </p>
+                          <p className="text-xl font-bold text-center">
+                            {user.Points} Points
+                          </p>
+                        </div>
+                      </motion.div>
+                    )
                   ))}
                 </div>
 
                 <div className="space-y-3">
                   {otherUsers.map((user, index) => (
-                    <motion.div
-                      key={index}
-                      className="bg-white rounded-lg shadow-sm overflow-hidden p-4 flex items-center justify-between border border-gray-200 hover:bg-gray-100"
-                      initial={{ opacity: 0, y: 50 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
-                    >
-                      <div className="flex items-center">
-                        <div className="position-number mr-4 text-xl font-bold text-gray-400">
-                          {index + 4}
-                        </div>
-                        <div className="profile-picture-right mr-4">
-                          {/* {getInitials(user.Name, user.Surname)} */}
-                          {/* {getIcon(user.Points) && (
-                            <span className="icon-right absolute -top-1 -right-1 text-lg">
-                              {getIcon(user.Points)}
-                            </span>
-                          )} */}
-
-                          <span className=" flex justify-center items-center absolute -top-1 -right-1">
-                            {/* {getIcon(user.Points)} */}
-
+                    user && (
+                      <motion.div
+                        key={index}
+                        className="bg-white rounded-lg shadow-sm overflow-hidden p-4 flex items-center justify-between border border-gray-200 hover:bg-gray-100 transform hover:scale-105 transition-transform duration-300"
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          delay: 0.2 + index * 0.1,
+                          duration: 0.5,
+                        }}
+                      >
+                        <div className="flex items-center">
+                          <div className="position-number mr-4 text-xl font-bold text-gray-400">
+                            {index + 4}
+                          </div>
+                          <div className="profile-picture-right mr-4 relative">
                             <img
                               src={
-                                user.profileImage
-                                  ? user.profileImage
-                                  : "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
+                                user.profileImage ||
+                                "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
                               }
                               alt="Profile Icon"
                               className="w-[3.5rem] h-[3.5rem] rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
                             />
-                          </span>
-                        </div>
-                        <div>
-                          <div className="text-lg font-semibold text-gray-800">
-                            {user.Name || "N/A"} {user.Surname || "N/A"}{" "}
-                            {getIcon(user.Points)}
                           </div>
-                          <div className="text-sm text-gray-600">
-                            {user.Points} Points
+                          <div>
+                            <div className="text-lg font-semibold text-gray-800">
+                              {user.Name || "N/A"} {user.Surname || "N/A"}{" "}
+                              {getIcon(user.Points)}
+                            </div>
+                            <div className="text-sm text-gray-600">
+                              {user.Points} Points
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </motion.div>
+                      </motion.div>
+                    )
                   ))}
                 </div>
               </>
@@ -280,7 +318,7 @@ const Page = () => {
 
             .typewriter-text {
               font-size: 4rem;
-              font-family: "Great Vibes", cursive;
+              font-family: "Poppins";
               font-weight: 400;
               color: #333;
               white-space: pre-wrap;
