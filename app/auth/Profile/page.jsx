@@ -689,7 +689,7 @@ const Profile = () => {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h2 className="text-lg font-medium text-gray-900">
-                      Select Interests
+                      Select 5 Interests
                     </h2>
                   </div>
 
