@@ -33,6 +33,11 @@
       "static/css/app/admin/Dashboard/[id]/page.css",
       "static/chunks/app/admin/Dashboard/[id]/page.js"
     ],
+    "/auth/Leaderboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/auth/Leaderboard/page.js"
+    ],
     "/_not-found/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",

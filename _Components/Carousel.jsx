@@ -1,16 +1,41 @@
 "use client";
 import React, { useState, useEffect } from "react";
-
-import CircularProgress from "@mui/material/CircularProgress";
+import {
+  Card,
+  CardContent,
+  CardActions,
+  CardMedia,
+  Typography,
+  Button,
+  Chip,
+  Grid,
+  CircularProgress,
+  Snackbar,
+  Alert,
+  TextField,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+  Modal,
+  Box,
+  Divider,
+} from "@mui/material";
 import CommunityDB from "../database/community/community";
 const Carousel = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [recommendedCommunities, setRecommendedCommunities] = useState([]);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
+  const [snackbarMessage, setSnackbarMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleNext = () => {
     setActiveIndex((prevIndex) => (prevIndex + 1) % 3); // Cycles through the slides
+  };
+
+  const handleCloseSnackbar = () => {
+    setOpenSnackbar(false);
   };
 
   const removeCommunityById = (idToRemove) => {
@@ -28,6 +53,11 @@ const Carousel = () => {
     removeCommunityById(community.id);
 
     //console.log(community);
+
+    setSnackbarMessage(
+      `Congrats! You have now joined the "${community.name}" community.`
+    );
+    setOpenSnackbar(true);
   };
 
   const handlePrev = () => {
@@ -234,6 +264,21 @@ const Carousel = () => {
           </div>
         </>
       )}
+
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 };
