@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Header from "../../_Components/header";
-import Navbar2 from "@/_Components/Navbar2";
+import Navbar2 from "@/_Components/Navbar";
 import CommunityDB from "../../database/community/community";
 import AdminCommunity from "../../_Components/AdminCommunities";
 import CloseIcon from "@mui/icons-material/Close";
