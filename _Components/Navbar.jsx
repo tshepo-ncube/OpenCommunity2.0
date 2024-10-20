@@ -153,7 +153,7 @@ const Navbar = ({ isHome }) => {
                   href="/admin/ViewRecommendations"
                   className="py-2 px-4 text-white hover:bg-[#bcd727] hover:rounded-lg"
                 >
-                  View Recommendations
+                  View Recommendation
                 </Link>
               </li>
             </>
