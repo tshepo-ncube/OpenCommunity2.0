@@ -102,7 +102,7 @@ const Page = () => {
       {/* <Header /> */}
 
       <div className="flex min-h-screen bg-gray-100">
-        <CollapsableSidebar />
+        {/* <CollapsableSidebar /> */}
         <div className="flex-grow p-6">
           <main className="container mx-auto px-4 py-12">
             {/* Information Icon */}
