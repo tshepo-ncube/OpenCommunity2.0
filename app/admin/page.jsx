@@ -449,6 +449,16 @@ const CreateCommunity = () => {
             //   ChannelID: data.id,
             // }
           );
+
+          setSelectedInterests([]);
+          setName("");
+          setDescription("");
+          setCategory(submittedData[index].category);
+          setImage(null);
+
+          //handleClosePopup();
+          //console.log("Closing form")
+          setPopupOpen(false);
         } catch (err) {
           console.log("Error:", err);
         }

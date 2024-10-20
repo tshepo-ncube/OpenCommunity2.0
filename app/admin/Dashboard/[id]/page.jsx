@@ -52,7 +52,10 @@ const createEvent = (eventDetails, communityID, selectedImages) => {
 const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   const [eventDetails, setEventDetails] = useState({
     eventName: eventData.Name,
-    startDateTime: `${eventData.startDate}T${eventData.startTime}`,
+    startDateTime:
+      `${eventData.startDate}T${eventData.startTime}` === "undefinedTundefined"
+        ? "28 October 2024"
+        : `${eventData.startDate}T${eventData.startTime}`,
     endDateTime: `${eventData.endDate}T${eventData.endTime}`,
     rsvpEndDateTime: eventData.rsvpEndDateTime,
     location: eventData.Location,
@@ -80,6 +83,10 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   useEffect(() => {
     console.log("Kept Images : ", eventImage);
   }, [eventImage]);
+
+  useEffect(() => {
+    console.log("EventForm eventDetails ", eventDetails);
+  }, []);
 
   // Function to generate 3 new images
   const generateImages = async () => {
@@ -148,7 +155,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   };
 
   useEffect(() => {
-    console.log(eventDetails);
+    console.log("Event Edit :eventDetails ", eventDetails);
   }, [eventDetails]);
 
   // Function to regenerate images (it keeps the previously kept ones)
@@ -228,8 +235,13 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   // Function to calculate min and max for the RSVP end date
   const getRsvpEndDateTimeLimits = () => {
     const now = new Date();
-    // const startDate = new Date(eventDetails.startDateTime);
-    const startDate = new Date("18 October 2024");
+    let startDate = new Date(eventDetails.startDateTime);
+
+    if (eventDetails.startDateTime === "undefinedTundefined") {
+      console.log("new event___");
+      startDate = new Date("28 October 2024");
+    }
+    // const startDate = new Date("18 October 2024");
     console.log("eventDetails.startDateTime : ", eventDetails.startDateTime);
 
     console.log("StartDate : ", startDate);
@@ -336,14 +348,14 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   };
 
   return (
-    <div className="">
+    <div className="p-18">
       {isOpen && (
-        <div className="fixed inset-0  backdrop-blur-md bg-opacity-20 z-10"></div>
+        <div className="fixed p-100 inset-0 backdrop-blur-md bg-opacity-20 z-10"></div>
       )}
       <div
         className={`${
           isOpen ? "block" : "hidden"
-        } fixed top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-3/4 bg-white p-12 rounded-md shadow-xl z-50 w-5/6 max-w-5xl max-h-[90vh] overflow-y-auto`}
+        } fixed top-3/4 left-1/2 transform  h-128  -translate-x-1/2 -translate-y-3/4 bg-white p-12 rounded-md shadow-xl z-50 w-5/6 max-w-5xl max-h-[90vh] overflow-y-auto`}
       >
         <button
           onClick={onClose}
@@ -725,35 +737,49 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     eventID: eventData.EventID,
   });
 
-  const handleChangeEvent = (e) => {
-    const { name, value } = e.target;
-    setEventDetails((prevDetails) => ({
-      ...prevDetails,
-      [name]: value,
-    }));
-  };
+  const [selectedImages, setSelectedImages] = useState([]);
 
-  const handleSubmitEvent = (e) => {
-    e.preventDefault();
-    onSubmit(eventDetails);
-    onClose();
-  };
+  const [generatedImages, setGeneratedImages] = useState([]); // Store current generated images
+  const [keptImages, setKeptImages] = useState([]); // Store user "kept" images
+  const [loading, setLoading] = useState(false); // Handle loading state
+  const [error, setError] = useState(null); // Handle errors
 
-  const handleSaveDraft = (e) => {
-    e.preventDefault();
-    onSubmit({ ...eventDetails, status: "draft" });
-    onClose();
-  };
+  const [eventImage, setEventImage] = useState(null);
 
   useEffect(() => {
-    console.log("Updated location:", eventDetails.location);
-    console.log(eventDetails);
-  }, [eventDetails.location]);
+    console.log("Kept Images : ", eventImage);
+  }, [eventImage]);
 
   useEffect(() => {
-    console.log("Updated Event Form:", eventDetails);
-    console.log(eventDetails);
-  }, [eventDetails]);
+    console.log("EventForm eventDetails ", eventDetails);
+  }, []);
+
+  // Function to generate 3 new images
+  const generateImages = async () => {
+    if (eventDetails.description === "") {
+      alert("Please enter an event description");
+      return;
+    }
+    setLoading(true);
+    setError(null); // Reset previous errors
+    try {
+      const response = await openai.images.generate({
+        model: "dall-e-2",
+        prompt: eventDetails.description, // You can customize this prompt
+        n: 3, // Generate 3 images
+        size: "1024x1024",
+      });
+
+      const imageUrls = response.data.map((item) => item.url); // Extract image URLs
+      setGeneratedImages(imageUrls); // Update the generated images state
+    } catch (err) {
+      setError("Failed to generate images. Please try again.");
+      console.log(err);
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const generateDescription = async () => {
     console.log("generate Description");
@@ -786,10 +812,173 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     }
   };
 
+  // Function to keep an image
+  const keepImage = (url) => {
+    if (keptImages.length >= MAX_KEEP_IMAGES) {
+      alert(`You can only keep a maximum of ${MAX_KEEP_IMAGES} images.`);
+      return;
+    }
+
+    if (!keptImages.includes(url)) {
+      setKeptImages((prevKeptImages) => [...prevKeptImages, url]);
+      setEventImage(url);
+    }
+  };
+
+  // Function to render the image
+  const renderImage = () => {
+    if (!eventImage) return null; // No image to show
+
+    // Check if eventImage is a File object
+    if (eventImage instanceof File) {
+      // Create a temporary URL for the image file to display it
+      return (
+        <img
+          src={URL.createObjectURL(eventImage)}
+          alt="Selected Image"
+          className="mt-3 max-w-full h-auto"
+        />
+      );
+    }
+
+    // If eventImage is a URL, display it directly
+    return (
+      <img
+        src={eventImage}
+        alt="Event Image"
+        className="mt-3 max-w-full h-auto"
+      />
+    );
+  };
+
+  useEffect(() => {
+    console.log("Event Edit :eventDetails ", eventDetails);
+  }, [eventDetails]);
+
+  // Function to regenerate images (it keeps the previously kept ones)
+  const regenerateImages = async () => {
+    if (eventDetails.description === "") {
+      alert("Please enter an event description");
+      return;
+    }
+    // Ensure the kept images are retained
+    setGeneratedImages([]); // Clear out current generated images
+    await generateImages(); // Regenerate images
+  };
+
+  const handleImageChange = (e) => {
+    // const files = Array.from(e.target.files);
+
+    // Check if the total selected images exceed the limit
+    // if (files.length + selectedImages.length > 5) {
+    //   alert(`You can only upload up to 5 images.`);
+    //   return; // Stop the function if limit is exceeded
+    // }
+
+    // setSelectedImages((prevImages) => [...prevImages, ...files]);
+    // setEventImage(e.target.files);
+
+    const file = e.target.files[0]; // Get the first selected file (only one since 'multiple' is not used)
+    if (file) {
+      console.log("Got a file.");
+      setEventImage(file); // Save the file to the state
+    } else {
+      console.log("It aint a file.");
+    }
+  };
+
+  useEffect(() => {
+    console.log("Selected images :", selectedImages);
+  }, [selectedImages]);
+
+  // Function to render image previews
+  const renderPreviews = () => {
+    return selectedImages.map((image, index) => {
+      return (
+        <div key={index} className="relative m-2 w-24 h-24">
+          <img
+            src={URL.createObjectURL(image)}
+            alt={`preview-${index}`}
+            className="w-full h-full object-cover rounded-lg shadow-md"
+          />
+        </div>
+      );
+    });
+  };
+
+  useEffect(() => {
+    console.log("Kept Images : ", eventImage);
+  }, [eventImage]);
+
+  useEffect(() => {
+    console.log("EventForm eventDetails ", eventDetails);
+  }, []);
+
+  const handleChangeEvent = (e) => {
+    const { name, value } = e.target;
+    setEventDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmitEvent = (e) => {
+    e.preventDefault();
+    onSubmit(eventDetails);
+    onClose();
+  };
+
+  const handleSaveDraft = (e) => {
+    e.preventDefault();
+    onSubmit({ ...eventDetails, status: "draft" });
+    onClose();
+  };
+
+  useEffect(() => {
+    console.log("Updated location:", eventDetails.location);
+    console.log(eventDetails);
+  }, [eventDetails.location]);
+
+  useEffect(() => {
+    console.log("Updated Event Form:", eventDetails);
+    console.log(eventDetails);
+  }, [eventDetails]);
+
+  // const generateDescription = async () => {
+  //   console.log("generate Description");
+  //   if (eventDetails.eventName.length !== 0) {
+  //     const name = eventDetails.eventName;
+  //     try {
+  //       const res = await axios.post(
+  //         strings.server_endpoints.generateEventDescription,
+  //         { name },
+  //         {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       );
+
+  //       console.log("Returned Desctiption: ", res.data.eventDescription);
+  //       console.log(res.data.eventDescription);
+  //       //setMessages(res.data.messages);
+  //       //setDescription(res.data.communityDescription);
+  //       setEventDetails((prevDetails) => ({
+  //         ...prevDetails, // Spread the previous state to retain all properties
+  //         description: res.data.eventDescription, // Update only the description
+  //       }));
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   } else {
+  //     alert("Please enter a name.");
+  //   }
+  // };
+
   return (
     <>
       {isOpen && (
-        <div className="fixed mt-18 inset-0 bg-black bg-opacity-50 z-100 flex items-center justify-center overflow-x-hidden overflow-y-auto p-4">
+        <div className="fixed mt-18 inset-0 bg-black bg-opacity-50 z-100 flex p-20 items-center justify-center overflow-x-hidden overflow-y-auto">
           <div className="relative bg-red-500 rounded-lg shadow-xl w-full max-w-3xl my-8 max-h-[80vh] overflow-y-auto">
             <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
               {/* <button
@@ -905,6 +1094,7 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                     required
                   />
                 </div>
+
                 <div>
                   <label
                     htmlFor="description"

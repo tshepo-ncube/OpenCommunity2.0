@@ -178,6 +178,7 @@ export default class CommunityDB {
 
     await this.getAllCommunities(setCommunities, setLoading); // Wait for communities to be fetched
     setLoading(false);
+    location.reload();
   };
 
   static editCommunity = async (id, object, image) => {
