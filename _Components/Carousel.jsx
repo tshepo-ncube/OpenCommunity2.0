@@ -183,6 +183,7 @@ const Carousel = () => {
                     src={community.communityImage}
                     className="block w-full h-full object-cover"
                     alt="Third slide"
+                    loading="lazy"
                   />
 
                   {/* Black overlay */}
