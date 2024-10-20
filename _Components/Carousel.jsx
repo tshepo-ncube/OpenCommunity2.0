@@ -191,7 +191,7 @@ const Carousel = () => {
                     <h1 className="font-bold text-6xl text-left mt-0 mb-1 ">
                       {community.name}
                     </h1>
-                    <h1 className="text-2xl mt-4 mb-6">
+                    <h1 className="text-2xl text-left mt-4 mb-6">
                       {community.description}
                     </h1>
                     <div className="mt-4 mb-30 flex justify-start">
