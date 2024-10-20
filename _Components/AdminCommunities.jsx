@@ -30,9 +30,6 @@ import {
 import CommunityDB from "../database/community/community";
 import { useRouter } from "next/navigation";
 
-
-
-
 // PUT BACK
 // import React, { useEffect, useState } from "react";
 // import CircularProgress from "@mui/material/CircularProgress";
@@ -42,7 +39,6 @@ import { useRouter } from "next/navigation";
 // // import CardContent from "@mui/material/CardContent";
 // import Button from "@mui/material/Button";
 // import Typography from "@mui/material/Typography";
-
 
 // import Dialog from "@mui/material/Dialog";
 // import DialogActions from "@mui/material/DialogActions";
@@ -221,17 +217,15 @@ const AdminCommunity = () => {
   const filteredData = filterDataByStatus(submittedData);
   const uniqueStatuses = getUniqueStatuses(submittedData);
 
-
-
   const renderEventsByStatus = (status) => {
     const eventsByStatus = filteredData.filter(
       (event) => event.status === status
     );
-  
+
     if (status === "All") {
       return uniqueStatuses.map((status) => {
         const events = filteredData.filter((event) => event.status === status);
-  
+
         return (
           <div key={status} className="mb-4">
             <h2 className="text-xl font-bold mb-4">
@@ -243,169 +237,155 @@ const AdminCommunity = () => {
               <Grid container spacing={2} className="p-4">
                 {events.map((data) => (
                   <Grid item xs={12} sm={6} md={4} lg={3} key={data.id}>
-                  <Card
-                    className="flex flex-col h-full"
-                    onClick={() => router.push(`/admin/Dashboard/${data.id}`)} // Navigate to community detail page
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      height: "400px", // Fixed height for consistency
-                      boxShadow: 3,
-                      borderRadius: 2,
-                      cursor: "pointer", // Change cursor to indicate clickability
-                      "&:hover": {
-                        boxShadow: 6, // Slightly elevate the card on hover for better UX
-                      },
-                    }}
-                  >
-                    <CardMedia
-                      component="img"
-                      height="175"
-                      image={
-                        data.communityImage
-                          ? data.communityImage
-                          : "https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60"
-                      }
-                      alt={`Image of ${data.name} community`}
-                      sx={{ objectFit: "cover", width: "100%" }}
-                    />
-                
-                    <CardContent
-                      sx={{ 
-                        flexGrow: 1, 
-                        padding: "12px",
-                        overflow: "hidden",
-                        display: "flex",
-                        flexDirection: "column",
-                      }}
-                    >
-                      <Typography
-                        gutterBottom
-                        variant="h6"
-                        component="div"
-                        style={{
-                          fontFamily: "Poppins, sans-serif",
-                          fontWeight: "bold",
-                          textAlign: "left",
-                        }}
-                      >
-                        {data.name}
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        style={{
-                          fontFamily: "Poppins, sans-serif",
-                          display: "-webkit-box",
-                          WebkitLineClamp: 2,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                          textAlign: "left",
-                        }}
-                      >
-                        {data.description.length > 100
-                          ? `${data.description.substring(0, 100)}...`
-                          : data.description}
-                      </Typography>
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {data.selectedInterests &&
-                          data.selectedInterests.map((tag) => (
-                            <Chip
-                              key={tag}
-                              label={tag}
-                              variant="filled"
-                              size="small"
-                              className="hover:bg-gray-200 bg-gray-300"
-                              sx={{
-                                color: "black",
-                                fontFamily: "Poppins, sans-serif",
-                              }}
-                            />
-                          ))}
-                      </div>
-                    </CardContent>
-                
-                    <CardContent sx={{ paddingTop: "0px", paddingBottom: "0px" }}>
-                      <Grid container alignItems="center">
-                        <Grid item xs={6}>
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            className="flex items-center"
-                            style={{
-                              fontFamily: "Poppins, sans-serif",
-                              textAlign: "left",
-                            }}
-                          >
-                            <People fontSize="small" style={{ marginRight: 4 }} />
-                            {data.users ? data.users.length : 0} Members
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            className="flex items-center justify-end"
-                            style={{
-                              fontFamily: "Poppins, sans-serif",
-                              textAlign: "right",
-                            }}
-                          >
-                            <CalendarToday fontSize="small" style={{ marginRight: 4 }} />
-                            {data.UpcomingEventsCount || 0}{" "}
-                            {data.UpcomingEventsCount > 1 ? "Events" : "Event"}
-                          </Typography>
-                        </Grid>
-                      </Grid>
-                    </CardContent>
-                
-                    <CardActions
+                    <Card
+                      className="flex flex-col h-150"
+                      onClick={() => router.push(`/admin/Dashboard/${data.id}`)} // Navigate to community detail page
                       sx={{
                         display: "flex",
-                        justifyContent: "space-around",
-                        padding: "8px 12px",
-                        gap: "8px",
+                        flexDirection: "column",
+                        height: "400px", // Fixed height for consistency
+                        boxShadow: 3,
+                        borderRadius: 2,
+                        cursor: "pointer", // Change cursor to indicate clickability
+                        "&:hover": {
+                          boxShadow: 6, // Slightly elevate the card on hover for better UX
+                        },
                       }}
                     >
-                      <Button
-                        size="small"
-                        startIcon={<EditIcon />}
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent card click when editing
-                          handleEdit(data.id);
-                        }}
+                      <CardMedia
+                        component="img"
+                        height="175"
+                        className="h-60"
+                        image={
+                          data.communityImage
+                            ? data.communityImage
+                            : "https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60"
+                        }
+                        alt={`Image of ${data.name} community`}
+                        sx={{ objectFit: "cover", width: "100%" }}
+                      />
+
+                      <CardContent
                         sx={{
-                          color: "#bcd727",
-                          fontFamily: "Poppins, sans-serif",
-                          backgroundColor: "transparent",
-                          border: "1px solid #bcd727",
-                          "&:hover": {
-                            backgroundColor: "rgba(188, 215, 39, 0.2)",
-                          },
-                          borderRadius: 1,
-                          textTransform: "none",
-                          flex: 1,
-                          maxWidth: "100px",
+                          flexGrow: 1,
+                          padding: "12px",
+                          overflow: "hidden",
+                          display: "flex",
+                          flexDirection: "column",
                         }}
                       >
-                        Edit
-                      </Button>
-                
-                      {data.status === "active" ? (
+                        <Typography
+                          gutterBottom
+                          variant="h6"
+                          component="div"
+                          style={{
+                            fontFamily: "Poppins, sans-serif",
+                            fontWeight: "bold",
+                            textAlign: "left",
+                          }}
+                        >
+                          {data.name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          style={{
+                            fontFamily: "Poppins, sans-serif",
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                            textAlign: "left",
+                          }}
+                        >
+                          {data.description.length > 100
+                            ? `${data.description.substring(0, 100)}...`
+                            : data.description}
+                        </Typography>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {data.selectedInterests &&
+                            data.selectedInterests.map((tag) => (
+                              <Chip
+                                key={tag}
+                                label={tag}
+                                variant="filled"
+                                size="small"
+                                className="hover:bg-gray-200 bg-gray-300"
+                                sx={{
+                                  color: "black",
+                                  fontFamily: "Poppins, sans-serif",
+                                }}
+                              />
+                            ))}
+                        </div>
+                      </CardContent>
+
+                      <CardContent
+                        sx={{ paddingTop: "0px", paddingBottom: "0px" }}
+                      >
+                        <Grid container alignItems="center">
+                          <Grid item xs={6}>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              className="flex items-center"
+                              style={{
+                                fontFamily: "Poppins, sans-serif",
+                                textAlign: "left",
+                              }}
+                            >
+                              <People
+                                fontSize="small"
+                                style={{ marginRight: 4 }}
+                              />
+                              {data.users ? data.users.length : 0} Members
+                            </Typography>
+                          </Grid>
+                          <Grid item xs={6}>
+                            <Typography
+                              variant="body2"
+                              color="text.secondary"
+                              className="flex items-center justify-end"
+                              style={{
+                                fontFamily: "Poppins, sans-serif",
+                                textAlign: "right",
+                              }}
+                            >
+                              <CalendarToday
+                                fontSize="small"
+                                style={{ marginRight: 4 }}
+                              />
+                              {data.UpcomingEventsCount || 0}{" "}
+                              {data.UpcomingEventsCount > 1
+                                ? "Events"
+                                : "Event"}
+                            </Typography>
+                          </Grid>
+                        </Grid>
+                      </CardContent>
+
+                      <CardActions
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-around",
+                          padding: "8px 12px",
+                          gap: "8px",
+                        }}
+                      >
                         <Button
                           size="small"
-                          startIcon={<VisibilityIcon />}
+                          startIcon={<EditIcon />}
                           onClick={(e) => {
-                            e.stopPropagation(); // Prevent card click when archiving
-                            handleArchive(data.id);
+                            e.stopPropagation(); // Prevent card click when editing
+                            handleEdit(data.id);
                           }}
                           sx={{
-                            color: "#FF9800",
+                            color: "#bcd727",
                             fontFamily: "Poppins, sans-serif",
                             backgroundColor: "transparent",
-                            border: "1px solid #FF9800",
+                            border: "1px solid #bcd727",
                             "&:hover": {
-                              backgroundColor: "rgba(255, 152, 0, 0.2)",
+                              backgroundColor: "rgba(188, 215, 39, 0.2)",
                             },
                             borderRadius: 1,
                             textTransform: "none",
@@ -413,23 +393,73 @@ const AdminCommunity = () => {
                             maxWidth: "100px",
                           }}
                         >
-                          Archive
+                          Edit
                         </Button>
-                      ) : (
+
+                        {data.status === "active" ? (
+                          <Button
+                            size="small"
+                            startIcon={<VisibilityIcon />}
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent card click when archiving
+                              handleArchive(data.id);
+                            }}
+                            sx={{
+                              color: "#FF9800",
+                              fontFamily: "Poppins, sans-serif",
+                              backgroundColor: "transparent",
+                              border: "1px solid #FF9800",
+                              "&:hover": {
+                                backgroundColor: "rgba(255, 152, 0, 0.2)",
+                              },
+                              borderRadius: 1,
+                              textTransform: "none",
+                              flex: 1,
+                              maxWidth: "100px",
+                            }}
+                          >
+                            Archive
+                          </Button>
+                        ) : (
+                          <Button
+                            size="small"
+                            startIcon={<VisibilityOffIcon />}
+                            onClick={(e) => {
+                              e.stopPropagation(); // Prevent card click when unarchiving
+                              handleUnarchive(data.id);
+                            }}
+                            sx={{
+                              color: "#4CAF50",
+                              fontFamily: "Poppins, sans-serif",
+                              backgroundColor: "transparent",
+                              border: "1px solid #4CAF50",
+                              "&:hover": {
+                                backgroundColor: "rgba(76, 175, 80, 0.2)",
+                              },
+                              borderRadius: 1,
+                              textTransform: "none",
+                              flex: 1,
+                              maxWidth: "100px",
+                            }}
+                          >
+                            Unarchive
+                          </Button>
+                        )}
+
                         <Button
                           size="small"
-                          startIcon={<VisibilityOffIcon />}
+                          startIcon={<DeleteIcon />}
                           onClick={(e) => {
-                            e.stopPropagation(); // Prevent card click when unarchiving
-                            handleUnarchive(data.id);
+                            e.stopPropagation(); // Prevent card click when deleting
+                            handleOpenDeleteDialog(data.id);
                           }}
                           sx={{
-                            color: "#4CAF50",
+                            color: "#f44336",
                             fontFamily: "Poppins, sans-serif",
                             backgroundColor: "transparent",
-                            border: "1px solid #4CAF50",
+                            border: "1px solid #f44336",
                             "&:hover": {
-                              backgroundColor: "rgba(76, 175, 80, 0.2)",
+                              backgroundColor: "rgba(244, 67, 54, 0.2)",
                             },
                             borderRadius: 1,
                             textTransform: "none",
@@ -437,37 +467,11 @@ const AdminCommunity = () => {
                             maxWidth: "100px",
                           }}
                         >
-                          Unarchive
+                          Delete
                         </Button>
-                      )}
-                
-                      <Button
-                        size="small"
-                        startIcon={<DeleteIcon />}
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent card click when deleting
-                          handleOpenDeleteDialog(data.id);
-                        }}
-                        sx={{
-                          color: "#f44336",
-                          fontFamily: "Poppins, sans-serif",
-                          backgroundColor: "transparent",
-                          border: "1px solid #f44336",
-                          "&:hover": {
-                            backgroundColor: "rgba(244, 67, 54, 0.2)",
-                          },
-                          borderRadius: 1,
-                          textTransform: "none",
-                          flex: 1,
-                          maxWidth: "100px",
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </Grid>
-                
+                      </CardActions>
+                    </Card>
+                  </Grid>
                 ))}
               </Grid>
             )}
@@ -503,7 +507,7 @@ const AdminCommunity = () => {
                   alt={`Image of ${data.name} community`}
                   sx={{ objectFit: "cover", width: "100%" }}
                 />
-  
+
                 <CardContent sx={{ flexGrow: 1, padding: "12px" }}>
                   <Typography
                     gutterBottom
@@ -550,7 +554,7 @@ const AdminCommunity = () => {
                       ))}
                   </div>
                 </CardContent>
-  
+
                 <CardContent sx={{ paddingTop: "0px", paddingBottom: "0px" }}>
                   <Grid container alignItems="center">
                     <Grid item xs={6}>
@@ -577,14 +581,17 @@ const AdminCommunity = () => {
                           textAlign: "right",
                         }}
                       >
-                        <CalendarToday fontSize="small" style={{ marginRight: 4 }} />
+                        <CalendarToday
+                          fontSize="small"
+                          style={{ marginRight: 4 }}
+                        />
                         {data.UpcomingEventsCount || 0}{" "}
                         {data.UpcomingEventsCount > 1 ? "Events" : "Event"}
                       </Typography>
                     </Grid>
                   </Grid>
                 </CardContent>
-  
+
                 <CardActions sx={{ padding: "12px" }}>
                   <Button
                     size="small"
@@ -649,8 +656,6 @@ const AdminCommunity = () => {
       );
     }
   };
-  
-
 
   return (
     <div className="relative min-h-screen bg-gray-100">
