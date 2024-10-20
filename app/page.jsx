@@ -59,7 +59,7 @@ const Page = () => {
         <div className="w-full max-w-md bg-white rounded-lg shadow-xl relative z-10">
           <div className="hidden md:block">
             <Image
-              className="w-full h-48 object-contain rounded-t-lg"
+              className="w-full h-36 px-8 object-contain rounded-t-lg"
               src={ocLogo}
               alt="Logo"
             />
