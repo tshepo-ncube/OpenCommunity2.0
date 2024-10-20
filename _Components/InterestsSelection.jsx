@@ -113,12 +113,12 @@ const InterestSelection = ({
         ))}
       </div>
       <div className="mt-4">
-        <button
+        {/* <button
           className={`mt-4 px-6 py-2 bg-gradient-to-r from-openbox-green to-green-900 text-white rounded-full disabled:opacity-50`}
           disabled={selectedInterests.length !== max}
         >
           Continue ({selectedInterests.length}/{max})
-        </button>
+        </button> */}
       </div>
     </div>
   );

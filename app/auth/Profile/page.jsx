@@ -69,6 +69,7 @@ const Profile = () => {
     newPassword: "",
     confirmNewPassword: "",
   });
+  const [selectedInterestsError, setSelectedInterestsError] = useState(false);
 
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [otherDiet, setOtherDiet] = useState("");
@@ -313,6 +314,14 @@ const Profile = () => {
         otherDiet: otherDiet, // Add or update the otherAllergy field
       }));
     }
+
+    if (selectedInterests.length !== 5) {
+      setSelectedInterestsError(true);
+      return;
+    } else {
+      setSelectedInterestsError(false);
+    }
+
     const success = await ManageUser.editProfileData(
       profile.id,
       profile,
@@ -659,9 +668,15 @@ const Profile = () => {
                     <></>
                   )}
                 </div> */}
-
                 <h2>Select Interests</h2>
 
+                {selectedInterestsError ? (
+                  <>
+                    <p className="text-red-500 ">Please select 5 interests</p>
+                  </>
+                ) : (
+                  <></>
+                )}
                 <div>
                   {selectedInterests ? (
                     <>
@@ -675,7 +690,6 @@ const Profile = () => {
                     <></>
                   )}
                 </div>
-
                 <div>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
