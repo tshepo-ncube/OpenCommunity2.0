@@ -1159,20 +1159,46 @@ export default function CommunityPage({ params }) {
   const arhiveCommunity = () => {};
 
   return (
-    <div className="bg-background_gray h-full">
+    <div className="bg-white h-full">
       <Navbar isHome={false} />
-      {/* <Header /> */}
-      {/* <div className="flex flex-col fixed bottom-7 right-4">
-        <button
-          onClick={handleCreateNewEvent}
-          className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
-        >
-          + EVENT
-        </button>
-      </div> */}
-      <div className="bg-background_gray mt-[98px] p-4 h-full">
+      <div className="bg- mt-8 p-4 h-full">
         <div className="flex justify-center mb-4">
-          <button
+            <Box sx={{ width: "100%", marginTop: 4 }}>
+            <div className="flex justify-center mt-6">
+              <div className="text-base font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+                <ul className="flex flex-wrap -mb-px">
+                  <li className="me-2">
+                    <a
+                      href="#"
+                      onClick={() => setCurrentView("infoManagement")}
+                      className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+                        currentView === "infoManagement"
+                          ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                          : "border-transparent"
+                      }`}
+                    >
+                      Community Management
+                    </a>
+                  </li>
+                  <li className="me-2">
+                    <a
+                      href="#"
+                      onClick={() => setCurrentView("usersManagement")}
+                      className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+                        currentView === "usersManagement"
+                          ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                          : "border-transparent"
+                      }`}
+                    >
+                      User Management
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </Box>
+
+          {/* <button
             onClick={() => setCurrentView("infoManagement")}
             className={`px-4 py-2 rounded-l-lg ${
               currentView === "infoManagement"
@@ -1191,7 +1217,7 @@ export default function CommunityPage({ params }) {
             }`}
           >
             Users Management
-          </button>
+          </button> */}
         </div>
         {currentView === "infoManagement" && (
           <div>
