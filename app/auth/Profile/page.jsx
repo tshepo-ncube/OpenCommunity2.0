@@ -361,7 +361,7 @@ const Profile = () => {
 
   const handleBack = () => {
     if (selectedInterests.length === 5) {
-      router.back("/Home");
+      router.push("/Home");
     } else {
       setShowBackButtonMessage(true);
       setTimeout(() => setShowBackButtonMessage(false), 3000); // Hide message after 3 seconds
