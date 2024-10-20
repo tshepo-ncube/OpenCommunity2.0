@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Confetti from "react-confetti";
-import CollapsableSidebar from "@/_Components/CollapsableSidebar";
+
 import { toast, Toaster } from "react-hot-toast";
 import {
   ChevronDown,
@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import RecommendationDB from "@/database/community/recommendation";
 
-import Header from "../../../_Components/header";
+import Header from "../../../_Components/Navbar2";
 
 const CommunityRecommendationPage = () => {
   // const [communityName, setCommunityName] = useState < string > "";
@@ -107,11 +107,9 @@ const CommunityRecommendationPage = () => {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-gradient-to-br from-[#f0f4e1] via-gray-100 to-[#e6edc3]"
     >
-      {/* <Header /> */}
+      <Header />
 
       <div className="flex min-h-screen bg-gray-100">
-        <CollapsableSidebar />
-
         <div className="flex-grow ">
           <Toaster position="bottom-right" reverseOrder={false} />
 
@@ -123,7 +121,7 @@ const CommunityRecommendationPage = () => {
             initial="hidden"
             animate="visible"
             variants={formVariants}
-            className="max-w-7xl mx-auto p-2 mt-8"
+            className="max-w-7xl mx-auto p-2 mt-16 pt-16"
           >
             <div className="bg-white rounded-3xl shadow-2xl overflow-hidden transform hover:scale-[1.02] transition-transform duration-300">
               <div className="md:flex">
