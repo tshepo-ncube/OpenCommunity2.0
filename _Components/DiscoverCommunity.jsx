@@ -3,6 +3,8 @@
 "use client"; // Must be the first line
 
 import React, { useEffect, useState } from "react";
+
+import { FaFire } from "react-icons/fa";
 import {
   Card,
   CardContent,
@@ -520,240 +522,254 @@ const DiscoverCommunity = ({ email }) => {
                   <Grid container spacing={4} className="mt-4">
                     {groupedCommunities[category].map((data) => (
                       <Grid item xs={12} sm={6} md={4} lg={3} key={data.id}>
-                        <Card
-                          className="flex flex-col h-full"
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            height: "350px", // Fixed card height
-                            boxShadow: 3,
-                            borderRadius: 2,
-                            transition: "transform 0.2s, box-shadow 0.2s",
-                            "&:hover": {
-                              transform: "scale(1.02)",
-                              boxShadow: 6,
-                            },
-                          }}
-                        >
-                          {/* Community Image */}
-                          <CardMedia
-                            component="img"
-                            height="175" // Half of the card height (350px / 2)
-                            className="h-40"
-                            image={
-                              data.communityImage
-                                ? data.communityImage
-                                : "https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60"
-                            }
-                            alt={`Image of ${data.name} community`}
-                            loading="lazy" // Enables lazy loading
+                        <div className="relative">
+                          {data.isHot ? (
+                            <>
+                              <button className="flex items-center absolute mt-1 mr-1  top-0 right-0 bg-red-500 text-white px-2 py-2 rounded-full">
+                                <FaFire className="mr-2" />
+                                <span>Hot</span>
+                              </button>
+                            </>
+                          ) : (
+                            <></>
+                          )}
+                          <div className=""></div>
+                          <Card
+                            className="flex flex-col h-full"
                             sx={{
-                              objectFit: "cover",
-                              objectFit: "cover",
-                              width: "100%",
+                              display: "flex",
+                              flexDirection: "column",
+                              height: "350px", // Fixed card height
+                              boxShadow: 3,
+                              borderRadius: 2,
+                              transition: "transform 0.2s, box-shadow 0.2s",
+                              "&:hover": {
+                                transform: "scale(1.02)",
+                                boxShadow: 6,
+                              },
                             }}
-                          />
-
-                          {/* Community Content */}
-                          <CardContent
-                            sx={{ flexGrow: 1, padding: "12px !important" }}
                           >
-                            {/* Community Name */}
-                            <Typography
-                              gutterBottom
-                              variant="h6"
-                              component="div"
-                              style={{
-                                fontFamily: "Poppins, sans-serif",
-                                fontWeight: "bold", // Bold community names
-                                textAlign: "left",
+                            {/* Community Image */}
+                            <CardMedia
+                              component="img"
+                              height="175" // Half of the card height (350px / 2)
+                              className="h-40"
+                              image={
+                                data.communityImage
+                                  ? data.communityImage
+                                  : "https://images.unsplash.com/photo-1607656311408-1e4cfe2bd9fc?w=500&auto=format&fit=crop&q=60"
+                              }
+                              alt={`Image of ${data.name} community`}
+                              loading="lazy" // Enables lazy loading
+                              sx={{
+                                objectFit: "cover",
+                                objectFit: "cover",
+                                width: "100%",
                               }}
+                            />
+
+                            {/* Community Content */}
+                            <CardContent
+                              sx={{ flexGrow: 1, padding: "12px !important" }}
                             >
-                              {data.name}
-                            </Typography>
+                              {/* Community Name */}
+                              <Typography
+                                gutterBottom
+                                variant="h6"
+                                component="div"
+                                style={{
+                                  fontFamily: "Poppins, sans-serif",
+                                  fontWeight: "bold", // Bold community names
+                                  textAlign: "left",
+                                }}
+                              >
+                                {data.name}
+                              </Typography>
 
-                            {/* Community Description */}
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              style={{
-                                fontFamily: "Poppins, sans-serif",
-                                display: "-webkit-box",
-                                WebkitLineClamp: 2, // Two lines for better readability
-                                WebkitBoxOrient: "vertical",
-                                overflow: "hidden",
-                                textAlign: "left",
-                              }}
-                            >
-                              {data.description.length > 100
-                                ? `${data.description.substring(0, 100)}... `
-                                : data.description}
-                              {data.description.length > 100 && (
-                                <Button
-                                  size="small"
-                                  onClick={() =>
-                                    handleOpenModal(data.description)
-                                  }
-                                  sx={{
-                                    textTransform: "none",
-                                    padding: 0,
-                                    minWidth: "auto",
-                                    color: "#bcd727",
-                                    "&:hover": {
-                                      backgroundColor: "transparent",
-                                      textDecoration: "underline",
-                                    },
-                                  }}
-                                >
-                                  Read More
-                                </Button>
-                              )}
-                            </Typography>
+                              {/* Community Description */}
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                style={{
+                                  fontFamily: "Poppins, sans-serif",
+                                  display: "-webkit-box",
+                                  WebkitLineClamp: 2, // Two lines for better readability
+                                  WebkitBoxOrient: "vertical",
+                                  overflow: "hidden",
+                                  textAlign: "left",
+                                }}
+                              >
+                                {data.description.length > 100
+                                  ? `${data.description.substring(0, 100)}... `
+                                  : data.description}
+                                {data.description.length > 100 && (
+                                  <Button
+                                    size="small"
+                                    onClick={() =>
+                                      handleOpenModal(data.description)
+                                    }
+                                    sx={{
+                                      textTransform: "none",
+                                      padding: 0,
+                                      minWidth: "auto",
+                                      color: "#bcd727",
+                                      "&:hover": {
+                                        backgroundColor: "transparent",
+                                        textDecoration: "underline",
+                                      },
+                                    }}
+                                  >
+                                    Read More
+                                  </Button>
+                                )}
+                              </Typography>
 
-                            {/* Interest Tags */}
-                            <div className="flex flex-wrap gap-1 mt-2">
-                              {getInterestsByCategory(data.category)
-                                .slice(0, 3)
-                                .map((tag) => (
-                                  <>
-                                    <Chip
-                                      key={tag}
-                                      label={tag}
-                                      variant="filled"
-                                      size="small"
-                                      sx={{
-                                        borderColor: "",
-                                        color: "black",
-                                        fontFamily: "Poppins, sans-serif",
-                                      }}
-                                      className="hover:bg-gray-200 bg-gray-300"
-                                    />
+                              {/* Interest Tags */}
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {getInterestsByCategory(data.category)
+                                  .slice(0, 3)
+                                  .map((tag) => (
+                                    <>
+                                      <Chip
+                                        key={tag}
+                                        label={tag}
+                                        variant="filled"
+                                        size="small"
+                                        sx={{
+                                          borderColor: "",
+                                          color: "black",
+                                          fontFamily: "Poppins, sans-serif",
+                                        }}
+                                        className="hover:bg-gray-200 bg-gray-300"
+                                      />
 
-                                    {/* <span className="bg-gray-400 text-black rounded px-1 py-1">
+                                      {/* <span className="bg-gray-400 text-black rounded px-1 py-1">
                                       {tag}
                                     </span> */}
-                                  </>
-                                ))}
-                              {data.tags && data.tags.length > 3 && (
-                                <Chip
-                                  label={`+${data.tags.length - 3}`}
+                                    </>
+                                  ))}
+                                {data.tags && data.tags.length > 3 && (
+                                  <Chip
+                                    label={`+${data.tags.length - 3}`}
+                                    variant="outlined"
+                                    size="small"
+                                    sx={{
+                                      borderColor: "#bcd727",
+                                      color: "#bcd727",
+                                      fontFamily: "Poppins, sans-serif",
+                                    }}
+                                  />
+                                )}
+                              </div>
+                            </CardContent>
+
+                            {/* Community Stats and Actions */}
+                            <CardContent
+                              sx={{
+                                paddingTop: "0px !important",
+                                paddingBottom: "0px !important",
+                              }}
+                            >
+                              <Grid container alignItems="center">
+                                {/* Left-aligned: Number of Members */}
+                                <Grid item xs={6}>
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    className="flex items-center"
+                                    style={{
+                                      fontFamily: "Poppins, sans-serif",
+                                      textAlign: "left",
+                                    }}
+                                  >
+                                    <People
+                                      fontSize="small"
+                                      style={{ marginRight: 4 }}
+                                    />
+                                    {data.users
+                                      ? data.users.length.toLocaleString()
+                                      : 0}
+                                    {data.users.length > 1
+                                      ? " Members"
+                                      : " Member"}
+                                  </Typography>
+                                </Grid>
+
+                                {/* Right-aligned: Number of Events */}
+                                <Grid item xs={6}>
+                                  <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    className="flex items-center justify-end"
+                                    style={{
+                                      fontFamily: "Poppins, sans-serif",
+                                      textAlign: "right",
+                                    }}
+                                  >
+                                    <CalendarToday
+                                      fontSize="small"
+                                      style={{ marginRight: 4 }}
+                                    />
+                                    {data.UpcomingEventCount
+                                      ? data.UpcomingEventCount.toLocaleString()
+                                      : ""}
+
+                                    {data.UpcomingEventCount > 1
+                                      ? " Events"
+                                      : " No Events"}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </CardContent>
+
+                            {/* Join/Joined Button */}
+                            {/* Only the CardActions section needs to be updated in the existing Card component */}
+
+                            <CardActions sx={{ padding: "12px !important" }}>
+                              {data.name !== "OpenBox Community" &&
+                              data.users.includes(email) ? (
+                                <Button
+                                  fullWidth
                                   variant="outlined"
-                                  size="small"
+                                  onClick={() => handleLeaveCommunity(data)}
+                                  startIcon={<ExitToApp />} // Using ExitToApp as the leave icon
                                   sx={{
                                     borderColor: "#bcd727",
                                     color: "#bcd727",
-                                    fontFamily: "Poppins, sans-serif",
-                                  }}
-                                />
-                              )}
-                            </div>
-                          </CardContent>
-
-                          {/* Community Stats and Actions */}
-                          <CardContent
-                            sx={{
-                              paddingTop: "0px !important",
-                              paddingBottom: "0px !important",
-                            }}
-                          >
-                            <Grid container alignItems="center">
-                              {/* Left-aligned: Number of Members */}
-                              <Grid item xs={6}>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                  className="flex items-center"
-                                  style={{
-                                    fontFamily: "Poppins, sans-serif",
-                                    textAlign: "left",
-                                  }}
-                                >
-                                  <People
-                                    fontSize="small"
-                                    style={{ marginRight: 4 }}
-                                  />
-                                  {data.users
-                                    ? data.users.length.toLocaleString()
-                                    : 0}
-                                  {data.users.length > 1
-                                    ? " Members"
-                                    : " Member"}
-                                </Typography>
-                              </Grid>
-
-                              {/* Right-aligned: Number of Events */}
-                              <Grid item xs={6}>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                  className="flex items-center justify-end"
-                                  style={{
-                                    fontFamily: "Poppins, sans-serif",
-                                    textAlign: "right",
-                                  }}
-                                >
-                                  <CalendarToday
-                                    fontSize="small"
-                                    style={{ marginRight: 4 }}
-                                  />
-                                  {data.UpcomingEventCount
-                                    ? data.UpcomingEventCount.toLocaleString()
-                                    : ""}
-
-                                  {data.UpcomingEventCount > 1
-                                    ? " Events"
-                                    : " No Events"}
-                                </Typography>
-                              </Grid>
-                            </Grid>
-                          </CardContent>
-
-                          {/* Join/Joined Button */}
-                          {/* Only the CardActions section needs to be updated in the existing Card component */}
-
-                          <CardActions sx={{ padding: "12px !important" }}>
-                            {data.name !== "OpenBox Community" &&
-                            data.users.includes(email) ? (
-                              <Button
-                                fullWidth
-                                variant="outlined"
-                                onClick={() => handleLeaveCommunity(data)}
-                                startIcon={<ExitToApp />} // Using ExitToApp as the leave icon
-                                sx={{
-                                  borderColor: "#bcd727",
-                                  color: "#bcd727",
-                                  "&:hover": {
-                                    borderColor: "#a4b622",
-                                    color: "#a4b622",
-                                    backgroundColor: "rgba(188, 215, 39, 0.04)",
-                                  },
-                                  fontFamily: "Poppins, sans-serif",
-                                }}
-                              >
-                                Leave
-                              </Button>
-                            ) : (
-                              data.name !== "OpenBox Community" && (
-                                <Button
-                                  fullWidth
-                                  variant="contained"
-                                  onClick={() => handleJoinCommunity(data)}
-                                  startIcon={<AddCircleOutlineIcon />}
-                                  sx={{
-                                    backgroundColor: "#bcd727",
-                                    color: "#fff",
                                     "&:hover": {
-                                      backgroundColor: "#a4b622",
+                                      borderColor: "#a4b622",
+                                      color: "#a4b622",
+                                      backgroundColor:
+                                        "rgba(188, 215, 39, 0.04)",
                                     },
                                     fontFamily: "Poppins, sans-serif",
                                   }}
                                 >
-                                  Join Community
+                                  Leave
                                 </Button>
-                              )
-                            )}
-                          </CardActions>
-                        </Card>
+                              ) : (
+                                data.name !== "OpenBox Community" && (
+                                  <Button
+                                    fullWidth
+                                    variant="contained"
+                                    onClick={() => handleJoinCommunity(data)}
+                                    startIcon={<AddCircleOutlineIcon />}
+                                    sx={{
+                                      backgroundColor: "#bcd727",
+                                      color: "#fff",
+                                      "&:hover": {
+                                        backgroundColor: "#a4b622",
+                                      },
+                                      fontFamily: "Poppins, sans-serif",
+                                    }}
+                                  >
+                                    Join Community
+                                  </Button>
+                                )
+                              )}
+                            </CardActions>
+                          </Card>
+                        </div>
                       </Grid>
                     ))}
                   </Grid>
