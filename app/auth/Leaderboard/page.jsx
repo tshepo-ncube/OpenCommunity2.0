@@ -144,9 +144,7 @@ const Page = () => {
               />
               {showInfo && (
                 <div className="absolute top-12 right-4 bg-white text-black p-4 rounded shadow-lg w-64 z-50">
-                  <h3 className="text-lg font-bold">
-                    Leaderboard Point Rules
-                  </h3>
+                  <h3 className="text-lg font-bold">Leaderboard Point Rules</h3>
                   <p className="mt-2">1st Class 👑: 1000 points +</p>
                   <p>2nd Class🏆: 500 points +</p>
                   <p>3rd Class 💎: 150 points +</p>
@@ -187,122 +185,129 @@ const Page = () => {
             ) : (
               <>
                 <div className="flex justify-center items-end space-x-8 mb-16">
-                  {displayTopUsers.map((user, index) => (
-                    user && (
-                      <motion.div
-                        key={index}
-                        className={`bg-white rounded-2xl shadow-lg overflow-hidden ${
-                          index === 1
-                            ? "h-[24rem] w-[18rem]"
-                            : "h-[22rem] w-[16rem]"
-                        } ${
-                          index === 1
-                            ? "order-2 hover:scale-105"
-                            : index === 0
-                            ? "order-1 hover:scale-105"
-                            : "order-3 hover:scale-105"
-                        } transition-transform duration-300 transform`}
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.2, duration: 0.5 }}
-                      >
-                        <div
-                          className={`h-2 ${
+                  {displayTopUsers.map(
+                    (user, index) =>
+                      user && (
+                        <motion.div
+                          key={index}
+                          className={`bg-white rounded-2xl shadow-lg overflow-hidden ${
                             index === 1
-                              ? "bg-[#FFD700]"
+                              ? "h-[24rem] w-[18rem]"
+                              : "h-[22rem] w-[16rem]"
+                          } ${
+                            index === 1
+                              ? "order-2 hover:scale-105"
                               : index === 0
-                              ? "bg-[#C0C0C0]"
-                              : "bg-[#CD7F32]"
-                          }`}
-                        ></div>
-                        <div className="p-6">
-                          <div className="podium-medal text-6xl mb-4 text-center relative">
-                            <div className="medal-container relative">
-                              <span className="medal relative z-10">
-                                {index === 1
-                                  ? "🥇"
-                                  : index === 0
-                                  ? "🥈"
-                                  : "🥉"}
-                              </span>
-                              <div
-                                className={`sparkle sparkle-${index + 1}`}
-                              ></div>
-                            </div>
-                          </div>
-                          <div className="profile-picture mx-auto mb-4">
-                            <img
-                              src={
-                                user.profileImage ||
-                                "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
-                              }
-                              alt="Profile Icon"
-                              className="w-[5.5rem] h-[5.5rem] rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
-                            />
-                          </div>
-                          <h2
-                            className={`text-xl font-semibold mb-1 text-center ${
+                                ? "order-1 hover:scale-105"
+                                : "order-3 hover:scale-105"
+                          } transition-transform duration-300 transform`}
+                          initial={{ opacity: 0, y: 50 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.2, duration: 0.5 }}
+                        >
+                          <div
+                            className={`h-2 ${
                               index === 1
-                                ? "podium-name-1"
+                                ? "bg-[#FFD700]"
                                 : index === 0
-                                ? "podium-name-2"
-                                : "podium-name-3"
+                                  ? "bg-[#C0C0C0]"
+                                  : "bg-[#CD7F32]"
                             }`}
-                          >
-                            {user.Name || "N/A"}
-                          </h2>
-                          <p className="text-lg mb-2 text-center text-gray-600">
-                            {user.Surname || "N/A"}
-                          </p>
-                          <p className="text-xl font-bold text-center">
-                            {user.Points} Points
-                          </p>
-                        </div>
-                      </motion.div>
-                    )
-                  ))}
+                          ></div>
+                          <div className="p-6">
+                            <div className="podium-medal text-6xl mb-4 text-center relative">
+                              <div className="medal-container relative">
+                                <span className="medal relative z-10">
+                                  {index === 1
+                                    ? "🥇"
+                                    : index === 0
+                                      ? "🥈"
+                                      : "🥉"}
+                                </span>
+                                <div
+                                  className={`sparkle sparkle-${index + 1}`}
+                                ></div>
+                              </div>
+                            </div>
+                            <div className="profile-picture mx-auto mb-4 relative">
+                              <img
+                                src={
+                                  user.profileImage ||
+                                  "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
+                                }
+                                alt="Profile Icon"
+                                className="w-[5.5rem] h-[5.5rem] rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
+                              />
+                              {getIcon(user.Points) && (
+                                <span className="absolute top-0 right-0  text-2xl">
+                                  {getIcon(user.Points)}
+                                </span>
+                              )}
+                            </div>
+                            <h2
+                              className={`text-xl font-semibold mb-1 text-center ${
+                                index === 1
+                                  ? "podium-name-1"
+                                  : index === 0
+                                    ? "podium-name-2"
+                                    : "podium-name-3"
+                              }`}
+                            >
+                              {user.Name || "N/A"}
+                            </h2>
+                            <p className="text-lg mb-2 text-center text-gray-600">
+                              {user.Surname || "N/A"}
+                            </p>
+                            <p className="text-xl font-bold text-center">
+                              {user.Points} Points
+                            </p>
+                          </div>
+                        </motion.div>
+                      )
+                  )}
                 </div>
 
                 <div className="space-y-3">
-                  {otherUsers.map((user, index) => (
-                    user && (
-                      <motion.div
-                        key={index}
-                        className="bg-white rounded-lg shadow-sm overflow-hidden p-4 flex items-center justify-between border border-gray-200 hover:bg-gray-100 transform hover:scale-105 transition-transform duration-300"
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{
-                          delay: 0.2 + index * 0.1,
-                          duration: 0.5,
-                        }}
-                      >
-                        <div className="flex items-center">
-                          <div className="position-number mr-4 text-xl font-bold text-gray-400">
-                            {index + 4}
-                          </div>
-                          <div className="profile-picture-right mr-4 relative">
-                            <img
-                              src={
-                                user.profileImage ||
-                                "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
-                              }
-                              alt="Profile Icon"
-                              className="w-[3.5rem] h-[3.5rem] rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
-                            />
-                          </div>
-                          <div>
-                            <div className="text-lg font-semibold text-gray-800">
-                              {user.Name || "N/A"} {user.Surname || "N/A"}{" "}
-                              {getIcon(user.Points)}
+                  {otherUsers.map(
+                    (user, index) =>
+                      user && (
+                        <motion.div
+                          key={index}
+                          className="bg-white rounded-lg shadow-sm overflow-hidden p-4 flex items-center justify-between border border-gray-200 hover:bg-gray-100 transform hover:scale-105 transition-transform duration-300"
+                          initial={{ opacity: 0, y: 50 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{
+                            delay: 0.2 + index * 0.1,
+                            duration: 0.5,
+                          }}
+                        >
+                          <div className="flex items-center">
+                            <div className="position-number mr-4 text-xl font-bold text-gray-400">
+                              {index + 4}
                             </div>
-                            <div className="text-sm text-gray-600">
-                              {user.Points} Points
+                            <div className="profile-picture-right mr-4 relative">
+                              <img
+                                src={
+                                  user.profileImage ||
+                                  "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
+                                }
+                                alt="Profile Icon"
+                                className="w-[3.5rem] h-[3.5rem] rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
+                              />
+                            </div>
+                            <div>
+                              <div className="text-lg font-semibold text-gray-800">
+                                {user.Name || "N/A"} {user.Surname || "N/A"}{" "}
+                                {getIcon(user.Points)}
+                              </div>
+                              <div className="text-sm text-gray-600">
+                                {user.Points} Points
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </motion.div>
-                    )
-                  ))}
+                        </motion.div>
+                      )
+                  )}
                 </div>
               </>
             )}
