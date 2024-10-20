@@ -365,6 +365,7 @@ const CreateCommunity = () => {
     };
 
     if (editIndex !== null) {
+      console.log("Editing a community.");
       // Update existing community
       CommunityDB.updateCommunity(
         { id: submittedData[editIndex].id, ...communityData },

@@ -180,11 +180,13 @@ export default class CommunityDB {
     setLoading(false);
   };
 
-  static editCommunity = async (id, object) => {
+  static editCommunity = async (id, object, image) => {
     const communityRef = doc(DB, "communities", id);
-
+    const new_image = await CommunityDB.uploadCommunityImage(image);
+    object.communityImage = new_image;
     console.log("about to update");
     // Update the community document
+    console.log("The Object: ", object);
     await updateDoc(communityRef, object);
     console.log("Done editing a community.");
     location.reload();

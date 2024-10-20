@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   Card,
   CardContent,
@@ -74,6 +74,20 @@ const AdminCommunity = () => {
   const [editID, setEditID] = useState(null);
   const [editIndex, setEditIndex] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState("All");
+  const fileInputRef = useRef(null);
+  const handleUploadButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const [image, setImage] = useState(null);
+
+  const handleImageUpload = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      setImage(event.target.files[0]);
+    }
+  };
 
   useEffect(() => {
     const fetchCommunities = async () => {
@@ -100,13 +114,15 @@ const AdminCommunity = () => {
 
     console.log("About to run CommunityDB.editCommunity()");
     try {
-      await CommunityDB.editCommunity(editID, {
-        id: editID,
-        name,
-        description,
-        category,
-        status,
-      });
+      await CommunityDB.editCommunity(
+        editID,
+        {
+          id: editID,
+
+          description,
+        },
+        image
+      );
     } catch (error) {
       console.error("Error editing community:", error);
     }
@@ -241,7 +257,7 @@ const AdminCommunity = () => {
                       className="flex flex-col h-120"
                       onClick={() => {
                         console.log(data);
-                        //router.push(`/admin/Dashboard/${data.id}`);
+                        router.push(`/admin/Dashboard/${data.id}`);
                       }} // Navigate to community detail page
                       sx={{
                         display: "flex",
@@ -664,17 +680,21 @@ const AdminCommunity = () => {
     <div className="relative min-h-screen bg-gray-100">
       {isPopupOpen && (
         <div className="fixed inset-0 left-0 w-full h-full flex justify-center items-center z-20">
-          <div className="relative w-full max-w-lg p-6 bg-white rounded-lg shadow">
+          <div className="relative w-full max-w-lg p-6 bg-white rounded-lg shadow-md">
             <button
               className="absolute top-2 right-2 text-gray-600 hover:text-black"
               onClick={handleClosePopup}
             >
               X
             </button>
-            <form onSubmit={handleFormSubmit}>
+            <form
+              onSubmit={handleFormSubmit}
+              className="max-h-[80vh] overflow-y-auto"
+            >
               <h2 className="text-2xl font-bold mb-4">
                 {editIndex !== null ? "Edit Event" : "Create Event"}
               </h2>
+
               <div className="mb-4">
                 <label
                   htmlFor="name"
@@ -689,8 +709,10 @@ const AdminCommunity = () => {
                   onChange={(e) => setName(e.target.value)}
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
                   required
+                  disabled
                 />
               </div>
+
               <div className="mb-4">
                 <label
                   htmlFor="description"
@@ -706,9 +728,48 @@ const AdminCommunity = () => {
                   required
                 ></textarea>
               </div>
+
+              <div className="mb-4">
+                <div className="flex items-center space-x-4">
+                  <label
+                    htmlFor="image"
+                    className="block text-sm font-semibold text-gray-700"
+                  >
+                    Community Profile Image
+                  </label>
+                  <input
+                    type="file"
+                    id="image"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    accept="image/*"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleUploadButtonClick}
+                    className="px-2 bg-green-500 hover:bg-green-600 text-white rounded-md"
+                  >
+                    Choose Image
+                  </button>
+                </div>
+                {image && (
+                  <div className="mt-4">
+                    <p className="text-sm text-gray-600">
+                      Uploaded: {image.name}
+                    </p>
+                    {/* <img
+                      src={URL.createObjectURL(image)}
+                      alt="Selected"
+                      className="mt-2 w-full h-40 object-cover rounded-md shadow"
+                    /> */}
+                  </div>
+                )}
+              </div>
+
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                className="w-full py-2 mt-4 bg-blue-500 text-white rounded-md hover:bg-blue-600"
               >
                 {editIndex !== null ? "Save Changes" : "Submit"}
               </button>

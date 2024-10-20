@@ -488,6 +488,9 @@ const DiscoverCommunity = ({ email }) => {
                           //   boxShadow: 6,
                           // },
                         }}
+                        // onClick={() => {
+                        //   router.push(`//${data.id}`);
+                        // }}
                       >
                         {/* Community Image */}
 
