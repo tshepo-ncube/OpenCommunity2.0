@@ -380,14 +380,14 @@ const CreateCommunity = () => {
       // Create a new community
       console.log("Creating a community now...");
       try {
-        CommunityDB.createCommunity(
-          communityData,
-          image,
-          (newCommunity) => {
-            setSubmittedData((prevData) => [...prevData, newCommunity]);
-          },
-          setLoading
-        );
+        // CommunityDB.createCommunity(
+        //   communityData,
+        //   image,
+        //   (newCommunity) => {
+        //     setSubmittedData((prevData) => [...prevData, newCommunity]);
+        //   },
+        //   setLoading
+        // );
         // console.log("creating a channel now...");
         // CommunityDB.createCommunity(
         //   communityData,
@@ -419,6 +419,8 @@ const CreateCommunity = () => {
             setShowImageError(true);
             console.log("THERE IS NO IMAGE< PLEASE SELECT ONE ");
             return;
+          } else {
+            setShowImageError(false);
           }
 
           if (selectedInterests.length < 3) {
@@ -427,6 +429,8 @@ const CreateCommunity = () => {
             //  setShowImageError(true);
             setShowInterestsError(true);
             return;
+          } else {
+            setShowInterestsError(false);
           }
 
           CommunityDB.createCommunity(

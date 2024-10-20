@@ -692,7 +692,7 @@ const AdminCommunity = () => {
               className="max-h-[80vh] overflow-y-auto"
             >
               <h2 className="text-2xl font-bold mb-4">
-                {editIndex !== null ? "Edit Event" : "Create Event"}
+                {editIndex !== null ? "Edit Community" : "Create Event"}
               </h2>
 
               <div className="mb-4">
@@ -729,42 +729,44 @@ const AdminCommunity = () => {
                 ></textarea>
               </div>
 
-              <div className="mb-4">
-                <div className="flex items-center space-x-4">
-                  <label
-                    htmlFor="image"
-                    className="block text-sm font-semibold text-gray-700"
-                  >
-                    Community Profile Image
-                  </label>
+              <div class="flex items-center justify-center w-full">
+                <label
+                  for="dropzone-file"
+                  class="flex flex-col items-center justify-center w-full h-20 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                >
+                  <div class="flex flex-col items-center justify-center">
+                    <svg
+                      class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 20 16"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                      />
+                    </svg>
+                    <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                      <span class="font-semibold">Click to upload images</span>{" "}
+                      or drag and drop
+                    </p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                      SVG, PNG, JPG or GIF (MAX. 800x400px)
+                    </p>
+                  </div>
                   <input
+                    id="dropzone-file"
                     type="file"
-                    id="image"
+                    class="hidden"
+                    accept="image/*"
                     ref={fileInputRef}
                     onChange={handleImageUpload}
-                    className="hidden"
-                    accept="image/*"
                   />
-                  <button
-                    type="button"
-                    onClick={handleUploadButtonClick}
-                    className="px-2 bg-green-500 hover:bg-green-600 text-white rounded-md"
-                  >
-                    Choose Image
-                  </button>
-                </div>
-                {image && (
-                  <div className="mt-4">
-                    <p className="text-sm text-gray-600">
-                      Uploaded: {image.name}
-                    </p>
-                    {/* <img
-                      src={URL.createObjectURL(image)}
-                      alt="Selected"
-                      className="mt-2 w-full h-40 object-cover rounded-md shadow"
-                    /> */}
-                  </div>
-                )}
+                </label>
               </div>
 
               <button

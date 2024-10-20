@@ -11,6 +11,7 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
+import Navbar from "@/_Components/Navbar2";
 import Header from "../../../_Components/header";
 import { useTable } from "react-table";
 import Swal from "sweetalert2"; // Import SweetAlert2
@@ -336,14 +337,15 @@ export default function RecommendationsTable() {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
+      <Navbar isHome={false} />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto p-8 bg-gray-50 rounded-lg shadow-xl shadow-gray-700"
+        className="max-w-7xl mt-28 mx-auto p-8 bg-gray-50 rounded-lg shadow-xl shadow-gray-700"
       >
-        <h1 className="text-4xl font-extrabold mb-6 text-center text-gray-500">
+        <h1 className="text-4xl font-extrabold mb-6 text-center text-black">
           Community Recommendations
         </h1>
 

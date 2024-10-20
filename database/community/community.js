@@ -182,8 +182,13 @@ export default class CommunityDB {
 
   static editCommunity = async (id, object, image) => {
     const communityRef = doc(DB, "communities", id);
-    const new_image = await CommunityDB.uploadCommunityImage(image);
-    object.communityImage = new_image;
+
+    if (image) {
+      const new_image = await CommunityDB.uploadCommunityImage(image);
+
+      object.communityImage = new_image;
+    }
+
     console.log("about to update");
     // Update the community document
     console.log("The Object: ", object);
