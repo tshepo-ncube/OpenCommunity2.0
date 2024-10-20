@@ -362,6 +362,12 @@ const DiscoverCommunity = ({ email }) => {
                 <div
                   id="dropdown"
                   className="absolute left-0 mt-1 bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700"
+                  style={{
+                    zIndex: 1000,
+                    position: "absolute",
+                    top: "100%",
+                    right: 0,
+                  }}
                 >
                   <ul
                     className="py-2 text-sm text-gray-700 dark:text-gray-200 z-99"
