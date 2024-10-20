@@ -76,20 +76,14 @@ const CreateCommunity = () => {
 
     const similarCommunity = submittedData.find((community) => {
       const existingName = community.name
-        ? community.name
-            .toLowerCase()
-            .replace(/\bcommunity\b/g, "")
-            .trim()
-        : ""; // Provide a fallback if name is undefined
-
-      const submittedName = submittedData.name
-        ? submittedData.name
-            .toLowerCase()
-            .replace(/\bcommunity\b/g, "")
-            .trim()
-        : ""; // Provide a fallback if submittedData.name is undefined
-
-      return existingName === submittedName;
+        .toLowerCase()
+        .replace(/\bcommunity\b/g, "")
+        .trim();
+      return (
+        existingName === cleanName ||
+        existingName.includes(cleanName) ||
+        cleanName.includes(existingName)
+      );
     });
 
     return similarCommunity || null;
@@ -348,6 +342,7 @@ const CreateCommunity = () => {
 
     const similarCommunity = checkNameSimilarity(name);
     if (similarCommunity) {
+      //alert("Similar COMCOM");
       setSimilarityError({
         message:
           "Cannot create this community as a similar community already exists.",
@@ -357,25 +352,16 @@ const CreateCommunity = () => {
       return;
     }
 
-    const adminEmail = localStorage.getItem("Email");
+    // Get the logged-in user's email (assuming consoleEmails stores the logged-in user's email)
+    const adminEmail = localStorage.getItem("Email"); // consoleEmails[0]; // Assuming the first email is the logged-in user's email
 
+    // Create the community data with the admin field
     const communityData = {
       name,
       description,
       category,
       status,
-      admin: adminEmail,
-    };
-
-    const clearForm = () => {
-      setName("");
-      setDescription("");
-      setCategory("");
-      setStatus("");
-      setImage(null); // Clear the image file
-      setSelectedInterests([]); // Clear selected interests
-      setShowImageError(false); // Reset image error
-      setShowInterestsError(false); // Reset interests error
+      admin: localStorage.getItem("Email"), // Adding the admin field with the logged-in user's email
     };
 
     if (editIndex !== null) {
@@ -387,7 +373,6 @@ const CreateCommunity = () => {
           updatedSubmittedData[editIndex] = updatedData;
           setSubmittedData(updatedSubmittedData);
           setPopupOpen(false); // Close the form after update
-          clearForm(); // Clear the form fields
         },
         setLoading
       );
@@ -395,31 +380,76 @@ const CreateCommunity = () => {
       // Create a new community
       console.log("Creating a community now...");
       try {
-        if (!image) {
-          setShowImageError(true);
-          console.log("THERE IS NO IMAGE, PLEASE SELECT ONE ");
-          return;
-        }
-
-        if (selectedInterests.length < 3) {
-          setShowInterestsError(true);
-          return;
-        }
-
         CommunityDB.createCommunity(
           communityData,
           image,
           (newCommunity) => {
             setSubmittedData((prevData) => [...prevData, newCommunity]);
-            setPopupOpen(false); // Close the form after successful creation
-            clearForm(); // Clear the form fields
           },
-          setLoading,
-          selectedInterests,
-          setCommunityCreated
+          setLoading
         );
+        // console.log("creating a channel now...");
+        // CommunityDB.createCommunity(
+        //   communityData,
+        //   (newCommunity) =>
+        //     setSubmittedData((prevData) => [...prevData, newCommunity]),
+        //   setLoading
+        // );
+        //name, description, category, status
+
+        try {
+          // const res = await axios.post(
+          //   strings.server_endpoints.createChannel,
+          //   { name, description, category, status },
+          //   {
+          //     headers: {
+          //       "Content-Type": "application/json",
+          //     },
+          //   }
+          // );
+
+          // console.log(res.data);
+          // let data = res.data;
+
+          console.log("About to check if image is there on create comm form");
+
+          if (!image) {
+            //alert("Please have an image");
+            //setSimilarCommmunitySnackbarOpen(true);
+            setShowImageError(true);
+            console.log("THERE IS NO IMAGE< PLEASE SELECT ONE ");
+            return;
+          }
+
+          if (selectedInterests.length < 3) {
+            // alert("Please add more interests");
+            // setImageError(true);
+            //  setShowImageError(true);
+            setShowInterestsError(true);
+            return;
+          }
+
+          CommunityDB.createCommunity(
+            communityData,
+            image,
+            (newCommunity) => {
+              setSubmittedData((prevData) => [...prevData, newCommunity]);
+            },
+            setLoading,
+            selectedInterests,
+            setCommunityCreated
+
+            // ,
+            // {
+            //   WebUrl: data.webUrl,
+            //   ChannelID: data.id,
+            // }
+          );
+        } catch (err) {
+          console.log("Error:", err);
+        }
       } catch (err) {
-        console.log("Error:", err);
+        console.log("error : ", err);
       }
     }
   };
@@ -553,7 +583,7 @@ const CreateCommunity = () => {
         <div className="mb-4">
           <p className="text-gray-700 mb-2">{error.message}</p>
           <p className="text-gray-900 font-medium">
-            Similar community name is as follows:
+            Similar community name is as follows :
           </p>
           <p className="text-gray-700 bg-gray-50 p-2 rounded mt-1">
             {error.similarCommunity}
