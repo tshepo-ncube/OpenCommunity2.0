@@ -756,7 +756,7 @@ export default function CommunityPage({ params }) {
               const backgroundColor = event.color || "#3174ad";
               return {
                 style: {
-                  backgroundColor,
+                  backgroundColor: "gray",
                   color: "white",
                   borderRadius: "0.25rem",
                   border: "none",
