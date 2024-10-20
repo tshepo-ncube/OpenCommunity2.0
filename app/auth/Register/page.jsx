@@ -14,11 +14,11 @@ const Register = () => {
   const [email, setEmail] = useState(null);
   const [password, setPassword] = useState(null);
   const [confirmPassword, setConfirmPassword] = useState(null);
-  const [diet, setDiet] = useState(null);
+  // const [diet, setDiet] = useState(null);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
-  const [showNext, setShowNext] = useState(false);
-  const [allergies, setAllergies] = useState("");
+  // const [showNext, setShowNext] = useState(false);
+  // const [allergies, setAllergies] = useState("");
   const [passwordError, setPasswordError] = useState(null);
 
   useEffect(() => {
@@ -36,42 +36,51 @@ const Register = () => {
     return true;
   };
 
-  const handleNextStep = () => {
-    if (
-      name &&
-      surname &&
-      email &&
-      password &&
-      confirmPassword &&
-      validatePasswords()
-    ) {
-      setShowNext(true);
-      setError(null); // Clear any general form error
-    } else if (!validatePasswords()) {
-      setPasswordError("Passwords do not match.");
-    } else {
-      setError("Please complete the form.");
-    }
-  };
+  // const handleNextStep = () => {
+  //   if (
+  //     name &&
+  //     surname &&
+  //     email &&
+  //     password &&
+  //     confirmPassword &&
+  //     validatePasswords()
+  //   ) {
+  //     setShowNext(true);
+  //     setError(null); // Clear any general form error
+  //   } else if (!validatePasswords()) {
+  //     setPasswordError("Passwords do not match.");
+  //   } else {
+  //     setError("Please complete the form.");
+  //   }
+  // };
 
   const handleRegistration = (e) => {
     e.preventDefault();
     if (!validatePasswords()) return;
 
-    if (
-      allergies === "" &&
-      name === null &&
-      surname === null &&
-      email === null
-    ) {
+    if (!name || !surname || !email || !password || !confirmPassword) {
       setError("Please complete the form.");
     } else {
       RegisterUser.registerUser(
-        { name, surname, email, password, diet, allergies },
+        { name, surname, email, password },
         setUser,
         setError
       );
     }
+    // if (
+    //   allergies === "" &&
+    //   name === null &&
+    //   surname === null &&
+    //   email === null
+    // ) {
+    //   setError("Please complete the form.");
+    // } else {
+    //   RegisterUser.registerUser(
+    //     { name, surname, email, password, diet, allergies },
+    //     setUser,
+    //     setError
+    //   );
+    // }
   };
 
   return (
@@ -98,14 +107,123 @@ const Register = () => {
         </div>
         <div className="p-6 pt-4">
           <h2 className="text-3xl font-bold text-center mb-2">
-            {showNext ? "Tell us more about you" : "Register"}
+            Register
+            {/* {showNext ? "Tell us more about you" : "Register"} */}
           </h2>
           <p className="text-center text-gray-600 mb-4">
-            {showNext
+            Create an account and connect with like-minded individuals
+            {/* {showNext
               ? "Help us personalise your experience in the Open Community"
-              : "Create an account and connect with like-minded individuals"}
+              : "Create an account and connect with like-minded individuals"} */}
           </p>
           <form onSubmit={handleRegistration}>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <label htmlFor="name" className="text-sm font-medium">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  value={name || ""}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Enter your first name"
+                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="surname" className="text-sm font-medium">
+                  Surname
+                </label>
+                <input
+                  type="text"
+                  id="surname"
+                  value={surname || ""}
+                  onChange={(e) => setSurname(e.target.value)}
+                  placeholder="Enter your last name"
+                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email || ""}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email address"
+                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="password" className="text-sm font-medium">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password || ""}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Create a password"
+                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <label
+                  htmlFor="confirmPassword"
+                  className="text-sm font-medium"
+                >
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  value={confirmPassword || ""}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm your password"
+                  className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
+                  required
+                />
+                {passwordError && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {passwordError}
+                  </p>
+                )}
+              </div>
+              {error && <p className="text-center text-red-500">{error}</p>}
+              <button
+                type="submit"
+                className="w-full bg-openbox-green hover:bg-hover-obgreen text-white py-3 rounded-lg font-medium"
+              >
+                Register
+              </button>
+              <p className="text-sm text-center text-gray-500 mt-4">
+                Already have an account?{" "}
+                <span
+                  className="text-primary hover:underline font-medium cursor-pointer"
+                  onClick={() => router.push("/")}
+                >
+                  Log in
+                </span>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Register;
+
+
+          {/* <form onSubmit={handleRegistration}>
             <div className="space-y-4">
               {!showNext ? (
                 <>
@@ -263,11 +381,11 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Register; */}
 
 
 
-
+// OLD CODE
 // "use client";
 // import { useState, useEffect } from "react";
 // import { useRouter } from "next/navigation";

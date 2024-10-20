@@ -16,20 +16,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/auth/ForgotPassword/page.js"
     ],
-    "/Home/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/Home/page.js"
-    ],
-    "/admin/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/page.js"
-    ],
     "/auth/Register/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/auth/Register/page.js"
+    ],
+    "/Home/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/Home/page.js"
     ],
     "/auth/Profile/page": [
       "static/chunks/webpack.js",
