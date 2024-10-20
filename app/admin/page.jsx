@@ -15,6 +15,8 @@ import InterestSelection from "@/_Components/InterestsSelection";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 import AdminManagement from "@/_Components/AdminManagement";
+import { RiAiGenerate } from "react-icons/ri";
+
 const CreateCommunity = () => {
   const [activeTab, setActiveTab] = useState("tab1");
   const [isPopupOpen, setPopupOpen] = useState(false);
@@ -772,7 +774,7 @@ const CreateCommunity = () => {
 
                 {showImageError ? (
                   <>
-                    <p className="text-red-500 p-2">please add an image</p>
+                    <p className="text-red-500 p-2">Please add an image</p>
                   </>
                 ) : (
                   <></>
@@ -798,13 +800,14 @@ const CreateCommunity = () => {
                     onClick={handleUploadButtonClick}
                     className="p-2 bg-openbox-green hover:bg-hover-obgreen text-white rounded-md"
                   >
-                    Choose Image
+                    Upload Community Image
                   </button>
                   {image && (
                     <p className="mt-2 text-gray-600">Uploaded: {image.name}</p>
                   )}
                 </div>
-
+                
+                {/* Select community interests */}
                 <label className="block text-m text-gray-700 font-semibold">
                   Select Community Interests
                 </label>
@@ -825,27 +828,53 @@ const CreateCommunity = () => {
                 />
 
                 <div className="flex justify-end">
-                  <button
+                <button
+                  type="button"
+                  onClick={generateDescription}
+                  className="flex mb-4 bg-[#B07AA1] hover:bg-[#925C84] text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-[#B07AA1] items-center"
+                >
+                  <RiAiGenerate className="mr-2 mx-2 w-5 h-5" />
+                  Generate Description
+                </button>
+
+                <button
+                  type="button"
+                  onClick={(e) => handleFormSubmit(e, "draft")}
+                  className="mb-4 bg-gray-500 hover:bg-gray-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                >
+                  Save Draft
+                </button>
+
+                <button
+                  type="submit"
+                  className="mb-4 bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                >
+                  {editIndex !== null ? "Save" : "Create"}
+                </button>
+
+                  {/* <button
                     type="button"
                     onClick={generateDescription}
-                    className="btn bg-[#B07AA1] hover:bg-[#925C84] text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-[#B07AA1]"
+                    className="flex mb-4 bg-[#B07AA1] hover:bg-[#925C84] text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-[#B07AA1] items-center"
+                    // className="btn bg-[#B07AA1] hover:bg-[#925C84] text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-[#B07AA1]"
                   >
+                    <RiAiGenerate className="mr-2 mx-2 w-5 h-5" />
                     Generate Description
                   </button>
 
                   <button
                     type="button"
                     onClick={(e) => handleFormSubmit(e, "draft")}
-                    className="btn bg-gray-500 hover:bg-gray-700 btn text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                    className="btn bg-gray-500 hover:bg-gray-700 text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
-                    Save as Draft
+                    Save Draft
                   </button>
                   <button
                     type="submit"
                     className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
                     {editIndex !== null ? "Save" : "Create"}
-                  </button>
+                  </button> */}
                   <CloseIcon
                     className="absolute top-4 right-4 text-black-500 cursor-pointer"
                     onClick={handleClosePopup}
@@ -1280,3 +1309,5 @@ const CreateCommunity = () => {
 };
 
 export default CreateCommunity;
+
+

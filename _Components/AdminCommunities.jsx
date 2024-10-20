@@ -503,6 +503,10 @@ const AdminCommunity = () => {
         return <p>No communities currently exist with the status: {status}</p>;
       }
       return (
+        <div>
+          <h2 className="text-xl font-bold mb-4">
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </h2>
         <Grid container spacing={2} className="p-4">
           {eventsByStatus.map((data) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={data.id}>
@@ -673,6 +677,7 @@ const AdminCommunity = () => {
             </Grid>
           ))}
         </Grid>
+      </div>
       );
     }
   };

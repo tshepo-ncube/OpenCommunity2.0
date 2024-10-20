@@ -363,11 +363,15 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
         >
           <IoMdClose size={25} />
         </button>
+
+        <h1 className="text-xl text-center font-bold text-gray-700 tracking-wide mb-4">
+                Create a New Event
+        </h1>
         <form className="space-y-4 h-160 max-h-110 z-100">
           <div>
             <label
               htmlFor="eventName"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-bold text-gray-700 mb-2"
             >
               Event Name
             </label>
@@ -386,7 +390,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             <div className="flex-1">
               <label
                 htmlFor="startDateTime"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-bold text-gray-700 mb-2"
               >
                 Start Date & Time
               </label>
@@ -405,7 +409,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             <div className="flex-1">
               <label
                 htmlFor="endDateTime"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-bold text-gray-700 mb-2"
               >
                 End Date & Time
               </label>
@@ -425,7 +429,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             <div className="flex-1">
               <label
                 htmlFor="rsvpEndDateTime"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-bold text-gray-700 mb-2"
               >
                 RSVP End Date & Time
               </label>
@@ -445,7 +449,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
           <div>
             <label
               htmlFor="location"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-bold text-gray-700 mb-2"
             >
               Location
             </label>
@@ -472,14 +476,21 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             />
           </div>
 
-          <div class="flex items-center justify-center w-full">
+          {/* Code for image drag and drop upload */}
+          <div className="flex flex-col w-full">
             <label
-              for="dropzone-file"
-              class="flex flex-col items-center justify-center w-full h-20 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+              htmlFor="dropzone-file"
+              className="block text-sm font-bold text-gray-700 mb-2"
             >
-              <div class="flex flex-col items-center justify-center">
+              Upload Event Image
+            </label>
+            <label
+              htmlFor="dropzone-file"
+              className="flex flex-col items-center justify-center w-full h-20 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+            >
+              <div className="flex flex-col items-center justify-center">
                 <svg
-                  class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                  className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -487,24 +498,23 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 >
                   <path
                     stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
                     d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                   />
                 </svg>
-                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                  <span class="font-semibold">Click to upload images</span> or
-                  drag and drop
+                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                  <span className="font-semibold">Click to upload images</span> or drag and drop
                 </p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   SVG, PNG, JPG or GIF (MAX. 800x400px)
                 </p>
               </div>
               <input
                 id="dropzone-file"
                 type="file"
-                class="hidden"
+                className="hidden"
                 accept="image/*"
                 onChange={handleImageChange}
               />
@@ -635,7 +645,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
           <div>
             <label
               htmlFor="rsvpLimit"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-bold text-gray-700 mb-2"
             >
               RSVP Limit
             </label>
@@ -674,7 +684,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
           <div>
             <label
               htmlFor="description"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-bold text-gray-700 mb-2"
             >
               Event Description
             </label>
@@ -698,7 +708,8 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
 
             <button
               onClick={generateDescription}
-              className="flex mb-4 bg-hover-obgreen items-center px-4 py-2 bg-open text-white rounded-md "
+              className="flex mb-4 bg-[#B07AA1] hover:bg-[#925C84] text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-[#B07AA1] items-center"
+              // className="flex mb-4 bg-hover-obgreen items-center px-4 py-2 bg-open text-white rounded-md "
             >
               <RiAiGenerate className="mr-2 mx-2 w-5 h-5" />
               Generate Description
@@ -707,10 +718,12 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             <button
               type="button"
               onClick={handleSaveDraft}
-              className=" mb-4 bg-white  mx-2 border text-black font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
+              // className="btn bg-gray-500 hover:bg-gray-700 btn text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+              className=" mb-4 bg-gray-500 hover:bg-gray-700 mx-2 border text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
             >
               Save Draft
             </button>
+
             <button
               type="submit"
               onClick={handleSubmitEvent}
@@ -987,11 +1000,12 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               >
                 <IoMdClose size={25} />
               </button> */}
+
               <form className="space-y-4 w-full">
                 <div>
                   <label
                     htmlFor="eventName"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-bold text-gray-700 mb-2"
                   >
                     Event Name
                   </label>
@@ -1010,7 +1024,7 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                   <div className="flex-1">
                     <label
                       htmlFor="startDateTime"
-                      className="block text-sm font-medium text-gray-700"
+                      className="block text-sm font-bold text-gray-700 mb-2"
                     >
                       Start Date & Time
                     </label>
@@ -1028,7 +1042,7 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                   <div className="flex-1">
                     <label
                       htmlFor="endDateTime"
-                      className="block text-sm font-medium text-gray-700"
+                      className="block text-sm font-bold text-gray-700 mb-2"
                     >
                       End Date & Time
                     </label>
@@ -1048,7 +1062,7 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                   <div className="flex-1">
                     <label
                       htmlFor="rsvpEndDateTime"
-                      className="block text-sm font-medium text-gray-700"
+                      className="block text-sm font-bold text-gray-700 mb-2"
                     >
                       RSVP End Date & Time
                     </label>
@@ -1066,7 +1080,7 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 <div>
                   <label
                     htmlFor="location"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-bold text-gray-700 mb-2"
                   >
                     Location
                   </label>
@@ -1098,7 +1112,7 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 <div>
                   <label
                     htmlFor="description"
-                    className="block text-sm font-medium text-gray-700"
+                    className="block text-sm font-bold text-gray-700 mb-2"
                   >
                     Event Description
                   </label>
@@ -1128,7 +1142,8 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                   </button>
                   <button
                     onClick={generateDescription}
-                    className="flex items-center px-4 mx-2 py-2 bg-hover-obgreen text-white rounded-md"
+                    className="flex mb-4 bg-[#B07AA1] hover:bg-[#925C84] text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-[#B07AA1] items-center"
+                    // className="flex items-center px-4 mx-2 py-2 bg-hover-obgreen text-white rounded-md"
                   >
                     <RiAiGenerate className="mr-2 w-5 h-5" />
                     Generate Description
@@ -1537,13 +1552,13 @@ export default function CommunityPage({ params }) {
                 <div className="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
                   <button
                     onClick={notifyMembers}
-                    className="text-white bg-openbox-green hover:bg-openbox-green focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                    className="text-white bg-openbox-green hover:bg-hover-obgreen focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                   >
-                    Notify members
+                    Notify Members
                   </button>
                   <button
                     onClick={arhiveCommunity}
-                    className="py-2.5 px-5 ms-3 text-sm font-medium text-white focus:outline-none bg-red-500 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                    className="py-2.5 px-5 ms-3 text-sm font-medium text-white focus:outline-none bg-red-500 rounded-lg border border-gray-200 hover:bg-red-600 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-red-700"
                   >
                     Archive Community
                   </button>
