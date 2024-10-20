@@ -198,7 +198,7 @@ function PollsHolder({ communityID }) {
           onClick={handleCreatePoll}
           aria-label="create poll"
         >
-          {/* <AddIcon style={{ color: "white" }} /> */}
+          <AddIcon style={{ color: "white" }} />
         </IconButton>
       </h1>
 
