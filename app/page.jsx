@@ -40,11 +40,11 @@ const Page = () => {
         setLoggedIn
       );
 
-      if (!loggedIn) {
-        setErrorMessage("Invalid password or email, try again");
-      } else {
-        setErrorMessage("");
-      }
+      // if (!loggedIn) {
+      //   setErrorMessage("Invalid password or email, try again");
+      // } else {
+      //   setErrorMessage("");
+      // }
     } catch (error) {
       setErrorMessage("Invalid password or email, try again");
     }
