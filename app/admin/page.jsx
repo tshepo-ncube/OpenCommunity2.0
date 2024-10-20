@@ -580,12 +580,12 @@ const CreateCommunity = () => {
     return fullName.includes(searchTerm.toLowerCase());
   });
   return (
-    <div className="flex-col items-center min-h-screen relative text-center pt-24">
+    <div className="flex-col items-center min-h-screen relative text-center pt-24 bg-gray-100">
       <Navbar2 isHome={true} />
       {/* <Header /> */}
 
       {/* Tab Navigation */}
-      <div className="flex justify-center mt-4 mb-8">
+      <div className="flex justify-center mt-4 mb-2 ">
         <button
           className={`px-4 py-2 mr-2 ${
             activeTab === "tab1"

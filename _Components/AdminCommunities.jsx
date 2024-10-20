@@ -238,7 +238,7 @@ const AdminCommunity = () => {
                 {events.map((data) => (
                   <Grid item xs={12} sm={6} md={4} lg={3} key={data.id}>
                     <Card
-                      className="flex flex-col h-100"
+                      className="flex flex-col h-120"
                       onClick={() => {
                         console.log(data);
                         //router.push(`/admin/Dashboard/${data.id}`);
@@ -717,8 +717,30 @@ const AdminCommunity = () => {
         </div>
       )}
 
-      <div className="w-full px-6 py-4">
-        <FormControl variant="outlined" className="mb-4 w-full md:w-1/4">
+      <div className="w-full px-6 py-4 ">
+        <div className="justify-center flex items-center ">
+          <div className="mb-4 w-full md:w-1/4 ">
+            <label
+              className="block text-gray-700 text-sm font-medium mb-2"
+              htmlFor="status"
+            >
+              Filter By Status
+            </label>
+            <select
+              id="status"
+              value={selectedStatus}
+              onChange={handleStatusChange}
+              className="block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            >
+              <option value="All">All</option>
+              <option value="draft">Draft</option>
+              <option value="active">Active</option>
+              <option value="archived">Archived</option>
+            </select>
+          </div>
+        </div>
+
+        {/* <FormControl variant="outlined" className="mb-4 w-full md:w-1/4">
           <InputLabel>Filter By Status</InputLabel>
           <Select
             value={selectedStatus}
@@ -730,7 +752,7 @@ const AdminCommunity = () => {
             <MenuItem value="active">Active</MenuItem>
             <MenuItem value="archived">Archived</MenuItem>
           </Select>
-        </FormControl>
+        </FormControl> */}
         {loading ? (
           <div className="flex justify-center">
             <CircularProgress />
