@@ -80,7 +80,7 @@ const Carousel = () => {
 
       {loading ? (
         <>
-          <CircularProgress />
+          <CircularProgress  style={{ color: "#bcd727"}} />
         </>
       ) : (
         <>

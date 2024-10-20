@@ -818,7 +818,7 @@ const AdminCommunity = () => {
         </FormControl> */}
         {loading ? (
           <div className="flex justify-center">
-            <CircularProgress />
+            <CircularProgress  style={{ color: "#bcd727"}} />
           </div>
         ) : (
           <div>{renderEventsByStatus(selectedStatus)}</div>

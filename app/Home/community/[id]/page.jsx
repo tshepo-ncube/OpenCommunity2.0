@@ -482,8 +482,8 @@ export default function CommunityPage({ params }) {
     return (
       <div>
         <center>
-          <CircularProgress
-            style={{ marginTop: 300, width: 150, height: 150 }}
+          <CircularProgress 
+            style={{ color: "#bcd727", marginTop: 300, width: 150, height: 150 }}
           />
         </center>
       </div>

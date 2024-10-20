@@ -56,7 +56,7 @@ const AdminCommHome = ({community}) => {
 
       {loading ? (
         <>
-          <CircularProgress />
+          <CircularProgress  style={{ color: "#bcd727"}} />
         </>
       ) : (
         <>

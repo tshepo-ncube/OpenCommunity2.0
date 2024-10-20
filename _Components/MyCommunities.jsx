@@ -574,7 +574,7 @@ const DiscoverCommunity = ({ email }) => {
             )}
           </>
         ) : (
-          <CircularProgress />
+          <CircularProgress  style={{ color: "#bcd727"}} />
         )}
       </div>
 

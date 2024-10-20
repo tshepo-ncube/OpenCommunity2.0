@@ -1094,7 +1094,7 @@ export default function CommunityPage({ params }) {
       {loader? (<>
         <center>
 
-        <CircularProgress   style={{ color:"#bcd727" ,marginTop: 30, width: 150, height: 150 }} />;
+        <CircularProgress   style={{ color:"#bcd727" ,marginTop: 210, width: 150, height: 150 }} />;
 
         </center>
       </>):(<>
