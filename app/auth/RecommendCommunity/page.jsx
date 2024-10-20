@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import RecommendationDB from "@/database/community/recommendation";
 
-import Header from "../../../_Components/Navbar2";
+import Header from "../../../_Components/Navbar";
 
 const CommunityRecommendationPage = () => {
   // const [communityName, setCommunityName] = useState < string > "";

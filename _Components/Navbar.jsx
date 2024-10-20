@@ -142,7 +142,7 @@ const Navbar = ({ isHome }) => {
             <>
               <li className="p-4 text-white">
                 <Link
-                  href="/Home"
+                  href="/admin"
                   className="py-2 px-4 text-white hover:bg-[#bcd727] hover:rounded-lg"
                 >
                   Home
@@ -150,10 +150,10 @@ const Navbar = ({ isHome }) => {
               </li>
               <li className="p-4 text-white">
                 <Link
-                  href="/admin/ViewRecommendations"
+                  href="/admin/RecommendedCommunities"
                   className="py-2 px-4 text-white hover:bg-[#bcd727] hover:rounded-lg"
                 >
-                  View Recommendation
+                  View Recommendations
                 </Link>
               </li>
             </>
