@@ -11,7 +11,7 @@ import UserDB from "../../database/community/users"; // Make sure this import pa
 import { doc, updateDoc } from "firebase/firestore";
 import DB from "../../database/DB"; // Ensure you are importing your Firestore DB instance
 import ManageUser from "@/database/auth/ManageUser";
-
+import InterestSelection from "@/_Components/InterestsSelection";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
 
@@ -20,6 +20,7 @@ const CreateCommunity = () => {
   const [isPopupOpen, setPopupOpen] = useState(false);
   const [isUserPopupOpen, setUserPopupOpen] = useState(false);
   const [name, setName] = useState("");
+  const [selectedInterests, setSelectedInterests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [description, setDescription] = useState("");
   const [submittedData, setSubmittedData] = useState([]);
