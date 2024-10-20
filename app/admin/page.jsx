@@ -76,14 +76,20 @@ const CreateCommunity = () => {
 
     const similarCommunity = submittedData.find((community) => {
       const existingName = community.name
-        .toLowerCase()
-        .replace(/\bcommunity\b/g, "")
-        .trim();
-      return (
-        existingName === cleanName ||
-        existingName.includes(cleanName) ||
-        cleanName.includes(existingName)
-      );
+        ? community.name
+            .toLowerCase()
+            .replace(/\bcommunity\b/g, "")
+            .trim()
+        : ""; // Provide a fallback if name is undefined
+
+      const submittedName = submittedData.name
+        ? submittedData.name
+            .toLowerCase()
+            .replace(/\bcommunity\b/g, "")
+            .trim()
+        : ""; // Provide a fallback if submittedData.name is undefined
+
+      return existingName === submittedName;
     });
 
     return similarCommunity || null;
