@@ -195,47 +195,49 @@ const Register = () => {
                   </div>
                 </>
               ) : (
-                <>
-                  <div className="space-y-2">
-                    <label htmlFor="allergies" className="text-sm font-medium">
-                      Allergies
-                    </label>
-                    <input
-                      type="text"
-                      id="allergies"
-                      value={allergies}
-                      onChange={(e) => setAllergies(e.target.value)}
-                      placeholder="Allergies"
-                      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="diet" className="text-sm font-medium">
-                      Dietary Requirements
-                    </label>
-                    <input
-                      type="text"
-                      id="diet"
-                      value={diet || ""}
-                      onChange={(e) => setDiet(e.target.value)}
-                      placeholder="Dietary Requirements"
-                      className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
-                      required
-                    />
-                  </div>
-                </>
+                // <>
+                //   <div className="space-y-2">
+                //     <label htmlFor="allergies" className="text-sm font-medium">
+                //       Allergies
+                //     </label>
+                //     <input
+                //       type="text"
+                //       id="allergies"
+                //       value={allergies}
+                //       onChange={(e) => setAllergies(e.target.value)}
+                //       placeholder="Allergies"
+                //       className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
+                //       required
+                //     />
+                //   </div>
+                //   <div className="space-y-2">
+                //     <label htmlFor="diet" className="text-sm font-medium">
+                //       Dietary Requirements
+                //     </label>
+                //     <input
+                //       type="text"
+                //       id="diet"
+                //       value={diet || ""}
+                //       onChange={(e) => setDiet(e.target.value)}
+                //       placeholder="Dietary Requirements"
+                //       className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
+                //       required
+                //     />
+                //   </div>
+                // </>
+
+                <></>
               )}
               {error && <p className="text-center text-red-500">{error}</p>}
               {showNext ? (
                 <div className="flex">
-                  <button
+                  {/* <button
                     type="button"
                     onClick={() => setShowNext(false)}
                     className="w-full bg-openbox-green hover:bg-hover-obgreen text-white py-3 rounded-lg font-medium mr-2"
                   >
                     Back
-                  </button>
+                  </button> */}
                   <button
                     type="submit"
                     className="w-full bg-blue-500 hover:bg-blue-700 text-white py-3 rounded-lg font-medium"
@@ -245,11 +247,11 @@ const Register = () => {
                 </div>
               ) : (
                 <button
-                  type="button"
-                  onClick={handleNextStep}
+                  // type="submit"
+                  // onClick={handleNextStep}
                   className="w-full bg-openbox-green hover:bg-hover-obgreen text-white py-3 rounded-lg font-medium"
                 >
-                  Next Step
+                  Register
                 </button>
               )}
               <p className="text-sm text-center text-gray-500 mt-4">
