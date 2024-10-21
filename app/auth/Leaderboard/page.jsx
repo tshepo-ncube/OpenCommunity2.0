@@ -6,7 +6,7 @@ import Header from "../../../_Components/header";
 import CollapsableSidebar from "@/_Components/CollapsableSidebar";
 import { motion } from "framer-motion";
 import { AiOutlineInfoCircle } from "react-icons/ai";
-import Navbar2 from "@/_Components/NavBar";
+import Navbar2 from "@/_Components/Navbar";
 import Confetti from "react-confetti"; // Corrected import statement
 
 const Page = () => {
