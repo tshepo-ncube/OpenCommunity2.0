@@ -386,7 +386,7 @@ export default function CommunityPage({ params }) {
     if (typeof window === "undefined") return;
 
     try {
-      // await EventDB.addRSVP(event.id, localStorage.getItem("Email"));
+      await EventDB.addRSVP(event.id, localStorage.getItem("Email"));
       console.log("id ", id);
       await CommunityDB.incrementCommunityScore(id, 1);
 
@@ -843,7 +843,7 @@ export default function CommunityPage({ params }) {
 
       {activeTab === "myEvents" && (
         <div className="bg-gray-50 p-4 pb-4">
-          {upcomingEvents.length > 0 ? (
+          {upcomingEvents.filter((event) => isRSVPed(event.id)).length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {upcomingEvents
                 .filter((event) => isRSVPed(event.id)) // Filter to show only events the user RSVPed to
@@ -942,7 +942,12 @@ export default function CommunityPage({ params }) {
                 ))}
             </div>
           ) : (
-            <Typography>No upcoming events to display</Typography>
+            <div className="flex justify-center items-center h-64">
+              <Typography className="text-center">
+                You currently have no upcoming events. Check out upcoming events
+                to RSVP.
+              </Typography>
+            </div>
           )}
         </div>
       )}
@@ -1252,10 +1257,15 @@ export default function CommunityPage({ params }) {
                 <textarea
                   className="w-full border border-gray-300 rounded-md p-2"
                   rows="4"
+                  maxLength="500" // Limits the input to 500 characters
                   placeholder="Comment"
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                 />
+                {/* Display character count */}
+                <p className="text-gray-500 text-sm mt-1">
+                  {comment.length}/500 characters
+                </p>
               </div>
 
               <div className="mt-4">
