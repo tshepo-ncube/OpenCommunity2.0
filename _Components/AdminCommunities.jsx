@@ -358,43 +358,8 @@ const AdminCommunity = () => {
                         sx={{ paddingTop: "0px", paddingBottom: "0px" }}
                       >
                         <Grid container alignItems="center">
-                          <Grid item xs={6}>
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              className="flex items-center"
-                              style={{
-                                fontFamily: "Poppins, sans-serif",
-                                textAlign: "left",
-                              }}
-                            >
-                              <People
-                                fontSize="small"
-                                style={{ marginRight: 4 }}
-                              />
-                              {data.users ? data.users.length : 0} Members
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={6}>
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              className="flex items-center justify-end"
-                              style={{
-                                fontFamily: "Poppins, sans-serif",
-                                textAlign: "right",
-                              }}
-                            >
-                              <CalendarToday
-                                fontSize="small"
-                                style={{ marginRight: 4 }}
-                              />
-                              {data.UpcomingEventsCount || 0}{" "}
-                              {data.UpcomingEventsCount > 1
-                                ? "Events"
-                                : "Event"}
-                            </Typography>
-                          </Grid>
+                          <Grid item xs={6}></Grid>
+                          <Grid item xs={6}></Grid>
                         </Grid>
                       </CardContent>
 
@@ -828,7 +793,7 @@ const AdminCommunity = () => {
         </div>
         {loading ? (
           <div className="flex justify-center">
-            <CircularProgress  style={{ color: "#bcd727"}} />
+            <CircularProgress style={{ color: "#bcd727" }} />
           </div>
         ) : (
           <div>{renderEventsByStatus(selectedStatus)}</div>
