@@ -1091,6 +1091,18 @@ export default function CommunityPage({ params }) {
                             {formatDate(event.RsvpEndTime)}
                           </span>
                         </div>
+
+                        <div className="flex items-center">
+                          {/* <AccessTime className="text-gray-600 mr-2" /> */}
+                          <p className="font-bold p-1">RSVP Live Count: </p>
+                          <span className="text-gray-800 text-sm">
+                            {/* {new Date(
+                              event.StartDate.seconds * 1000
+                            ).toLocaleTimeString()} */}
+
+                            {event.rsvp ? event.rsvp.length : "0"}
+                          </span>
+                        </div>
                       </Typography>
 
                       {/* RSVP and event status */}
