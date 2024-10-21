@@ -482,8 +482,13 @@ export default function CommunityPage({ params }) {
     return (
       <div>
         <center>
-          <CircularProgress 
-            style={{ color: "#bcd727", marginTop: 300, width: 150, height: 150 }}
+          <CircularProgress
+            style={{
+              color: "#bcd727",
+              marginTop: 300,
+              width: 150,
+              height: 150,
+            }}
           />
         </center>
       </div>
@@ -1033,7 +1038,11 @@ export default function CommunityPage({ params }) {
                         </span>
                       ) : null}
                       <img
-                        src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        src={
+                          event.EventImages
+                            ? event.EventImages
+                            : "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                        }
                         alt={event.Name}
                         className="w-full h-48 object-cover"
                       />
