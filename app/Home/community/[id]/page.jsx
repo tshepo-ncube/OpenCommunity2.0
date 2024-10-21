@@ -1022,6 +1022,9 @@ export default function CommunityPage({ params }) {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {upcomingEvents.map((event) => (
                   <div
+                    onClick={() => {
+                      console.log(event);
+                    }}
                     key={event.id}
                     className="bg-white shadow-sm rounded-md overflow-hidden"
                   >
@@ -1074,15 +1077,18 @@ export default function CommunityPage({ params }) {
                         <div className="flex items-center mb-1">
                           <Event className="text-gray-600 mr-2" />
                           <span className="text-gray-800 text-sm">
-                            {formatDate(event.StartDate)}
+                            {formatDate(event.StartDate)} -
+                            {formatDate(event.EndDate)}
                           </span>
                         </div>
                         <div className="flex items-center">
                           <AccessTime className="text-gray-600 mr-2" />
                           <span className="text-gray-800 text-sm">
-                            {new Date(
+                            {/* {new Date(
                               event.StartDate.seconds * 1000
-                            ).toLocaleTimeString()}
+                            ).toLocaleTimeString()} */}
+
+                            {formatDate(event.RsvpEndTime)}
                           </span>
                         </div>
                       </Typography>
