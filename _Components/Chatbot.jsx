@@ -703,7 +703,7 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                                     </>
                                   ) : (
                                     <>
-                                      <p className=" bg-red-500  border w-90 p-2 rounded-lg mb-2 left-0">
+                                      <p className=" bg-white  border w-90 p-2 rounded-lg mb-2 left-0">
                                         {message.content[0].text.value}
                                       </p>
                                     </>
@@ -724,7 +724,7 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                                 </>
                               )}
 
-                              {message.content[0] && message.content[0].text ? (
+                              {/* {message.content[0] && message.content[0].text ? (
                                 (() => {
                                   try {
                                     const parsedContent = JSON.parse(
@@ -764,7 +764,7 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                                   wrapperStyle={{}}
                                   wrapperClass=""
                                 />
-                              )}
+                              )} */}
                             </>
                           ) : (
                             <>
