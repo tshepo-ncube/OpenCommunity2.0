@@ -1,5 +1,6 @@
 import DB from "../DB";
 import { StorageDB } from "../StorageDB";
+import axios from "axios";
 import {
   getAuth,
   signInWithPopup,
@@ -25,6 +26,7 @@ import {
   runTransaction,
   serverTimestamp,
 } from "firebase/firestore";
+import strings from "../../Utils/strings.json";
 
 import { ref, uploadBytes, listAll, getDownloadURL } from "firebase/storage";
 //import { truncateSync } from "fs";
@@ -50,7 +52,7 @@ export default class PollDB {
         ...pollObject,
         createdAt: serverTimestamp(), // This ensures the server sets the correct timestamp
       });
-      console.log("Document ID: ", pollRef.id);
+      console.log("Document Poll ID: ", pollRef.id);
     } catch (e) {
       console.log("Error adding document: ", e);
     }
