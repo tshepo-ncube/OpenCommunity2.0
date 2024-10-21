@@ -80,7 +80,7 @@ const Carousel = () => {
 
       {loading ? (
         <>
-          <CircularProgress  style={{ color: "#bcd727"}} />
+          <CircularProgress style={{ color: "#bcd727" }} />
         </>
       ) : (
         <>
@@ -110,66 +110,6 @@ const Carousel = () => {
 
             {/* Carousel items */}
             <div className="relative w-full overflow-hidden after:clear-both after:block after:content-[''] h-full">
-              {/* First item */}
-              {/* <div
-            className={`relative float-left w-full h-full transition-transform duration-[600ms] ease-in-out ${
-              activeIndex === 0 ? "block" : "hidden"
-            }`}
-            style={{ backfaceVisibility: "hidden" }}
-          >
-            <img
-              src="https://plus.unsplash.com/premium_photo-1663126325483-886b1a08ba8e?q=80&w=1957&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              className="block w-full h-full object-cover"
-              alt="First slide"
-            />
-
-            <div className="absolute inset-0 bg-black opacity-40"></div>
-
-            <div className="absolute left-[6%] bottom-5 pt-0 pb-5 text-white z-10">
-              <h1 className="font-bold text-6xl text-left mt-0 mb-1">
-                Baking Community
-              </h1>
-              <h1 className="text-left  text-2xl mt-4 mb-6">
-                Some representative placeholder content for the first slide.
-              </h1>
-              <div className="mt-4 mb-30 flex justify-start">
-                <button className="px-2 py-2 text-white font-bold text-xl rounded bg-[#bcd727] hover:bg-[#6e7d19]">
-                  Visit Community
-                </button>
-              </div>
-            </div>
-          </div> */}
-
-              {/* Second item */}
-              {/* <div
-            className={`relative float-left w-full h-full transition-transform duration-[600ms] ease-in-out ${
-              activeIndex === 1 ? "block" : "hidden"
-            }`}
-            style={{ backfaceVisibility: "hidden" }}
-          >
-            <img
-              src="https://plus.unsplash.com/premium_photo-1677567996070-68fa4181775a?q=80&w=1772&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-              className="block w-full h-full object-cover"
-              alt="Second slide"
-            />
-
-       
-            <div className="absolute inset-0 bg-black opacity-40"></div>
-            <div className="absolute left-[6%] bottom-5 pt-0 pb-5 text-white z-10">
-              <h1 className="font-bold text-6xl text-left mt-0 mb-1">
-                Reading Club
-              </h1>
-              <h1 className="text-left  text-2xl mt-4 mb-6">
-                Some representative placeholder content for the first slide.
-              </h1>
-              <div className="mt-4 mb-30 flex justify-start">
-                <button className="px-2 py-2 text-white font-bold text-2xl rounded bg-[#bcd727] hover:bg-[#6e7d19]">
-                  Visit Community
-                </button>
-              </div>
-            </div>
-          </div> */}
-
               {/* Third item */}
 
               {recommendedCommunities.map((community, index) => (

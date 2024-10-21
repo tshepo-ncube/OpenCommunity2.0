@@ -190,52 +190,6 @@ function EventAssistant() {
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  // const waitForCompletion = async (threadId, runId) => {
-  //   let runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
-  //   console.log(`current run status - ${runStatus.status} `);
-  //   while (runStatus.status !== "completed") {
-  //     await delay(1500); // Wait for 5 seconds before checking again
-  //     runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
-  //   }
-  //   console.log("run status - completed");
-  //   return runStatus;
-  // };
-
-  // const checkStatusAndPrintMessages = async (threadId, runId) => {
-  //   await waitForCompletion(threadId, runId);
-  //   console.log("*******************run  - complete**************************");
-  //   let messages = await openai.beta.threads.messages.list(threadId);
-  //   let msgList = messages.data;
-  //   // If you want the messages in reverse chronological order, just sort them as such.
-  //   // Since you're calling reverse() after sorting by created_at descending, it's equivalent to sorting by created_at ascending.
-  //   msgList.sort((a, b) => a.created_at - b.created_at);
-  //   //sessionStorage.setItem("messages", JSON.stringify(msgList));
-  //   //setMessages(msgList);
-  //   setMessages([...msgList]); // Ensure a new array is created
-  //   console.log("setMessages is updated.");
-  //   msgList.forEach((msg) => {
-  //     const role = msg.role;
-  //     // Ensure that msg.content[0] and msg.content[0].text exist before trying to access .value
-  //     const content =
-  //       msg.content[0] && msg.content[0].text
-  //         ? msg.content[0].text.value
-  //         : "Content missing";
-  //     console.log(
-  //       `${role.charAt(0).toUpperCase() + role.slice(1)}: ${content}`
-  //     );
-  //     console.log("\n");
-  //   });
-  //   let length = msgList.length;
-  //   // if (msgList[length - 1].role !== "user") {
-  //   //   console.log("loading........");
-  //   //   checkStatusAndPrintMessages(threadId, runId);
-  //   // } else {
-  //   //   setLoading(false);
-  //   // }
-  //   console.log("sent message processed...");
-  //   setSentMessageProcessed(true);
-  //   setMsgsLoading(false);
-  // };
   const waitForCompletion = async (threadId, runId) => {
     let runStatus = await openai.beta.threads.runs.retrieve(threadId, runId);
     console.log(`current run status - ${runStatus.status}`);

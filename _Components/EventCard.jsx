@@ -31,52 +31,8 @@ const bull = (
   </Box>
 );
 
-// const card = (
-//   <React.Fragment>
-//     <CardContent>
-//       <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-//         Word of the Day
-//       </Typography>
-//       <Typography variant="h5" component="div">
-//         be{bull}nev{bull}o{bull}lent
-//       </Typography>
-//       <Typography sx={{ mb: 1.5 }} color="text.secondary">
-//         adjective
-//       </Typography>
-//       <Typography variant="body2">
-//         well meaning and kindly.
-//         <br />
-//         {'"a benevolent smile"'}
-//       </Typography>
-//     </CardContent>
-//     <CardActions>
-//       <Button size="small">Learn More</Button>
-//     </CardActions>
-//   </React.Fragment>
-// );
-
 export default function EventCard({ event }) {
   return (
-    // <Box sx={{}} className="rounded border">
-    //   <React.Fragment>
-    //     <CardContent>
-    //       <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-    //         Event
-    //       </Typography>
-    //       <Typography variant="h5" component="div">
-    //         {event.Name}
-    //       </Typography>
-    //       <Typography sx={{ mb: 1.5 }} color="text.secondary">
-    //         14 Feb 2024 - 17 Feb 2024
-    //       </Typography>
-    //       <Typography variant="body2">{event.EventDescription}</Typography>
-    //     </CardContent>
-    //     <CardActions>
-    //       <Button size="small">View</Button>
-    //     </CardActions>
-    //   </React.Fragment>
-    // </Box>
-
     <Card sx={{ maxWidth: 345 }}>
       <CardHeader
         avatar={

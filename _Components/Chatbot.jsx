@@ -68,16 +68,6 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
       { sender: "AI", content: [] },
     ]);
 
-    // let instructions = `You are an assistant designed to help
-    //   recommend new events for the ${communityData.name}. Your primary task is to
-    //   recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
-    //    to ensure the event's success: Predicted Attendance, Optimal Timing,
-    //    location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event
-    //     please respond in a json format ONLY (no other text, only JSON)
-    //      with fields name, description, idea_for_event, optimal_timing,
-    //      start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
-    //       an event or just answering a question you can respond normally (less than 300 characters please) (NO JSON, JUST TEXT)`;
-
     let instructions = `You are an assistant designed to help 
     recommend new events for the ${communityData.name}. Your primary task is to 
     recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
@@ -124,19 +114,6 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
       },
       { sender: "AI", content: [] },
     ]);
-
-    // let threadID = "thread_Fs2VYok9YAiXZ1qHv5TpDeIZ";
-    // let runID = "run_GuV63F5sRM7OOAFTnZqhOtU3";
-    // let assistantID = "asst_EiHgeiLbxcs1r1855lryoIe8";
-    // let instructions = `You are an assistant designed to help
-    //   recommend new events for the ${communityData.name}. Your primary task is to
-    //   recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
-    //    to ensure the event's success: Predicted Attendance, Optimal Timing,
-    //    location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event
-    //     please respond in a json format ONLY (no other text, only JSON)
-    //      with fields name, description, predicted_attendance, optimal_timing,
-    //      start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
-    //       an event or just answering a question you can respond normally (NO JSON, JUST TEXT)`;
 
     let instructions = `You are an assistant designed to help 
     recommend new events for the ${communityData.name}. Your primary task is to 
@@ -290,29 +267,12 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
 
   useEffect(() => {
     console.log("Chatbot just rendered");
-    //fetchMessages();
-    //createNewAssistant();
 
-    // console.log(communityData);
-    //localStorageChecker();
-    //checkStatusAndPrintMessages(currentGoal.threadID, currentGoal.runID);
     scrollToBottom();
   }, []);
 
   const fetchMessages = async () => {
     console.log("------------------------------------------");
-    // let threadID = "thread_Fs2VYok9YAiXZ1qHv5TpDeIZ";
-    // let runID = "run_GuV63F5sRM7OOAFTnZqhOtU3";
-    // let assistantID = "asst_EiHgeiLbxcs1r1855lryoIe8";
-    // let instructions = `You are an assistant designed to help
-    //   recommend new events for the ${communityData.name}. Your primary task is to
-    //   recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
-    //    to ensure the event's success: Predicted Attendance, Optimal Timing,
-    //    location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event
-    //     please respond in a json format ONLY (no other text, only JSON)
-    //      with fields name, description, predicted_attendance, optimal_timing,
-    //      start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
-    //       an event or just answering a question you can respond normally (NO JSON, JUST TEXT)`;
 
     try {
       console.log("Fetching messages... ");
@@ -369,13 +329,6 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
     let foundObject = chatbotMetaDataArrayObject.find(
       (obj) => obj.communityID === communityID
     );
-
-    // if (foundObject) {
-    //   console.log("Object with communityID: 'xyz' is present.");
-    //   if(runIsNotExpired(foundObject))
-    // } else {
-    //   console.log("Object with communityID: 'xyz' is not present.");
-    // }
   };
 
   const localStorageChecker = async () => {
@@ -496,30 +449,6 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
   } 
   \`\`\``;
 
-  // const jsonResult = extractJsonFromText(inputText);
-  // if (jsonResult) {
-  //   console.log("Extracted JSON:", jsonResult);
-  // }
-
-  // // Example usage:
-  // const inputText = `Sure! Here is a recommended event for the Soccer Community:
-  // \`\`\`json
-  // {
-  //   "name": "Annual Soccer Festival",
-  //   "description": "A fun-filled day of soccer games, contests, and activities for all ages and skill levels.",
-  //   "predicted_attendance": 5000,
-  //   "optimal_timing": "Weekend",
-  //   "start_date": 1735564800,
-  //   "end_date": 1735651200,
-  //   "location": "City Soccer Complex"
-  // }
-  // \`\`\``;
-
-  // const jsonResult = extractJsonFromText(inputText);
-  // if (jsonResult) {
-  //   console.log("Extracted JSON:", jsonResult);
-  // }
-
   return (
     <>
       {/* Button */}
@@ -605,59 +534,10 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                         key={message.id}
                         className="flex gap-3 my-4 text-gray-600 text-sm flex-1"
                       >
-                        {/* <span className="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
-                      <div className="rounded-full bg-gray-100 border p-1">
-                        <svg
-                          stroke="none"
-                          fill="black"
-                          strokeWidth={message.sender === "AI" ? "1.5" : "0"}
-                          viewBox="0 0 24 24"
-                          height="20"
-                          width="20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d={
-                              message.sender === "AI"
-                                ? "M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"
-                                : "M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"
-                            }
-                          />
-                        </svg>
-                      </div>
-                    </span> */}
                         <p className="leading-relaxed">
-                          {/* <span className="block font-bold text-gray-700">
-                        {message.sender}{" "}
-                      </span> */}
                           {/* {message.content[0].text.value} */}
                           {message.sender === "AI" ? (
                             <>
-                              {/* {(() => {
-                            try {
-                              const parsedContent = JSON.parse(
-                                message.content[0].text.value.slice(7, -3)
-                              );
-                              // console.log("Parsed Content :", parsedContent);
-                              return (
-                                <ChatCard
-                                  name={parsedContent.name}
-                                  description={parsedContent.description}
-                                  date={parsedContent.date}
-                                />
-                              );
-                            } catch (error) {
-                              // If JSON parsing fails, render the content as a plain string
-                              return (
-                                <p className=" bg-white  border w-90 p-2 rounded-lg mb-2 left-0">
-                                  {message.content[0].text.value}
-                                </p>
-                              );
-                            }
-                          })()} */}
-
                               {message.content[0] &&
                               message.content[0].text.value ? (
                                 <>
@@ -723,48 +603,6 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                                   />
                                 </>
                               )}
-
-                              {/* {message.content[0] && message.content[0].text ? (
-                                (() => {
-                                  try {
-                                    const parsedContent = JSON.parse(
-                                      message.content[0].text.value
-                                    );
-                                    return (
-                                      <ChatCard
-                                        name={parsedContent.name}
-                                        description={parsedContent.description}
-                                        date={parsedContent.date}
-                                        start_date={parsedContent.start_date}
-                                        end_date={parsedContent.end_date}
-                                        location={parsedContent.location}
-                                        handleMore={handleMore}
-                                        setShowEventForm={setShowEventForm}
-                                        setEventForm={setEventForm}
-                                      />
-                                    );
-                                  } catch (error) {
-                                    return (
-                                      <>
-                                        <p className=" bg-white  border w-90 p-2 rounded-lg mb-2 left-0">
-                                          {message.content[0].text.value}
-                                        </p>
-                                      </>
-                                    );
-                                  }
-                                })()
-                              ) : (
-                                <ThreeDots
-                                  visible={true}
-                                  height="20"
-                                  width="40"
-                                  color="#bcd727"
-                                  radius="9"
-                                  ariaLabel="three-dots-loading"
-                                  wrapperStyle={{}}
-                                  wrapperClass=""
-                                />
-                              )} */}
                             </>
                           ) : (
                             <>

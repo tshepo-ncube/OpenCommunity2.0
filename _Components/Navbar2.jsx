@@ -16,14 +16,7 @@ import {
 } from "firebase/auth";
 
 const provider = new GoogleAuthProvider();
-//import { firebase } from "firebase";
-// import { firebaseui } from "firebaseui";
-//var firebase = require("firebase");
-//var firebaseui = require("firebaseui");
-// TODO: Replace the following with your app's Firebase project configuration
 
-// const app = initializeApp(firebaseConfig);
-// Initialize the FirebaseUI Widget using Firebase.
 const Navbar = ({ isHome }) => {
   const [nav, setNav] = useState(false);
   const [color, setColor] = useState("#0096FF");
@@ -36,17 +29,6 @@ const Navbar = ({ isHome }) => {
 
   useEffect(() => {
     console.log("Navbar - Getting Profile Data...");
-    // ManageUser.getProfileData(localStorage.getItem("Email"), (data) => {
-    //   setProfile(data);
-    //   console.log("The Data :", data);
-    //   if (data.profileImage) {
-    //     setSelectedImage(data.profileImage);
-    //     setHasCustomImage(true);
-    //   } else {
-    //     setSelectedImage(null);
-    //     setHasCustomImage(false);
-    //   }
-    // });
 
     ManageUser.getProfileData(
       localStorage.getItem("Email"),
@@ -59,34 +41,6 @@ const Navbar = ({ isHome }) => {
   useEffect(() => {
     console.log("Profile :", profile);
   }, [profile]);
-
-  //   const auth = getAuth();
-
-  //   useEffect(() => {
-  //     // Check if user is logged in
-  //     const unsubscribe = onAuthStateChanged(auth, (user) => {
-  //       if (user) {
-  //         // User is signed in.
-  //         console.log("User is logged in:", user);
-  //         setSignedIn(true);
-
-  //         // User is signed in.
-  //         setUser({
-  //           email: user.email,
-  //           name: user.displayName,
-  //           profilePicture: user.photoURL,
-  //         });
-  //       } else {
-  //         setSignedIn(false);
-  //         setUser(null);
-  //         // No user is signed in.
-  //         console.log("No user is logged in");
-  //       }
-  //     });
-
-  //     // To stop listening for changes (unsubscribe) - optional
-  //     return () => unsubscribe();
-  //   }, [auth]); // Ensure that auth is added to the dependency array to avoid unnecessary re-renders
 
   const handleNav = () => {
     setNav(!nav);
@@ -106,40 +60,10 @@ const Navbar = ({ isHome }) => {
 
   const handleSignIn = () => {
     console.log("handle signIn");
-
-    // const auth = getAuth();
-    // signInWithPopup(auth, provider)
-    //   .then((result) => {
-    //     // This gives you a Google Access Token. You can use it to access the Google API.
-    //     const credential = GoogleAuthProvider.credentialFromResult(result);
-    //     const token = credential.accessToken;
-    //     // The signed-in user info.
-    //     const user = result.user;
-    //     // IdP data available using getAdditionalUserInfo(result)
-    //     // ...
-    //   })
-    //   .catch((error) => {
-    //     // Handle Errors here.
-    //     const errorCode = error.code;
-    //     const errorMessage = error.message;
-    //     // The email of the user's account used.
-    //     const email = error.customData.email;
-    //     // The AuthCredential type that was used.
-    //     const credential = GoogleAuthProvider.credentialFromError(error);
-    //     // ...
-    //   });
   };
 
   useEffect(() => {
-    const changeColor = () => {
-      //   if (window.scrollY >= 90) {
-      //     setColor('#ffffff');
-      //     setTextColor('#000000');
-      //   } else {
-      //     setColor('transparent');
-      //     setTextColor('#ffffff');
-      //   }
-    };
+    const changeColor = () => {};
     window.addEventListener("scroll", changeColor);
   }, []);
   const [scrolling, setScrolling] = useState(false);
@@ -185,18 +109,6 @@ const Navbar = ({ isHome }) => {
             </>
           ) : (
             <>
-              {/* <h1
-                style={{ color: `${textColor}` }}
-                className="font-bold text-4xl"
-              >
-                Open 
-                <span
-                    className="text-white bg-green-400 px-2 py-1 rounded-tl-md rounded-tr-md rounded-bl-3xl rounded-br-md"
-                    style={{ backgroundColor: "#bcd727" }}
-                  >
-                    Community
-                  </span>
-              </h1> */}
               <div className="relative text-center">
                 <h2 className="text-4xl font-bold flex space-x-1">
                   <span className="text-white  px-2 py-1 ">open </span>
@@ -207,9 +119,6 @@ const Navbar = ({ isHome }) => {
                     community
                   </span>
                 </h2>
-                {/* <p className="mt-4 text-gray-600 text-2xl">
-                  Connect. Collaborate. Create.
-                </p> */}
               </div>
             </>
           )}
@@ -224,29 +133,8 @@ const Navbar = ({ isHome }) => {
               Home
             </Link>
           </li>
-          {/* <li className="p-4 text-white hover:bg-[#bcd727] hover:rounded-lg">
-            <Link href="/auth/Profile" className="p-4 text-white">
-              Profile
-            </Link>
-          </li> */}
-          {/* <li className="p-4">
-            <Link href="/chat" target={"_blank"}>
-              Chat
-            </Link>
-          </li> */}
-          {user ? (
-            <>
-              {/* <li className="p-4">
-                <Link href="/profile">Profile</Link>
-              </li> */}
-            </>
-          ) : (
-            <>
-              {/* <li className="p-4">
-                <Link href="/goals">Goal Assistant</Link>
-              </li> */}
-            </>
-          )}
+
+          {user ? <></> : <></>}
           {/* ADMIN IS CURRENTLY HARD CODED, ADD Holly's Toggle Button for roles */}
           <li className="p-4">
             <Link
@@ -256,9 +144,6 @@ const Navbar = ({ isHome }) => {
               Admin
             </Link>
           </li>
-          {/* <li className="p-4">
-            <Link href="/about">About</Link>
-          </li> */}
 
           <li className="p-4 text-white ">
             <Link
@@ -278,23 +163,9 @@ const Navbar = ({ isHome }) => {
             </Link>
           </li>
 
-          {/* <div className="hidden sm:flex items-center ml-4">
-            <img
-              src="https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
-              alt="Profile Icon"
-              className="w-10 h-10 rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
-            />
-          </div> */}
-
           {/* Profile Icon */}
           <Link href="/auth/Profile" className="p-2">
             <div className="hidden sm:flex items-center ml-4">
-              {/* <img
-                src= "https://static.vecteezy.com/system/resources/thumbnails/005/544/770/small/profile-icon-design-free-vector.jpg"
-                alt="Profile Icon"
-                className="w-10 h-10 rounded-full cursor-pointer hover:bg-[#bcd727] hover:scale-110 p-1"
-              /> */}
-
               <img
                 src={
                   profile.profileImage
@@ -333,31 +204,9 @@ const Navbar = ({ isHome }) => {
             </li>
             <hr style={{ marginTop: 8 }} />
 
-            {/* <li className="p-4 text-4xl hover:text-gray-500">
-              <Link href="/chat" target={"_blank"}>
-                Chat
-              </Link>
-            </li> */}
             <hr style={{ marginTop: 8 }} />
 
-            {user ? (
-              <>
-                {/* <li className="p-4 text-4xl hover:text-gray-500">
-                  <Link href="/goals">My Goals</Link>
-                </li>
-                <hr style={{ marginTop: 8 }} /> */}
-                {/* <li className="p-4 text-4xl hover:text-gray-500">
-                  <Link href="/profile">Profile</Link>
-                </li> */}
-              </>
-            ) : (
-              <>
-                {/* <li className="p-4 text-4xl hover:text-gray-500">
-                  <Link href="/goals">Goal Assistant</Link>
-                </li>
-                <hr style={{ marginTop: 8 }} /> */}
-              </>
-            )}
+            {user ? <></> : <></>}
 
             <li
               onClick={handleNav}

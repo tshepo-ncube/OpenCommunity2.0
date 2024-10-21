@@ -41,19 +41,6 @@ const ExpandMore = styled((props) => {
   ],
 }));
 
-// setEventForm={setEventForm}
-// setShowEventForm={setShowEventForm}
-
-// const [eventFormData, setEventForm] = useState({
-//     Name: "",
-//     StartDate: "",
-//     EndDate: "",
-//     StartTime: "",
-//     EndTime: "",
-//     Location: "",
-//     EventDescription: "",
-//     RsvpEndTime: "",
-
 export default function ChatCard({
   name,
   description,
@@ -142,41 +129,6 @@ export default function ChatCard({
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
             <div className="">
-              {/* <p className="text-sm text-gray-500">
-                Predicted Attendance:{" "}
-                <span className="font-medium text-gray-800">150</span>
-              </p> */}
-              {/* <p className="text-sm text-gray-500">
-                Optimal Timing:{" "}
-                <span className="font-medium text-gray-800">Weekend</span>
-              </p> */}
-              {/* <p className="text-sm text-gray-500">
-                Start:{" "}
-                <span className="font-medium text-gray-800">
-                  {new Date(parseInt(start_date) * 1000).toLocaleDateString(
-                    "en-US",
-                    {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    }
-                  )}
-                </span>
-              </p> */}
-              {/* <p className="text-sm text-gray-500">
-                End:{" "}
-                <span className="font-medium text-gray-800">
-                  {" "}
-                  {new Date(parseInt(end_date) * 1000).toLocaleDateString(
-                    "en-US",
-                    {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    }
-                  )}
-                </span>
-              </p> */}
               <p className="text-sm text-gray-500">
                 Location:{" "}
                 <span className="font-medium text-gray-800">{location}</span>
@@ -188,22 +140,7 @@ export default function ChatCard({
 
       <Stack>
         <button
-          onClick={
-            // Name: "",
-            // StartDate: "",
-            // EndDate: "",
-            // StartTime: "",
-            // EndTime: "",
-            // Location: "",
-            // EventDescription: "",
-            // RsvpEndTime: "",
-            // setEventFormData ({
-            //   "Name" : name,
-            //   "EndDate"
-            // })
-
-            handleUpdate
-          }
+          onClick={handleUpdate}
           className="bg-white p-2 mt-2 mb-2 rounded text-black border transform transition-transform duration-200 hover:scale-105"
         >
           Create Event

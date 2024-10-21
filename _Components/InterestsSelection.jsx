@@ -5,20 +5,6 @@ const InterestSelection = ({
   selectedInterests,
   setSelectedInterests,
 }) => {
-  // Example interest list
-  // const interests = [
-  //   "Politics",
-  //   "Free Diving",
-  //   "Aquarium",
-  //   "Jiu-jitsu",
-  //   "Volunteering",
-  //   "Festivals",
-  //   "Marvel",
-  //   "Gardening",
-  //   "Football",
-  //   "BBQ",
-  // ];
-
   const interests = [
     { interest: "Running", category: "Sports" },
     { interest: "Yoga", category: "Sports" },
