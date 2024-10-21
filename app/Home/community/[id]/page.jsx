@@ -482,8 +482,13 @@ export default function CommunityPage({ params }) {
     return (
       <div>
         <center>
-          <CircularProgress 
-            style={{ color: "#bcd727", marginTop: 300, width: 150, height: 150 }}
+          <CircularProgress
+            style={{
+              color: "#bcd727",
+              marginTop: 300,
+              width: 150,
+              height: 150,
+            }}
           />
         </center>
       </div>
@@ -1223,10 +1228,15 @@ export default function CommunityPage({ params }) {
                 <textarea
                   className="w-full border border-gray-300 rounded-md p-2"
                   rows="4"
+                  maxLength="500" // Limits the input to 500 characters
                   placeholder="Comment"
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                 />
+                {/* Display character count */}
+                <p className="text-gray-500 text-sm mt-1">
+                  {comment.length}/500 characters
+                </p>
               </div>
 
               <div className="mt-4">
