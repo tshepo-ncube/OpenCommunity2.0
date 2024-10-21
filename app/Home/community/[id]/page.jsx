@@ -843,7 +843,7 @@ export default function CommunityPage({ params }) {
 
       {activeTab === "myEvents" && (
         <div className="bg-gray-50 p-4 pb-4">
-          {upcomingEvents.length > 0 ? (
+          {upcomingEvents.filter((event) => isRSVPed(event.id)).length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {upcomingEvents
                 .filter((event) => isRSVPed(event.id)) // Filter to show only events the user RSVPed to
@@ -942,7 +942,12 @@ export default function CommunityPage({ params }) {
                 ))}
             </div>
           ) : (
-            <Typography>No upcoming events to display</Typography>
+            <div className="flex justify-center items-center h-64">
+              <Typography className="text-center">
+                You currently have no upcoming events. Check out upcoming events
+                to RSVP.
+              </Typography>
+            </div>
           )}
         </div>
       )}
