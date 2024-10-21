@@ -142,15 +142,15 @@ export default function ChatCard({
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
             <div className="">
-              <p className="text-sm text-gray-500">
+              {/* <p className="text-sm text-gray-500">
                 Predicted Attendance:{" "}
                 <span className="font-medium text-gray-800">150</span>
-              </p>
-              <p className="text-sm text-gray-500">
+              </p> */}
+              {/* <p className="text-sm text-gray-500">
                 Optimal Timing:{" "}
                 <span className="font-medium text-gray-800">Weekend</span>
-              </p>
-              <p className="text-sm text-gray-500">
+              </p> */}
+              {/* <p className="text-sm text-gray-500">
                 Start:{" "}
                 <span className="font-medium text-gray-800">
                   {new Date(parseInt(start_date) * 1000).toLocaleDateString(
@@ -162,8 +162,8 @@ export default function ChatCard({
                     }
                   )}
                 </span>
-              </p>
-              <p className="text-sm text-gray-500">
+              </p> */}
+              {/* <p className="text-sm text-gray-500">
                 End:{" "}
                 <span className="font-medium text-gray-800">
                   {" "}
@@ -176,7 +176,7 @@ export default function ChatCard({
                     }
                   )}
                 </span>
-              </p>
+              </p> */}
               <p className="text-sm text-gray-500">
                 Location:{" "}
                 <span className="font-medium text-gray-800">{location}</span>

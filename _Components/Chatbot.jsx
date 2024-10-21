@@ -79,14 +79,15 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
     //       an event or just answering a question you can respond normally (less than 300 characters please) (NO JSON, JUST TEXT)`;
 
     let instructions = `You are an assistant designed to help 
-          recommend new events for the ${communityData.name}. Your primary task is to 
-          recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
-           to ensure the event's success: Idea For Event, Optimal Timing,
-           location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event 
-            please respond in a json format ONLY (no other text, only JSON)
-             with fields name, description, idea_for_event, optimal_timing, 
-             start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
-              an event or just answering a question you can respond normally (less than 300 characters please) (NO JSON, JUST TEXT)`;
+    recommend new events for the ${communityData.name}. Your primary task is to 
+    recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
+     to ensure the event's success: Idea For Event, Optimal Timing,
+     location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event 
+      please respond in a json format ONLY (no other text, only JSON)
+       with fields name, description, idea_for_event, optimal_timing, 
+       start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
+        an event or just answering a question you can respond normally (less than 300 characters please) (NO JSON, JUST TEXT). First greet me, i am Holly Nowers, ask me about the kind of event I would like`;
+
     // const newMessageCopy = newMessage.slice();
     try {
       const res = await axios.post(
@@ -138,14 +139,15 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
     //       an event or just answering a question you can respond normally (NO JSON, JUST TEXT)`;
 
     let instructions = `You are an assistant designed to help 
-          recommend new events for the ${communityData.name}. Your primary task is to 
-          recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
-           to ensure the event's success: Idea For Event, Optimal Timing,
-           location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event 
-            please respond in a json format ONLY (no other text, only JSON)
-             with fields name, description, idea_for_event, optimal_timing, 
-             start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
-              an event or just answering a question you can respond normally (less than 300 characters please) (NO JSON, JUST TEXT)`;
+    recommend new events for the ${communityData.name}. Your primary task is to 
+    recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
+     to ensure the event's success: Idea For Event, Optimal Timing,
+     location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event 
+      please respond in a json format ONLY (no other text, only JSON)
+       with fields name, description, idea_for_event, optimal_timing, 
+       start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
+        an event or just answering a question you can respond normally (less than 300 characters please) (NO JSON, JUST TEXT). First greet me, i am Holly Nowers, ask me about the kind of event I would like`;
+
     try {
       const res = await axios.post(
         strings.server_endpoints.sendMessage,
@@ -457,31 +459,25 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
     sendMoreReccMsg();
   };
 
-  function extractJsonFromText(text) {
-    console.log("TESTING MESSAGE : ", text);
-    // Ensure the input is a string before proceeding
-    if (typeof text !== "string") {
-      console.log("no json");
+  function extractJsonFromText(inputString) {
+    if (typeof inputString !== "string") {
+      console.error("Input is not a string:", typeof inputString);
       return null;
     }
 
-    // Regular expression to match JSON-like content inside ```json ... ```
-    const jsonRegex = /```json\s*([\s\S]*?)\s*```/;
+    const jsonMatch = inputString.match(/{[\s\S]*}/);
 
-    // Find JSON-like content within the given text
-    const match = text.match(jsonRegex);
-
-    // If a match is found, try to parse it as JSON
-    if (match && match[1]) {
+    if (jsonMatch) {
       try {
-        const jsonObject = JSON.parse(match[1]);
+        const jsonObject = JSON.parse(jsonMatch[0]);
+        console.log("JSON_OBJECT : ", jsonObject);
         return jsonObject;
       } catch (error) {
-        console.log("no json"); // If JSON parsing fails, log "no json"
+        console.error("Error parsing JSON:", error);
         return null;
       }
     } else {
-      console.log("no json"); // If no match is found, log "no json"
+      console.error("No JSON found in the input string.");
       return null;
     }
   }
@@ -663,52 +659,68 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                           })()} */}
 
                               {message.content[0] &&
-                              message.content[0].text &&
-                              extractJsonFromText(
-                                message.content[0].text.value
-                              ) ? (
+                              message.content[0].text.value ? (
                                 <>
-                                  <ChatCard
-                                    name={
-                                      extractJsonFromText(
-                                        message.content[0].text
-                                      ).name
-                                    }
-                                    description={
-                                      extractJsonFromText(
-                                        message.content[0].text
-                                      ).description
-                                    }
-                                    date={
-                                      extractJsonFromText(
-                                        message.content[0].text
-                                      ).date
-                                    }
-                                    start_date={
-                                      extractJsonFromText(
-                                        message.content[0].text
-                                      ).start_date
-                                    }
-                                    end_date={
-                                      extractJsonFromText(
-                                        message.content[0].text
-                                      ).end_date
-                                    }
-                                    location={
-                                      extractJsonFromText(
-                                        message.content[0].text
-                                      ).location
-                                    }
-                                    handleMore={handleMore}
-                                    setShowEventForm={setShowEventForm}
-                                    setEventForm={setEventForm}
-                                  />
+                                  {extractJsonFromText(
+                                    message.content[0].text.value
+                                  ) ? (
+                                    <>
+                                      <ChatCard
+                                        name={
+                                          extractJsonFromText(
+                                            message.content[0].text.value
+                                          ).name
+                                        }
+                                        description={
+                                          extractJsonFromText(
+                                            message.content[0].text.value
+                                          ).description
+                                        }
+                                        date={
+                                          extractJsonFromText(
+                                            message.content[0].text.value
+                                          ).date
+                                        }
+                                        start_date={
+                                          extractJsonFromText(
+                                            message.content[0].text.value
+                                          ).start_date
+                                        }
+                                        end_date={
+                                          extractJsonFromText(
+                                            message.content[0].text.value
+                                          ).end_date
+                                        }
+                                        location={
+                                          extractJsonFromText(
+                                            message.content[0].text.value
+                                          ).location
+                                        }
+                                        handleMore={handleMore}
+                                        setShowEventForm={setShowEventForm}
+                                        setEventForm={setEventForm}
+                                      />
+                                    </>
+                                  ) : (
+                                    <>
+                                      <p className=" bg-red-500  border w-90 p-2 rounded-lg mb-2 left-0">
+                                        {message.content[0].text.value}
+                                      </p>
+                                    </>
+                                  )}
                                 </>
                               ) : (
                                 <>
-                                  <p className=" bg-red-500  border w-90 p-2 rounded-lg mb-2 left-0">
-                                    {message.content[0].text.value}
-                                  </p>
+                                  <ThreeDots
+                                    visible={true}
+                                    height="20"
+                                    width="40"
+                                    color="#bcd727"
+                                    radius="9"
+                                    ariaLabel="three-dots-loading"
+                                    wrapperStyle={{}}
+                                    wrapperClass=""
+                                  />
                                 </>
                               )}
 
