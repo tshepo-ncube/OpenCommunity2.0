@@ -336,12 +336,6 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
 
         console.log("Returned Desctiption: ", res.data.eventDescription);
         console.log(res.data.eventDescription);
-        //setMessages(res.data.messages);
-        //setDescription(res.data.communityDescription);
-        setEventDetails((prevDetails) => ({
-          ...prevDetails, // Spread the previous state to retain all properties
-          description: res.data.eventDescription, // Update only the description
-        }));
       } catch (error) {
         console.log(error);
       }
@@ -706,7 +700,6 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               onChange={handleChangeEvent}
               placeholder="Enter event description"
               className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
-              required
             ></textarea>
           </div>
 
@@ -1136,17 +1129,16 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                     onChange={handleChangeEvent}
                     placeholder="Enter event description"
                     className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
-                    required
                   ></textarea>
                 </div>
                 <div className="flex justify-end">
-                  {/* <button
+                  <button
                     type="button"
                     onClick={generateDescription}
                     className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
                     Generate Description
-                  </button> */}
+                  </button>
                   <button
                     className="bg-white border px-4 hover:bg-gray-100  rounded"
                     onClick={onClose}
