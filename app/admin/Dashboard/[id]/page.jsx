@@ -452,8 +452,8 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             >
               Location
             </label>
-            <Autocomplete
-              apiKey={"YOUR_GOOGLE_API_KEY"}
+            {/* <Autocomplete
+              apiKey={"AIzaSyA_nwBxUgw4RTZLvfRpt__cS1DIcYprbQ0"}
               className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
               name="location"
               id="location"
@@ -466,6 +466,24 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               {...(eventDetails.location !== ""
                 ? { defaultValue: eventDetails.location }
                 : {})}
+              required
+            /> */}
+
+            <input
+              //ref={inputRef}
+              type="text"
+              className="w-full p-4 "
+              name="location"
+              id="location"
+              value={eventDetails.location}
+              onChange={(e) => {
+                console.log(e.target.value);
+                setEventDetails((prevDetails) => ({
+                  ...prevDetails,
+                  location: e.target.value,
+                }));
+              }}
+              placeholder="Enter a location"
               required
             />
           </div>
@@ -969,6 +987,18 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                   >
                     Location
                   </label>
+
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    className="w-full"
+                    name="location"
+                    id="location"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    placeholder="Enter a location"
+                    required
+                  />
                   <Autocomplete
                     apiKey={"AIzaSyA_nwBxUgw4RTZLvfRpt__cS1DIcYprbQ0"}
                     className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"

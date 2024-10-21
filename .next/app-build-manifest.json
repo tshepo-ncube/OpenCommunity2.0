@@ -16,6 +16,22 @@
       "static/chunks/main-app.js",
       "static/css/app/Home/community/[id]/page.css",
       "static/chunks/app/Home/community/[id]/page.js"
+    ],
+    "/admin/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/admin/page.js"
+    ],
+    "/admin/Dashboard/[id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/admin/Dashboard/[id]/page.css",
+      "static/chunks/app/admin/Dashboard/[id]/page.js"
+    ],
+    "/_not-found/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/_not-found/page.js"
     ]
   }
 }
