@@ -1160,12 +1160,14 @@ export default function CommunityPage({ params }) {
       <div>
         {activeTab === "polls" && (
           <div>
-            <PollComponent></PollComponent>
-            {/* <div className="flex flex-wrap gap-4 justify-center">
+            {/* <PollComponent></PollComponent>
+            pollObject, communityID, handlePollOptionSelection, voting,
+            <PollComp pollO /> */}
+            <div className="flex flex-wrap gap-4 justify-center">
               {allPolls.length > 0 ? (
                 allPolls.map((poll, index) => (
                   <>
-                    <div
+                    {/* <div
                       key={index}
                       className="p-4 bg-white shadow-lg rounded-md max-w-xs w-full"
                       style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)" }}
@@ -1204,9 +1206,9 @@ export default function CommunityPage({ params }) {
                           </div>
                         ))}
                       </ul>
-                    </div>
+                    </div> */}
 
-                    <PollComponent
+                    <PollComp
                       pollObject={poll}
                       communityID={params.id}
                       handlePollOptionSelection={handlePollOptionSelection}
@@ -1217,7 +1219,7 @@ export default function CommunityPage({ params }) {
               ) : (
                 <Typography>No polls available</Typography>
               )}
-            </div> */}
+            </div>{" "}
           </div>
         )}
       </div>

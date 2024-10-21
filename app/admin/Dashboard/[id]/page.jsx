@@ -452,27 +452,11 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             >
               Location
             </label>
-            {/* <Autocomplete
-              apiKey={"AIzaSyA_nwBxUgw4RTZLvfRpt__cS1DIcYprbQ0"}
-              className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
-              name="location"
-              id="location"
-              onPlaceSelected={(place) => {
-                setEventDetails((prevDetails) => ({
-                  ...prevDetails,
-                  location: place.formatted_address,
-                }));
-              }}
-              {...(eventDetails.location !== ""
-                ? { defaultValue: eventDetails.location }
-                : {})}
-              required
-            /> */}
 
             <input
               //ref={inputRef}
               type="text"
-              className="w-full p-4 "
+              className="w-full p-4 border rounded  "
               name="location"
               id="location"
               value={eventDetails.location}
@@ -527,10 +511,130 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             </label>
           </div>
 
-          {/* Image Preview Section */}
           {renderImage()}
 
-          {/* Show Kept Images */}
+          <div className="flex flex-col items-center ">
+            <div className="flex flex-wrap mt-2 font-bold ">or</div>
+          </div>
+
+          <div className="flex flex-col items-center ">
+            <button
+              onClick={generateImages}
+              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-300 mb-4"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <ThreeDots
+                    visible={true}
+                    height="20"
+                    width="40"
+                    color="#bcd727"
+                    radius="9"
+                    ariaLabel="three-dots-loading"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                  />
+                </>
+              ) : (
+                "Generate Images"
+              )}
+            </button>
+
+            {error && <p className="text-red-500 mb-4">{error}</p>}
+
+            {renderImage()}
+            {/* Show Kept Images */}
+            {keptImages.length > 0 && (
+              <div className="flex flex-wrap justify-center mt-4">
+                {/* <h3 className="text-lg font-bold mb-2 w-full text-center">
+                  Kept Images ({keptImages.length}/{MAX_KEEP_IMAGES})
+                </h3> */}
+                {/* {keptImages.map((imageUrl, index) => (
+                  <div key={index} className="m-2 w-32 h-32">
+                    <img
+                      src={imageUrl}
+                      alt={`kept-${index}`}
+                      className="w-full h-full object-cover rounded-lg shadow-lg"
+                    />
+                  </div>
+                ))} */}
+              </div>
+            )}
+
+            {/* Generated Images */}
+            {generatedImages.length > 0 && (
+              <div className="flex flex-wrap justify-center mt-4">
+                <h3 className="text-lg font-bold mb-2 w-full text-center">
+                  Generated Images
+                </h3>
+                {/* Horizontal scrolling container for generated images */}
+                {/* <div className="flex flex-col items-center justify-center p-4">
+                  {generatedImages.length > 0 && (
+                    <div className=" overflow-x-auto mt-4">
+                      <div className="flex space-x-4">
+                        {generatedImages.map((imageUrl, index) => (
+                          <div
+                            key={index}
+                            className="relative w-64 h-64 flex-shrink-0"
+                          >
+                            <img
+                              src={imageUrl}
+                              alt={`generated-${index}`}
+                              className="w-full h-full object-cover rounded-lg shadow-lg"
+                            />
+                            <button
+                              onClick={() => keepImage(imageUrl)}
+                              className="absolute bottom-2 left-2 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
+                            >
+                              Keep
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div> */}
+
+                {generatedImages.map((imageUrl, index) => (
+                  <div key={index} className="relative m-2 w-64 h-64">
+                    <img
+                      src={imageUrl}
+                      alt={`generated-${index}`}
+                      className="w-full h-full object-cover rounded-lg shadow-lg"
+                    />
+                    <button
+                      onClick={() => keepImage(imageUrl)}
+                      className="absolute bottom-2 left-2 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
+                    >
+                      Keep
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Regenerate Button */}
+            {generatedImages.length > 0 &&
+              keptImages.length < MAX_KEEP_IMAGES && (
+                <button
+                  onClick={regenerateImages}
+                  className="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600 transition duration-300 mt-4"
+                  disabled={loading}
+                >
+                  {loading ? "Regenerating..." : "Regenerate Images"}
+                </button>
+              )}
+
+            <p className="text-sm text-gray-500 mt-4">
+              You can keep a maximum of {MAX_KEEP_IMAGES} images.
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center ">
+            <div className="mt-6 flex flex-wrap ">{renderPreviews()}</div>
+          </div>
+
           {keptImages.length > 0 && (
             <div className="flex flex-wrap justify-center mt-4">
               <h3 className="text-lg font-bold mb-2 w-full text-center">
@@ -607,12 +711,6 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
           </div>
 
           <div className="flex justify-end">
-            {/* <button
-              type="button"
-              onClick={generateDescription}
-              className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
-            ></button> */}
-
             <button
               onClick={generateDescription}
               className="flex mb-4 bg-hover-obgreen items-center px-4 py-2 bg-open text-white rounded-md "

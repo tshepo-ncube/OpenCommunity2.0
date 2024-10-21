@@ -142,7 +142,7 @@ const PollComponent = ({
         console.log(
           "The selected option is not 'Juice' or the poll was not found."
         );
-        console.log(foundPoll.selected_option);
+        //console.log(foundPoll.selected_option);
         return false;
       }
       return false;
@@ -153,13 +153,16 @@ const PollComponent = ({
     <div>
       {voting ? (
         <>
-          <CircularProgress style={{ color: "#bcd727", marginTop: 5, width: 40, height: 40 }} />;
+          <CircularProgress
+            style={{ color: "#bcd727", marginTop: 5, width: 40, height: 40 }}
+          />
+          ;
         </>
       ) : (
         <>
           {" "}
-          <div className="flex flex-col items-center space-y-4">
-            <h2>{pollObject.Question}</h2>
+          <div className="flex  flex-col items-center space-y-4 p-4 border mt-2 rounded">
+            <h2 className="font-bold">{pollObject.Question}</h2>
             <div className="flex flex-col items-center space-y-4">
               {pollObject.Opt.map((poll, index) => (
                 <div
