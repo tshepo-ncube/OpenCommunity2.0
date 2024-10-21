@@ -11,7 +11,7 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import Navbar from "@/_Components/Navbar";
+import Navbar from "../../../_Components/Navbar";
 import Header from "../../../_Components/header";
 import { useTable } from "react-table";
 import Swal from "sweetalert2"; // Import SweetAlert2

@@ -38,7 +38,23 @@ const AdminManagement = ({
 
   return (
     <div className="mt-8 max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg relative">
-      {/* Button to open the Handover Role popup */}
+      {/* Button Container for Handover Buttons */}
+    <div className="flex justify-between mb-4">
+      <button
+        onClick={() => setCommunityHandoverOpen(true)}
+        className="btn bg-[#bcd727] hover:bg-hover-obgreen text-white font-medium rounded-lg px-5 py-2.5"
+      >
+        Community Admin Handover
+      </button>
+      <button
+        onClick={() => setPopupOpen(true)}
+        className="btn bg-[#999999] hover:bg-gray-600 text-white font-medium rounded-lg px-5 py-2.5"
+      >
+        Role Handover
+      </button>
+    </div>
+      
+      {/* Button to open the Handover Role popup
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setPopupOpen(true)}
@@ -54,7 +70,7 @@ const AdminManagement = ({
         >
           Community Admin Handover
         </button>
-      </div>
+      </div> */}
 
       {/* Community Admin Handover Popup */}
       {isCommunityHandoverOpen && (
@@ -249,7 +265,7 @@ const AdminManagement = ({
                 onClick={handleHandoverRole}
                 className="bg-openbox-green hover:bg-green-400 text-white py-2 px-4 rounded-lg"
               >
-                Handover my role
+                Handover My Role
               </button>
             </div>
           </div>

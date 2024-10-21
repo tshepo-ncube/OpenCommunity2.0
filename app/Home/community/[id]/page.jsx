@@ -482,8 +482,8 @@ export default function CommunityPage({ params }) {
     return (
       <div>
         <center>
-          <CircularProgress
-            style={{ marginTop: 300, width: 150, height: 150 }}
+          <CircularProgress 
+            style={{ color: "#bcd727", marginTop: 300, width: 150, height: 150 }}
           />
         </center>
       </div>
@@ -756,7 +756,7 @@ export default function CommunityPage({ params }) {
               const backgroundColor = event.color || "#3174ad";
               return {
                 style: {
-                  backgroundColor,
+                  backgroundColor: "gray",
                   color: "white",
                   borderRadius: "0.25rem",
                   border: "none",
@@ -903,7 +903,7 @@ export default function CommunityPage({ params }) {
                                 UN RSVP
                               </button>
                             ) : (
-                              <span className="flex-1 bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-md">
+                              <span className="flex-1 justify-center bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-md">
                                 RSVP for this event is CLOSED
                               </span>
                             )}
@@ -1090,7 +1090,7 @@ export default function CommunityPage({ params }) {
                                 UN RSVP
                               </button>
                             ) : (
-                              <span className="flex-1 bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-md">
+                              <span className="flex-1 justify-center bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded-md">
                                 RSVP for this event is CLOSED
                               </span>
                             )}
