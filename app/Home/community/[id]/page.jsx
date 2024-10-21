@@ -386,7 +386,7 @@ export default function CommunityPage({ params }) {
     if (typeof window === "undefined") return;
 
     try {
-      // await EventDB.addRSVP(event.id, localStorage.getItem("Email"));
+      await EventDB.addRSVP(event.id, localStorage.getItem("Email"));
       console.log("id ", id);
       await CommunityDB.incrementCommunityScore(id, 1);
 
