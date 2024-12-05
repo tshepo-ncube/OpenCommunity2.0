@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from "react";
 // import Header from "../_Components/header";
 import Header from "../../_Components/header";
+import Navbar from "@/_Components/Navbar";
+import Carousel from "@/_Components/Carousel";
+import HotCommunity from "@/_Components/Home";
 import AddIcon from "@mui/icons-material/Add";
 import Fab from "@mui/material/Fab";
 import Image from "next/image";
@@ -29,6 +32,7 @@ import {
   InputLabel,
   FormControl,
 } from "@mui/material";
+import CommunityDB from "@/database/community/community";
 
 // Custom styles
 const CustomTab = styled(Tab)({
@@ -75,6 +79,8 @@ function Home() {
     CommunitiesJoined: [],
   });
 
+  const [hottestCommunity, setHottestCommunity] = useState(null);
+
   const [activeTab, setActiveTab] = useState("My Communities");
 
   const handleTabClick = (tab) => {
@@ -101,6 +107,10 @@ function Home() {
       }
     }
   }, []);
+
+  useEffect(() => {
+    console.log("Hottest Community :", hottestCommunity);
+  }, [hottestCommunity]);
 
   // Function to generate consistent color based on category
   const stringToColor = (category) => {
@@ -133,17 +143,29 @@ function Home() {
       "------------------------------------------------------------------------------------"
     );
 
+    CommunityDB.getHottestCommunity(setHottestCommunity);
+
     ManageUser.addUserToGlobalIfNotThere("m.be@outlook.com");
   }, []);
 
   return (
     <>
-      <div className="App text-center" style={{ backgroundColor: "#f5f5f5" }}>
-        <Header />
+      <div className=" text-center" style={{ backgroundColor: "#f5f5f5" }}>
+        {/* <div className="App text-center" style={{ backgroundColor: "#f5f5f5" }}>
+        
+         */}
 
-        <div>
+        {/* <Header /> */}
+
+        <Navbar isHome={true} />
+
+        {/* <HotCommunity /> */}
+
+        <Carousel />
+
+        {/* <div>
           <RecommendedCommunities />
-        </div>
+        </div> */}
 
         <center className="mt-8">
           <Box sx={{ width: "100%", marginTop: 4 }}>

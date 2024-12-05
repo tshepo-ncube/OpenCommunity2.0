@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import PollDB from "../database/community/poll";
-
+import dayjs from "dayjs";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -28,6 +28,8 @@ import {
   PostAdd as PostAddIcon,
   Assessment as AssessmentIcon,
 } from "@mui/icons-material";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function PollsHolder({ communityID }) {
   const [allPolls, setAllPolls] = useState([]);
@@ -78,7 +80,51 @@ function PollsHolder({ communityID }) {
     setNewPollOptions(["", ""]);
   };
 
+  // Add state variables for validation
+  const [errors, setErrors] = useState({
+    dateError: false,
+    questionError: false,
+    optionError: false,
+  });
+
   const handleSavePoll = () => {
+    // Reset errors initially
+    let hasError = false;
+    const newErrors = {
+      dateError: false,
+      questionError: false,
+      optionError: false,
+    };
+
+    // Check if the date is selected
+    if (!dateValue) {
+      newErrors.dateError = true;
+      hasError = true;
+    }
+
+    // Check if the poll question is filled
+    if (!newPollQuestion.trim()) {
+      newErrors.questionError = true;
+      hasError = true;
+    }
+
+    // Check if there are at least 2 options and none of them are empty
+    if (
+      newPollOptions.length < 2 ||
+      newPollOptions.some((option) => !option.trim())
+    ) {
+      newErrors.optionError = true;
+      hasError = true;
+    }
+
+    // If any field is invalid, show an error and return without saving
+    if (hasError) {
+      setErrors(newErrors);
+      toast.error("Please fill all required fields.");
+      return;
+    }
+
+    // If validation passes, proceed with poll creation
     const newArray = newPollOptions.map((option) => ({
       votes: 0,
       title: option,
@@ -96,6 +142,9 @@ function PollsHolder({ communityID }) {
       setShowCreateForm(false);
       resetForm();
       PollDB.getPollFromCommunityID(communityID, setAllPolls);
+
+      // Show success toast notification
+      toast.success("Poll successfully created!");
     });
   };
 
@@ -131,6 +180,7 @@ function PollsHolder({ communityID }) {
 
   return (
     <div className="mt-4 h-480">
+      <ToastContainer />
       <h1 className="text-xxl relative my-4  text-black p-2">
         Active Polls
         <IconButton
@@ -164,7 +214,7 @@ function PollsHolder({ communityID }) {
                   <IconButton
                     aria-label="delete poll"
                     style={{ ...iconStyle, backgroundColor: "tranparent" }}
-                    onClick={() => console.log("Delete Poll")}
+                    onClick={() => PollDB.deletePoll(value.id)}
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -205,7 +255,6 @@ function PollsHolder({ communityID }) {
           </Grid>
         )}
       </div>
-
       <h1 className="text-xxl relative my-4  text-black p-2">Closed Polls</h1>
 
       <div style={{ overflowX: "auto", whiteSpace: "nowrap", marginTop: 15 }}>
@@ -215,69 +264,73 @@ function PollsHolder({ communityID }) {
           </div>
         ) : (
           <Grid container justifyContent="flex-start" spacing={2}>
-            {inActivePolls.map((value) => (
-              <Grid key={value.id} item xs={12} sm={6} md={4} lg={3}>
-                <Card style={cardStyle}>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      gap: "8px",
-                      padding: "8px",
-                    }}
-                  >
-                    <IconButton
-                      aria-label="analytics"
-                      style={{ backgroundColor: "transparent" }}
-                      onClick={() => {
-                        setAnalyticsPollPointer(value);
-                        setShowAnalyticsForm(true);
+            {inActivePolls.slice(0, 5).map(
+              (
+                value // Show only the most recent 5 closed polls
+              ) => (
+                <Grid key={value.id} item xs={12} sm={6} md={4} lg={3}>
+                  <Card style={cardStyle}>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        gap: "8px",
+                        padding: "8px",
                       }}
                     >
-                      <AssessmentIcon />
-                    </IconButton>
-                    <IconButton
-                      aria-label="delete poll"
-                      style={{ backgroundColor: "transparent" }}
-                      onClick={() => console.log("Delete Poll")}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </div>
-                  <CardContent>
-                    <h3 className="mb-4 font-semibold text-gray-900 dark:text-white">
-                      {value.Question}
-                    </h3>
+                      <IconButton
+                        aria-label="analytics"
+                        style={{ backgroundColor: "transparent" }}
+                        onClick={() => {
+                          setAnalyticsPollPointer(value);
+                          setShowAnalyticsForm(true);
+                        }}
+                      >
+                        <AssessmentIcon />
+                      </IconButton>
+                      <IconButton
+                        aria-label="delete poll"
+                        style={{ backgroundColor: "transparent" }}
+                        onClick={() => console.log("Delete Poll")}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </div>
+                    <CardContent>
+                      <h3 className="mb-4 font-semibold text-gray-900 dark:text-white">
+                        {value.Question}
+                      </h3>
 
-                    <ul className="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-                      {value.Opt.map((option, index) => (
-                        <li
-                          key={index}
-                          className="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600"
-                        >
-                          <div className="flex items-center ps-3">
-                            <input
-                              disabled
-                              id="list-radio-license"
-                              type="radio"
-                              value=""
-                              name="list-radio"
-                              className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                            />
-                            <label
-                              htmlFor="list-radio-license"
-                              className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                            >
-                              {option.title}
-                            </label>
-                          </div>
-                        </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
+                      <ul className="w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                        {value.Opt.map((option, index) => (
+                          <li
+                            key={index}
+                            className="w-full border-b border-gray-200 rounded-t-lg dark:border-gray-600"
+                          >
+                            <div className="flex items-center ps-3">
+                              <input
+                                disabled
+                                id="list-radio-license"
+                                type="radio"
+                                value=""
+                                name="list-radio"
+                                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
+                              />
+                              <label
+                                htmlFor="list-radio-license"
+                                className="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                              >
+                                {option.title}
+                              </label>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              )
+            )}
           </Grid>
         )}
       </div>
@@ -293,7 +346,14 @@ function PollsHolder({ communityID }) {
               onChange={(newValue) => {
                 setDateValue(newValue);
               }}
-              renderInput={(params) => <TextField {...params} />}
+              minDate={dayjs().add(1, "day")}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  error={errors.dateError}
+                  helperText={errors.dateError ? "Please select a date" : ""}
+                />
+              )}
             />
           </LocalizationProvider>
           <DialogContentText>
@@ -308,7 +368,10 @@ function PollsHolder({ communityID }) {
             fullWidth
             value={newPollQuestion}
             onChange={(e) => setNewPollQuestion(e.target.value)}
+            error={errors.questionError}
+            helperText={errors.questionError ? "Poll question is required" : ""}
           />
+
           {newPollOptions.map((option, index) => (
             <div
               key={index}
@@ -325,6 +388,12 @@ function PollsHolder({ communityID }) {
                 fullWidth
                 value={option}
                 onChange={(e) => handleChangeOption(index, e.target.value)}
+                error={errors.optionError && !option.trim()}
+                helperText={
+                  errors.optionError && !option.trim()
+                    ? "Option is required"
+                    : ""
+                }
               />
               {index > 1 && (
                 <IconButton
@@ -351,7 +420,7 @@ function PollsHolder({ communityID }) {
             Cancel
           </Button>
           <Button onClick={handleSavePoll} color="primary">
-            Save Poll
+            Create Poll
           </Button>
         </DialogActions>
       </Dialog>

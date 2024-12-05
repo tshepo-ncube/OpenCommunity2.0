@@ -10,6 +10,7 @@ import {
   sendPasswordResetEmail,
   updatePassword,
 } from "firebase/auth";
+import UserDB from "../community/users";
 import {
   getFirestore,
   collection,
@@ -89,6 +90,7 @@ export default class ManageUser {
       .then(() => {
         // Password reset email sent!
         setForgotPassword(false);
+        alert("Password Reset Link Sent");
       })
       .catch((error) => {
         const errorCode = error.code;
@@ -135,6 +137,7 @@ export default class ManageUser {
   static editPassword = (newPassword, setError) => {
     const auth = getAuth();
     const user = auth.currentUser;
+    console.log("user, :", user);
 
     updatePassword(user, newPassword)
       .then(() => {
@@ -142,7 +145,8 @@ export default class ManageUser {
         alert("You have now updated your password");
       })
       .catch((error) => {
-        alert("Error!!!");
+        alert(error);
+        console.log(error);
         setError(error);
       });
   };
@@ -173,6 +177,8 @@ export default class ManageUser {
 
     // Set the "capital" field of the city 'DC'
     await updateDoc(communityRef, object);
+
+    return true;
   };
 
   static getProfileData = async (
@@ -199,6 +205,18 @@ export default class ManageUser {
         const object2 = { id: doc.id };
 
         // Check if the user is an admin
+        if (userData.role === "super_admin") {
+          //console.log("User is a super admin");
+          localStorage.setItem("SuperAdmin", "super_admin");
+          setIsAdmin(true); // Set admin status
+        } else {
+          // localStorage.setItem("AdminStatus", "super_admin");
+          localStorage.setItem("SuperAdmin", "noSuper");
+          //console.log("User is not a a super admin");
+          setIsAdmin(false); // Set non-admin status
+        }
+
+        // Check if the user is an admin
         if (userData.Role === "admin") {
           console.log("User is an admin");
           setIsAdmin(true); // Set admin status
@@ -212,6 +230,40 @@ export default class ManageUser {
           setUserCommunities
         );
         setProfile({ ...userData, ...object2 });
+      });
+    } catch (error) {
+      console.error("Error getting Profile Data: ", error);
+    }
+  };
+
+  static setIsSuperAdmin = async (setIsSuperAdmin) => {
+    const candidatesCollectionRef = collection(DB, "users");
+    console.log(`Email : ${localStorage.getItem("Email")}`);
+    const q = query(
+      candidatesCollectionRef,
+      where("Email", "==", localStorage.getItem("Email"))
+    );
+
+    try {
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
+        console.log("No matching documents.");
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        console.log(doc.id, "=>", doc.data());
+
+        const userData = doc.data();
+
+        // Check if the user is an admin
+        if (userData.role === "super_admin") {
+          console.log("User is an admin");
+          setIsSuperAdmin(true); // Set admin status
+        } else {
+          console.log("User is not an admin");
+          setIsSuperAdmin(false); // Set non-admin status
+        }
       });
     } catch (error) {
       console.error("Error getting Profile Data: ", error);
@@ -275,9 +327,9 @@ export default class ManageUser {
     }
   };
 
-  static addPollToCommunity = async (docID, communityID, newPoll) => {
+  static addPollToCommunityOriginal = async (docID, communityID, newPoll) => {
     const docRef = doc(DB, "users", docID);
-    console.log("starting...");
+    console.log("starting... addPollToCommunity");
     try {
       const docSnap = await getDoc(docRef);
 
@@ -290,27 +342,150 @@ export default class ManageUser {
         );
 
         if (communityIndex !== -1) {
-          myCommunities[communityIndex].polls_engaged.push(newPoll);
-          await updateDoc(docRef, {
-            MyCommunities: myCommunities,
-          });
-          console.log(`Poll added to community ${communityID}`);
+          //myCommunities[communityIndex].polls_engaged.push(newPoll);
+          console.log(
+            "Poll id Existsssssssss before adddding : ",
+            myCommunities[communityIndex].polls_engaged.some(
+              (poll) => poll.poll_id === newPoll.poll_id
+            )
+          );
+
+          const existingPoll = myCommunities[communityIndex].polls_engaged.find(
+            (poll) => poll.poll_id === newPoll.poll_id
+          );
+
+          if (existingPoll) {
+            console.log(
+              "----------------------------------exits------------------------------------"
+            );
+            // If such a poll exists, update its selected_option
+            existingPoll.selected_option = newPoll.selected_option;
+            console.log(`Poll with poll_id '${newPoll.poll_id}' updated.`);
+          } else {
+            console.log(
+              "----------------------------------do exists------------------------------------"
+            );
+            // If no such poll exists, push the newPoll to polls_engaged
+            myCommunities[communityIndex].polls_engaged.push(newPoll);
+            console.log("New poll added to polls_engaged.");
+          }
+
+          console.log(
+            "----------------------------------communityIndex !== -1------------------------------------"
+          );
+          // await updateDoc(docRef, {
+          //   MyCommunities: myCommunities,
+          // });
         } else {
+          console.log(
+            "----------------------------------communityIndex === -1------------------------------------"
+          );
           myCommunities.push({
             community_id: communityID,
             polls_engaged: [newPoll],
           });
+
           console.log(`New community ${communityID} created and poll added`);
         }
 
+        console.log("Poll IS UPDATED>>>TSHEPO");
         await updateDoc(docRef, {
           MyCommunities: myCommunities,
         });
+
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log(
+          "MYYYYY COMMUNITIES _______________---------: ",
+          myCommunities
+        );
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
+        console.log("-------------------------");
 
         console.log(`Document ${docID} updated successfully`);
       } else {
         console.log(`Document ${docID} does not exist`);
       }
+    } catch (error) {
+      console.error("Error adding poll to community:", error);
+    }
+  };
+
+  static addPollToCommunity = async (docID, communityID, newPoll) => {
+    const docRef = doc(DB, "users", docID);
+    console.log("starting... addPollToCommunity with transaction");
+
+    try {
+      await runTransaction(DB, async (transaction) => {
+        const docSnap = await transaction.get(docRef);
+
+        if (!docSnap.exists()) {
+          throw new Error(`Document ${docID} does not exist`);
+        }
+
+        const data = docSnap.data();
+        const myCommunities = data.MyCommunities || [];
+
+        const communityIndex = myCommunities.findIndex(
+          (community) => community.community_id === communityID
+        );
+
+        if (communityIndex !== -1) {
+          // Check if a poll with the same ID exists in the community
+          const existingPoll = myCommunities[communityIndex].polls_engaged.find(
+            (poll) => poll.poll_id === newPoll.poll_id
+          );
+
+          if (existingPoll) {
+            // Update the selected option of the existing poll
+            existingPoll.selected_option = newPoll.selected_option;
+            console.log(`Poll with poll_id '${newPoll.poll_id}' updated.`);
+          } else {
+            // Add the new poll to the polls_engaged array if it doesn't exist
+            myCommunities[communityIndex].polls_engaged.push(newPoll);
+            console.log("New poll added to polls_engaged.");
+          }
+        } else {
+          // Add a new community with the poll if the community does not exist
+          myCommunities.push({
+            community_id: communityID,
+            polls_engaged: [newPoll],
+          });
+          console.log(`New community ${communityID} created and poll added.`);
+        }
+
+        // Update the document with the modified myCommunities array
+        transaction.update(docRef, {
+          MyCommunities: myCommunities,
+        });
+
+        console.log(
+          `Document ${docID} updated successfully with the new poll.`
+        );
+      });
+
+      console.log("Transaction successfully committed.");
+      UserDB.addPoints(16);
     } catch (error) {
       console.error("Error adding poll to community:", error);
     }

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Confetti from "react-confetti";
-import CollapsableSidebar from "@/_Components/CollapsableSidebar";
+
 import { toast, Toaster } from "react-hot-toast";
 import {
   ChevronDown,
@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import RecommendationDB from "@/database/community/recommendation";
 
-import Header from "../../../_Components/header";
+import Header from "../../../_Components/Navbar2";
 
 const CommunityRecommendationPage = () => {
   // const [communityName, setCommunityName] = useState < string > "";
@@ -24,7 +24,7 @@ const CommunityRecommendationPage = () => {
   // const [showConfetti, setShowConfetti] = useState < boolean > false;
   const [communityName, setCommunityName] = useState("");
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("general");
+  const [category, setCategory] = useState("Fitness & Wellness");
   const [showConfetti, setShowConfetti] = useState(false);
   const [windowSize, setWindowSize] = useState({ width: 0, height: 0 });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,7 +33,7 @@ const CommunityRecommendationPage = () => {
   const [formData, setFormData] = useState({
     communityName: "",
     description: "",
-    category: "general",
+    category: "Fitness & Wellness",
   });
 
   useEffect(() => {
@@ -66,7 +66,11 @@ const CommunityRecommendationPage = () => {
         { userEmail, category: formData.category }
       );
 
-      setFormData({ communityName: "", description: "", category: "general" });
+      setFormData({
+        communityName: "",
+        description: "",
+        category: "Fitness & Wellness",
+      });
       toast.success("Your community recommendation has been submitted!");
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 5000);
@@ -103,11 +107,9 @@ const CommunityRecommendationPage = () => {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-gradient-to-br from-[#f0f4e1] via-gray-100 to-[#e6edc3]"
     >
-      {/* <Header /> */}
+      <Header />
 
       <div className="flex min-h-screen bg-gray-100">
-        <CollapsableSidebar />
-
         <div className="flex-grow ">
           <Toaster position="bottom-right" reverseOrder={false} />
 
@@ -119,7 +121,7 @@ const CommunityRecommendationPage = () => {
             initial="hidden"
             animate="visible"
             variants={formVariants}
-            className="max-w-7xl mx-auto p-2 mt-8"
+            className="max-w-7xl mx-auto p-2 mt-16 pt-16"
           >
             <div className="bg-white rounded-3xl shadow-2xl overflow-hidden transform hover:scale-[1.02] transition-transform duration-300">
               <div className="md:flex">
@@ -220,16 +222,17 @@ const CommunityRecommendationPage = () => {
                           onChange={handleInputChange}
                           className="w-full p-4 text-lg bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#bcd727] focus:border-[#bcd727] appearance-none transition-all duration-300 shadow-sm"
                         >
-                          {["General", "Sports", "Social", "Development"].map(
-                            (cat) => (
-                              <option
-                                key={cat.toLowerCase()}
-                                value={cat.toLowerCase()}
-                              >
-                                {cat}
-                              </option>
-                            )
-                          )}
+                          {[
+                            "Fitness & Wellness",
+                            "Food & Drinks",
+                            "Arts & Culture",
+                            "Tech & Gaming",
+                            "Social & Networking",
+                            "Hobbies & Interests",
+                            "Travel & Adventure",
+                          ].map((cat) => (
+                            <option>{cat}</option>
+                          ))}
                         </select>
                         <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
                       </div>

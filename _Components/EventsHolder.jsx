@@ -23,7 +23,7 @@ import AnalyticsDB from "../database/community/analytics";
 
 import EventDB from "../database/community/event";
 
-import { green, red, blue, yellow } from "@mui/material/colors";
+import { green, red, blue, yellow, orange } from "@mui/material/colors";
 import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
 import {
@@ -68,22 +68,33 @@ const EventsHolder = ({
             return updatedEvent;
           }
 
-          if (event.RsvpEndTime && event.RsvpEndTime.toDate() > currentDate) {
-            if (event.status !== "rsvp") {
-              newStatus = "rsvp";
+          // Convert timestamps to Date objects
+          const rsvpEndTime = event.RsvpEndTime?.toDate();
+          const startTime = event.StartDate?.toDate();
+          const endTime = event.EndDate?.toDate();
+
+          // RSVP Open: Before RSVP end time
+          if (rsvpEndTime && currentDate < rsvpEndTime) {
+            if (event.status !== "rsvp open") {
+              newStatus = "rsvp open";
             }
-          } else if (event.EndDate && event.EndDate.toDate() < currentDate) {
+          }
+          // RSVP Closed: After RSVP end time but before event start time
+          else if (startTime && currentDate < startTime) {
+            if (event.status !== "rsvp closed") {
+              newStatus = "rsvp closed";
+            }
+          }
+          // Active: After start time but before end time
+          else if (endTime && currentDate < endTime) {
+            if (event.status !== "active") {
+              newStatus = "active";
+            }
+          }
+          // Past: After end time
+          else if (endTime && currentDate >= endTime) {
             if (event.status !== "past") {
               newStatus = "past";
-            }
-          } else {
-            if (
-              event.RsvpEndTime &&
-              event.RsvpEndTime.toDate() <= currentDate
-            ) {
-              if (event.status !== "active") {
-                newStatus = "active";
-              }
             }
           }
 
@@ -152,7 +163,7 @@ const EventsHolder = ({
 
   const handleDelete = async () => {
     try {
-      await EventDB.deleteEvent(eventIdToDelete);
+      await EventDB.deleteEvent(eventIdToDelete, communityID);
       setAllEvents(allEvents.filter((event) => event.id !== eventIdToDelete));
       setOpenDeleteModal(false);
     } catch (error) {
@@ -232,12 +243,14 @@ const EventsHolder = ({
     switch (status) {
       case "active":
         return green[500];
-      case "archived":
+      case "past":
         return red[500];
       case "draft":
         return blue[500];
-      case "rsvp":
+      case "rsvp open":
         return yellow[500];
+      case "rsvp closed":
+        return orange[500];
       default:
         return "#000";
     }
@@ -393,12 +406,18 @@ const EventsHolder = ({
                         marginTop: "0px", // Adjust this value as needed
                       }}
                     >
-                      <Typography variant="caption">
-                        {value.status === "rsvp"
-                          ? "RSVP"
-                          : value.status === "active"
-                          ? "Active"
-                          : value.status}
+                      <Typography variant="caption" sx={{}}>
+                        {value.status === "rsvp open"
+                          ? "RSVP Open"
+                          : value.status === "rsvp closed"
+                            ? "RSVP Closed"
+                            : value.status === "active"
+                              ? "Active"
+                              : value.status === "draft"
+                                ? "Draft"
+                                : value.status === "past"
+                                  ? "Past"
+                                  : value.status.toUpperCase()}
                       </Typography>
                     </Box>
                   )}
@@ -647,8 +666,8 @@ const EventsHolder = ({
             {selectedEvent?.status === "rsvp"
               ? `RSVP List for ${selectedEvent?.Name}`
               : selectedEvent?.status === "past"
-              ? `Analytics for ${selectedEvent?.Name}`
-              : `Event Details for ${selectedEvent?.Name}`}
+                ? `Analytics for ${selectedEvent?.Name}`
+                : `Event Details for ${selectedEvent?.Name}`}
           </Typography>
           <Box
             sx={{ display: "flex", justifyContent: "flex-end", gap: 1, mt: 2 }}

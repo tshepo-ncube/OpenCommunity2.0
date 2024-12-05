@@ -34,6 +34,7 @@ import UserDB from "./users";
 export default class PollDB {
   static deletePoll = async (id) => {
     await deleteDoc(doc(DB, "polls", id));
+    location.reload();
   };
 
   static createPoll = async (pollObject) => {
@@ -42,6 +43,8 @@ export default class PollDB {
       //   ...pollObject,
       //   createdAt: new Date(),
       // });
+
+      //this is a comment
 
       const pollRef = await addDoc(collection(DB, "polls"), {
         ...pollObject,
@@ -131,7 +134,10 @@ export default class PollDB {
           // Perform your action here
         } else {
           console.log("The given date has not passed.");
+          //alert("Sorry Poll Data has closed, You Can not vite");
+          // alert("Sorry Poll Data has closed, You Can not vite");
           console.log("User can not vote on the poll");
+          //alert("Sorry you can not vote!");
         }
       });
 
@@ -188,7 +194,7 @@ export default class PollDB {
         poll_id: pollId,
         selected_option: selectedOption,
       };
-      UserDB.addPoints(16);
+      // ;
       ManageUser.addPollToCommunity(docID, community_id, newPoll);
     } catch (error) {
       console.error("Transaction failed: ", error);

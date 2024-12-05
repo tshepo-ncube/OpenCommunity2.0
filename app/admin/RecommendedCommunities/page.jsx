@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import RecommendationDB from "@/database/community/recommendation"; // Import your DB module
 import CommunityDB from "@/database/community/community"; // Import CommunityDB
 import {
@@ -11,11 +11,14 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
+import Navbar from "@/_Components/Navbar2";
 import Header from "../../../_Components/header";
 import { useTable } from "react-table";
 import Swal from "sweetalert2"; // Import SweetAlert2
 import { motion, AnimatePresence } from "framer-motion";
 import { FaHeart, FaRegHeart, FaPlus, FaEnvelope } from "react-icons/fa";
+import CloseIcon from "@mui/icons-material/Close";
+import InterestSelection from "@/_Components/InterestsSelection";
 import {
   BarChart,
   Bar,
@@ -35,6 +38,14 @@ export default function RecommendationsTable() {
   // const [likedRecommendations, setLikedRecommendations] =
   //   useState < Set < string >> new Set();
   const [likedRecommendations, setLikedRecommendations] = useState(new Set());
+  const [isPopupOpen, setPopupOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("Fitness & Wellness");
+  const [image, setImage] = useState(null);
+  const [selectedInterests, setSelectedInterests] = useState([]);
+  const popupRef = useRef(null);
+  const fileInputRef = useRef(null);
   useEffect(() => {
     const fetchRecommendations = async () => {
       try {
@@ -56,6 +67,114 @@ export default function RecommendationsTable() {
 
     fetchRecommendations();
   }, []);
+
+  const handleUploadButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleImageUpload = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      setImage(event.target.files[0]);
+    }
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setPopupOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleFormSubmit = async (e, status) => {
+    e.preventDefault();
+
+    if (selectedInterests.length < 3) {
+      Swal.fire("Error", "Please select at least 3 interests", "error");
+      return;
+    }
+
+    const communityData = {
+      name,
+      description,
+      category,
+      status,
+    };
+
+    try {
+      setIsLoading(true);
+
+      // Find the recommendation before trying to delete it
+      const recommendationToDelete = recommendations.find(
+        (rec) => rec.name.toLowerCase() === name.toLowerCase()
+      );
+
+      if (!recommendationToDelete) {
+        throw new Error("Recommendation not found");
+      }
+
+      // Create the community first
+      await CommunityDB.createCommunity(
+        communityData,
+        image,
+        (newCommunity) => {
+          console.log("Community created successfully:", newCommunity);
+        },
+        setIsLoading,
+        selectedInterests
+      );
+
+      // After successful community creation, delete the recommendation
+      await RecommendationDB.deleteRecommendation(recommendationToDelete.id);
+
+      // Update the local state to remove the recommendation
+      setRecommendations((prevRecs) =>
+        prevRecs.filter((rec) => rec.id !== recommendationToDelete.id)
+      );
+
+      // Reset form fields
+      setName("");
+      setDescription("");
+      setCategory("Fitness & Wellness");
+      setImage(null);
+      setSelectedInterests([]);
+
+      // Close the popup
+      setPopupOpen(false); // This closes the popup
+
+      // Show success message
+      Swal.fire({
+        title: "Success",
+        text: "Community created successfully and removed from recommendations",
+        icon: "success",
+        confirmButtonColor: "#bcd727",
+      });
+    } catch (error) {
+      console.error("Error in community creation:", error);
+      Swal.fire({
+        title: "Error",
+        text: error.message || "Failed to create community. Please try again.",
+        icon: "error",
+        confirmButtonColor: "#bcd727",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddClick = (rec) => {
+    setName(rec.name); // Populate with selected community name
+    setDescription(rec.description); // Populate with selected community description
+    setCategory(rec.category); // Set category based on the selected recommendation
+    setPopupOpen(true); // Open the popup
+  };
 
   const handleEmailClick = (email, name, description, category) => {
     const subject = encodeURIComponent(
@@ -82,105 +201,6 @@ export default function RecommendationsTable() {
       }
       return updatedLikes;
     });
-  };
-
-  const handleAddClick = async (rec) => {
-    const categories = ["general", "Sports", "Social", "Development"];
-
-    const { value: formValues } = await Swal.fire({
-      title: "Create Community",
-      html: `
-        <div class="space-y-4">
-          <div>
-            <label for="name" class="block text-sm font-medium text-gray-700">Community Name</label>
-            <input id="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50" value="${
-              rec.name
-            }" />
-          </div>
-          <div>
-            <label for="description" class="block text-sm font-medium text-gray-700">Community Description</label>
-            <textarea id="description" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">${
-              rec.description
-            }</textarea>
-          </div>
-          <div>
-            <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
-            <select id="category" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-              ${categories
-                .map(
-                  (category) =>
-                    `<option value="${category}" ${
-                      category === rec.category ? "selected" : ""
-                    }>${category}</option>`
-                )
-                .join("")}
-            </select>
-          </div>
-        </div>
-      `,
-      showCloseButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Create Community",
-      cancelButtonText: "Cancel",
-      focusConfirm: false,
-      customClass: {
-        container: "custom-swal-container",
-        popup: "custom-swal-popup",
-        header: "custom-swal-header",
-        closeButton: "custom-swal-close",
-        icon: "custom-swal-icon",
-        image: "custom-swal-image",
-        content: "custom-swal-content",
-        input: "custom-swal-input",
-        actions: "custom-swal-actions",
-        confirmButton: "custom-swal-confirm",
-        cancelButton: "custom-swal-cancel",
-        footer: "custom-swal-footer",
-      },
-      didOpen: () => {
-        // Apply custom styling after the popup is open
-        const confirmButton = document.querySelector(".swal2-confirm");
-        if (confirmButton) {
-          confirmButton.style.backgroundColor = "#bcd727";
-          confirmButton.style.borderColor = "#bcd727";
-          confirmButton.style.color = "#ffffff"; // Ensuring text is readable
-        }
-      },
-      preConfirm: () => ({
-        name: document.getElementById("name").value,
-        description: document.getElementById("description").value,
-        category: document.getElementById("category").value,
-      }),
-    });
-
-    if (formValues) {
-      try {
-        await CommunityDB.createCommunity(
-          formValues,
-          () => {},
-          () => {}
-        );
-        await RecommendationDB.deleteRecommendation(rec.id);
-        const updatedRecommendations =
-          await RecommendationDB.getAllRecommendations();
-        setRecommendations(updatedRecommendations);
-        Swal.fire(
-          "Success",
-          "Community created and recommendation removed.",
-          "success"
-        );
-      } catch (error) {
-        console.error(
-          "Error creating community or deleting recommendation:",
-          error
-        );
-        Swal.fire(
-          "Error",
-          "There was an error creating the community or deleting the recommendation.",
-          "error"
-        );
-      }
-    }
   };
 
   const columns = React.useMemo(
@@ -317,14 +337,15 @@ export default function RecommendationsTable() {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
+      <Navbar isHome={false} />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto p-8 bg-gray-50 rounded-lg shadow-xl shadow-gray-700"
+        className="max-w-7xl mt-28 mx-auto p-8 bg-gray-50 rounded-lg shadow-xl shadow-gray-700"
       >
-        <h1 className="text-4xl font-extrabold mb-6 text-center text-gray-500">
+        <h1 className="text-4xl font-extrabold mb-6 text-center text-black">
           Community Recommendations
         </h1>
 
@@ -353,6 +374,137 @@ export default function RecommendationsTable() {
             </div>
           </div>
         </div>
+
+        {/* Create Community Popup */}
+        {isPopupOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-20 backdrop-blur-md z-50">
+            <div
+              ref={popupRef}
+              className="fixed top-0 left-1/2 transform -translate-x-1/2 bg-white p-8 rounded-md shadow-xl z-50 w-11/12 sm:w-3/4 lg:w-2/3 xl:w-1/2"
+              style={{ marginTop: "50px" }} // Adjust this value for spacing from the top
+            >
+              <h1 className="text-xl font-bold text-gray-700 tracking-wide mb-4">
+                Create a new community
+              </h1>
+              <form className="space-y-4">
+                <div>
+                  <label
+                    htmlFor="name"
+                    className="block text-m text-gray-700 text-left font-semibold"
+                  >
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                    required
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="category"
+                    className="block text-m text-gray-700 text-left font-semibold"
+                  >
+                    Category
+                  </label>
+                  <select
+                    id="category"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                    required
+                  >
+                    <option value="Fitness & Wellness">
+                      Fitness & Wellness
+                    </option>
+                    <option value="Food & Drinks">Food & Drinks</option>
+                    <option value="Arts & Culture">Arts & Culture</option>
+                    <option value="Tech & Gaming">Tech & Gaming</option>
+                    <option value="Social & Networking">
+                      Social & Networking
+                    </option>
+                    <option value="Hobbies & Interests">
+                      Hobbies & Interests
+                    </option>
+                    <option value="Travel & Adventure">
+                      Travel & Adventure
+                    </option>
+                  </select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="description"
+                    className="block text-m text-gray-700 text-left font-semibold"
+                  >
+                    Community Description
+                  </label>
+                  <textarea
+                    id="description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="mt-1 p-2 h-40 border border-gray-300 rounded-md w-full"
+                    required
+                  />
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <label
+                    htmlFor="image"
+                    className="block text-m text-gray-700 font-semibold"
+                  >
+                    Community Profile Image
+                  </label>
+                  <input
+                    type="file"
+                    id="image"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    accept="image/*"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleUploadButtonClick}
+                    className="p-2 bg-openbox-green hover:bg-hover-obgreen text-white rounded-md"
+                  >
+                    Choose Image
+                  </button>
+                  {image && (
+                    <p className="mt-2 text-gray-600">Uploaded: {image.name}</p>
+                  )}
+                </div>
+
+                <label className="block text-m text-gray-700 font-semibold">
+                  Select Community Interests
+                </label>
+                <InterestSelection
+                  max={3}
+                  setSelectedInterests={setSelectedInterests}
+                  selectedInterests={selectedInterests}
+                />
+
+                <div className="flex justify-end">
+                  <button
+                    type="button"
+                    onClick={(e) => handleFormSubmit(e, "active")}
+                    className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+                  >
+                    Create
+                  </button>
+                  <button
+                    onClick={() => setPopupOpen(false)}
+                    className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+                  >
+                    <CloseIcon />
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {isLoading ? (
           <div className="flex justify-center items-center h-64">

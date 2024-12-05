@@ -11,16 +11,16 @@ export default function RecommendedCommunities() {
   }, []);
 
   useEffect(() => {
-    console.log(recommendedCommunities);
+    console.log("Recommended Communities : ", recommendedCommunities);
   }, [recommendedCommunities]);
   return (
     <>
-      <h1 className="text-black font-bold text-4xl text-center mt-6 mb-4 ">
+      <h1 className="text-black  mt-6 text-5xl font-bold mb-4 font-helvetica ">
         Recommended Communities
       </h1>
 
-      <div class="w-full inline-flex flex-nowrap">
-        <ul class="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
+      <div className="w-full inline-flex flex-nowrap">
+        <ul className="flex items-center justify-center md:justify-start [&_li]:mx-8 [&_img]:max-w-none animate-infinite-scroll">
           {recommendedCommunities.map((community) => (
             <li>
               <div className="flex h-100 w-100 flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-700 dark:shadow-neutral-700/70">

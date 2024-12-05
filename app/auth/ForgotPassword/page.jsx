@@ -7,7 +7,7 @@ import Logo from "@/lib/images/Logo.jpeg";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-
+  const [ForgotPassword, setForgotPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
@@ -18,7 +18,7 @@ const ForgotPassword = () => {
   };
 
   const forgotPassword = (e) => {
-    ManageUser.forgotPassword(email, setErrorMessage, router);
+    ManageUser.forgotPassword(email, setErrorMessage, setForgotPassword);
   };
 
   return (
