@@ -13,6 +13,7 @@ import DB from "../../database/DB"; // Ensure you are importing your Firestore D
 import ManageUser from "@/database/auth/ManageUser";
 import InterestSelection from "@/_Components/InterestsSelection";
 import Button from "@mui/material/Button";
+
 import Snackbar from "@mui/material/Snackbar";
 import AdminManagement from "@/_Components/AdminManagement";
 const CreateCommunity = () => {
@@ -319,7 +320,7 @@ const CreateCommunity = () => {
     return (
       <td
         className={`px-6 py-4 text-sm ${
-          isHighlighted ? "text-red-600" : "text-gray-900"
+          isHighlighted ? "text-red-600 font-bold" : "text-gray-900"
         }`}
       >
         {email}
@@ -449,6 +450,16 @@ const CreateCommunity = () => {
             //   ChannelID: data.id,
             // }
           );
+
+          setSelectedInterests([]);
+          setName("");
+          setDescription("");
+          setCategory(submittedData[index].category);
+          setImage(null);
+
+          //handleClosePopup();
+          //console.log("Closing form")
+          setPopupOpen(false);
         } catch (err) {
           console.log("Error:", err);
         }
@@ -650,6 +661,42 @@ const CreateCommunity = () => {
       {/* <Header /> */}
 
       {/* Tab Navigation */}
+      <div className="flex justify-center mt-6">
+        <div className="text-base font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+          <ul className="flex flex-wrap -mb-px">
+            <li className="me-2">
+              <a
+                href="#"
+                onClick={() => setActiveTab("tab1")}
+                className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+                  activeTab === "tab1"
+                    ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                    : "border-transparent"
+                }`}
+              >
+                Community Management
+              </a>
+            </li>
+            {isSuperAdmin && (
+              <li className="me-2">
+                <a
+                  href="#"
+                  onClick={() => setActiveTab("tab2")}
+                  className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+                    activeTab === "tab2"
+                      ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                      : "border-transparent"
+                  }`}
+                >
+                  Admin Management
+                </a>
+              </li>
+            )}
+          </ul>
+        </div>
+      </div>
+
+      {/* Tab Navigation
       <div className="flex justify-center mt-4 mb-2 ">
         <button
           className={`px-4 py-2 mr-2 ${
@@ -673,7 +720,7 @@ const CreateCommunity = () => {
             Admin Management
           </button>
         )}
-      </div>
+      </div> */}
 
       {/* Tab Content */}
       {activeTab === "tab1" ? (
@@ -725,7 +772,7 @@ const CreateCommunity = () => {
                   >
                     Category
                   </label>
-                  <select
+                  {/* <select
                     id="category"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
@@ -738,6 +785,30 @@ const CreateCommunity = () => {
                     <option value="Retreat">Company Retreat</option>
                     <option value="Development">
                       Professional Development
+                    </option>
+                  </select> */}
+
+                  <select
+                    id="category"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                    required
+                  >
+                    <option value="Fitness & Wellness">
+                      Fitness & Wellness
+                    </option>
+                    <option value="Food & Drinks">Food & Drinks</option>
+                    <option value="Arts & Culture">Arts & Culture</option>
+                    <option value="Tech & Gaming">Tech & Gaming</option>
+                    <option value="Social & Networking">
+                      Social & Networking
+                    </option>
+                    <option value="Hobbies & Interests">
+                      Hobbies & Interests
+                    </option>
+                    <option value="Travel & Adventure">
+                      Travel & Adventure
                     </option>
                   </select>
                 </div>

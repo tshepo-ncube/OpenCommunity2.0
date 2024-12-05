@@ -38,11 +38,27 @@ const AdminManagement = ({
 
   return (
     <div className="mt-8 max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-lg relative">
-      {/* Button to open the Handover Role popup */}
+      {/* Button Container for Handover Buttons */}
+    <div className="flex justify-between mb-4">
+      <button
+        onClick={() => setCommunityHandoverOpen(true)}
+        className="btn bg-[#bcd727] hover:bg-hover-obgreen text-white font-medium rounded-lg px-5 py-2.5"
+      >
+        Community Admin Handover
+      </button>
+      <button
+        onClick={() => setPopupOpen(true)}
+        className="btn bg-[#999999] hover:bg-gray-600 text-white font-medium rounded-lg px-5 py-2.5"
+      >
+        Role Handover
+      </button>
+    </div>
+      
+      {/* Button to open the Handover Role popup
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setPopupOpen(true)}
-          className="btn bg-gray-400 hover:bg-gray-600 text-white font-medium rounded-lg px-5 py-2.5"
+          className="btn bg-white border hover:bg-gray-100 text-black rounded-lg px-5 py-2.5"
         >
           Role Handover
         </button>
@@ -50,11 +66,11 @@ const AdminManagement = ({
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setCommunityHandoverOpen(true)}
-          className="btn bg-gray-400 hover:bg-gray-600 text-white font-medium rounded-lg px-5 py-2.5"
+          className="btn bg-white border hover:bg-gray-100 text-black rounded-lg px-5 py-2.5"
         >
           Community Admin Handover
         </button>
-      </div>
+      </div> */}
 
       {/* Community Admin Handover Popup */}
       {isCommunityHandoverOpen && (
@@ -141,13 +157,13 @@ const AdminManagement = ({
               <div className="flex justify-end space-x-4">
                 <button
                   onClick={() => setCommunityHandoverOpen(false)}
-                  className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-medium py-2 px-4 rounded-lg"
+                  className="bg-white border hover:bg-gray-100 text-gray-800  py-2 px-4 rounded-lg"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => setHandoverConfirmationOpen(true)}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
+                  className="bg-openbox-green hover:bg-green-400 text-white  py-2 px-4 rounded-lg"
                   disabled={!selectedCommunity || !selectedNewAdmin}
                 >
                   Transfer Admin Rights
@@ -247,9 +263,9 @@ const AdminManagement = ({
             <div className="flex justify-end">
               <button
                 onClick={handleHandoverRole}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
+                className="bg-openbox-green hover:bg-green-400 text-white py-2 px-4 rounded-lg"
               >
-                Handover my role
+                Handover My Role
               </button>
             </div>
           </div>
@@ -275,7 +291,7 @@ const AdminManagement = ({
       {/* User List */}
       {filteredUsers.length > 0 ? (
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white shadow-md rounded-lg divide-y divide-gray-200">
+          <table className="min-w-full bg-white shadow-md rounded-lg divide-y divide-gray-200 ">
             <thead className="bg-gray-100">
               <tr>
                 <th className="px-6 py-4 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">

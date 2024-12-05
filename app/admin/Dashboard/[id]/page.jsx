@@ -1,12 +1,16 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import Navbar from "@/_Components/Navbar2";
+import Navbar from "@/_Components/Navbar";
 import Autocomplete from "react-google-autocomplete";
 import CommunityDB from "@/database/community/community";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import { IoMdClose } from "react-icons/io";
+import { RiAiGenerate } from "react-icons/ri";
+
 import Chatbot from "../../../../_Components/Chatbot";
+import AdminCommHome from "@/_Components/AdminCommHome";
+import { CircularProgress } from "@mui/material";
 import strings from "../../../../Utils/strings.json";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import DB from "../../../../database/DB";
@@ -50,7 +54,10 @@ const createEvent = (eventDetails, communityID, selectedImages) => {
 const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   const [eventDetails, setEventDetails] = useState({
     eventName: eventData.Name,
-    startDateTime: `${eventData.startDate}T${eventData.startTime}`,
+    startDateTime:
+      `${eventData.startDate}T${eventData.startTime}` === "undefinedTundefined"
+        ? "28 October 2024"
+        : `${eventData.startDate}T${eventData.startTime}`,
     endDateTime: `${eventData.endDate}T${eventData.endTime}`,
     rsvpEndDateTime: eventData.rsvpEndDateTime,
     location: eventData.Location,
@@ -78,6 +85,10 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   useEffect(() => {
     console.log("Kept Images : ", eventImage);
   }, [eventImage]);
+
+  useEffect(() => {
+    console.log("EventForm eventDetails ", eventDetails);
+  }, []);
 
   // Function to generate 3 new images
   const generateImages = async () => {
@@ -146,7 +157,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   };
 
   useEffect(() => {
-    console.log(eventDetails);
+    console.log("Event Edit :eventDetails ", eventDetails);
   }, [eventDetails]);
 
   // Function to regenerate images (it keeps the previously kept ones)
@@ -226,8 +237,13 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   // Function to calculate min and max for the RSVP end date
   const getRsvpEndDateTimeLimits = () => {
     const now = new Date();
-    // const startDate = new Date(eventDetails.startDateTime);
-    const startDate = new Date("18 October 2024");
+    let startDate = new Date(eventDetails.startDateTime);
+
+    if (eventDetails.startDateTime === "undefinedTundefined") {
+      console.log("new event___");
+      startDate = new Date("28 October 2024");
+    }
+    // const startDate = new Date("18 October 2024");
     console.log("eventDetails.startDateTime : ", eventDetails.startDateTime);
 
     console.log("StartDate : ", startDate);
@@ -334,22 +350,22 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
   };
 
   return (
-    <div className="">
+    <div className="p-18">
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-20 z-10"></div>
+        <div className="fixed p-100 inset-0 backdrop-blur-md bg-opacity-20 z-10"></div>
       )}
       <div
         className={`${
           isOpen ? "block" : "hidden"
-        } fixed top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-3/4 bg-white p-12 rounded-md shadow-xl z-50 w-5/6 max-w-5xl max-h-[90vh] overflow-y-auto`}
+        } fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-md shadow-xl z-50 w-4/5 max-w-4xl max-h-[80vh] mt-12 overflow-y-auto`}
       >
         <button
           onClick={onClose}
-          className="max-h-full overflow-y-auto absolute p-2 top-2 right-2 text-gray-500 hover:text-gray-700"
+          className="absolute p-2 top-2 right-2 text-gray-500 hover:text-gray-700"
         >
           <IoMdClose size={25} />
         </button>
-        <form className="space-y-4 h-160 max-h-110 ">
+        <form className="space-y-4">
           <div>
             <label
               htmlFor="eventName"
@@ -382,7 +398,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 id="startDateTime"
                 value={eventDetails.startDateTime}
                 onChange={handleChangeEvent}
-                min={new Date().toISOString().slice(0, 16)} // Prevent past dates
+                min={new Date().toISOString().slice(0, 16)}
                 className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
                 required
               />
@@ -401,7 +417,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 id="endDateTime"
                 value={eventDetails.endDateTime}
                 onChange={handleChangeEvent}
-                min={eventDetails.startDateTime} // Prevent end date before start date
+                min={eventDetails.startDateTime}
                 className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
                 required
               />
@@ -421,8 +437,8 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                 id="rsvpEndDateTime"
                 value={eventDetails.rsvpEndDateTime}
                 onChange={handleChangeEvent}
-                min={minRsvpDate} // Prevent past dates
-                max={maxRsvpDate} // Prevent RSVP after the start date
+                min={minRsvpDate}
+                max={maxRsvpDate}
                 className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
                 required
               />
@@ -436,7 +452,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               Location
             </label>
             <Autocomplete
-              apiKey={"AIzaSyA_nwBxUgw4RTZLvfRpt__cS1DIcYprbQ0"}
+              apiKey={"YOUR_GOOGLE_API_KEY"}
               className="mt-1 p-3 border border-gray-300 rounded-md w-full text-lg"
               name="location"
               id="location"
@@ -446,11 +462,6 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                   location: place.formatted_address,
                 }));
               }}
-              inputAutocompleteValue={"HR VS soft devs, bring your A game"}
-              // {...(eventDetails.location
-              //   ? { defaultValue: eventDetails.location }
-              //   : {})}
-
               {...(eventDetails.location !== ""
                 ? { defaultValue: eventDetails.location }
                 : {})}
@@ -458,14 +469,14 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             />
           </div>
 
-          <div class="flex items-center justify-center w-full">
+          <div className="flex items-center justify-center w-full">
             <label
-              for="dropzone-file"
-              class="flex flex-col items-center justify-center w-full h-20 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+              htmlFor="dropzone-file"
+              className="flex flex-col items-center justify-center w-full h-20 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100"
             >
-              <div class="flex flex-col items-center justify-center">
+              <div className="flex flex-col items-center justify-center">
                 <svg
-                  class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                  className="w-8 h-8 mb-4 text-gray-500"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -479,145 +490,45 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                     d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                   />
                 </svg>
-                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                  <span class="font-semibold">Click to upload images</span> or
-                  drag and drop
+                <p className="mb-2 text-sm text-gray-500">
+                  <span className="font-semibold">Click to upload images</span>{" "}
+                  or drag and drop
                 </p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-gray-500">
                   SVG, PNG, JPG or GIF (MAX. 800x400px)
                 </p>
               </div>
               <input
                 id="dropzone-file"
                 type="file"
-                class="hidden"
+                className="hidden"
                 accept="image/*"
                 onChange={handleImageChange}
               />
             </label>
           </div>
 
-          <div className="flex flex-col items-center ">
-            <div className="flex flex-wrap mt-2 font-bold ">or</div>
-          </div>
+          {/* Image Preview Section */}
+          {renderImage()}
 
-          <div className="flex flex-col items-center ">
-            <button
-              onClick={generateImages}
-              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 transition duration-300 mb-4"
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <ThreeDots
-                    visible={true}
-                    height="20"
-                    width="40"
-                    color="#bcd727"
-                    radius="9"
-                    ariaLabel="three-dots-loading"
-                    wrapperStyle={{}}
-                    wrapperClass=""
+          {/* Show Kept Images */}
+          {keptImages.length > 0 && (
+            <div className="flex flex-wrap justify-center mt-4">
+              <h3 className="text-lg font-bold mb-2 w-full text-center">
+                Kept Images ({keptImages.length}/{MAX_KEEP_IMAGES})
+              </h3>
+              {keptImages.map((imageUrl, index) => (
+                <div key={index} className="m-2 w-32 h-32">
+                  <img
+                    src={imageUrl}
+                    alt={`kept-${index}`}
+                    className="w-full h-full object-cover rounded-lg shadow-lg"
                   />
-                </>
-              ) : (
-                "Generate Images"
-              )}
-            </button>
+                </div>
+              ))}
+            </div>
+          )}
 
-            {error && <p className="text-red-500 mb-4">{error}</p>}
-
-            {renderImage()}
-            {/* Show Kept Images */}
-            {keptImages.length > 0 && (
-              <div className="flex flex-wrap justify-center mt-4">
-                {/* <h3 className="text-lg font-bold mb-2 w-full text-center">
-                  Kept Images ({keptImages.length}/{MAX_KEEP_IMAGES})
-                </h3> */}
-                {/* {keptImages.map((imageUrl, index) => (
-                  <div key={index} className="m-2 w-32 h-32">
-                    <img
-                      src={imageUrl}
-                      alt={`kept-${index}`}
-                      className="w-full h-full object-cover rounded-lg shadow-lg"
-                    />
-                  </div>
-                ))} */}
-              </div>
-            )}
-
-            {/* Generated Images */}
-            {generatedImages.length > 0 && (
-              <div className="flex flex-wrap justify-center mt-4">
-                <h3 className="text-lg font-bold mb-2 w-full text-center">
-                  Generated Images
-                </h3>
-                {/* Horizontal scrolling container for generated images */}
-                {/* <div className="flex flex-col items-center justify-center p-4">
-                  {generatedImages.length > 0 && (
-                    <div className=" overflow-x-auto mt-4">
-                      <div className="flex space-x-4">
-                        {generatedImages.map((imageUrl, index) => (
-                          <div
-                            key={index}
-                            className="relative w-64 h-64 flex-shrink-0"
-                          >
-                            <img
-                              src={imageUrl}
-                              alt={`generated-${index}`}
-                              className="w-full h-full object-cover rounded-lg shadow-lg"
-                            />
-                            <button
-                              onClick={() => keepImage(imageUrl)}
-                              className="absolute bottom-2 left-2 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
-                            >
-                              Keep
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div> */}
-
-                {generatedImages.map((imageUrl, index) => (
-                  <div key={index} className="relative m-2 w-64 h-64">
-                    <img
-                      src={imageUrl}
-                      alt={`generated-${index}`}
-                      className="w-full h-full object-cover rounded-lg shadow-lg"
-                    />
-                    <button
-                      onClick={() => keepImage(imageUrl)}
-                      className="absolute bottom-2 left-2 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition"
-                    >
-                      Keep
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Regenerate Button */}
-            {generatedImages.length > 0 &&
-              keptImages.length < MAX_KEEP_IMAGES && (
-                <button
-                  onClick={regenerateImages}
-                  className="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600 transition duration-300 mt-4"
-                  disabled={loading}
-                >
-                  {loading ? "Regenerating..." : "Regenerate Images"}
-                </button>
-              )}
-
-            <p className="text-sm text-gray-500 mt-4">
-              You can keep a maximum of {MAX_KEEP_IMAGES} images.
-            </p>
-          </div>
-
-          <div className="flex flex-col items-center ">
-            <div className="mt-6 flex flex-wrap ">{renderPreviews()}</div>
-          </div>
           <div>
             <label
               htmlFor="rsvpLimit"
@@ -657,6 +568,7 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
               />
             </div>
           )}
+
           <div>
             <label
               htmlFor="description"
@@ -676,24 +588,31 @@ const EventForm = ({ isOpen, onClose, onSubmit, eventData }) => {
           </div>
 
           <div className="flex justify-end">
-            <button
+            {/* <button
               type="button"
               onClick={generateDescription}
               className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+            ></button> */}
+
+            <button
+              onClick={generateDescription}
+              className="flex mb-4 bg-hover-obgreen items-center px-4 py-2 bg-open text-white rounded-md "
             >
+              <RiAiGenerate className="mr-2 mx-2 w-5 h-5" />
               Generate Description
             </button>
+
             <button
               type="button"
               onClick={handleSaveDraft}
-              className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+              className=" mb-4 bg-white  mx-2 border text-black font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
             >
               Save Draft
             </button>
             <button
               type="submit"
               onClick={handleSubmitEvent}
-              className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
+              className=" mb-4 bg-openbox-green mx-2 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5  focus:outline-none focus:ring-2 focus:ring-primary-300"
             >
               Post Event
             </button>
@@ -716,35 +635,49 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     eventID: eventData.EventID,
   });
 
-  const handleChangeEvent = (e) => {
-    const { name, value } = e.target;
-    setEventDetails((prevDetails) => ({
-      ...prevDetails,
-      [name]: value,
-    }));
-  };
+  const [selectedImages, setSelectedImages] = useState([]);
 
-  const handleSubmitEvent = (e) => {
-    e.preventDefault();
-    onSubmit(eventDetails);
-    onClose();
-  };
+  const [generatedImages, setGeneratedImages] = useState([]); // Store current generated images
+  const [keptImages, setKeptImages] = useState([]); // Store user "kept" images
+  const [loading, setLoading] = useState(false); // Handle loading state
+  const [error, setError] = useState(null); // Handle errors
 
-  const handleSaveDraft = (e) => {
-    e.preventDefault();
-    onSubmit({ ...eventDetails, status: "draft" });
-    onClose();
-  };
+  const [eventImage, setEventImage] = useState(null);
 
   useEffect(() => {
-    console.log("Updated location:", eventDetails.location);
-    console.log(eventDetails);
-  }, [eventDetails.location]);
+    console.log("Kept Images : ", eventImage);
+  }, [eventImage]);
 
   useEffect(() => {
-    console.log("Updated Event Form:", eventDetails);
-    console.log(eventDetails);
-  }, [eventDetails]);
+    console.log("EventForm eventDetails ", eventDetails);
+  }, []);
+
+  // Function to generate 3 new images
+  const generateImages = async () => {
+    if (eventDetails.description === "") {
+      alert("Please enter an event description");
+      return;
+    }
+    setLoading(true);
+    setError(null); // Reset previous errors
+    try {
+      const response = await openai.images.generate({
+        model: "dall-e-2",
+        prompt: eventDetails.description, // You can customize this prompt
+        n: 3, // Generate 3 images
+        size: "1024x1024",
+      });
+
+      const imageUrls = response.data.map((item) => item.url); // Extract image URLs
+      setGeneratedImages(imageUrls); // Update the generated images state
+    } catch (err) {
+      setError("Failed to generate images. Please try again.");
+      console.log(err);
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const generateDescription = async () => {
     console.log("generate Description");
@@ -777,19 +710,182 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
     }
   };
 
+  // Function to keep an image
+  const keepImage = (url) => {
+    if (keptImages.length >= MAX_KEEP_IMAGES) {
+      alert(`You can only keep a maximum of ${MAX_KEEP_IMAGES} images.`);
+      return;
+    }
+
+    if (!keptImages.includes(url)) {
+      setKeptImages((prevKeptImages) => [...prevKeptImages, url]);
+      setEventImage(url);
+    }
+  };
+
+  // Function to render the image
+  const renderImage = () => {
+    if (!eventImage) return null; // No image to show
+
+    // Check if eventImage is a File object
+    if (eventImage instanceof File) {
+      // Create a temporary URL for the image file to display it
+      return (
+        <img
+          src={URL.createObjectURL(eventImage)}
+          alt="Selected Image"
+          className="mt-3 max-w-full h-auto"
+        />
+      );
+    }
+
+    // If eventImage is a URL, display it directly
+    return (
+      <img
+        src={eventImage}
+        alt="Event Image"
+        className="mt-3 max-w-full h-auto"
+      />
+    );
+  };
+
+  useEffect(() => {
+    console.log("Event Edit :eventDetails ", eventDetails);
+  }, [eventDetails]);
+
+  // Function to regenerate images (it keeps the previously kept ones)
+  const regenerateImages = async () => {
+    if (eventDetails.description === "") {
+      alert("Please enter an event description");
+      return;
+    }
+    // Ensure the kept images are retained
+    setGeneratedImages([]); // Clear out current generated images
+    await generateImages(); // Regenerate images
+  };
+
+  const handleImageChange = (e) => {
+    // const files = Array.from(e.target.files);
+
+    // Check if the total selected images exceed the limit
+    // if (files.length + selectedImages.length > 5) {
+    //   alert(`You can only upload up to 5 images.`);
+    //   return; // Stop the function if limit is exceeded
+    // }
+
+    // setSelectedImages((prevImages) => [...prevImages, ...files]);
+    // setEventImage(e.target.files);
+
+    const file = e.target.files[0]; // Get the first selected file (only one since 'multiple' is not used)
+    if (file) {
+      console.log("Got a file.");
+      setEventImage(file); // Save the file to the state
+    } else {
+      console.log("It aint a file.");
+    }
+  };
+
+  useEffect(() => {
+    console.log("Selected images :", selectedImages);
+  }, [selectedImages]);
+
+  // Function to render image previews
+  const renderPreviews = () => {
+    return selectedImages.map((image, index) => {
+      return (
+        <div key={index} className="relative m-2 w-24 h-24">
+          <img
+            src={URL.createObjectURL(image)}
+            alt={`preview-${index}`}
+            className="w-full h-full object-cover rounded-lg shadow-md"
+          />
+        </div>
+      );
+    });
+  };
+
+  useEffect(() => {
+    console.log("Kept Images : ", eventImage);
+  }, [eventImage]);
+
+  useEffect(() => {
+    console.log("EventForm eventDetails ", eventDetails);
+  }, []);
+
+  const handleChangeEvent = (e) => {
+    const { name, value } = e.target;
+    setEventDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmitEvent = (e) => {
+    e.preventDefault();
+    onSubmit(eventDetails);
+    onClose();
+  };
+
+  const handleSaveDraft = (e) => {
+    e.preventDefault();
+    onSubmit({ ...eventDetails, status: "draft" });
+    onClose();
+  };
+
+  useEffect(() => {
+    console.log("Updated location:", eventDetails.location);
+    console.log(eventDetails);
+  }, [eventDetails.location]);
+
+  useEffect(() => {
+    console.log("Updated Event Form:", eventDetails);
+    console.log(eventDetails);
+  }, [eventDetails]);
+
+  // const generateDescription = async () => {
+  //   console.log("generate Description");
+  //   if (eventDetails.eventName.length !== 0) {
+  //     const name = eventDetails.eventName;
+  //     try {
+  //       const res = await axios.post(
+  //         strings.server_endpoints.generateEventDescription,
+  //         { name },
+  //         {
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //         }
+  //       );
+
+  //       console.log("Returned Desctiption: ", res.data.eventDescription);
+  //       console.log(res.data.eventDescription);
+  //       //setMessages(res.data.messages);
+  //       //setDescription(res.data.communityDescription);
+  //       setEventDetails((prevDetails) => ({
+  //         ...prevDetails, // Spread the previous state to retain all properties
+  //         description: res.data.eventDescription, // Update only the description
+  //       }));
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   } else {
+  //     alert("Please enter a name.");
+  //   }
+  // };
+
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-40 flex items-center justify-center overflow-x-hidden overflow-y-auto p-4">
-          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-3xl my-8 max-h-[80vh] overflow-y-auto">
+        <div className="fixed mt-18 inset-0 bg-black bg-opacity-50 z-100 flex p-20 items-center justify-center overflow-x-hidden overflow-y-auto">
+          <div className="relative bg-red-500 rounded-lg shadow-xl w-full max-w-3xl my-8 max-h-[80vh] overflow-y-auto">
             <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
-              <button
+              {/* <button
                 onClick={onClose}
                 className="text-gray-500 hover:text-gray-700"
               >
                 <IoMdClose size={25} />
-              </button>
-              <form className="space-y-4">
+              </button> */}
+              <form className="space-y-4 w-full">
                 <div>
                   <label
                     htmlFor="eventName"
@@ -896,6 +992,7 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                     required
                   />
                 </div>
+
                 <div>
                   <label
                     htmlFor="description"
@@ -914,11 +1011,24 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
                   ></textarea>
                 </div>
                 <div className="flex justify-end">
-                  <button
+                  {/* <button
                     type="button"
                     onClick={generateDescription}
                     className="btn bg-purple-400 hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 mr-4 focus:outline-none focus:ring-2 focus:ring-primary-300"
                   >
+                    Generate Description
+                  </button> */}
+                  <button
+                    className="bg-white border px-4 hover:bg-gray-100  rounded"
+                    onClick={onClose}
+                  >
+                    Cancel{" "}
+                  </button>
+                  <button
+                    onClick={generateDescription}
+                    className="flex items-center px-4 mx-2 py-2 bg-hover-obgreen text-white rounded-md"
+                  >
+                    <RiAiGenerate className="mr-2 w-5 h-5" />
                     Generate Description
                   </button>
                   {/* <button
@@ -928,6 +1038,7 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
             >
               Save Draft
             </button> */}
+
                   <button
                     type="submit"
                     onClick={handleSubmitEvent}
@@ -948,8 +1059,10 @@ const EventEditForm = ({ isOpen, onClose, onSubmit, eventData }) => {
 export default function CommunityPage({ params }) {
   const { id } = params;
   const [communityID, setCommunityID] = useState(params.id);
+  const [community, setCommunity] = useState(null);
   const [showEventForm, setShowEventForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
+  const [loader, setLoader] = useState(true);
   const [eventFormData, setEventForm] = useState({
     Name: "",
     StartDate: new Date(),
@@ -976,6 +1089,10 @@ export default function CommunityPage({ params }) {
   const closeModal = () => {
     setIsNotifyUsersModalOpen(false);
   };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   // Function to check community score
   const checkCommunityScore = async (communityID) => {
@@ -1082,6 +1199,12 @@ export default function CommunityPage({ params }) {
     setOpenSnackbar(true);
   };
 
+  useEffect(() => {
+    if (community) {
+      setLoader(false);
+    }
+  }, [community]);
+
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -1121,22 +1244,42 @@ export default function CommunityPage({ params }) {
       console.log(err);
     }
   };
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      if (currentView === "usersManagement") {
-        const communityId = params.id;
-        const result = await CommunityDB.getCommunityUsers(communityId);
-        if (result.success) {
-          setUsers(result.users);
-        } else {
-          console.error(result.message);
-        }
+  const fetchUsers = async () => {
+    if (currentView === "usersManagement") {
+      const communityId = params.id;
+      const result = await CommunityDB.getCommunityUsers(communityId);
+      if (result.success) {
+        setUsers(result.users);
+        setCommunity({
+          name: result.name,
+          communityImage: result.communityImage,
+          description: result.description,
+        });
+      } else {
+        console.error(result.message);
       }
-    };
-
+    } else {
+      const communityId = params.id;
+      const result = await CommunityDB.getCommunityUsers(communityId);
+      if (result.success) {
+        setUsers(result.users);
+        setCommunity({
+          name: result.name,
+          communityImage: result.communityImage,
+          description: result.description,
+        });
+      } else {
+        console.error(result.message);
+      }
+    }
+  };
+  useEffect(() => {
     fetchUsers();
   }, [currentView]);
+
+  useEffect(() => {
+    console.log("Community : ", community);
+  }, [community]);
 
   const notifyMembers = async () => {
     console.log("ABout to notify members");
@@ -1159,207 +1302,234 @@ export default function CommunityPage({ params }) {
   const arhiveCommunity = () => {};
 
   return (
-    <div className="bg-background_gray h-full">
-      <Navbar isHome={false} />
-      {/* <Header /> */}
-      {/* <div className="flex flex-col fixed bottom-7 right-4">
-        <button
-          onClick={handleCreateNewEvent}
-          className="btn bg-openbox-green hover:bg-hover-obgreen text-white font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary-300"
-        >
-          + EVENT
-        </button>
-      </div> */}
-      <div className="bg-background_gray mt-[98px] p-4 h-full">
-        <div className="flex justify-center mb-4">
-          <button
-            onClick={() => setCurrentView("infoManagement")}
-            className={`px-4 py-2 rounded-l-lg ${
-              currentView === "infoManagement"
-                ? "bg-openbox-green text-white"
-                : "bg-gray-200"
-            }`}
-          >
-            Community Management
-          </button>
-          <button
-            onClick={() => setCurrentView("usersManagement")}
-            className={`px-4 py-2 rounded-r-lg ${
-              currentView === "usersManagement"
-                ? "bg-openbox-green text-white"
-                : "bg-gray-200"
-            }`}
-          >
-            Users Management
-          </button>
-        </div>
-        {currentView === "infoManagement" && (
-          <div>
-            <PollsHolder communityID={params.id} />
-            <EventsHolder
-              communityID={params.id}
-              handleCreateNewEvent={handleCreateNewEvent}
-              setShowEventForm={setShowEventForm}
-              setEventForm={setEventForm}
-              setShowEditForm={setShowEditForm}
+    <div className="bg-white h-full">
+      {loader ? (
+        <>
+          <center>
+            <CircularProgress
+              style={{
+                color: "#bcd727",
+                marginTop: 210,
+                width: 150,
+                height: 150,
+              }}
             />
-            {showEventForm && (
-              <EventForm
-                isOpen={showEventForm}
-                onClose={handleCreateNewEvent}
-                onSubmit={handleEventSubmit}
-                eventData={eventFormData}
-              />
-            )}
+            ;
+          </center>
+        </>
+      ) : (
+        <>
+          <Navbar isHome={true} />
 
-            {showEditForm && (
-              <EventEditForm
-                isOpen={showEditForm}
-                onClose={handleEditNewEvent}
-                onSubmit={handleEditEventSubmit}
-                eventData={eventFormData}
-              />
-            )}
-          </div>
-        )}
-        {currentView === "usersManagement" && (
-          <div>
-            <Typography variant="h6" className="mb-4">
-              Community Members
-            </Typography>
-            <Box>
-              {users.length > 0 ? (
-                <ul className="space-y-2">
-                  {users.map((user, index) => (
-                    <li key={index} className="bg-white p-3 rounded shadow">
-                      {user}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No users found in this community.</p>
-              )}
-            </Box>
-          </div>
-        )}
-      </div>
+          <AdminCommHome community={community} />
 
-      <>
-        {/* Modal toggle button */}
-        {/* <button
-          onClick={toggleModal}
-          className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          type="button"
-        >
-          Toggle modal
-        </button> */}
-
-        {/* Modal */}
-        {isNotifyUsersModalOpen && (
-          <div
-            id="default-modal"
-            tabIndex="-1"
-            aria-hidden="true"
-            className="fixed inset-0 z-50 flex justify-center items-center w-full h-[calc(100%-1rem)] max-h-full overflow-y-auto overflow-x-hidden"
-          >
-            <div className="relative p-4 w-full max-w-2xl max-h-full">
-              {/* Modal content */}
-              <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                {/* Modal header */}
-                <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                    Community Notice
-                  </h3>
-                  <button
-                    type="button"
-                    onClick={closeModal}
-                    className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                  >
-                    <svg
-                      className="w-3 h-3"
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 14 14"
-                    >
-                      <path
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M1 1l6 6m0 0l6 6M7 7l6-6M7 7l-6 6"
-                      />
-                    </svg>
-                    <span className="sr-only">Community Notice</span>
-                  </button>
+          <div className="bg-white   p-4 h-full">
+            <div className="flex justify-center mb-4">
+              <Box sx={{ width: "100%", marginTop: 0 }}>
+                <div className="flex justify-center mt-2">
+                  <div className="text-base font-medium text-center text-gray-500 border-b border-gray-200 dark:text-gray-400 dark:border-gray-700">
+                    <ul className="flex flex-wrap -mb-px">
+                      <li className="me-2">
+                        <a
+                          href="#"
+                          onClick={() => setCurrentView("infoManagement")}
+                          className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+                            currentView === "infoManagement"
+                              ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                              : "border-transparent"
+                          }`}
+                        >
+                          Community Management
+                        </a>
+                      </li>
+                      <li className="me-2">
+                        <a
+                          href="#"
+                          onClick={() => setCurrentView("usersManagement")}
+                          className={`inline-block p-5 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 ${
+                            currentView === "usersManagement"
+                              ? "text-openbox-green border-openbox-green dark:text-openbox-green dark:border-openbox-green"
+                              : "border-transparent"
+                          }`}
+                        >
+                          User Management
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
+              </Box>
+            </div>
+            {currentView === "infoManagement" && (
+              <div>
+                <PollsHolder communityID={params.id} />
+                <EventsHolder
+                  communityID={params.id}
+                  handleCreateNewEvent={handleCreateNewEvent}
+                  setShowEventForm={setShowEventForm}
+                  setEventForm={setEventForm}
+                  setShowEditForm={setShowEditForm}
+                />
+                {showEventForm && (
+                  <EventForm
+                    isOpen={showEventForm}
+                    onClose={handleCreateNewEvent}
+                    onSubmit={handleEventSubmit}
+                    eventData={eventFormData}
+                  />
+                )}
 
-                {/* Modal body */}
-                <div className="p-4 md:p-5 space-y-4">
-                  <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                    This community has been inactive for more than 28 days. All
-                    users in the community will be notified about the
-                    inactivity. If the inactivity continues, the community will
-                    be archived to ensure proper management of active groups.
-                  </p>
-                  <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                    {/* The European Union’s General Data Protection Regulation
-                    (G.D.P.R.) goes into effect on May 25 and is meant to ensure
-                    a common set of data rights in the European Union. It
-                    requires organizations to notify users as soon as possible
-                    of high-risk data breaches that could personally affect
-                    them. */}
-                    <div
-                      class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
-                      role="alert"
-                    >
-                      <span class="font-medium">Warning alert!</span> Members of
-                      a community won't be able to see a community once you
-                      archive it.
+                {showEditForm && (
+                  <EventEditForm
+                    isOpen={showEditForm}
+                    onClose={handleEditNewEvent}
+                    onSubmit={handleEditEventSubmit}
+                    eventData={eventFormData}
+                  />
+                )}
+              </div>
+            )}
+            {currentView === "usersManagement" && (
+              <div>
+                <Typography variant="h6" className="mb-4">
+                  Community Members
+                </Typography>
+                <Box>
+                  {users.length > 0 ? (
+                    <ul className="space-y-2">
+                      {users.map((user, index) => (
+                        <li key={index} className="bg-white p-3 rounded shadow">
+                          {user}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No users found in this community.</p>
+                  )}
+                </Box>
+              </div>
+            )}
+          </div>
+
+          <>
+            {/* Modal toggle button */}
+            {/* <button
+   onClick={toggleModal}
+   className="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+   type="button"
+ >
+   Toggle modal
+ </button> */}
+
+            {/* Modal */}
+            {isNotifyUsersModalOpen && (
+              <div
+                id="default-modal"
+                tabIndex="-1"
+                aria-hidden="true"
+                className="fixed inset-0 z-50 flex justify-center items-center w-full h-[calc(100%-1rem)] max-h-full overflow-y-auto overflow-x-hidden"
+              >
+                <div className="relative p-4 w-full max-w-2xl max-h-full">
+                  {/* Modal content */}
+                  <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                    {/* Modal header */}
+                    <div className="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                        Community Notice
+                      </h3>
+                      <button
+                        type="button"
+                        onClick={closeModal}
+                        className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                      >
+                        <svg
+                          className="w-3 h-3"
+                          aria-hidden="true"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 14 14"
+                        >
+                          <path
+                            stroke="currentColor"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M1 1l6 6m0 0l6 6M7 7l6-6M7 7l-6 6"
+                          />
+                        </svg>
+                        <span className="sr-only">Community Notice</span>
+                      </button>
                     </div>
-                  </p>
-                </div>
 
-                {/* Modal footer */}
-                <div className="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                  <button
-                    onClick={notifyMembers}
-                    className="text-white bg-openbox-green hover:bg-openbox-green focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                  >
-                    Notify members
-                  </button>
-                  <button
-                    onClick={arhiveCommunity}
-                    className="py-2.5 px-5 ms-3 text-sm font-medium text-white focus:outline-none bg-red-500 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                  >
-                    Archive Community
-                  </button>
+                    {/* Modal body */}
+                    <div className="p-4 md:p-5 space-y-4">
+                      <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                        This community has been inactive for more than 28 days.
+                        All users in the community will be notified about the
+                        inactivity. If the inactivity continues, the community
+                        will be archived to ensure proper management of active
+                        groups.
+                      </p>
+                      <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                        {/* The European Union’s General Data Protection Regulation
+             (G.D.P.R.) goes into effect on May 25 and is meant to ensure
+             a common set of data rights in the European Union. It
+             requires organizations to notify users as soon as possible
+             of high-risk data breaches that could personally affect
+             them. */}
+                        <div
+                          class="p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300"
+                          role="alert"
+                        >
+                          <span class="font-medium">Warning alert!</span>{" "}
+                          Members of a community won't be able to see a
+                          community once you archive it.
+                        </div>
+                      </p>
+                    </div>
+
+                    {/* Modal footer */}
+                    <div className="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                      <button
+                        onClick={notifyMembers}
+                        className="text-white bg-openbox-green hover:bg-openbox-green focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                      >
+                        Notify members
+                      </button>
+                      <button
+                        onClick={arhiveCommunity}
+                        className="py-2.5 px-5 ms-3 text-sm font-medium text-white focus:outline-none bg-red-500 rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-white focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                      >
+                        Archive Community
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
-      </>
+            )}
+          </>
 
-      <Chatbot
-        communityID={params.id}
-        setEventForm={setEventForm}
-        setShowEventForm={setShowEventForm}
-      />
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={2000}
-        onClose={handleSnackbarClose}
-      >
-        <Alert
-          onClose={handleSnackbarClose}
-          severity="success"
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          Event has been edited!
-        </Alert>
-      </Snackbar>
+          <Chatbot
+            communityID={params.id}
+            setEventForm={setEventForm}
+            setShowEventForm={setShowEventForm}
+          />
+          <Snackbar
+            open={openSnackbar}
+            autoHideDuration={2000}
+            onClose={handleSnackbarClose}
+          >
+            <Alert
+              onClose={handleSnackbarClose}
+              severity="success"
+              variant="filled"
+              sx={{ width: "100%" }}
+            >
+              Event has been edited!
+            </Alert>
+          </Snackbar>
+        </>
+      )}
     </div>
   );
 }

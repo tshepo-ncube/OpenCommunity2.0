@@ -19,6 +19,7 @@ import {
   MenuItem,
   InputLabel,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 import {
   People,
   CalendarToday,
@@ -677,15 +678,15 @@ const AdminCommunity = () => {
   };
 
   return (
-    <div className="relative min-h-screen bg-gray-100">
+    <div className="relative min-h-screen  ">
       {isPopupOpen && (
-        <div className="fixed inset-0 left-0 w-full h-full flex justify-center items-center z-20">
+        <div className="fixed  backdrop-blur-lg inset-0 left-0 w-full h-full flex justify-center items-center z-20">
           <div className="relative w-full max-w-lg p-6 bg-white rounded-lg shadow-md">
             <button
-              className="absolute top-2 right-2 text-gray-600 hover:text-black"
+              className="absolute top-2 p-2 right-2 text-gray-600 hover:text-black"
               onClick={handleClosePopup}
             >
-              X
+              <CloseIcon />
             </button>
             <form
               onSubmit={handleFormSubmit}
@@ -707,7 +708,7 @@ const AdminCommunity = () => {
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
                   required
                   disabled
                 />
@@ -724,7 +725,7 @@ const AdminCommunity = () => {
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
+                  className="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
                   required
                 ></textarea>
               </div>
@@ -771,7 +772,7 @@ const AdminCommunity = () => {
 
               <button
                 type="submit"
-                className="w-full py-2 mt-4 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                className="w-full py-2 mt-4 bg-openbox-green text-white rounded-md hover:bg-green-400"
               >
                 {editIndex !== null ? "Save Changes" : "Submit"}
               </button>
@@ -818,7 +819,7 @@ const AdminCommunity = () => {
         </FormControl> */}
         {loading ? (
           <div className="flex justify-center">
-            <CircularProgress />
+            <CircularProgress  style={{ color: "#bcd727"}} />
           </div>
         ) : (
           <div>{renderEventsByStatus(selectedStatus)}</div>

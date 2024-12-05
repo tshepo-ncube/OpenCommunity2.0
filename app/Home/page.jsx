@@ -79,6 +79,17 @@ function Home() {
     CommunitiesJoined: [],
   });
 
+  const [pageLoad, setPageLoad] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageLoad(false);
+    }, 5000);
+
+    // Cleanup function to clear the timeout if the component unmounts before the 2 seconds
+    return () => clearTimeout(timer);
+  }, []);
+
   const [hottestCommunity, setHottestCommunity] = useState(null);
 
   const [activeTab, setActiveTab] = useState("My Communities");
@@ -159,13 +170,7 @@ function Home() {
 
         <Navbar isHome={true} />
 
-        {/* <HotCommunity /> */}
-
         <Carousel />
-
-        {/* <div>
-          <RecommendedCommunities />
-        </div> */}
 
         <center className="mt-8">
           <Box sx={{ width: "100%", marginTop: 4 }}>
@@ -201,36 +206,6 @@ function Home() {
                 </ul>
               </div>
             </div>
-
-            {/* <Box
-              sx={{
-                borderBottom: "5px solid white", // Set the border color to green
-                borderColor: "white",
-                width: "100%",
-                height: "12vh",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "flex-start",
-                pt: 2,
-              }}
-            >
-              <Tabs
-                value={value}
-                onChange={handleChange}
-                aria-label="basic tabs example"
-              >
-                <CustomTab label="My Communities" {...a11yProps(0)} />
-                <CustomTab label="Discover Communities" {...a11yProps(1)} />
-              </Tabs>
-            </Box> */}
-
-            {/* <CustomTabPanel value={value} index={0}>
-              <MyCommunities email={email} />
-            </CustomTabPanel>
-
-            <CustomTabPanel value={value} index={1}>
-              <DiscoverCommunity email={email} />
-            </CustomTabPanel> */}
 
             {activeTab === "My Communities" ? (
               <>

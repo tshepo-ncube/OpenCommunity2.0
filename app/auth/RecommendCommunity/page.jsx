@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import RecommendationDB from "@/database/community/recommendation";
 
-import Header from "../../../_Components/Navbar2";
+import Navbar from "../../../_Components/Navbar2";
 
 const CommunityRecommendationPage = () => {
   // const [communityName, setCommunityName] = useState < string > "";
@@ -107,7 +107,7 @@ const CommunityRecommendationPage = () => {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-gradient-to-br from-[#f0f4e1] via-gray-100 to-[#e6edc3]"
     >
-      <Header />
+      <Navbar />
 
       <div className="flex min-h-screen bg-gray-100">
         <div className="flex-grow ">

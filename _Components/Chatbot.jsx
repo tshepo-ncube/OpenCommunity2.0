@@ -4,6 +4,7 @@ import ChatCard from "../_Components/ChatCard";
 import { ThreeDots } from "react-loader-spinner";
 import axios from "axios";
 import CommunityDB from "@/database/community/community";
+import strings from "../Utils/strings.json";
 
 const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,10 +13,11 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
   const [assistantID, setAssistantID] = useState("");
   const [runID, setRunID] = useState("");
 
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef(null);
   const [newMessage, setNewMessage] = useState("");
+  const [loader, setLoader] = useState(true);
   const [msgsLoading, setMsgsLoading] = useState(true);
   const [sentMessageProcessed, setSentMessageProcessed] = useState(true);
   const [communityData, setCommunityData] = useState(null);
@@ -66,20 +68,30 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
       { sender: "AI", content: [] },
     ]);
 
+    // let instructions = `You are an assistant designed to help
+    //   recommend new events for the ${communityData.name}. Your primary task is to
+    //   recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
+    //    to ensure the event's success: Predicted Attendance, Optimal Timing,
+    //    location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event
+    //     please respond in a json format ONLY (no other text, only JSON)
+    //      with fields name, description, idea_for_event, optimal_timing,
+    //      start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
+    //       an event or just answering a question you can respond normally (less than 300 characters please) (NO JSON, JUST TEXT)`;
+
     let instructions = `You are an assistant designed to help 
-      recommend new events for the ${communityData.name}. Your primary task is to 
-      recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
-       to ensure the event's success: Predicted Attendance, Optimal Timing,
-       location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event 
-        please respond in a json format ONLY (no other text, only JSON)
-         with fields name, description, predicted_attendance, optimal_timing, 
-         start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
-          an event or just answering a question you can respond normally (less than 300 characters please) (NO JSON, JUST TEXT)`;
+          recommend new events for the ${communityData.name}. Your primary task is to 
+          recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
+           to ensure the event's success: Idea For Event, Optimal Timing,
+           location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event 
+            please respond in a json format ONLY (no other text, only JSON)
+             with fields name, description, idea_for_event, optimal_timing, 
+             start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
+              an event or just answering a question you can respond normally (less than 300 characters please) (NO JSON, JUST TEXT)`;
     // const newMessageCopy = newMessage.slice();
     try {
       const res = await axios.post(
-        "http://localhost:8080/sendMessage",
-        // strings.server_endpoints.sendMessage,
+        //"http://localhost:8080/sendMessage",
+        strings.server_endpoints.sendMessage,
         { newMessage, threadID, runID, assistantID, instructions },
         {
           headers: {
@@ -87,6 +99,8 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
           },
         }
       );
+
+      console.log("THIS IS A COMMMMMMIT: ", res.data.messages);
       setNewMessage("");
 
       console.log("Returned Messages: ", res.data.messages);
@@ -95,6 +109,7 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
       setNewMessage("");
       console.log("New Messages Refreshed");
     } catch (error) {
+      console.log("Endpoint Called : ", strings.server_endpoints.sendMessage);
       console.log(error);
     }
   };
@@ -112,19 +127,29 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
     // let threadID = "thread_Fs2VYok9YAiXZ1qHv5TpDeIZ";
     // let runID = "run_GuV63F5sRM7OOAFTnZqhOtU3";
     // let assistantID = "asst_EiHgeiLbxcs1r1855lryoIe8";
-    let instructions = `You are an assistant designed to help 
-      recommend new events for the ${communityData.name}. Your primary task is to 
-      recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
-       to ensure the event's success: Predicted Attendance, Optimal Timing,
-       location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event 
-        please respond in a json format ONLY (no other text, only JSON)
-         with fields name, description, predicted_attendance, optimal_timing, 
-         start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
-          an event or just answering a question you can respond normally (NO JSON, JUST TEXT)`;
+    // let instructions = `You are an assistant designed to help
+    //   recommend new events for the ${communityData.name}. Your primary task is to
+    //   recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
+    //    to ensure the event's success: Predicted Attendance, Optimal Timing,
+    //    location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event
+    //     please respond in a json format ONLY (no other text, only JSON)
+    //      with fields name, description, predicted_attendance, optimal_timing,
+    //      start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
+    //       an event or just answering a question you can respond normally (NO JSON, JUST TEXT)`;
 
+    let instructions = `You are an assistant designed to help 
+          recommend new events for the ${communityData.name}. Your primary task is to 
+          recommend one event (ONLY JSON, NO EXPLANATION OR TEXT) .Provide the following details
+           to ensure the event's success: Idea For Event, Optimal Timing,
+           location suitability, start_date (TIMESTAMP SECONDS PLZ) and end_date (TIMESTAMP SECONDS PLZ). If you're recommending an event 
+            please respond in a json format ONLY (no other text, only JSON)
+             with fields name, description, idea_for_event, optimal_timing, 
+             start_date,end_date  and location. No matter What, Respond with one event at a time. If you not recommending
+              an event or just answering a question you can respond normally (less than 300 characters please) (NO JSON, JUST TEXT)`;
     try {
       const res = await axios.post(
-        "http://localhost:8080/sendMessage",
+        strings.server_endpoints.sendMessage,
+        // "http://localhost:8080/sendMessage",
         {
           newMessage: "another one please",
           threadID,
@@ -183,6 +208,14 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
     const rows = Math.min(5, newLines + 1); // Limit to 5 rows
     return rows;
   };
+
+  useEffect(() => {
+    if (messages) {
+      setLoader(false);
+    } else {
+      setLoader(true);
+    }
+  }, [messages]);
 
   const checkStatusAndPrintMessages = async (threadId, runId) => {
     console.log("checkStatusAndPrintMessages() starting...");
@@ -265,6 +298,7 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
   }, []);
 
   const fetchMessages = async () => {
+    console.log("------------------------------------------");
     // let threadID = "thread_Fs2VYok9YAiXZ1qHv5TpDeIZ";
     // let runID = "run_GuV63F5sRM7OOAFTnZqhOtU3";
     // let assistantID = "asst_EiHgeiLbxcs1r1855lryoIe8";
@@ -279,8 +313,10 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
     //       an event or just answering a question you can respond normally (NO JSON, JUST TEXT)`;
 
     try {
+      console.log("Fetching messages... ");
       const res = await axios.post(
-        "http://localhost:8080/fetchMessages",
+        strings.server_endpoints.fetchMessages,
+        // "http://localhost:8080/fetchMessages" ,
         { threadID, runID, assistantID },
         {
           headers: {
@@ -392,7 +428,8 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
       const communityName = communityData.name;
       try {
         const res = await axios.post(
-          "http://localhost:8080/createAssistant",
+          //"http://localhost:8080/createAssistant",
+          strings.server_endpoints.createAssistant,
           { communityName },
           {
             headers: {
@@ -420,83 +457,159 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
     sendMoreReccMsg();
   };
 
+  function extractJsonFromText(text) {
+    console.log("TESTING MESSAGE : ", text);
+    // Ensure the input is a string before proceeding
+    if (typeof text !== "string") {
+      console.log("no json");
+      return null;
+    }
+
+    // Regular expression to match JSON-like content inside ```json ... ```
+    const jsonRegex = /```json\s*([\s\S]*?)\s*```/;
+
+    // Find JSON-like content within the given text
+    const match = text.match(jsonRegex);
+
+    // If a match is found, try to parse it as JSON
+    if (match && match[1]) {
+      try {
+        const jsonObject = JSON.parse(match[1]);
+        return jsonObject;
+      } catch (error) {
+        console.log("no json"); // If JSON parsing fails, log "no json"
+        return null;
+      }
+    } else {
+      console.log("no json"); // If no match is found, log "no json"
+      return null;
+    }
+  }
+
+  // Example usage:
+  const inputText = `Sure! Here is a recommended event for the Soccer Community: 
+  \`\`\`json 
+  {
+    "name": "Annual Soccer Festival",
+    "description": "A fun-filled day of soccer games, contests, and activities for all ages and skill levels.",
+    "predicted_attendance": 5000,
+    "optimal_timing": "Weekend",
+    "start_date": 1735564800,
+    "end_date": 1735651200,
+    "location": "City Soccer Complex"
+  } 
+  \`\`\``;
+
+  // const jsonResult = extractJsonFromText(inputText);
+  // if (jsonResult) {
+  //   console.log("Extracted JSON:", jsonResult);
+  // }
+
+  // // Example usage:
+  // const inputText = `Sure! Here is a recommended event for the Soccer Community:
+  // \`\`\`json
+  // {
+  //   "name": "Annual Soccer Festival",
+  //   "description": "A fun-filled day of soccer games, contests, and activities for all ages and skill levels.",
+  //   "predicted_attendance": 5000,
+  //   "optimal_timing": "Weekend",
+  //   "start_date": 1735564800,
+  //   "end_date": 1735651200,
+  //   "location": "City Soccer Complex"
+  // }
+  // \`\`\``;
+
+  // const jsonResult = extractJsonFromText(inputText);
+  // if (jsonResult) {
+  //   console.log("Extracted JSON:", jsonResult);
+  // }
+
   return (
     <>
       {/* Button */}
-      <button
-        className="fixed bottom-4 right-4 inline-flex items-center justify-center text-sm font-medium disabled:pointer-events-none disabled:opacity-50 border rounded-full w-16 h-16 bg-openbox-green hover:bg-openbox-green m-0 cursor-pointer border-gray-200 bg-none p-0 normal-case leading-5 hover:text-gray-900"
-        type="button"
-        aria-haspopup="dialog"
-        aria-expanded={isOpen}
-        onClick={handleToggle}
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="30"
-          height="40"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="text-white block border-gray-200 align-middle"
-        >
-          <path
-            d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"
-            className="border-gray-200"
-          ></path>
-        </svg>
-      </button>
 
-      {/* Chatbox */}
-      {isOpen && (
-        <div
-          style={{
-            boxShadow: "0 0 #0000, 0 0 #0000, 0 1px 2px 0 rgb(0 0 0 / 0.05)",
-          }}
-          className="  fixed bottom-[calc(4rem+1.5rem)] right-0 mr-4 bg-white p-6 rounded-lg border border-[#e5e7eb] w-[440px] h-[634px]"
-        >
-          {/* Heading */}
-          <div
-            style={{ zIndex: 99 }}
-            className="bg-white fixed z-100 border-b-2 w-[240px] border-black p-2 flex flex-col space-y-1.5 pb-6"
+      {loader ? (
+        <> </>
+      ) : (
+        <>
+          <button
+            className="fixed bottom-4 right-4 inline-flex items-center justify-center text-sm font-medium disabled:pointer-events-none disabled:opacity-50 border rounded-full w-16 h-16 bg-openbox-green hover:bg-openbox-green m-0 cursor-pointer border-gray-200 bg-none p-0 normal-case leading-5 hover:text-gray-900"
+            type="button"
+            aria-haspopup="dialog"
+            aria-expanded={isOpen}
+            onClick={handleToggle}
           >
-            <h2 className="font-semibold text-lg tracking-tight">Chatbot</h2>
-            <p className="text-sm text-[#6b7280] leading-3">
-              {communityData.name}
-            </p>
-          </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="30"
+              height="40"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-white block border-gray-200 align-middle"
+            >
+              <path
+                d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"
+                className="border-gray-200"
+              ></path>
+            </svg>
+          </button>
 
-          {/* Chat Container */}
-          <div
-            // className="pr-4 h-[474px]"
+          {/* Chatbox */}
+          {isOpen && (
+            <div
+              style={{
+                zIndex: 150,
+                boxShadow:
+                  "0 0 #0000, 0 0 #0000, 0 1px 2px 0 rgb(0 0 0 / 0.05)",
+              }}
+              className=" mt-30 fixed bottom-[calc(4rem+1.5rem)] right-0 mr-4 bg-white p-6 rounded-lg border border-[#e5e7eb] w-[440px] h-[634px]"
+            >
+              {/* Heading */}
+              <div
+                style={{ zIndex: 99 }}
+                className="bg-white fixed z-100 border-b-2 w-[240px] border-black p-2 flex flex-col space-y-1.5 pb-6"
+              >
+                <h2 className="font-semibold text-lg tracking-tight">
+                  Chatbot
+                </h2>
+                <p className="text-sm text-[#6b7280] leading-3">
+                  {communityData.name}
+                </p>
+              </div>
 
-            // className="mt-20 z-0 h-[474px]  overflow-y-auto  mb-400"
-            // style={{
-            //   minWidth: "100%",
-            //   height: "200px",
-            //   display: "table",
-            //   overflowY: "scroll",
-            // }}
+              {/* Chat Container */}
+              <div
+                // className="pr-4 h-[474px]"
 
-            className="mt-20  z-0 overflow-y-auto flex-1 mb-4 pr-4"
-            style={{ height: "78%" }}
-          >
-            {/* Chat Messages */}
+                // className="mt-20 z-0 h-[474px]  overflow-y-auto  mb-400"
+                // style={{
+                //   minWidth: "100%",
+                //   height: "200px",
+                //   display: "table",
+                //   overflowY: "scroll",
+                // }}
 
-            {messages.length == 0 ? (
-              <>
-                <p>No messages</p>
-              </>
-            ) : (
-              <>
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className="flex gap-3 my-4 text-gray-600 text-sm flex-1"
-                  >
-                    {/* <span className="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
+                className="mt-20  z-0 overflow-y-auto flex-1 mb-4 pr-4"
+                style={{ height: "78%" }}
+              >
+                {/* Chat Messages */}
+
+                {messages.length == 0 ? (
+                  <>
+                    <p>No messages</p>
+                  </>
+                ) : (
+                  <>
+                    {messages.map((message) => (
+                      <div
+                        key={message.id}
+                        className="flex gap-3 my-4 text-gray-600 text-sm flex-1"
+                      >
+                        {/* <span className="relative flex shrink-0 overflow-hidden rounded-full w-8 h-8">
                       <div className="rounded-full bg-gray-100 border p-1">
                         <svg
                           stroke="none"
@@ -519,14 +632,14 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                         </svg>
                       </div>
                     </span> */}
-                    <p className="leading-relaxed">
-                      {/* <span className="block font-bold text-gray-700">
+                        <p className="leading-relaxed">
+                          {/* <span className="block font-bold text-gray-700">
                         {message.sender}{" "}
                       </span> */}
-                      {/* {message.content[0].text.value} */}
-                      {message.sender === "AI" ? (
-                        <>
-                          {/* {(() => {
+                          {/* {message.content[0].text.value} */}
+                          {message.sender === "AI" ? (
+                            <>
+                              {/* {(() => {
                             try {
                               const parsedContent = JSON.parse(
                                 message.content[0].text.value.slice(7, -3)
@@ -549,131 +662,141 @@ const Chatbot = ({ setEventForm, setShowEventForm, communityID }) => {
                             }
                           })()} */}
 
-                          {message.content[0] && message.content[0].text ? (
-                            (() => {
-                              try {
-                                const parsedContent = JSON.parse(
-                                  message.content[0].text.value
-                                );
-                                return (
+                              {message.content[0] &&
+                              message.content[0].text &&
+                              extractJsonFromText(
+                                message.content[0].text.value
+                              ) ? (
+                                <>
                                   <ChatCard
-                                    name={parsedContent.name}
-                                    description={parsedContent.description}
-                                    date={parsedContent.date}
-                                    start_date={parsedContent.start_date}
-                                    end_date={parsedContent.end_date}
-                                    location={parsedContent.location}
+                                    name={
+                                      extractJsonFromText(
+                                        message.content[0].text
+                                      ).name
+                                    }
+                                    description={
+                                      extractJsonFromText(
+                                        message.content[0].text
+                                      ).description
+                                    }
+                                    date={
+                                      extractJsonFromText(
+                                        message.content[0].text
+                                      ).date
+                                    }
+                                    start_date={
+                                      extractJsonFromText(
+                                        message.content[0].text
+                                      ).start_date
+                                    }
+                                    end_date={
+                                      extractJsonFromText(
+                                        message.content[0].text
+                                      ).end_date
+                                    }
+                                    location={
+                                      extractJsonFromText(
+                                        message.content[0].text
+                                      ).location
+                                    }
                                     handleMore={handleMore}
                                     setShowEventForm={setShowEventForm}
                                     setEventForm={setEventForm}
                                   />
-                                );
-                              } catch (error) {
-                                //console.log("ERRRRRRRRORRRRRRRRRR");
-                                //console.log(error);
-                                // If JSON parsing fails, render the content as a plain string
-                                return (
-                                  // <p className=" bg-white  border w-90 p-2 rounded-lg mb-2 left-0">
-                                  //   {message.content[0].text.value}
-                                  // </p>
+                                </>
+                              ) : (
+                                <>
+                                  <p className=" bg-red-500  border w-90 p-2 rounded-lg mb-2 left-0">
+                                    {message.content[0].text.value}
+                                  </p>
+                                </>
+                              )}
 
-                                  <>
-                                    <div className="chat chat-start">
-                                      <div className="chat-image avatar">
-                                        <div className="w-10 rounded-full">
-                                          <img
-                                            alt="Tailwind CSS chat bubble component"
-                                            src="https://upload.wikimedia.org/wikipedia/commons/1/13/ChatGPT-Logo.png"
-                                          />
-                                        </div>
-                                      </div>
-                                      <div className="chat-header">
-                                        {/* Obi-Wan Kenobi */}
-                                        {/* <time className="text-xs opacity-50">12:45</time> */}
-                                      </div>
-                                      <div className="chat-bubble bg-openbox-green text-white">
-                                        {message.content[0].text.value}
-                                      </div>
-                                      {/* <div className="chat-footer opacity-50">Delivered</div> */}
-                                    </div>
-                                  </>
-                                );
-                              }
-                            })()
-                          ) : (
-                            <ThreeDots
-                              visible={true}
-                              height="20"
-                              width="40"
-                              color="#bcd727"
-                              radius="9"
-                              ariaLabel="three-dots-loading"
-                              wrapperStyle={{}}
-                              wrapperClass=""
-                            />
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          {/* <p className=" bg-openbox-green  border w-90 p-2 rounded-lg mb-2 left-0">
-                            {message.content[0].text.value}
-                          </p> */}
-
-                          <div className="chat chat-end">
-                            <div className="chat-image avatar">
-                              <div className="w-10 rounded-full">
-                                <img
-                                  alt="Tailwind CSS chat bubble component"
-                                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                              {message.content[0] && message.content[0].text ? (
+                                (() => {
+                                  try {
+                                    const parsedContent = JSON.parse(
+                                      message.content[0].text.value
+                                    );
+                                    return (
+                                      <ChatCard
+                                        name={parsedContent.name}
+                                        description={parsedContent.description}
+                                        date={parsedContent.date}
+                                        start_date={parsedContent.start_date}
+                                        end_date={parsedContent.end_date}
+                                        location={parsedContent.location}
+                                        handleMore={handleMore}
+                                        setShowEventForm={setShowEventForm}
+                                        setEventForm={setEventForm}
+                                      />
+                                    );
+                                  } catch (error) {
+                                    return (
+                                      <>
+                                        <p className=" bg-white  border w-90 p-2 rounded-lg mb-2 left-0">
+                                          {message.content[0].text.value}
+                                        </p>
+                                      </>
+                                    );
+                                  }
+                                })()
+                              ) : (
+                                <ThreeDots
+                                  visible={true}
+                                  height="20"
+                                  width="40"
+                                  color="#bcd727"
+                                  radius="9"
+                                  ariaLabel="three-dots-loading"
+                                  wrapperStyle={{}}
+                                  wrapperClass=""
                                 />
-                              </div>
-                            </div>
-                            <div className="chat-header">
-                              {/* Anakin */}
-                              {/* <time className="text-xs opacity-50">12:46</time> */}
-                            </div>
-                            <div className="chat-bubble">
-                              {" "}
-                              {message.content[0].text.value}
-                            </div>
-                            {/* <div className="chat-footer opacity-50">Seen at 12:46</div> */}
-                          </div>
-                        </>
-                      )}
-                    </p>
-                  </div>
-                ))}
-              </>
-            )}
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <p className=" bg-openbox-green  border w-90 p-2 rounded-lg mb-2 left-0">
+                                {message.content[0].text.value}
+                              </p>
+                            </>
+                          )}
+                        </p>
+                      </div>
+                    ))}
+                  </>
+                )}
 
-            <div ref={messagesEndRef} />
-          </div>
+                <div ref={messagesEndRef} />
+              </div>
 
-          {/* Input box */}
-          <div className=" pt-0  w-full p-4">
-            <div className="flex items-center justify-center w-full space-x-2">
-              <input
-                className="flex h-10 w-full rounded-md border border-[#e5e7eb] px-3 py-2 text-sm placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#9ca3af] disabled:cursor-not-allowed disabled:opacity-50 text-[#030712] focus-visible:ring-offset-2"
-                placeholder="Type your message"
-                // value={inputValue}
-                // onChange={(e) => setInputValue(e.target.value)}
+              {/* Input box */}
+              <div className=" pt-0  w-full p-4">
+                <div className="flex items-center justify-center w-full space-x-2">
+                  <input
+                    className="flex h-10 w-full rounded-md border border-[#e5e7eb] px-3 py-2 text-sm placeholder-[#6b7280] focus:outline-none focus:ring-2 focus:ring-[#9ca3af] disabled:cursor-not-allowed disabled:opacity-50 text-[#030712] focus-visible:ring-offset-2"
+                    placeholder="Type your message"
+                    // value={inputValue}
+                    // onChange={(e) => setInputValue(e.target.value)}
 
-                value={newMessage}
-                rows={calculateRows(newMessage)}
-                onChange={(e) => setNewMessage(e.target.value)}
-              />
-              <button
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium text-[#f9fafb] disabled:pointer-events-none disabled:opacity-50 bg-openbox-green hover:bg-bg-openbox-green h-10 px-4 py-2"
-                onClick={handleMessageSend}
-                // onClick={() => {
-                //   setShowEventForm(true);
-                // }}
-              >
-                Send
-              </button>
+                    value={newMessage}
+                    rows={calculateRows(newMessage)}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                  />
+                  <button
+                    className="inline-flex items-center justify-center rounded-md text-sm font-medium text-[#f9fafb] disabled:pointer-events-none disabled:opacity-50 bg-openbox-green hover:bg-bg-openbox-green h-10 px-4 py-2"
+                    onClick={handleMessageSend}
+                    // onClick={() => {
+                    //   setShowEventForm(true);
+                    // }}
+                  >
+                    Send
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          )}
+        </>
       )}
     </>
   );

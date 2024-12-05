@@ -69,7 +69,8 @@ const Profile = () => {
     newPassword: "",
     confirmNewPassword: "",
   });
-
+  const [backButtonDisabled, setBackButtonDisabled] = useState(true);
+  const [showBackButtonMessage, setShowBackButtonMessage] = useState(false);
   const [selectedInterests, setSelectedInterests] = useState([]);
   const [otherDiet, setOtherDiet] = useState("");
   const [sel, setSel] = useState([]);
@@ -79,7 +80,7 @@ const Profile = () => {
   const [activeTab, setActiveTab] = useState("personalDetails");
   const [userCommunities, setUserCommunities] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
-
+  const [profileUpdateError, setProfileUpdateError] = useState("");
   const [openSnackbar, setOpenSnackbar] = React.useState(false);
 
   const handleClick = () => {
@@ -164,6 +165,10 @@ const Profile = () => {
       setIsOtherDietSelected(true);
     }
   }, [profile.otherDiet]);
+
+  useEffect(() => {
+    setBackButtonDisabled((selectedInterests?.length ?? 0) !== 5);
+  }, [selectedInterests]);
 
   useEffect(() => {
     if (profile.Interests !== selectedInterests) {
@@ -295,32 +300,36 @@ const Profile = () => {
   // };
 
   const handleEditProfileSubmit = async (e) => {
-    console.log("handleEditProfileSubmit");
     e.preventDefault();
+    setProfileUpdateError(""); // Clear any previous error messages
+
+    if (selectedInterests.length !== 5) {
+      setProfileUpdateError(
+        "*Please select exactly 5 interests to set up your profile*"
+      );
+      return; // Prevent form submission
+    }
 
     if (otherAllergy !== "") {
-      // Update the profile with the otherAllergy field
       setProfile((prevProfile) => ({
-        ...prevProfile, // Keep the existing profile fields
-        otherAllergy: otherAllergy, // Add or update the otherAllergy field
+        ...prevProfile,
+        otherAllergy: otherAllergy,
       }));
     }
 
     if (otherDiet !== "") {
-      // Update the profile with the otherAllergy field
       setProfile((prevProfile) => ({
-        ...prevProfile, // Keep the existing profile fields
-        otherDiet: otherDiet, // Add or update the otherAllergy field
+        ...prevProfile,
+        otherDiet: otherDiet,
       }));
     }
+
     const success = await ManageUser.editProfileData(
       profile.id,
       profile,
       selectedInterests
     );
     if (success) {
-      // If the profile update was successful, fetch the updated profile data
-      // ManageUser.getProfileData("tshepo@tshepo.com", setProfile);
       setOpenSnackbar(true);
       ManageUser.getProfileData(
         localStorage.getItem("Email"),
@@ -329,14 +338,12 @@ const Profile = () => {
         setIsAdmin
       );
     } else {
-      // Handle failure
+      setProfileUpdateError("Failed to update profile. Please try again.");
     }
 
     if (profileImageFile !== null) {
       ManageUser.setProfileImage(profileImageFile);
     }
-
-    console.log("About to make some edits......", profile);
   };
 
   const handleNewPasswordSubmit = (e) => {
@@ -353,7 +360,12 @@ const Profile = () => {
   };
 
   const handleBack = () => {
-    router.back();
+    if (selectedInterests.length === 5) {
+      router.push("/Home");
+    } else {
+      setShowBackButtonMessage(true);
+      setTimeout(() => setShowBackButtonMessage(false), 3000); // Hide message after 3 seconds
+    }
   };
 
   return (
@@ -367,11 +379,25 @@ const Profile = () => {
         <div className="px-4 py-5 sm:px-6 flex items-center bg-gray-50">
           <button
             onClick={handleBack}
-            className="text-gray-400 hover:text-gray-500 mr-4"
+            className={`text-gray-400 hover:text-gray-500 mr-4 ${
+              backButtonDisabled ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={backButtonDisabled}
           >
             <ArrowLeftIcon className="h-6 w-6" />
           </button>
           <h2 className="text-2xl font-bold text-gray-900">User Settings</h2>
+          {showBackButtonMessage && (
+            <div
+              className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4"
+              role="alert"
+            >
+              <p className="font-bold">
+                Please complete your profile setup before accessing the system.
+              </p>
+              <p>You must select 5 interests to proceed.</p>
+            </div>
+          )}
         </div>
         <Tab.Group>
           <div className="border-b border-gray-200">
@@ -659,22 +685,28 @@ const Profile = () => {
                     <></>
                   )}
                 </div> */}
+                {/* Interests Section - Always visible */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-medium text-gray-900">
+                      Select 5 Interests
+                    </h2>
+                  </div>
 
-                <h2>Select Interests</h2>
-
-                <div>
-                  {selectedInterests ? (
-                    <>
-                      <InterestSelection
-                        max={5}
-                        selectedInterests={selectedInterests}
-                        setSelectedInterests={setSelectedInterests}
-                      />
-                    </>
-                  ) : (
-                    <></>
-                  )}
+                  <div className="border rounded-lg p-4 bg-gray-50">
+                    <InterestSelection
+                      max={5}
+                      selectedInterests={selectedInterests || []}
+                      setSelectedInterests={setSelectedInterests}
+                    />
+                  </div>
                 </div>
+                {/* Display error message if there is one */}
+                {profileUpdateError && (
+                  <div className="text-red-600 text-sm mt-2">
+                    {profileUpdateError}
+                  </div>
+                )}
 
                 <div>
                   <motion.button

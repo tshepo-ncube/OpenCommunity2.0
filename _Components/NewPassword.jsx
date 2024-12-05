@@ -51,7 +51,7 @@ const ForgotPassword = () => {
         onClick={forgotPassword}
         className="block w-full bg-openbox-green hover:bg-hover-obgreen focus:bg-hover-obgreen text-white rounded-lg px-3 py-3 font-semibold"
       >
-        send link to change password
+        Send Link to Change Password
       </button>
     </div>
   );
